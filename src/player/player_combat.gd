@@ -210,6 +210,7 @@ func _start_heavy() -> void:
 	current_attack = ATTACK_HEAVY
 	phase = Phase.CHARGE
 	_pending = false
+	_queued = false
 	_holding = false
 	_release_requested = false
 	_charge_time = _config.hold_threshold
@@ -314,16 +315,32 @@ func _update_hits() -> void:
 			hit_landed.emit(area, current_attack, damage)
 
 
-## Cancels into the next swing of the combo when its window is open and a press is
-## queued (pressed at any time during this swing).
+## Uses a press queued during this swing once the swing allows it (from "chain_from",
+## or from "move_cancel_from" for a swing with no next hit). A queued press still held
+## on a ground swing waits up to hold_threshold: held that long it starts the heavy,
+## let go first it chains the next combo hit. Air swings never start the heavy.
 func _try_chain() -> void:
-	var data: Dictionary = _config.attacks[current_attack]
-	if not data.has("next") or not _queued or _body.frame < data["chain_from"]:
+	if not _queued:
 		return
+	var data: Dictionary = _config.attacks[current_attack]
+	var open_from: int = data.get("chain_from", data["move_cancel_from"])
+	if _body.frame < open_from:
+		return
+	var ground := current_attack != ATTACK_JUMP and current_attack != ATTACK_DOWN
+	if ground and Input.is_action_pressed(&"attack"):
+		if _queued_age >= _config.hold_threshold:
+			_turn_to_input()
+			_start_heavy()
+		return
+	if data.has("next"):
+		_turn_to_input()
+		_start_swing(data["next"])
+
+
+func _turn_to_input() -> void:
 	var direction := signf(Input.get_axis(&"move_left", &"move_right"))
 	if direction != 0.0:
 		_player.facing = int(direction)
-	_start_swing(data["next"])
 
 
 ## Lets the FX layer finish where the swing was: a copy takes over the remaining
