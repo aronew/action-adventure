@@ -1,0 +1,25 @@
+; Engine configuration file for Godot 4.7.2.
+; Input actions are registered in code at startup (src/player/player_input_bindings.gd),
+; not in an [input] section here.
+config_version=5
+
+[application]
+
+config/name="Guardbreak"
+run/main_scene="res://src/test_rooms/movement_test_room.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=480
+window/size/viewport_height=270
+window/size/window_width_override=1440
+window/size/window_height_override=810
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+window/stretch/scale_mode="integer"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+textures/canvas_textures/default_texture_filter=0
