@@ -1,7 +1,7 @@
 # Story 001: Seeker controller and movement set
 
 > **Epic**: Guardbreak
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Visual/Feel
 > **Estimate**: L
@@ -70,10 +70,12 @@
 - `src/player/player.gd`, `src/player/player.tscn`
 - `src/player/player_config.gd`, `src/player/player_config.tres`
 - `src/player/seeker_animations.json`
-- `src/player/player_input_bindings.gd`, `src/player/dust_effect.gd`
+- `src/player/player_input_bindings.gd`, `src/player/dust_effect.gd`, `src/player/player_camera.gd`
 - `src/test_rooms/movement_test_room.gd`, `src/test_rooms/movement_test_room.tscn`
 - `project.godot` (main scene, 480x270 viewport, integer scaling, nearest filtering)
 - No test file: waived at qa.level minimal
+
+---
 
 ## QA Test Cases
 
@@ -96,3 +98,17 @@
 
 - Depends on: None
 - Unlocks: `production/epics/guardbreak/story-002-melee-combat.md`, `production/epics/guardbreak/story-006-ability-gates.md`
+
+## Completion Notes
+**Completed**: 2026-11-17
+**Criteria**: 13/13 passing, by the user's own playtest on their machine (keyboard and gamepad); none observed in a retained image
+**Deviations**: Closed without the required Visual/Feel evidence: no retained screenshot in `production/qa/evidence/story-001-seeker-controller-movement/` and no sign-off file. The user chose "Close anyway, accepting the deviations". Run result here was NOT VERIFIED (no Godot binary in the cloud container); the build was run only on the user's machine.
+**Test Evidence**: none retained (tests waived at qa.level minimal; the screenshot gap was accepted by the user)
+**Reviewed by**: self, no independent review (QL-TEST-COVERAGE and LP-CODE-REVIEW skipped — Solo mode)
+
+## Calls beyond the design
+- Movement values in `src/player/player_config.tres`: run 140, jump 330, double jump 320, dash 370 px/s for 0.25 s, wall jump 380 up and 190 away with a 0.1 s steering lock, grapple pull 360, fall gravity x1.5, apex hang, fast fall, coyote 0.1 s, jump buffer 0.12 s, ground and air acceleration, dash end and dash-jump momentum · kept 2026-11-17
+- Behaviours in `src/player/player.gd`: grapple flings the feet 24 px (one body height) above the anchor; jumping out of a grapple restores the double jump and air dash; nearest anchor in range, no line-of-sight check; wall jump within 3 px of a wall and 0.1 s after leaving it; corner correction 6 px, ledge nudge 5 px; crouch-walking allowed · kept 2026-11-17
+- Controls in `src/player/player_input_bindings.gd` (the Seeker pack's layout, doors on Up, gamepad A/RB/LB/X/Y and triggers) and the camera in `src/player/player_camera.gd` (smooth follow, 28 px look-ahead, 36 px fall lead, 4 px landing dip) · kept 2026-11-17
+- Test room layout in `src/test_rooms/movement_test_room.gd`, and 480x270 base resolution in a 1440x810 window with whole-number scaling in `project.godot` · kept 2026-11-17
+- Default palette Bone instead of Void in `src/player/player.gd` (the user's change) · kept 2026-11-17
