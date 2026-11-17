@@ -25,6 +25,8 @@ so the way they have their controls for this character its Space or Z= Jump, X= 
 
 one thing too is I want to use the bone sprite not the void sprite
 
+id say only bosses should have a guard like that or a mini boss normal enemies shouldnt s
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
@@ -33,7 +35,7 @@ one thing too is I want to use the bone sprite not the void sprite
 
 **Question:** Does the one move set feel good in a fight and in a room for ten minutes? *(guessed)*
 
-**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Every movement ability opens rooms and adds an attack angle. *(guessed)*
+**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard; normal enemies have health only. Every movement ability opens rooms and adds an attack angle. *(guessed, except the guard rule: you said)*
 
 **Intent:**
 
@@ -60,7 +62,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 ## Features
 - [x] Movement from the pack: run, dash, double jump, wall slide, climb, crouch, grapple, enter door
 - [x] Melee: 3-hit combo, jump, up and down attacks, heavy attack
-- [ ] Guard-break: enemies have a guard meter; the charged heavy shatters it and opens a finisher
+- [ ] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
 - [ ] 2–3 enemy types with readable, telegraphed attacks
 - [ ] One boss fight
 - [ ] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
