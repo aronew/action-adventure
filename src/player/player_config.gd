@@ -66,6 +66,9 @@ extends Resource
 @export var fast_fall_gravity_multiplier: float
 ## Terminal fall speed while fast falling.
 @export var fast_fall_speed: float
+## Down must be held this long in the air before the fast fall starts, so a quick
+## down + attack (the pogo) does not speed up the fall.
+@export var fast_fall_hold_time: float
 
 @export_group("Dash")
 ## Duration of a dash (the guide says 0.2 to 0.3 s reads well).

@@ -21,6 +21,9 @@ extends Node2D
 signal hit_landed(target: Node2D, attack: String, damage: float)
 ## Emitted once when an attack with a screen shake enters its hit frames.
 signal camera_shake_requested(size: float, duration: float)
+## Emitted when a swing with a forward step starts (and when the heavy is released),
+## with the forward speed the player should get, in px/s.
+signal lunge_requested(speed: float)
 
 ## Steps of an attack: nothing, a swing playing, or the heavy winding up and charging.
 enum Phase { IDLE, SWING, CHARGE }
@@ -189,6 +192,7 @@ func _start_swing(id: String) -> void:
 	_start_frame = Engine.get_physics_frames()
 	_begin_swing_state()
 	_play_layers(id)
+	_request_lunge()
 
 
 func _start_heavy() -> void:
@@ -265,6 +269,13 @@ func _release_heavy() -> void:
 	_body.play()
 	_fx.frame = _config.heavy_release_frame
 	_fx.play()
+	_request_lunge()
+
+
+func _request_lunge() -> void:
+	var speed: float = _config.attacks[current_attack].get("lunge", 0.0)
+	if speed > 0.0:
+		lunge_requested.emit(speed)
 
 
 ## Switches the hitbox on for the hit frames and reports each new target once.

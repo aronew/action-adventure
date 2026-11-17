@@ -45,6 +45,14 @@ extends Resource
 @export_group("Pogo")
 ## Upward speed given to the player when a down attack hits, as a positive number.
 @export var pogo_speed: float
+## Fastest the player falls while a down attack plays, so its hit frames meet what is
+## below instead of the player dropping past it.
+@export var down_attack_max_fall_speed: float
+
+@export_group("Moving while attacking")
+## Ground slowdown with no input during a swing (lower than the run's braking, so the
+## swing's forward step glides a little). With input the player runs as normal.
+@export var swing_glide_deceleration: float
 
 @export_group("Attacks")
 ## One entry per attack, keyed "attack1", "attack2", "attack3", "jump_attack",
@@ -59,4 +67,6 @@ extends Resource
 ##   first frame from which a press cancels into it.
 ## - "shake_size" (float, px) and "shake_time" (float, s): screen shake sent on the
 ##   hit frames; a size of 0 sends none.
+## - "lunge" (float, px/s, optional): forward speed given when the swing starts (the
+##   heavy: when it is released) on the ground; 0 or absent gives none.
 @export var attacks: Dictionary

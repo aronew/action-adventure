@@ -38,6 +38,7 @@
 - [ ] Each attack has a hitbox that is active only on its hit frames, and one swing hits an enemy once.
 - [ ] Body and FX layers are separate sprites per attack, so the FX layer can be recoloured or detached.
 - [ ] Damage, charge time and cancel windows are in a config resource, not code constants.
+- [ ] The player keeps running while swinging (facing locked for the swing), and each ground swing and the heavy release step forward a little; the pogo is easy to land: no fast fall during an attack, fast fall needs down held a moment, and the down attack caps the fall speed. *(added after playtest)*
 
 ---
 

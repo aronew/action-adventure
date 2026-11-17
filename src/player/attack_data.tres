@@ -16,10 +16,13 @@ glow_step_time_fast = 0.05
 glow_ready_cycle = PackedInt32Array(0, 2)
 glow_ready_step_time = 0.04
 pogo_speed = 260.0
+down_attack_max_fall_speed = 220.0
+swing_glide_deceleration = 500.0
 attacks = {
 "attack1": {
 "chain_from": 5,
 "damage": 10.0,
+"lunge": 60.0,
 "hit_from": 3,
 "hit_to": 4,
 "hitbox": Rect2(-8, -29, 74, 34),
@@ -31,6 +34,7 @@ attacks = {
 "attack2": {
 "chain_from": 4,
 "damage": 12.0,
+"lunge": 70.0,
 "hit_from": 1,
 "hit_to": 2,
 "hitbox": Rect2(-8, -42, 64, 47),
@@ -41,6 +45,7 @@ attacks = {
 },
 "attack3": {
 "damage": 20.0,
+"lunge": 100.0,
 "hit_from": 5,
 "hit_to": 6,
 "hitbox": Rect2(20, -22, 72, 27),
@@ -77,6 +82,7 @@ attacks = {
 },
 "heavy": {
 "damage": 30.0,
+"lunge": 140.0,
 "hit_from": 5,
 "hit_to": 6,
 "hitbox": Rect2(-21, -67, 103, 72),

@@ -85,6 +85,7 @@ var _climb_lockout_timer := 0.0
 var _wall_jump_lock_timer := 0.0
 var _wall_coyote_timer := 0.0
 var _wall_coyote_away := 0.0
+var _down_hold_time := 0.0
 var _air_jumps_left := 0
 var _air_dashes_left := 0
 var _landing := false
@@ -134,6 +135,7 @@ func _ready() -> void:
 	combat = PlayerCombat.new()
 	combat.setup(self, attack_config, _sprite, _pivots, _combat_fx_frames, _combat_fx_pivots)
 	combat.hit_landed.connect(_on_combat_hit_landed)
+	combat.lunge_requested.connect(_on_combat_lunge_requested)
 	add_child(combat)
 
 	_rope = Line2D.new()
@@ -159,6 +161,7 @@ func _physics_process(delta: float) -> void:
 	_takeoff_timer = maxf(_takeoff_timer - delta, 0.0)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_climb_lockout_timer = maxf(_climb_lockout_timer - delta, 0.0)
+	_down_hold_time = _down_hold_time + delta if _vertical > 0.0 else 0.0
 	_wall_jump_lock_timer = maxf(_wall_jump_lock_timer - delta, 0.0)
 	_wall_coyote_timer = maxf(_wall_coyote_timer - delta, 0.0)
 
@@ -267,6 +270,7 @@ func _state_air(delta: float) -> void:
 				config.air_turn_acceleration, config.air_overspeed_deceleration)
 	if combat.poll(delta, false, _vertical, false):
 		_flipping = false
+		velocity.y = minf(velocity.y, config.max_fall_speed)
 	_apply_air_gravity(delta)
 	var pre_move_vertical := velocity.y
 	move_and_slide()
@@ -307,10 +311,11 @@ func _state_dash(delta: float) -> void:
 		_set_state(State.GROUND if _has_floor_below() else State.AIR)
 
 
-## Ground swings and the heavy charge. The player is rooted: the speed it carried
-## bleeds off at the ground deceleration and input does not move or turn it (the
-## combo may turn it when chaining). Dash, jump and grapple cancel once the attack
-## allows it ([method PlayerCombat.is_locked]); walking off an edge ends the attack.
+## Ground swings and the heavy charge. The player keeps running while swinging (input
+## steers as on the ground) but facing is locked for the swing (the combo may turn it
+## when chaining). With no input, the swing's forward step glides out at
+## swing_glide_deceleration. Dash, jump and grapple cancel once the attack allows it
+## ([method PlayerCombat.is_locked]); walking off an edge ends the attack.
 func _state_attack(delta: float) -> void:
 	if not combat.is_attacking():
 		_set_state(State.GROUND)
@@ -324,7 +329,8 @@ func _state_attack(delta: float) -> void:
 		if _jump_buffer_timer > 0.0:
 			_start_ground_jump()
 			return
-	velocity.x = move_toward(velocity.x, 0.0, config.ground_deceleration * delta)
+	_steer(delta, config.ground_acceleration, attack_config.swing_glide_deceleration,
+			config.ground_turn_acceleration, config.ground_overspeed_deceleration)
 	velocity.y = config.gravity * delta
 	move_and_slide()
 	if not is_on_floor():
@@ -575,6 +581,13 @@ func _grapple_jump_out() -> void:
 
 
 ## A down attack that hits launches the player back up and refreshes the air moves.
+## A ground swing steps forward: forward speed is raised to at least [param speed].
+func _on_combat_lunge_requested(speed: float) -> void:
+	if not _has_floor_below():
+		return
+	velocity.x = float(facing) * maxf(velocity.x * float(facing), speed)
+
+
 func _on_combat_hit_landed(_target: Node2D, attack: String, _damage: float) -> void:
 	if attack == PlayerCombat.ATTACK_DOWN:
 		velocity.y = -attack_config.pogo_speed
@@ -623,7 +636,8 @@ func _steer(delta: float, acceleration: float, deceleration: float, turn: float,
 
 
 ## Air gravity: lighter at the apex while jump is held, heavier when falling, heavier
-## still when holding down (fast fall).
+## still when down has been held for fast_fall_hold_time (fast fall). No fast fall
+## during an attack, and a down attack caps the fall so its hit frames meet the target.
 func _apply_air_gravity(delta: float) -> void:
 	var acceleration := config.gravity
 	var max_fall := config.max_fall_speed
@@ -631,7 +645,10 @@ func _apply_air_gravity(delta: float) -> void:
 		acceleration *= config.apex_hang_gravity_multiplier
 	elif velocity.y > 0.0:
 		acceleration *= config.fall_gravity_multiplier
-		if _vertical > 0.0:
+		if combat.is_attacking():
+			if combat.current_attack == PlayerCombat.ATTACK_DOWN:
+				max_fall = attack_config.down_attack_max_fall_speed
+		elif _down_hold_time >= config.fast_fall_hold_time:
 			acceleration *= config.fast_fall_gravity_multiplier
 			max_fall = config.fast_fall_speed
 	if velocity.y > max_fall:

@@ -30,6 +30,7 @@ apex_hang_speed = 50.0
 apex_hang_gravity_multiplier = 0.55
 fast_fall_gravity_multiplier = 1.8
 fast_fall_speed = 640.0
+fast_fall_hold_time = 0.2
 dash_time = 0.25
 dash_speed = 370.0
 dash_cooldown = 0.3
