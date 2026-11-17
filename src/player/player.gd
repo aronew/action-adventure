@@ -23,6 +23,8 @@ extends CharacterBody2D
 ## Emitted once the enter-door animation has finished playing. The player stays in
 ## the door until [method resume_from_door] is called (room change is story 007).
 signal door_entered(door: Area2D)
+## Emitted when the player lands from the air, with the fall speed at impact (px/s).
+signal landed(impact_speed: float)
 
 ## Controller states.
 enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR }
@@ -72,6 +74,8 @@ var _dash_timer := 0.0
 var _dash_cooldown_timer := 0.0
 var _climb_lockout_timer := 0.0
 var _wall_jump_lock_timer := 0.0
+var _wall_coyote_timer := 0.0
+var _wall_coyote_away := 0.0
 var _air_jumps_left := 0
 var _air_dashes_left := 0
 var _landing := false
@@ -79,6 +83,7 @@ var _flipping := false
 var _standing_up := false
 var _grapple_phase := GrapplePhase.THROW
 var _anchor: Node2D
+var _grapple_direction := Vector2.ZERO
 var _door: Area2D
 
 
@@ -140,6 +145,7 @@ func _physics_process(delta: float) -> void:
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_climb_lockout_timer = maxf(_climb_lockout_timer - delta, 0.0)
 	_wall_jump_lock_timer = maxf(_wall_jump_lock_timer - delta, 0.0)
+	_wall_coyote_timer = maxf(_wall_coyote_timer - delta, 0.0)
 
 	match state:
 		State.GROUND:
@@ -155,7 +161,7 @@ func _physics_process(delta: float) -> void:
 		State.CROUCH:
 			_state_crouch(delta)
 		State.GRAPPLE:
-			_state_grapple()
+			_state_grapple(delta)
 		State.ENTER_DOOR:
 			velocity = Vector2.ZERO
 
@@ -195,7 +201,8 @@ func _state_ground(delta: float) -> void:
 	var moving := _move_x != 0.0
 	if moving:
 		facing = int(_move_x)
-	velocity.x = _move_x * config.run_speed
+	_steer(delta, config.ground_acceleration, config.ground_deceleration,
+			config.ground_turn_acceleration, config.ground_overspeed_deceleration)
 	velocity.y = config.gravity * delta
 	move_and_slide()
 	if not is_on_floor():
@@ -219,8 +226,11 @@ func _state_air(delta: float) -> void:
 	if _try_start_climb():
 		return
 	if _jump_buffer_timer > 0.0:
+		var wall_away := _wall_jump_direction()
 		if _coyote_timer > 0.0:
 			_start_ground_jump()
+		elif wall_away != 0.0:
+			_start_wall_jump(wall_away)
 		elif _air_jumps_left > 0:
 			_start_air_jump()
 	if Input.is_action_just_released(&"jump") and velocity.y < 0.0:
@@ -229,14 +239,20 @@ func _state_air(delta: float) -> void:
 	if _wall_jump_lock_timer <= 0.0:
 		if _move_x != 0.0:
 			facing = int(_move_x)
-		velocity.x = _move_x * config.run_speed
-	velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
-	var impact := velocity.y
+		_steer(delta, config.air_acceleration, config.air_deceleration,
+				config.air_turn_acceleration, config.air_overspeed_deceleration)
+	_apply_air_gravity(delta)
+	var pre_move_vertical := velocity.y
 	move_and_slide()
+	if is_on_ceiling() and pre_move_vertical < 0.0:
+		_correct_corner(pre_move_vertical)
 
+	var pushing_into_wall := is_on_wall() and _move_x != 0.0 and _move_x == -signf(get_wall_normal().x)
 	if is_on_floor():
-		_land(impact)
-	elif is_on_wall() and velocity.y > 0.0 and _move_x != 0.0 and _move_x == -signf(get_wall_normal().x):
+		_land(pre_move_vertical)
+	elif pushing_into_wall and pre_move_vertical >= -config.apex_speed and _nudge_onto_ledge():
+		_air_animation()
+	elif pushing_into_wall and velocity.y > 0.0:
 		_set_state(State.WALL_SLIDE)
 		facing = -int(_move_x)
 		_play_loop(&"wall_slide")
@@ -245,19 +261,32 @@ func _state_air(delta: float) -> void:
 
 
 func _state_dash(delta: float) -> void:
+	var grounded := _has_floor_below()
+	if _jump_buffer_timer > 0.0 and (grounded or _air_jumps_left > 0):
+		_dash_cooldown_timer = config.dash_cooldown
+		var carried := float(facing) * config.dash_speed * config.dash_jump_speed_keep
+		if grounded:
+			_start_ground_jump()
+		else:
+			_start_air_jump()
+		velocity.x = carried
+		return
+
 	_dash_timer -= delta
 	velocity = Vector2(float(facing) * config.dash_speed, 0.0)
 	move_and_slide()
 	if _dash_timer <= 0.0 or is_on_wall():
 		_dash_cooldown_timer = config.dash_cooldown
-		_set_state(State.GROUND if is_on_floor() else State.AIR)
+		velocity.x = 0.0 if is_on_wall() else float(facing) * config.dash_speed * config.dash_end_speed_keep
+		_set_state(State.GROUND if _has_floor_below() else State.AIR)
 
 
 func _state_wall_slide(delta: float) -> void:
 	if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
 		return
+	var away := signf(get_wall_normal().x)
 	if _jump_buffer_timer > 0.0:
-		_start_wall_jump()
+		_start_wall_jump(away)
 		return
 	velocity.x = _move_x * config.run_speed
 	velocity.y = minf(velocity.y + config.gravity * delta, config.wall_slide_speed)
@@ -265,6 +294,8 @@ func _state_wall_slide(delta: float) -> void:
 	if is_on_floor():
 		_set_state(State.GROUND)
 	elif not is_on_wall() or _move_x == 0.0 or _move_x != -signf(get_wall_normal().x):
+		_wall_coyote_timer = config.wall_coyote_time
+		_wall_coyote_away = away
 		_set_state(State.AIR)
 	else:
 		facing = -int(_move_x)
@@ -308,7 +339,10 @@ func _state_crouch(delta: float) -> void:
 		_set_state(State.AIR)
 
 
-func _state_grapple() -> void:
+func _state_grapple(delta: float) -> void:
+	if _grapple_phase != GrapplePhase.THROW and _jump_buffer_timer > 0.0:
+		_grapple_jump_out()
+		return
 	match _grapple_phase:
 		GrapplePhase.THROW:
 			_aim_at_anchor()
@@ -318,10 +352,18 @@ func _state_grapple() -> void:
 			if to_anchor.length() <= config.grapple_arrive_distance:
 				_begin_grapple_release()
 			else:
-				velocity = to_anchor.normalized() * config.grapple_speed
+				_grapple_direction = to_anchor.normalized()
+				velocity = _grapple_direction * config.grapple_speed
 				move_and_slide()
 				if is_on_wall() or is_on_ceiling() or (is_on_floor() and to_anchor.y > 0.0):
 					_begin_grapple_release()
+		GrapplePhase.RELEASE:
+			velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
+			var impact := velocity.y
+			move_and_slide()
+			if is_on_floor():
+				_land(impact)
+				return
 
 	var rope_shown := _grapple_phase == GrapplePhase.PULL \
 			or (_grapple_phase == GrapplePhase.THROW and _sprite.frame >= 1)
@@ -354,12 +396,12 @@ func _start_ground_jump() -> void:
 	_spawn_effect(&"dust_jump")
 
 
-func _start_wall_jump() -> void:
-	var away := signf(get_wall_normal().x)
+func _start_wall_jump(away: float) -> void:
 	_set_state(State.AIR)
 	facing = int(away)
 	velocity = Vector2(away * config.wall_jump_push_speed, -config.wall_jump_speed)
 	_wall_jump_lock_timer = config.wall_jump_control_lock_time
+	_wall_coyote_timer = 0.0
 	_jump_buffer_timer = 0.0
 	_coyote_timer = 0.0
 	_takeoff_timer = config.jump_takeoff_time
@@ -377,6 +419,7 @@ func _start_air_jump() -> void:
 
 func _land(impact: float) -> void:
 	_set_state(State.GROUND)
+	landed.emit(impact)
 	if impact >= config.land_min_fall_speed:
 		_landing = true
 		_start_clip(&"jump_land")
@@ -441,6 +484,7 @@ func _try_start_grapple() -> bool:
 	if best == null:
 		return false
 	_anchor = best
+	_grapple_direction = (_anchor.global_position - global_position).normalized()
 	facing = 1 if _anchor.global_position.x >= global_position.x else -1
 	velocity = Vector2.ZERO
 	_set_state(State.GRAPPLE)
@@ -449,11 +493,27 @@ func _try_start_grapple() -> bool:
 	return true
 
 
+## Lets go of the anchor, keeping part of the pull velocity so the player is flung on.
 func _begin_grapple_release() -> void:
 	_grapple_phase = GrapplePhase.RELEASE
-	velocity = Vector2.ZERO
+	velocity *= config.grapple_fling_keep
 	_sprite.rotation = 0.0
 	_start_clip(&"grapple_release")
+
+
+## Jumps out of a grapple pull or release: carries part of the pull velocity, adds an
+## upward kick, and restores the air jump and air dash so moves can be chained.
+func _grapple_jump_out() -> void:
+	var carried := _grapple_direction * config.grapple_speed * config.grapple_jump_keep
+	_set_state(State.AIR)
+	_refresh_air_moves()
+	velocity = Vector2(carried.x, carried.y - config.grapple_jump_speed)
+	if velocity.x != 0.0:
+		facing = int(signf(velocity.x))
+	_jump_buffer_timer = 0.0
+	_flipping = true
+	_start_clip(&"double_jump")
+	_spawn_effect(&"air_jump_ring")
 
 
 func _on_animation_finished() -> void:
@@ -482,6 +542,78 @@ func _on_animation_finished() -> void:
 func _refresh_air_moves() -> void:
 	_air_jumps_left = config.air_jumps
 	_air_dashes_left = config.air_dashes
+
+
+## Moves velocity.x toward the input's run speed. Speed above run_speed (dash, fling)
+## bleeds off at [param overspeed] while the input agrees with it or is neutral.
+func _steer(delta: float, acceleration: float, deceleration: float, turn: float, overspeed: float) -> void:
+	var rate := acceleration
+	if absf(velocity.x) > config.run_speed and (_move_x == 0.0 or _move_x == signf(velocity.x)):
+		rate = overspeed
+	elif _move_x == 0.0:
+		rate = deceleration
+	elif velocity.x != 0.0 and _move_x != signf(velocity.x):
+		rate = turn
+	velocity.x = move_toward(velocity.x, _move_x * config.run_speed, rate * delta)
+
+
+## Air gravity: lighter at the apex while jump is held, heavier when falling, heavier
+## still when holding down (fast fall).
+func _apply_air_gravity(delta: float) -> void:
+	var acceleration := config.gravity
+	var max_fall := config.max_fall_speed
+	if absf(velocity.y) < config.apex_hang_speed and Input.is_action_pressed(&"jump"):
+		acceleration *= config.apex_hang_gravity_multiplier
+	elif velocity.y > 0.0:
+		acceleration *= config.fall_gravity_multiplier
+		if _vertical > 0.0:
+			acceleration *= config.fast_fall_gravity_multiplier
+			max_fall = config.fast_fall_speed
+	if velocity.y > max_fall:
+		velocity.y = move_toward(velocity.y, max_fall, acceleration * delta)
+	else:
+		velocity.y = minf(velocity.y + acceleration * delta, max_fall)
+
+
+## Away direction (+1 or -1) for a wall jump, or 0 when none is allowed: a wall within
+## wall_jump_reach, else a wall left less than wall_coyote_time ago.
+func _wall_jump_direction() -> float:
+	if test_move(global_transform, Vector2(-config.wall_jump_reach, 0.0)):
+		return 1.0
+	if test_move(global_transform, Vector2(config.wall_jump_reach, 0.0)):
+		return -1.0
+	if _wall_coyote_timer > 0.0:
+		return _wall_coyote_away
+	return 0.0
+
+
+## The head hit a ceiling while rising: slide sideways up to corner_correction pixels
+## to clear its edge, keeping the upward speed.
+func _correct_corner(rising_speed: float) -> void:
+	for distance in range(1, config.corner_correction + 1):
+		for direction in [-1.0, 1.0]:
+			var shift := Vector2(float(distance) * float(direction), 0.0)
+			if not test_move(global_transform, shift) \
+					and not test_move(global_transform.translated(shift), Vector2(0.0, -1.0)):
+				global_position += shift
+				velocity.y = rising_speed
+				return
+
+
+## The feet just missed a ledge while moving into it: lift up to ledge_nudge pixels
+## onto it. Returns true when the player was lifted.
+func _nudge_onto_ledge() -> bool:
+	var into_wall := Vector2(_move_x, 0.0)
+	for lift in range(1, config.ledge_nudge + 1):
+		var up := Vector2(0.0, -float(lift))
+		if not test_move(global_transform, up) and not test_move(global_transform.translated(up), into_wall):
+			global_position += up
+			return true
+	return false
+
+
+func _has_floor_below() -> bool:
+	return test_move(global_transform, Vector2(0.0, 1.0))
 
 
 ## Resizes the body box so its bottom stays on the feet point.

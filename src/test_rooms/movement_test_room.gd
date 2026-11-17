@@ -48,12 +48,13 @@ func _ready() -> void:
 	_player.door_entered.connect(_on_player_door_entered)
 	add_child(_player)
 
-	var camera := Camera2D.new()
+	var camera := PlayerCamera.new()
 	camera.limit_left = 0
 	camera.limit_top = 0
 	camera.limit_right = int(ROOM_SIZE.x)
 	camera.limit_bottom = int(ROOM_SIZE.y)
 	_player.add_child(camera)
+	camera.setup(_player)
 
 	var hud := CanvasLayer.new()
 	_label = Label.new()
