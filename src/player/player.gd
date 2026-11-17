@@ -71,6 +71,7 @@ var _takeoff_timer := 0.0
 var _dash_timer := 0.0
 var _dash_cooldown_timer := 0.0
 var _climb_lockout_timer := 0.0
+var _wall_jump_lock_timer := 0.0
 var _air_jumps_left := 0
 var _air_dashes_left := 0
 var _landing := false
@@ -138,6 +139,7 @@ func _physics_process(delta: float) -> void:
 	_takeoff_timer = maxf(_takeoff_timer - delta, 0.0)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_climb_lockout_timer = maxf(_climb_lockout_timer - delta, 0.0)
+	_wall_jump_lock_timer = maxf(_wall_jump_lock_timer - delta, 0.0)
 
 	match state:
 		State.GROUND:
@@ -224,9 +226,10 @@ func _state_air(delta: float) -> void:
 	if Input.is_action_just_released(&"jump") and velocity.y < 0.0:
 		velocity.y *= config.jump_cut_multiplier
 
-	if _move_x != 0.0:
-		facing = int(_move_x)
-	velocity.x = _move_x * config.run_speed
+	if _wall_jump_lock_timer <= 0.0:
+		if _move_x != 0.0:
+			facing = int(_move_x)
+		velocity.x = _move_x * config.run_speed
 	velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
 	var impact := velocity.y
 	move_and_slide()
@@ -253,8 +256,8 @@ func _state_dash(delta: float) -> void:
 func _state_wall_slide(delta: float) -> void:
 	if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
 		return
-	if _jump_buffer_timer > 0.0 and _air_jumps_left > 0:
-		_start_air_jump()
+	if _jump_buffer_timer > 0.0:
+		_start_wall_jump()
 		return
 	velocity.x = _move_x * config.run_speed
 	velocity.y = minf(velocity.y + config.gravity * delta, config.wall_slide_speed)
@@ -349,6 +352,17 @@ func _start_ground_jump() -> void:
 	_coyote_timer = 0.0
 	_takeoff_timer = config.jump_takeoff_time
 	_spawn_effect(&"dust_jump")
+
+
+func _start_wall_jump() -> void:
+	var away := signf(get_wall_normal().x)
+	_set_state(State.AIR)
+	facing = int(away)
+	velocity = Vector2(away * config.wall_jump_push_speed, -config.wall_jump_speed)
+	_wall_jump_lock_timer = config.wall_jump_control_lock_time
+	_jump_buffer_timer = 0.0
+	_coyote_timer = 0.0
+	_takeoff_timer = config.jump_takeoff_time
 
 
 func _start_air_jump() -> void:

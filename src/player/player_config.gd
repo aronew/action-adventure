@@ -53,6 +53,13 @@ extends Resource
 @export_group("Wall slide")
 ## Maximum fall speed while sliding down a wall.
 @export var wall_slide_speed: float
+## Upward speed of a jump off a wall.
+@export var wall_jump_speed: float
+## Horizontal speed away from the wall at the start of a wall jump.
+@export var wall_jump_push_speed: float
+## Time after a wall jump during which left and right do not steer, so holding
+## toward the wall does not cancel the push away from it.
+@export var wall_jump_control_lock_time: float
 
 @export_group("Climb")
 ## Vertical speed on a ladder or vine.

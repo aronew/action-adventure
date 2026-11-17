@@ -35,6 +35,7 @@
 - [ ] Jump and fall pick their frame from vertical speed: 0 takeoff, 1-12 rising, 13-14 apex, 15-25 falling (looped for long falls), 26-27 landing.
 - [ ] Double jump plays its flip once, then returns to fall frames 15-25. Dash loops its animation for 0.2-0.3 s.
 - [ ] Wall slide faces the wall with the back to it; climb shows frame 0 when still; crouch goes down on frames 0-3, holds 3, stands on 4; enter door plays once, then emits a signal for the room change (story 007).
+- [ ] Jumping while wall sliding kicks the player up and away from the wall (wall jump), so a tall wall can be climbed by alternating; its speeds and control-lock time are in the config. *(added after playtest: the test room's 160 px wall could not be crossed)*
 - [ ] Grapple: throw at an anchor point (frames 0-2), pulled along (frames 3-6 looped), release (frame 7), with the sprite rotated toward the anchor and a rope drawn as a line from hand to anchor (the pack has no rope).
 - [ ] Jump, land and dash dust and the double-jump ring spawn at the feet from `assets/characters/seeker/VFX/Void/Dust/`.
 - [ ] The body collides as a 10 x 22 px box standing on the feet point; all movement values (run speed, jump, gravity, dash time and speed) come from one config resource, not code constants.
