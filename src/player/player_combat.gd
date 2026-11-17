@@ -208,6 +208,8 @@ func _start_heavy() -> void:
 	_charge_time = 0.0
 	_begin_swing_state()
 	_play_layers(ATTACK_HEAVY)
+	_body.speed_scale = _config.windup_speed_scale
+	_fx.speed_scale = _config.windup_speed_scale
 
 
 ## Resets what one swing remembers and puts its hitbox on the feet point, mirrored
@@ -226,6 +228,7 @@ func _play_layers(id: String) -> void:
 	_body.play(id)
 	_body.frame = 0
 	_fx.visible = true
+	_fx.speed_scale = 1.0
 	_fx.offset = -_fx_pivots[StringName(id)]
 	_fx.scale.x = float(_player.facing)
 	_fx.play(id)
@@ -270,6 +273,8 @@ func _update_charge(delta: float) -> void:
 func _release_heavy() -> void:
 	phase = Phase.SWING
 	_glow.visible = false
+	_body.speed_scale = 1.0
+	_fx.speed_scale = 1.0
 	_body.frame = _config.heavy_release_frame
 	_body.play()
 	_fx.frame = _config.heavy_release_frame

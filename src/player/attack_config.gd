@@ -22,6 +22,9 @@ extends Resource
 @export var chain_buffer_time: float
 
 @export_group("Heavy")
+## Playback speed of the heavy's wind-up (frames before the charge frame); above 1
+## shortens the pause before the charge starts. The strike plays at normal speed.
+@export var windup_speed_scale: float
 ## Wind-up frame the heavy holds on while charging (guide: frame 4).
 @export var charge_hold_frame: int
 ## Frame the strike starts on when the button is released (guide: frame 5).

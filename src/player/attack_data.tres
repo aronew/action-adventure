@@ -4,8 +4,9 @@
 
 [resource]
 script = ExtResource("1_attack")
-hold_threshold = 0.18
+hold_threshold = 0.14
 chain_buffer_time = 0.25
+windup_speed_scale = 2.5
 charge_hold_frame = 4
 heavy_release_frame = 5
 charge_time = 0.55
