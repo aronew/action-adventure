@@ -5,10 +5,13 @@
 ## wall-slide on and wall-jump over, a ladder up to a ledge, a grapple anchor, a block with a 16 px
 ## gap under it (crouch), and a door that emits door_entered. Three [HitTarget]
 ## dummies for the attacks: one on the floor, one high above it (up attack) and one in
-## the air over the second floor (jump and pogo off it with down + X).
+## the air over the second floor (jump and pogo off it with down + X). A [TrainingDummy]
+## with a guard sits on the first floor right of the floor target, for the guard-break
+## (story 003): wear its guard down, or hold X for a charged heavy to break it.
 extends Node2D
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
+const DUMMY_SCENE := preload("res://src/test_rooms/training_dummy.tscn")
 const SPAWN_POINT := Vector2(64, 224)
 const RESPAWN_BELOW_Y := 420.0
 const ROOM_SIZE := Vector2(1516, 270)
@@ -22,6 +25,7 @@ const HIT_LABEL_POSITION := Vector2(4, 36)
 const FLOOR_TARGET := Rect2(188, 192, 24, 32)
 const HIGH_TARGET := Rect2(288, 162, 24, 20)
 const POGO_TARGET := Rect2(586, 160, 28, 16)
+const DUMMY_TARGET := Rect2(358, 184, 28, 40)
 
 var _player: Player
 var _label: Label
@@ -68,6 +72,10 @@ func _ready() -> void:
 		target.size = rect.size
 		target.position = rect.get_center()
 		add_child(target)
+	var dummy: TrainingDummy = DUMMY_SCENE.instantiate()
+	dummy.size = DUMMY_TARGET.size
+	dummy.position = DUMMY_TARGET.get_center()
+	add_child(dummy)
 	_player.combat.hit_landed.connect(_on_player_hit)
 
 	var hud := CanvasLayer.new()
@@ -95,7 +103,10 @@ func _on_player_door_entered(door: Area2D) -> void:
 
 
 func _on_player_hit(target: Node2D, attack: String, damage: float) -> void:
-	(target as HitTarget).register_hit(attack, damage)
+	if target is HitTarget:
+		(target as HitTarget).register_hit(attack, damage)
+	elif target is TrainingDummy:
+		(target as TrainingDummy).register_hit(attack, damage, _player.combat.heavy_charged)
 	_hit_label.text = "hit_landed: %s %d" % [attack, int(damage)]
 
 

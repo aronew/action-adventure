@@ -57,8 +57,11 @@
 
 ## Files
 
-- `src/combat/guard_component.gd`, `src/combat/guard_config.tres`
-- `src/test_rooms/training_dummy.tscn`
+- `src/combat/guard_component.gd` (new): guard states, transitions, meter, stagger, finisher, regen, health
+- `src/combat/guard_config.gd`, `src/combat/guard_config.tres` (new): every guard value
+- `src/test_rooms/training_dummy.gd`, `src/test_rooms/training_dummy.tscn` (new): dummy with guard and health bars and state colours
+- `src/test_rooms/movement_test_room.gd`: places the dummy and routes hits to it
+- No test file: waived at qa.level minimal
 
 ---
 
