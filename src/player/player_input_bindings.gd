@@ -3,9 +3,10 @@
 ## later added in project.godot) are left untouched.
 ##
 ## Keyboard layout follows the Seeker pack's playable test: Space or Z jump, X attack
-## (hold X for the heavy, down + X in the air for the pogo), Shift or C dash, E grapple,
-## F bow, Q cast or charge, V rapid fire. Up (W or the up arrow) enters doors.
-## attack, bow, cast and rapid_fire are reserved for later stories and do nothing yet.
+## (tap for the combo, hold for the heavy, up + X up attack, in the air X jump attack and
+## down + X the pogo), Shift or C dash, E grapple, F bow, Q cast or charge, V rapid fire.
+## Up (W or the up arrow) enters doors. bow, cast and rapid_fire are reserved for later
+## stories and do nothing yet.
 ##
 ## Usage: [codeblock]
 ## PlayerInputBindings.register()

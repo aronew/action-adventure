@@ -1,5 +1,5 @@
 ## The Seeker player controller: run, jump, double jump, dash, wall slide, climb,
-## crouch, grapple and enter door, animated from the pack's sheets.
+## crouch, grapple, enter door and melee attacks, animated from the pack's sheets.
 ##
 ## Every gameplay value comes from [member config]. Animation timings and feet
 ## points come from seeker_animations.json; SpriteFrames are built at runtime from
@@ -9,7 +9,9 @@
 ## - solid geometry on physics layer 1 (LAYER_WORLD),
 ## - Area2D nodes on layer 2 (LAYER_INTERACTABLE) in group "climbable" (ladders,
 ##   vines) or "door" (doors, entered with interact),
-## - Node2D nodes in group "grapple_anchor".
+## - Node2D nodes in group "grapple_anchor",
+## - Area2D nodes on layer [constant PlayerCombat.LAYER_HITTABLE] in group "hittable"
+##   (things the melee attacks hit).
 ##
 ## Usage: [codeblock]
 ## var player: Player = preload("res://src/player/player.tscn").instantiate()
@@ -27,7 +29,8 @@ signal door_entered(door: Area2D)
 signal landed(impact_speed: float)
 
 ## Controller states.
-enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR }
+## ATTACK is a ground swing or the heavy charge; air attacks play in AIR.
+enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK }
 ## Steps of a grapple: throw (frames 0-2), pull (3-6 looped), release (7).
 enum GrapplePhase { THROW, PULL, RELEASE }
 
@@ -46,6 +49,8 @@ const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 
 ## Movement tuning. Replace before adding the player to the tree to inject other values.
 @export var config: PlayerConfig = preload("res://src/player/player_config.tres")
+## Melee tuning. Replace before adding the player to the tree to inject other values.
+@export var attack_config: AttackConfig = preload("res://src/player/attack_data.tres")
 ## Palette folder and file-name part of the sheets (Void, Ember, Frost, Bone, Dream).
 ## Read once in _ready.
 @export var palette: StringName = &"Bone"
@@ -54,6 +59,8 @@ const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 var state: State = State.GROUND
 ## 1 when facing right, -1 when facing left (read only).
 var facing: int = 1
+## Melee combat node: its signals report hits and camera shake (read only).
+var combat: PlayerCombat
 
 var _sprite: AnimatedSprite2D
 var _body_shape: RectangleShape2D
@@ -64,6 +71,8 @@ var _frames: SpriteFrames
 var _vfx_frames: SpriteFrames
 var _pivots := {}
 var _vfx_pivots := {}
+var _combat_fx_frames: SpriteFrames
+var _combat_fx_pivots := {}
 
 var _move_x := 0.0
 var _vertical := 0.0
@@ -113,6 +122,7 @@ func _ready() -> void:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ANIMATION_DATA_PATH))
 	_frames = _build_frames(data["character"], _pivots)
 	_vfx_frames = _build_frames(data["vfx"], _vfx_pivots)
+	_combat_fx_frames = _build_frames(data["combat_fx"], _combat_fx_pivots)
 
 	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = _frames
@@ -120,6 +130,11 @@ func _ready() -> void:
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_sprite.animation_finished.connect(_on_animation_finished)
 	add_child(_sprite)
+
+	combat = PlayerCombat.new()
+	combat.setup(self, attack_config, _sprite, _pivots, _combat_fx_frames, _combat_fx_pivots)
+	combat.hit_landed.connect(_on_combat_hit_landed)
+	add_child(combat)
 
 	_rope = Line2D.new()
 	_rope.width = ROPE_WIDTH
@@ -164,7 +179,10 @@ func _physics_process(delta: float) -> void:
 			_state_grapple(delta)
 		State.ENTER_DOOR:
 			velocity = Vector2.ZERO
+		State.ATTACK:
+			_state_attack(delta)
 
+	combat.update(delta)
 	_sprite.scale.x = float(facing)
 
 
@@ -189,6 +207,11 @@ func _state_ground(delta: float) -> void:
 		if door != null:
 			_start_enter_door(door)
 			return
+	if _move_x != 0.0:
+		facing = int(_move_x)
+	if combat.poll(delta, true, _vertical, _find_overlap(GROUP_DOOR) != null):
+		_set_state(State.ATTACK)
+		return
 	if _try_start_climb():
 		return
 	if _jump_buffer_timer > 0.0:
@@ -219,28 +242,31 @@ func _state_ground(delta: float) -> void:
 
 
 func _state_air(delta: float) -> void:
-	if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
-		return
-	if Input.is_action_just_pressed(&"dash") and _try_start_dash():
-		return
-	if _try_start_climb():
-		return
-	if _jump_buffer_timer > 0.0:
-		var wall_away := _wall_jump_direction()
-		if _coyote_timer > 0.0:
-			_start_ground_jump()
-		elif wall_away != 0.0:
-			_start_wall_jump(wall_away)
-		elif _air_jumps_left > 0:
-			_start_air_jump()
+	if not combat.is_locked():
+		if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
+			return
+		if Input.is_action_just_pressed(&"dash") and _try_start_dash():
+			return
+		if _try_start_climb():
+			return
+		if _jump_buffer_timer > 0.0:
+			var wall_away := _wall_jump_direction()
+			if _coyote_timer > 0.0:
+				_start_ground_jump()
+			elif wall_away != 0.0:
+				_start_wall_jump(wall_away)
+			elif _air_jumps_left > 0:
+				_start_air_jump()
 	if Input.is_action_just_released(&"jump") and velocity.y < 0.0:
 		velocity.y *= config.jump_cut_multiplier
 
 	if _wall_jump_lock_timer <= 0.0:
-		if _move_x != 0.0:
+		if _move_x != 0.0 and not combat.is_attacking():
 			facing = int(_move_x)
 		_steer(delta, config.air_acceleration, config.air_deceleration,
 				config.air_turn_acceleration, config.air_overspeed_deceleration)
+	if combat.poll(delta, false, _vertical, false):
+		_flipping = false
 	_apply_air_gravity(delta)
 	var pre_move_vertical := velocity.y
 	move_and_slide()
@@ -279,6 +305,30 @@ func _state_dash(delta: float) -> void:
 		_dash_cooldown_timer = config.dash_cooldown
 		velocity.x = 0.0 if is_on_wall() else float(facing) * config.dash_speed * config.dash_end_speed_keep
 		_set_state(State.GROUND if _has_floor_below() else State.AIR)
+
+
+## Ground swings and the heavy charge. The player is rooted: the speed it carried
+## bleeds off at the ground deceleration and input does not move or turn it (the
+## combo may turn it when chaining). Dash, jump and grapple cancel once the attack
+## allows it ([method PlayerCombat.is_locked]); walking off an edge ends the attack.
+func _state_attack(delta: float) -> void:
+	if not combat.is_attacking():
+		_set_state(State.GROUND)
+		_state_ground(delta)
+		return
+	if not combat.is_locked():
+		if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
+			return
+		if Input.is_action_just_pressed(&"dash") and _try_start_dash():
+			return
+		if _jump_buffer_timer > 0.0:
+			_start_ground_jump()
+			return
+	velocity.x = move_toward(velocity.x, 0.0, config.ground_deceleration * delta)
+	velocity.y = config.gravity * delta
+	move_and_slide()
+	if not is_on_floor():
+		_set_state(State.AIR)
 
 
 func _state_wall_slide(delta: float) -> void:
@@ -376,6 +426,8 @@ func _state_grapple(delta: float) -> void:
 # --- Transitions -----------------------------------------------------------
 
 func _set_state(new_state: State) -> void:
+	if new_state != State.ATTACK:
+		combat.cancel()
 	if state == State.CROUCH and new_state != State.CROUCH:
 		_apply_hitbox(config.hitbox_size.y)
 	if state == State.GRAPPLE and new_state != State.GRAPPLE:
@@ -522,6 +574,13 @@ func _grapple_jump_out() -> void:
 	_spawn_effect(&"air_jump_ring")
 
 
+## A down attack that hits launches the player back up and refreshes the air moves.
+func _on_combat_hit_landed(_target: Node2D, attack: String, _damage: float) -> void:
+	if attack == PlayerCombat.ATTACK_DOWN:
+		velocity.y = -attack_config.pogo_speed
+		_refresh_air_moves()
+
+
 func _on_animation_finished() -> void:
 	match _sprite.animation:
 		&"jump_land":
@@ -652,7 +711,7 @@ func _hand_position() -> Vector2:
 
 
 func _air_animation() -> void:
-	if _flipping:
+	if _flipping or combat.is_attacking():
 		return
 	if _takeoff_timer > 0.0:
 		_show_frame(&"jump_takeoff", 0)

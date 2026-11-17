@@ -61,8 +61,14 @@
 
 ## Files
 
-- `src/player/player_combat.gd`, `src/player/attack_data.tres`
-- `src/player/player.tscn` (adds attack hitboxes and FX layers)
+- `src/player/player_combat.gd` (new): attack chain, air/up/down attacks, charged heavy, hit frames, cancel windows, FX layer
+- `src/player/attack_config.gd`, `src/player/attack_data.tres` (new): every attack value
+- `src/player/player.gd`: combat wiring, ATTACK state, pogo
+- `src/player/seeker_animations.json`: attack Body clips and a combat_fx group (FX layers, BladeGlow)
+- `src/player/player_camera.gd`: request_shake for Attack3
+- `src/player/player_input_bindings.gd`: doc comment only
+- `src/test_rooms/hit_target.gd` (new), `src/test_rooms/movement_test_room.gd`: three hit targets
+- No test file: waived at qa.level minimal
 
 ---
 

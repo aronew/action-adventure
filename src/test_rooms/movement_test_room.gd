@@ -1,9 +1,11 @@
-## Blank room for trying every Seeker movement move (story 001). Built in code so
-## the .tscn only attaches this script.
+## Blank room for trying every Seeker movement move (story 001) and melee attack
+## (story 002). Built in code so the .tscn only attaches this script.
 ##
 ## Left to right: floor, a 128 px gap (needs the double jump), a tall wall to
 ## wall-slide on and wall-jump over, a ladder up to a ledge, a grapple anchor, a block with a 16 px
-## gap under it (crouch), and a door that emits door_entered.
+## gap under it (crouch), and a door that emits door_entered. Three [HitTarget]
+## dummies for the attacks: one on the floor, one high above it (up attack) and one in
+## the air over the second floor (jump and pogo off it with down + X).
 extends Node2D
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
@@ -15,10 +17,15 @@ const SOLID_COLOR := Color(0.32, 0.34, 0.42)
 const LADDER_COLOR := Color(0.3, 0.55, 0.3, 0.6)
 const DOOR_COLOR := Color(0.55, 0.4, 0.25)
 const ANCHOR_COLOR := Color(0.95, 0.85, 0.3)
-const HELP_TEXT := "Arrows/WASD move  Space/Z jump x2 (wall: wall jump)  Shift/C dash  Down crouch  Up door  E grapple (jump to launch out)"
+const HELP_TEXT := "Arrows/WASD move  Space/Z jump x2 (wall: wall jump)  Shift/C dash  Down crouch  Up door  E grapple (jump to launch out)\nX attack x3 (tap)  hold X heavy  Up+X up attack  air: X jump attack, Down+X pogo"
+const HIT_LABEL_POSITION := Vector2(4, 36)
+const FLOOR_TARGET := Rect2(188, 192, 24, 32)
+const HIGH_TARGET := Rect2(288, 162, 24, 20)
+const POGO_TARGET := Rect2(586, 160, 28, 16)
 
 var _player: Player
 var _label: Label
+var _hit_label: Label
 
 
 func _ready() -> void:
@@ -56,12 +63,23 @@ func _ready() -> void:
 	_player.add_child(camera)
 	camera.setup(_player)
 
+	for rect in [FLOOR_TARGET, HIGH_TARGET, POGO_TARGET]:
+		var target := HitTarget.new()
+		target.size = rect.size
+		target.position = rect.get_center()
+		add_child(target)
+	_player.combat.hit_landed.connect(_on_player_hit)
+
 	var hud := CanvasLayer.new()
 	_label = Label.new()
 	_label.position = Vector2(4, 2)
 	_label.add_theme_font_size_override(&"font_size", 8)
 	_label.text = HELP_TEXT
 	hud.add_child(_label)
+	_hit_label = Label.new()
+	_hit_label.position = HIT_LABEL_POSITION
+	_hit_label.add_theme_font_size_override(&"font_size", 8)
+	hud.add_child(_hit_label)
 	add_child(hud)
 
 
@@ -74,6 +92,11 @@ func _physics_process(_delta: float) -> void:
 func _on_player_door_entered(door: Area2D) -> void:
 	_label.text = HELP_TEXT + "\ndoor_entered: " + str(door.name)
 	_player.resume_from_door()
+
+
+func _on_player_hit(target: Node2D, attack: String, damage: float) -> void:
+	(target as HitTarget).register_hit(attack, damage)
+	_hit_label.text = "hit_landed: %s %d" % [attack, int(damage)]
 
 
 func _add_solid(rect: Rect2) -> void:
