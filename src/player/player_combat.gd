@@ -59,7 +59,8 @@ var _hitboxes := {}
 var _hit_targets: Array[Area2D] = []
 var _pending := false
 var _hold_time := 0.0
-var _chain_buffer := 0.0
+var _queued := false
+var _queued_age := 0.0
 var _start_frame := -1
 var _shake_sent := false
 var _fx_finished := true
@@ -124,20 +125,23 @@ func is_locked() -> bool:
 ## [param grounded] chooses ground or air attacks, [param vertical] is -1 (up held),
 ## 0 or 1 (down held), [param on_door] stops up from selecting the up attack.
 ## On the ground a press is resolved on release (a tap) or after the hold threshold
-## (the heavy); in the air it starts a swing at once.
+## (the heavy); in the air it starts a swing at once. A press queued during the last
+## swing counts as a press here, already held for as long as it was queued.
 func poll(delta: float, grounded: bool, vertical: float, on_door: bool) -> bool:
 	if phase != Phase.IDLE:
 		return false
 	var pressed := Input.is_action_pressed(&"attack")
 	if not grounded:
 		_pending = false
-		if Input.is_action_just_pressed(&"attack"):
+		if Input.is_action_just_pressed(&"attack") or _queued:
+			_queued = false
 			_start_swing(ATTACK_DOWN if vertical > 0.0 else ATTACK_JUMP)
 			return true
 		return false
-	if not _pending and Input.is_action_just_pressed(&"attack"):
+	if not _pending and (Input.is_action_just_pressed(&"attack") or _queued):
 		_pending = true
-		_hold_time = 0.0
+		_hold_time = 0.0 if Input.is_action_just_pressed(&"attack") else _queued_age
+		_queued = false
 	if not _pending:
 		return false
 	if not pressed:
@@ -153,22 +157,25 @@ func poll(delta: float, grounded: bool, vertical: float, on_door: bool) -> bool:
 ## Advances the running attack: charge, hit frames, hits and chaining. Call once per
 ## physics tick, after the player has moved.
 func update(delta: float) -> void:
-	_chain_buffer = maxf(_chain_buffer - delta, 0.0)
+	_queued_age += delta
 	if phase == Phase.CHARGE:
 		_update_charge(delta)
 	elif phase == Phase.SWING:
 		if Input.is_action_just_pressed(&"attack") and Engine.get_physics_frames() != _start_frame:
-			_chain_buffer = _config.chain_buffer_time
+			_queued = true
+			_queued_age = 0.0
 		_update_hits()
 		_try_chain()
 
 
 ## Stops the attack at once (dash, jump, landing, leaving the ground...). The FX of a
-## swing still playing finishes where the swing was, on a detached copy.
+## swing still playing finishes where the swing was, on a detached copy. A press queued
+## during the cancelled swing is dropped.
 func cancel() -> void:
 	_pending = false
 	if phase == Phase.IDLE:
 		return
+	_queued = false
 	_detach_fx()
 	_fx.visible = false
 	_glow.visible = false
@@ -190,7 +197,7 @@ func _start_swing(id: String) -> void:
 	current_attack = id
 	phase = Phase.SWING
 	_pending = false
-	_chain_buffer = 0.0
+	_queued = false
 	_start_frame = Engine.get_physics_frames()
 	_begin_swing_state()
 	_play_layers(id)
@@ -307,10 +314,11 @@ func _update_hits() -> void:
 			hit_landed.emit(area, current_attack, damage)
 
 
-## Cancels into the next swing of the combo when its window is open and a press waits.
+## Cancels into the next swing of the combo when its window is open and a press is
+## queued (pressed at any time during this swing).
 func _try_chain() -> void:
 	var data: Dictionary = _config.attacks[current_attack]
-	if not data.has("next") or _chain_buffer <= 0.0 or _body.frame < data["chain_from"]:
+	if not data.has("next") or not _queued or _body.frame < data["chain_from"]:
 		return
 	var direction := signf(Input.get_axis(&"move_left", &"move_right"))
 	if direction != 0.0:

@@ -17,9 +17,6 @@ extends Resource
 ## A press of attack on the ground released before this time is a normal attack
 ## (Attack1, or the up attack with up held); held for this long it starts the heavy.
 @export var hold_threshold: float
-## A press during a swing is remembered this long, so it chains when the cancel
-## window opens a little later.
-@export var chain_buffer_time: float
 
 @export_group("Heavy")
 ## Playback speed of the heavy's wind-up (frames before the charge frame); above 1
