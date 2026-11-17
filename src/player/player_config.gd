@@ -145,6 +145,16 @@ extends Resource
 ## Fraction of the pull velocity carried into a jump out of a grapple.
 @export var grapple_jump_keep: float
 
+@export_group("Effects")
+## Seconds of standing still before the idle aura (the pack's Aura_Loop) appears.
+@export var idle_aura_delay: float
+## Seconds between afterimages left behind during a dash.
+@export var dash_trail_interval: float
+## Seconds an afterimage takes to fade out.
+@export var dash_trail_lifetime: float
+## Tint and starting opacity of the afterimages (drawn with additive blending).
+@export var dash_trail_color: Color
+
 @export_group("Camera")
 ## Camera2D position smoothing speed (higher follows tighter).
 @export var camera_smoothing_speed: float

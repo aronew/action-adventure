@@ -63,6 +63,10 @@ var facing: int = 1
 var combat: PlayerCombat
 
 var _sprite: AnimatedSprite2D
+var _aura: AnimatedSprite2D
+var _trail_material: CanvasItemMaterial
+var _idle_time := 0.0
+var _trail_timer := 0.0
 var _body_shape: RectangleShape2D
 var _body_collision: CollisionShape2D
 var _sensor: Area2D
@@ -132,6 +136,17 @@ func _ready() -> void:
 	_sprite.animation_finished.connect(_on_animation_finished)
 	add_child(_sprite)
 
+	_aura = AnimatedSprite2D.new()
+	_aura.sprite_frames = _vfx_frames
+	_aura.centered = false
+	_aura.offset = -_vfx_pivots[&"aura_loop"]
+	_aura.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_aura.visible = false
+	add_child(_aura)
+
+	_trail_material = CanvasItemMaterial.new()
+	_trail_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+
 	combat = PlayerCombat.new()
 	combat.setup(self, attack_config, _sprite, _pivots, _combat_fx_frames, _combat_fx_pivots)
 	combat.hit_landed.connect(_on_combat_hit_landed)
@@ -187,6 +202,7 @@ func _physics_process(delta: float) -> void:
 
 	combat.update(delta)
 	_sprite.scale.x = float(facing)
+	_update_effects(delta)
 
 
 ## Leaves the enter-door state and gives control back to the player. Call it after
@@ -767,6 +783,46 @@ func _show_frame(clip: StringName, index: int) -> void:
 	_sprite.speed_scale = 1.0
 	_sprite.pause()
 	_sprite.frame = index
+
+
+## The idle aura (shown after idle_aura_delay of standing still) and the dash
+## afterimage trail.
+func _update_effects(delta: float) -> void:
+	var idle := state == State.GROUND and _move_x == 0.0 and absf(velocity.x) < 1.0
+	_idle_time = _idle_time + delta if idle else 0.0
+	var show_aura := _idle_time >= config.idle_aura_delay
+	if show_aura != _aura.visible:
+		_aura.visible = show_aura
+		if show_aura:
+			_aura.play(&"aura_loop")
+		else:
+			_aura.stop()
+
+	if state != State.DASH:
+		_trail_timer = 0.0
+		return
+	_trail_timer -= delta
+	if _trail_timer <= 0.0:
+		_trail_timer = config.dash_trail_interval
+		_spawn_afterimage()
+
+
+## Leaves a fading, additive copy of the current frame behind the player.
+func _spawn_afterimage() -> void:
+	var ghost := Sprite2D.new()
+	ghost.texture = _sprite.sprite_frames.get_frame_texture(_sprite.animation, _sprite.frame)
+	ghost.centered = false
+	ghost.offset = _sprite.offset
+	ghost.scale.x = _sprite.scale.x
+	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ghost.material = _trail_material
+	ghost.modulate = config.dash_trail_color
+	get_parent().add_child(ghost)
+	get_parent().move_child(ghost, get_index())
+	ghost.global_position = global_position
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, config.dash_trail_lifetime)
+	tween.tween_callback(ghost.queue_free)
 
 
 func _spawn_effect(clip: StringName) -> void:
