@@ -15,7 +15,7 @@ const SOLID_COLOR := Color(0.32, 0.34, 0.42)
 const LADDER_COLOR := Color(0.3, 0.55, 0.3, 0.6)
 const DOOR_COLOR := Color(0.55, 0.4, 0.25)
 const ANCHOR_COLOR := Color(0.95, 0.85, 0.3)
-const HELP_TEXT := "A/D move  W/S climb  Space jump x2 (on a wall: wall jump)  Shift dash  S crouch  E door  Q grapple"
+const HELP_TEXT := "Arrows/WASD move  Space/Z jump x2 (wall: wall jump)  Shift/C dash  Down crouch  Up door  E grapple (jump to launch out)"
 
 var _player: Player
 var _label: Label

@@ -134,6 +134,9 @@ extends Resource
 @export var grapple_hand_offset: Vector2
 ## Fraction of the pull velocity kept when the grapple lets go, so the player is flung past the anchor.
 @export var grapple_fling_keep: float
+## On reaching the anchor, the fling lifts the feet to this height above the anchor
+## (about one body height; the pack's README puts him at about 24 px tall).
+@export var grapple_fling_height: float
 ## Upward speed added when jumping out of a grapple.
 @export var grapple_jump_speed: float
 ## Fraction of the pull velocity carried into a jump out of a grapple.

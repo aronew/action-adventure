@@ -21,11 +21,13 @@ im going to get a character from itch.io who has
 
 * PRO BONUS: the Dream Seeker, a fifth special palette with a custom  holographic dream aesthetic, perfect to add a very unique vibe to your protagonist or as a special empowered state swap.
 
+so the way they have their controls for this character its Space or Z= Jump, X= Attack, Shift or C = Dash, E= Grapple, X Hold = Heavy, Down arrow or W + X= air: Pogo, F= Bow, Q= Cast/Charge, V= Rapid Fire. and have the grapple fling him about his body height higher than what he grapples off of d
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
 
-**Controls:** Gamepad first, keyboard too: move, jump/double jump, dash, crouch, attack (3-hit combo; with up, down or in the air for directional attacks), heavy (hold to charge), grapple, interact (doors). *(guessed)*
+**Controls:** Keyboard as in the Seeker pack's playable test: Space or Z jump, X attack, X hold heavy, down + X in the air pogo, Shift or C dash, E grapple, F bow, Q cast/charge, V rapid fire; arrows or WASD move, Up enters doors *(guessed)*. Gamepad too.
 
 **Question:** Does the one move set feel good in a fight and in a room for ten minutes? *(guessed)*
 

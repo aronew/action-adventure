@@ -350,13 +350,13 @@ func _state_grapple(delta: float) -> void:
 			_aim_at_anchor()
 			var to_anchor := _anchor.global_position - _hand_position()
 			if to_anchor.length() <= config.grapple_arrive_distance:
-				_begin_grapple_release()
+				_begin_grapple_release(true)
 			else:
 				_grapple_direction = to_anchor.normalized()
 				velocity = _grapple_direction * config.grapple_speed
 				move_and_slide()
 				if is_on_wall() or is_on_ceiling() or (is_on_floor() and to_anchor.y > 0.0):
-					_begin_grapple_release()
+					_begin_grapple_release(false)
 		GrapplePhase.RELEASE:
 			velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
 			var impact := velocity.y
@@ -494,9 +494,15 @@ func _try_start_grapple() -> bool:
 
 
 ## Lets go of the anchor, keeping part of the pull velocity so the player is flung on.
-func _begin_grapple_release() -> void:
+## When the pull reached the anchor ([param arrived]), the upward speed is set so the
+## feet peak grapple_fling_height above the anchor; a pull stopped by a wall keeps
+## only its slid velocity.
+func _begin_grapple_release(arrived: bool) -> void:
 	_grapple_phase = GrapplePhase.RELEASE
 	velocity *= config.grapple_fling_keep
+	if arrived:
+		var rise := global_position.y - (_anchor.global_position.y - config.grapple_fling_height)
+		velocity.y = -sqrt(2.0 * config.gravity * rise) if rise > 0.0 else 0.0
 	_sprite.rotation = 0.0
 	_start_clip(&"grapple_release")
 
