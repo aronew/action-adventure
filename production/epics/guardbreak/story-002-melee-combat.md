@@ -1,13 +1,13 @@
 # Story 002: Melee: 3-hit combo, air/up/down attacks, charged heavy
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: Visual/Feel
 > **Estimate**: L
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-17
 
 ## Context
 
