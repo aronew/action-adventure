@@ -1,13 +1,13 @@
 # Story 003: Guard-break
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: M
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-17
 
 ## Context
 
