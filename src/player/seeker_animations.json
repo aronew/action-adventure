@@ -1,0 +1,51 @@
+{
+  "character": {
+    "dir": "res://assets/characters/seeker/Spritesheets/{palette}/",
+    "sheets": {
+      "idle": {"file": "Seeker_{palette}_Idle_30x30_24f.png", "frame_size": [30, 30], "frames": 24, "ms": 100, "pivot": [15, 28]},
+      "run": {"file": "Seeker_{palette}_Run_30x30_10f.png", "frame_size": [30, 30], "frames": 10, "ms": 70, "pivot": [17, 28]},
+      "jump_fall": {"file": "Seeker_{palette}_JumpFall_30x30_28f.png", "frame_size": [30, 30], "frames": 28, "ms": [40, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 60, 60, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 60, 80], "pivot": [16, 28]},
+      "double_jump": {"file": "Seeker_{palette}_DoubleJump_55x80_14f.png", "frame_size": [55, 80], "frames": 14, "ms": [40, 40, 40, 40, 40, 40, 40, 30, 30, 30, 30, 40, 60, 80], "pivot": [26, 51]},
+      "dash": {"file": "Seeker_{palette}_Dash_30x30_5f.png", "frame_size": [30, 30], "frames": 5, "ms": 40, "pivot": [18, 26]},
+      "wall_slide": {"file": "Seeker_{palette}_WallSlide_40x40_5f.png", "frame_size": [40, 40], "frames": 5, "ms": 100, "pivot": [18, 36]},
+      "climb": {"file": "Seeker_{palette}_Climb_30x30_9f.png", "frame_size": [30, 30], "frames": 9, "ms": 80, "pivot": [15, 28]},
+      "crouch": {"file": "Seeker_{palette}_Crouch_30x30_5f.png", "frame_size": [30, 30], "frames": 5, "ms": [40, 40, 60, 60, 100], "pivot": [15, 27]},
+      "enter_door": {"file": "Seeker_{palette}_EnterDoor_30x30_15f.png", "frame_size": [30, 30], "frames": 15, "ms": [120, 100, 80, 80, 80, 80, 80, 80, 80, 80, 90, 90, 90, 90, 400], "pivot": [13, 28]},
+      "grapple": {"file": "Seeker_{palette}_Grapple_40x40_8f.png", "frame_size": [40, 40], "frames": 8, "ms": [80, 40, 80, 80, 80, 80, 80, 80], "pivot": [20, 33]}
+    },
+    "clips": {
+      "idle": {"sheet": "idle", "loop": true},
+      "run": {"sheet": "run", "loop": true},
+      "jump_takeoff": {"sheet": "jump_fall", "from": 0, "to": 0},
+      "jump_rise": {"sheet": "jump_fall", "from": 1, "to": 12},
+      "jump_apex": {"sheet": "jump_fall", "from": 13, "to": 14},
+      "jump_fall": {"sheet": "jump_fall", "from": 15, "to": 25, "loop": true},
+      "jump_land": {"sheet": "jump_fall", "from": 26, "to": 27},
+      "double_jump": {"sheet": "double_jump"},
+      "dash": {"sheet": "dash", "loop": true},
+      "wall_slide": {"sheet": "wall_slide", "loop": true},
+      "climb": {"sheet": "climb", "loop": true},
+      "crouch_down": {"sheet": "crouch", "from": 0, "to": 3},
+      "crouch_stand": {"sheet": "crouch", "from": 4, "to": 4},
+      "enter_door": {"sheet": "enter_door"},
+      "grapple_throw": {"sheet": "grapple", "from": 0, "to": 2},
+      "grapple_pull": {"sheet": "grapple", "from": 3, "to": 6, "loop": true},
+      "grapple_release": {"sheet": "grapple", "from": 7, "to": 7}
+    }
+  },
+  "vfx": {
+    "dir": "res://assets/characters/seeker/VFX/{palette}/Dust/",
+    "sheets": {
+      "dust_jump": {"file": "Seeker_VFX_{palette}_Dust_Jump_32x18_6f.png", "frame_size": [32, 18], "frames": 6, "ms": 50, "pivot": [16, 16]},
+      "dust_land": {"file": "Seeker_VFX_{palette}_Dust_Land_44x16_7f.png", "frame_size": [44, 16], "frames": 7, "ms": 50, "pivot": [22, 14]},
+      "dust_dash": {"file": "Seeker_VFX_{palette}_Dust_Dash_40x20_7f.png", "frame_size": [40, 20], "frames": 7, "ms": 50, "pivot": [30, 18]},
+      "air_jump_ring": {"file": "Seeker_VFX_{palette}_AirJump_Ring_32x16_7f.png", "frame_size": [32, 16], "frames": 7, "ms": 50, "pivot": [16, 6]}
+    },
+    "clips": {
+      "dust_jump": {"sheet": "dust_jump"},
+      "dust_land": {"sheet": "dust_land"},
+      "dust_dash": {"sheet": "dust_dash"},
+      "air_jump_ring": {"sheet": "air_jump_ring"}
+    }
+  }
+}
