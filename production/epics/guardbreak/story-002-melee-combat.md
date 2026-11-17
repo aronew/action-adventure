@@ -1,7 +1,7 @@
 # Story 002: Melee: 3-hit combo, air/up/down attacks, charged heavy
 
 > **Epic**: Guardbreak
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Visual/Feel
 > **Estimate**: L
@@ -94,3 +94,18 @@
 
 - Depends on: `production/epics/guardbreak/story-001-seeker-controller-movement.md`
 - Unlocks: `production/epics/guardbreak/story-003-guard-break.md`
+
+## Completion Notes
+**Completed**: 2026-11-17
+**Criteria**: 10/10 passing, by the user's own playtest on their machine; none observed in a retained image
+**Deviations**: Closed without the required Visual/Feel evidence: no retained screenshot in `production/qa/evidence/story-002-melee-combat/` and no sign-off file. The user chose "Close anyway, accepting it". Run result here was NOT VERIFIED (no Godot binary in the cloud container); the build was run only on the user's machine.
+**Test Evidence**: none retained (tests waived at qa.level minimal; the screenshot gap was accepted by the user)
+**Reviewed by**: self, no independent review (QL-TEST-COVERAGE and LP-CODE-REVIEW skipped — Solo mode)
+
+## Calls beyond the design
+- Damage placeholders in `src/player/attack_data.tres`: attack1 10, attack2 12, attack3 20, jump 10, up 10, down 8, heavy 30, charged x2 · kept 2026-11-17
+- Input in `src/player/player_combat.gd`: a ground tap swings on release; held 0.18 s it starts the heavy; chain buffer 0.25 s; up attack ground-only (up + X in the air is the jump attack); door wins over up attack · kept 2026-11-17
+- Heavy in `attack_data.tres`: charge 0.9 s from frame 4, glow step 0.22 s to 0.05 s, ready flicker 0.04 s; release before frame 4 finishes the wind-up and strikes uncharged · kept 2026-11-17
+- Movement during attacks in `src/player/player.gd`: running while swinging with facing locked; lunge attack1 60, attack2 70, attack3 100, heavy 140 px/s; glide deceleration 500; dash, jump and grapple cancel from each attack's recovery frame; only the Attack1-3 combo chains · kept 2026-11-17
+- Pogo: bounce 260 px/s refreshing double jump and dash; fast fall needs down held 0.2 s and never during an attack; down attack caps the fall at 220 px/s · kept 2026-11-17
+- Attack3 camera shake 3 px for 0.15 s; hitbox rectangles from the FX frame bounds; hit layer 8, group "hittable"; three test targets in `src/test_rooms/movement_test_room.gd` · kept 2026-11-17

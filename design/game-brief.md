@@ -59,7 +59,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 
 ## Features
 - [x] Movement from the pack: run, dash, double jump, wall slide, climb, crouch, grapple, enter door
-- [ ] Melee: 3-hit combo, jump, up and down attacks, heavy attack
+- [x] Melee: 3-hit combo, jump, up and down attacks, heavy attack
 - [ ] Guard-break: enemies have a guard meter; the charged heavy shatters it and opens a finisher
 - [ ] 2–3 enemy types with readable, telegraphed attacks
 - [ ] One boss fight
