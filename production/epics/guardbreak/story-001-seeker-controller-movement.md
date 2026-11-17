@@ -29,7 +29,7 @@
 
 *From `design/game-brief.md` (Features item 1; Goal & fail state) and the pack's `Animation_Guide.txt`:*
 
-- [ ] A player scene runs in a blank test room, using the Seeker sheets from `assets/characters/seeker/Spritesheets/Void/` (Void is the default palette), imported with nearest filtering and no compression.
+- [ ] A player scene runs in a blank test room, using the Seeker sheets from `assets/characters/seeker/Spritesheets/Bone/` (Bone is the default palette, changed from Void at the user's request), imported with nearest filtering and no compression.
 - [ ] Every animation's origin is its feet point from `Animation_Guide.txt`, so changing animation or facing never shifts the character.
 - [ ] Idle and run loop with the guide's timings; run playback speed scales with run speed.
 - [ ] Jump and fall pick their frame from vertical speed: 0 takeoff, 1-12 rising, 13-14 apex, 15-25 falling (looped for long falls), 26-27 landing.
@@ -39,7 +39,7 @@
 - [ ] The grapple flings the player on when it lets go (part of the pull velocity is kept), and jump during the pull or release launches out of it, restoring the air jump and air dash. *(added after playtest)*
 - [ ] Movement feel pass, every value in the config: ground and air acceleration, braking and turning; dash end and dash-jump momentum; faster fall, apex hang, fast fall; ceiling corner correction and ledge nudge; wall-jump reach and wall coyote time; camera smoothing, look-ahead, fall lead and landing dip. *(added after playtest: "top-tier feel" request)*
 - [ ] Grapple: throw at an anchor point (frames 0-2), pulled along (frames 3-6 looped), release (frame 7), with the sprite rotated toward the anchor and a rope drawn as a line from hand to anchor (the pack has no rope).
-- [ ] Jump, land and dash dust and the double-jump ring spawn at the feet from `assets/characters/seeker/VFX/Void/Dust/`.
+- [ ] Jump, land and dash dust and the double-jump ring spawn at the feet from `assets/characters/seeker/VFX/Bone/Dust/`.
 - [ ] The body collides as a 10 x 22 px box standing on the feet point; all movement values (run speed, jump, gravity, dash time and speed) come from one config resource, not code constants.
 - [ ] Every action is bound for both gamepad and keyboard through the Input Map.
 

@@ -48,7 +48,7 @@ const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 @export var config: PlayerConfig = preload("res://src/player/player_config.tres")
 ## Palette folder and file-name part of the sheets (Void, Ember, Frost, Bone, Dream).
 ## Read once in _ready.
-@export var palette: StringName = &"Void"
+@export var palette: StringName = &"Bone"
 
 ## Current controller state (read only).
 var state: State = State.GROUND

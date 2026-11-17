@@ -23,6 +23,8 @@ im going to get a character from itch.io who has
 
 so the way they have their controls for this character its Space or Z= Jump, X= Attack, Shift or C = Dash, E= Grapple, X Hold = Heavy, Down arrow or W + X= air: Pogo, F= Bow, Q= Cast/Charge, V= Rapid Fire. and have the grapple fling him about his body height higher than what he grapples off of d
 
+one thing too is I want to use the bone sprite not the void sprite
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
@@ -36,7 +38,7 @@ so the way they have their controls for this character its Space or Z= Jump, X= 
 **Intent:**
 
 ## Look and references
-- Look: 2D pixel side view using the itch.io character pack. Sword FX on their own layer, sparks and glow on hits. The player uses the Void, Ember, Frost or Bone palette, each with matching FX; the default palette is open. *(provisional)*
+- Look: 2D pixel side view using the itch.io character pack, in the Bone palette. Sword FX on their own layer, sparks and glow on hits. The other palettes (Void, Ember, Frost) and the Dream Seeker are for power-ups later.
 - References: Nine Sols (level design, per your words).
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
