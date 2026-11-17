@@ -64,11 +64,13 @@
 
 ## Files
 
-- `src/player/player.gd`, `src/player/player.tscn`, `src/player/player_config.tres`
-- `src/test_rooms/movement_test_room.tscn`
-- `project.godot` (base resolution, texture filter, input map)
-
----
+- `src/player/player.gd`, `src/player/player.tscn`
+- `src/player/player_config.gd`, `src/player/player_config.tres`
+- `src/player/seeker_animations.json`
+- `src/player/player_input_bindings.gd`, `src/player/dust_effect.gd`
+- `src/test_rooms/movement_test_room.gd`, `src/test_rooms/movement_test_room.tscn`
+- `project.godot` (main scene, 480x270 viewport, integer scaling, nearest filtering)
+- No test file: waived at qa.level minimal
 
 ## QA Test Cases
 
