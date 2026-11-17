@@ -1,7 +1,7 @@
 # Story 003: Guard-break
 
 > **Epic**: Guardbreak
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: M
@@ -86,3 +86,16 @@
 
 - Depends on: `production/epics/guardbreak/story-002-melee-combat.md`
 - Unlocks: `production/epics/guardbreak/story-004-enemy-types.md`, `production/epics/guardbreak/story-005-region-boss.md`
+
+## Completion Notes
+**Completed**: 2026-11-17
+**Criteria**: 8/8 passing, by the user's own playtest on their machine. Criterion 4 (a fully charged heavy breaks the guard outright) failed on the first check, then passed after the full-charge moment was made visible (commit 286e731).
+**Deviations**: Closed with no on-screen check retained (no Godot binary in the cloud container; run only on the user's machine); the user chose to close anyway. Test evidence waived at qa.level minimal. Later rule from the user: only bosses and mini-bosses have a guard (design/game-brief.md); this story's component and dummy are unaffected.
+**Test Evidence**: waived at qa.level minimal
+**Reviewed by**: self, no independent review (QL-TEST-COVERAGE and LP-CODE-REVIEW skipped — Solo mode)
+
+## Calls beyond the design
+- Guard values in `src/combat/guard_config.tres`: max guard 100; guard cost attack1 10, attack2 10, attack3 20, jump 10, up 10, down 8, uncharged heavy 30; guarded damage x0.25; stagger 2.5 s; recovery 1.0 s; regen after 2.0 s at 20/s; dummy health 200 · kept 2026-11-17
+- Rules in `src/combat/guard_component.gd`: finishers are attack3 and the heavy at x2; the breaking hit deals full damage without the finisher bonus; hits while recovering deal full damage and do not touch the meter; hits during the stagger do not extend it · kept 2026-11-17
+- Training dummy in `src/test_rooms/training_dummy.gd`: health refills at 0; colours blue guarded, yellow broken, green recovering; placed at x 358..386 on the first floor · kept 2026-11-17
+- Full-charge cue in `src/player/player.gd` and `attack_data.tres`: the Charge_Release burst on the blade and a 0.15 s bright flash on the Seeker the moment the heavy is fully charged · kept 2026-11-17
