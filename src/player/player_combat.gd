@@ -205,11 +205,15 @@ func _start_heavy() -> void:
 	_pending = false
 	_holding = false
 	_release_requested = false
-	_charge_time = 0.0
+	_charge_time = _config.hold_threshold
 	_begin_swing_state()
 	_play_layers(ATTACK_HEAVY)
 	_body.speed_scale = _config.windup_speed_scale
 	_fx.speed_scale = _config.windup_speed_scale
+	_glow.visible = true
+	_glow.scale.x = float(_player.facing)
+	_glow_index = -1
+	_glow_timer = 0.0
 
 
 ## Resets what one swing remembers and puts its hitbox on the feet point, mirrored
@@ -236,22 +240,19 @@ func _play_layers(id: String) -> void:
 	_fx_finished = false
 
 
+## The charge runs from the first wind-up frame: the glow blinks and the charge time
+## counts while he pulls the sword back, then he holds the charge frame until release.
+## A release during the wind-up strikes once the charge frame is reached.
 func _update_charge(delta: float) -> void:
 	if not Input.is_action_pressed(&"attack"):
 		_release_requested = true
-	if not _holding:
-		if _body.frame < _config.charge_hold_frame:
-			return
+	if not _holding and _body.frame >= _config.charge_hold_frame:
 		_holding = true
 		_body.pause()
 		_body.frame = _config.charge_hold_frame
 		_fx.pause()
 		_fx.frame = _config.charge_hold_frame
-		_glow.visible = true
-		_glow.scale.x = float(_player.facing)
-		_glow_index = -1
-		_glow_timer = 0.0
-	if _release_requested:
+	if _holding and _release_requested:
 		_release_heavy()
 		return
 

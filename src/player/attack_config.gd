@@ -29,7 +29,8 @@ extends Resource
 @export var charge_hold_frame: int
 ## Frame the strike starts on when the button is released (guide: frame 5).
 @export var heavy_release_frame: int
-## Seconds spent holding on the charge frame until the heavy is ready (charged).
+## Seconds from pressing attack until the heavy is ready (charged). The charge counts
+## from the press (the hold threshold included) and runs through the wind-up.
 @export var charge_time: float
 ## Damage multiplier of a heavy released when charged.
 @export var charged_damage_multiplier: float
