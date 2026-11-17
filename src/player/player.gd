@@ -151,6 +151,7 @@ func _ready() -> void:
 	combat.setup(self, attack_config, _sprite, _pivots, _combat_fx_frames, _combat_fx_pivots)
 	combat.hit_landed.connect(_on_combat_hit_landed)
 	combat.lunge_requested.connect(_on_combat_lunge_requested)
+	combat.heavy_ready.connect(_on_combat_heavy_ready)
 	add_child(combat)
 
 	_rope = Line2D.new()
@@ -597,6 +598,15 @@ func _grapple_jump_out() -> void:
 
 
 ## A down attack that hits launches the player back up and refreshes the air moves.
+## Full charge: a burst on the blade and a short bright flash on the Seeker, so the
+## moment the heavy will break a guard is unmistakable.
+func _on_combat_heavy_ready() -> void:
+	_spawn_effect(&"charge_release", attack_config.heavy_ready_fx_offset)
+	_sprite.modulate = attack_config.heavy_ready_flash_color
+	var tween := create_tween()
+	tween.tween_property(_sprite, "modulate", Color.WHITE, attack_config.heavy_ready_flash_time)
+
+
 ## A ground swing steps forward: forward speed is raised to at least [param speed].
 func _on_combat_lunge_requested(speed: float) -> void:
 	if not _has_floor_below():
@@ -825,10 +835,13 @@ func _spawn_afterimage() -> void:
 	tween.tween_callback(ghost.queue_free)
 
 
-func _spawn_effect(clip: StringName) -> void:
+## Plays a one-shot effect with its anchor on the feet point, or on [param offset] from
+## it (written facing right, mirrored with facing).
+func _spawn_effect(clip: StringName, offset := Vector2.ZERO) -> void:
 	var effect := DustEffect.new()
 	get_parent().add_child(effect)
-	effect.start(_vfx_frames, clip, _vfx_pivots[clip], global_position, facing)
+	var point := global_position + Vector2(offset.x * float(facing), offset.y)
+	effect.start(_vfx_frames, clip, _vfx_pivots[clip], point, facing)
 
 
 ## Builds SpriteFrames from one group of seeker_animations.json: one animation per

@@ -24,6 +24,8 @@ signal camera_shake_requested(size: float, duration: float)
 ## Emitted when a swing with a forward step starts (and when the heavy is released),
 ## with the forward speed the player should get, in px/s.
 signal lunge_requested(speed: float)
+## Emitted once, the moment the heavy becomes fully charged (heavy_charged turns true).
+signal heavy_ready
 
 ## Steps of an attack: nothing, a swing playing, or the heavy winding up and charging.
 enum Phase { IDLE, SWING, CHARGE }
@@ -251,7 +253,10 @@ func _update_charge(delta: float) -> void:
 		return
 
 	_charge_time += delta
+	var was_charged := heavy_charged
 	heavy_charged = _charge_time >= _config.charge_time
+	if heavy_charged and not was_charged:
+		heavy_ready.emit()
 	var cycle := _config.glow_ready_cycle if heavy_charged else _config.glow_cycle
 	_glow_timer -= delta
 	if _glow_timer <= 0.0:

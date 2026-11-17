@@ -77,12 +77,14 @@
       "dust_land": {"file": "Dust/Seeker_VFX_{palette}_Dust_Land_44x16_7f.png", "frame_size": [44, 16], "frames": 7, "ms": 50, "pivot": [22, 14]},
       "dust_dash": {"file": "Dust/Seeker_VFX_{palette}_Dust_Dash_40x20_7f.png", "frame_size": [40, 20], "frames": 7, "ms": 50, "pivot": [30, 18]},
       "air_jump_ring": {"file": "Dust/Seeker_VFX_{palette}_AirJump_Ring_32x16_7f.png", "frame_size": [32, 16], "frames": 7, "ms": 50, "pivot": [16, 6]},
-      "aura_loop": {"file": "Magic/Seeker_VFX_{palette}_Aura_Loop_40x48_16f.png", "frame_size": [40, 48], "frames": 16, "ms": 50, "pivot": [20, 44]}
+      "aura_loop": {"file": "Magic/Seeker_VFX_{palette}_Aura_Loop_40x48_16f.png", "frame_size": [40, 48], "frames": 16, "ms": 50, "pivot": [20, 44]},
+      "charge_release": {"file": "Magic/Seeker_VFX_{palette}_Charge_Release_48x48_6f.png", "frame_size": [48, 48], "frames": 6, "ms": 50, "pivot": [24, 24]}
     },
     "clips": {
       "dust_jump": {"sheet": "dust_jump"},
       "dust_land": {"sheet": "dust_land"},
       "dust_dash": {"sheet": "dust_dash"},
+      "charge_release": {"sheet": "charge_release"},
       "aura_loop": {"sheet": "aura_loop", "loop": true},
       "air_jump_ring": {"sheet": "air_jump_ring"}
     }

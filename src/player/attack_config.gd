@@ -41,6 +41,13 @@ extends Resource
 @export var glow_ready_cycle: PackedInt32Array
 ## Seconds per BladeGlow state while ready.
 @export var glow_ready_step_time: float
+## Where the full-charge burst (the pack's Charge_Release effect) plays, from the feet
+## point with the player facing right: on the blade of the charge frame.
+@export var heavy_ready_fx_offset: Vector2
+## Seconds the Seeker flashes bright when the heavy becomes fully charged.
+@export var heavy_ready_flash_time: float
+## Colour the Seeker is multiplied by at the start of that flash (above 1 brightens).
+@export var heavy_ready_flash_color: Color
 
 @export_group("Pogo")
 ## Upward speed given to the player when a down attack hits, as a positive number.
