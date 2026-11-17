@@ -1,13 +1,13 @@
 # Story 001: Seeker controller and movement set
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: Visual/Feel
 > **Estimate**: L
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-17
 
 ## Context
 
