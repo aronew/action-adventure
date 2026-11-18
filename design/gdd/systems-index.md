@@ -35,7 +35,7 @@ Notes by area (balanced density):
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
 | 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
-| 9 | Ability gating | Progression | MVP | Designed (pending review; GDD 2026-11-18, code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft) |
+| 9 | Ability gating | Progression | MVP | In Review (first design review 2026-11-18: NEEDS REVISION, 3 blockers revised (F11 gate-anchor spend rule and last-flight bound, pane breaks on band entry); F2 window now 72-106; awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft) |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
