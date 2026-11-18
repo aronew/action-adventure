@@ -39,15 +39,15 @@ Notes by area (balanced density):
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
-| 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating |
+| 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (revised 2026-11-18 after design review; awaiting re-review) | design/gdd/level-design.md | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (second design review 2026-11-18: 4 blockers revised, key mapping confirmed; awaiting re-review) | design/gdd/level-design.md | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
-| 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions |
+| 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
 | 19 | Collectible upgrades (inferred) | Progression | Vertical Slice | Not Started | — | World state, Level design |
 | 20 | HUD (inferred) | UI | MVP | Implemented (debug HUD only) | — | Health/damage/death, Ability gating |
-| 21 | Grid map | UI | MVP | Not Started | — | Rooms and transitions, World state |
+| 21 | Grid map | UI | MVP | Not Started | — | Rooms and transitions, World state, Level design |
 | 22 | Pause and menus, incl. control remapping (inferred) | UI | Vertical Slice | Not Started | — | Player controller (input), Save points |
 | 23 | Parallax, lighting and atmosphere (inferred) | Presentation | Vertical Slice | Not Started | — | Terrain pipeline, Camera, Rooms and transitions |
 | 24 | Hit feedback and effects (inferred) | Presentation | MVP | Implemented (no GDD) | — (brief) | Combat, Camera |

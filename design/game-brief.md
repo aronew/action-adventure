@@ -43,7 +43,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 
 **Question:** Does the one move set feel good in a fight and in a room for ten minutes? *(guessed)*
 
-**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard; normal enemies have health only. Every movement ability opens rooms and adds an attack angle. *(guessed, except the guard rule: you said)*
+**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard (plus one first-minute tutorial foe); normal enemies have health only. Every movement ability opens rooms and adds an attack angle. *(guessed, except the guard rule: you said)*
 
 **Intent:**
 
@@ -53,10 +53,10 @@ also what comes later is the bow, and the spell cast that are in my characters a
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
 ## First minute
-Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
+Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet the tutorial foe, the one guarded enemy that is not a boss or mini-boss: break its guard and land the first finisher. *(guessed; tutorial exception confirmed 2026-11-18, level design rule 20)*
 
 ## Challenge
-A tougher guarded enemy about one minute in; a loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
+A tougher guarded enemy, region 1's mini-boss, mid-region; beating it gives the dash. A loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
 
 ## Core loop
 - Fight: wear down a guard, break it, land a finisher.
@@ -73,7 +73,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 - [x] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
 - [x] 2–3 enemy types with readable, telegraphed attacks
 - [x] One boss fight
-- [x] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
+- [x] Dash and wall cling found in region 1 (dash from the mini-boss, wall cling from a shrine behind a dash gate), each opening routes and new attack angles; double-jump and grapple gates are seen in region 1 and their keys come from later regions (level design GDD, confirmed 2026-11-18)
 - [ ] Rooms with doors, save points and a grid map that fills in
 
 ## Your systems
@@ -94,7 +94,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 ## Out of scope
 - Multiplayer, crafting, loot and shops
 - Full story and dialogue (lore comes after the core feels good)
-- More than one region; localization
+- More than one region in the core build (the full game is 5 regions); localization
 - Bow, spell casts, elemental palette power-ups and the Dream Seeker state (after the core feels good)
 
 ## Build order
