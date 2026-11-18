@@ -1,7 +1,7 @@
 # Story 004: Two or three enemy types with telegraphed attacks
 
 > **Epic**: Guardbreak
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: L
@@ -57,8 +57,11 @@
 
 ## Files
 
-- `src/enemies/enemy_base.gd`, `src/enemies/enemy_*.gd`, `src/enemies/enemy_*.tres`
-- `src/player/player_health.gd`
+- `src/enemies/enemy_base.gd`, `src/enemies/enemy_config.gd`, `src/enemies/enemy.tscn`
+- `src/enemies/enemy_grunt.tres`, `src/enemies/enemy_skitter.tres`, `src/enemies/enemy_brute.tres`
+- `src/player/player_health.gd`, `src/player/player.gd`, `src/player/player_config.gd`, `src/player/player_config.tres`, `src/player/seeker_animations.json`
+- `src/test_rooms/enemy_test_room.gd`, `src/test_rooms/enemy_test_room.tscn`
+- No test file: waived at qa.level minimal
 
 ---
 
@@ -83,3 +86,17 @@
 
 - Depends on: `production/epics/guardbreak/story-003-guard-break.md`
 - Unlocks: `production/epics/guardbreak/story-005-region-boss.md`, `production/epics/guardbreak/story-008-bow-thin.md`, `production/epics/guardbreak/story-009-spells-thin.md`
+
+## Completion Notes
+**Completed**: 2026-11-18
+**Criteria**: 6/6 passing (the pacing criterion moved to story 012 at the user's request). Criteria 1-2 failed the first check (weak flinch, too few hits to kill, no death impact) and passed after commits 41d42ca and f288eb6, by the user's playtest.
+**Deviations**: Built in another session (branch claude/blissful-knuth-5lpg95, fast-forwarded here): the enemies live in a separate `src/test_rooms/enemy_test_room.tscn` rather than the movement test room, and the types are named Grunt and Skitter rather than walker and runner. The evidence stamp shows `src/player/player.gd` and the enemy files changed after the screenshots were taken (later fixes); the screenshots were not re-captured.
+**Test Evidence**: tests waived at qa.level minimal; 8 screenshots retained in `production/qa/evidence/story-004-enemy-types/`
+**Reviewed by**: self, no independent review (QL-TEST-COVERAGE and LP-CODE-REVIEW skipped — Solo mode)
+
+## Calls beyond the design
+- Enemy values in `src/enemies/enemy_*.tres`: Grunt health 85, chase 70, telegraph 0.5 s, damage 15; Skitter health 50, chase 150, telegraph 0.35 s, lunge 280, damage 10; Brute health 220, chase 45, telegraph 0.9 s, damage 30, can't be interrupted mid-swing · kept 2026-11-18
+- Getting hit: knockback grunt 150, skitter 190, brute 65 px/s; hop 70 / 90 / 0; 3 px recoil snap; hurt time 0.35 / 0.3 / 0.2 s · kept 2026-11-18
+- Death impact: hit-pause at 0.05 speed for 0.08 / 0.07 / 0.14 s, camera shake 3 / 2 / 5 px, fragment burst in the enemy's colour, body launched and toppled, then faded · kept 2026-11-18
+- Player health in `src/player/player_config.tres`: 100 health, 1.0 s invulnerability with blinking, 0.35 s hurt lock, hits of 20 or more play the knockback hurt; no dash invulnerability · kept 2026-11-18
+- Test room `src/test_rooms/enemy_test_room.gd`: 3400 px long, three Grunts, three Skitters, then the Brute; the room reloads 1 s after death as the stand-in for story 007 · kept 2026-11-18
