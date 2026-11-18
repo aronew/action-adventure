@@ -57,8 +57,12 @@
 
 ## Files
 
-- `src/player/player_state.gd`, `src/world/ability_pickup.gd`, `src/world/ability_gate.gd`
-- `src/test_rooms/gate_test_rooms.tscn`
+- `src/player/player_state.gd` (new): PlayerState resource, ability ownership flags
+- `src/player/player.gd`: player_state export (defaults to both owned), air jumps and grapple gated on it
+- `src/world/ability_pickup.gd` (new): pickup that grants an ability once
+- `src/world/ability_gate.gd` (new): sign showing the ability a route needs, lit once owned
+- `src/test_rooms/gate_test_rooms.gd`, `src/test_rooms/gate_test_rooms.tscn` (new): three-area gate test room, starts locked
+- No test file: waived at qa.level minimal
 
 ---
 
