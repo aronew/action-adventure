@@ -119,3 +119,30 @@ Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43
 Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
 Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 8
+Summary: The fifth review's fixes landed (rule 15 and F4 counting agree with the criteria; F1-F3, F8 and F9 figures re-derive against `player_config.tres`), but two gaps followed from them: widening Saggar Rows for rule 26 pushed N2 to N3 to 8 screens, and F1 constrained only the gap's width, so a shallow pit let the start kit walk through the first gate. Both blockers and recommendations 1-7 were revised in the same session after the owner's decisions (a new save N2b in Saggar Rows; sealed alcoves are nooks in the gate room). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (all 3 fifth-review blockers fixed in the text; the widening's effect on F4 is a new finding)
+Findings:
+- [BLOCKING] Formulas (F4) / Open Question 18: region 1 spacing "6, 2, 7, all valid" assumed a 1x2 Saggar Rows; at 2x2 (rule 26) N2 to N3 is 8 (fixed: save N2b, legs re-derived)
+- [BLOCKING] Formulas (F1): no pit depth, lip height or mid-gap rule; a shallow safe floor lets the start kit cross (fixed: pit block, `pit_depth_min`, criteria)
+- [RECOMMENDED] Core Rules (rule 26) / F8 / F9: "ceiling lower than target_top - launch_rise" exemption can never apply (fixed: removed)
+- [RECOMMENDED] Formulas (F4): example counted 7 where the rule gives 6 (fixed)
+- [RECOMMENDED] Formulas (F4): main route revisits rooms; adjacency along the walk undefined (fixed; post-dash legs wait on the draft, Open Question 18)
+- [RECOMMENDED] Edge Cases: case 1's examples contradicted F1 and the criteria (fixed)
+- [RECOMMENDED] Acceptance Criteria: "30 attempts" meaningless on a deterministic sim; stray [Play] tag (fixed: input sweep)
+- [RECOMMENDED] Core Rules (rule 2) / States / criteria: sealed alcove room-or-not undefined (fixed: in the gate room, owner)
+- [RECOMMENDED] Formulas (F9): assumes a free-standing gate (fixed: stated)
+- [RECOMMENDED] Carried over: Open Questions 18-19; Game Feel targets not criteria; no Tuning Knobs or Player Fantasy (advisory); 8 hard upstream GDDs missing (open)
+Reviewed-Content-Hash: design/gdd/level-design.md c271e3ebc71804f6a2fd45e80e82e0c43454b84e
+Reviewed-Content-Hash: design/registry/entities.yaml dfeacb02917f751cb1dfd88cf490c7ec3d8d2d0f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848

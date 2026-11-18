@@ -35,13 +35,13 @@ Notes by area (balanced density):
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
 | 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
-| 9 | Ability gating | Progression | MVP | Implemented (test rooms, no GDD) | — (brief) | Player controller, World state |
+| 9 | Ability gating | Progression | MVP | Designed (pending review; GDD 2026-11-18, code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft) |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (fifth design review 2026-11-18: 3 blockers revised (gate room footprint: rule 26, F9; rule 15 save near, loop returns; F4 counted by screen position); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (sixth design review 2026-11-18: 2 blockers revised (F1 pit spec; region 1 save spacing after the rule 26 widening, new save N2b in Saggar Rows); sealed alcoves sit in the gate room; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
@@ -182,7 +182,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 1 (level design) |
+| Design docs started | 2 (level design, ability gating) |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
