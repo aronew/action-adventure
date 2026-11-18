@@ -53,10 +53,10 @@ also what comes later is the bow, and the spell cast that are in my characters a
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
 ## First minute
-Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
+Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet only unguarded creatures; the first guarded fight is the region's Keeper. *(you said, 2026-11-18)*
 
 ## Challenge
-A tougher guarded enemy about one minute in; a loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
+The first guarded fight is the region's Keeper; a loss sends you back to the last save point. Later regions add mini-bosses, faster guards and mixed groups. *(Keeper-first: you said; rest guessed)*
 
 ## Core loop
 - Fight: wear down a guard, break it, land a finisher.

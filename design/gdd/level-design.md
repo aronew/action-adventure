@@ -27,7 +27,7 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 **World model**
 
 1. The world is a graph of **rooms**. A room is a whole number of 480x270 screens (1x1 connector, 1x3-4 shaft, 3-4x1 hall, rare set piece up to about 8 screens). Rooms group into **regions**; a region has one identity (palette, enemies, architecture, music), one boss at its apex and at least one save point. **[Rec]**
-2. The core build is **one region** (brief scope), built so more regions can attach at its edges. Its gates for keys the region itself does not give are real and visible; they open when later regions exist. **[Rec, provisional]**
+2. The core build is **one region**, the Cooling Yards (brief scope), built so more regions can attach at its edges. It **earns only the dash**. Gates for wall cling, double jump and grapple are real and visible in it and open with keys earned in later regions. **[Owner, 2026-11-18]**
 3. Rooms are authored on a grey-box first: collision only, no art, played and approved before any tile or painting is added. **[Sourced]** (Ori's "design approved" gate)
 
 **Start state and key order**
@@ -37,9 +37,9 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 
 | # | Key | Opens (gate signature) | Found by | Why here |
 |---|-----|------------------------|----------|----------|
-| 1 | Dash | Gaps wider than about 90 px; dash-through barriers | Keeper (the region's boss) | Horizontal key first in every benchmark; seen as an uncrossable gap in the first minutes |
-| 2 | Wall cling (wall slide, wall jump, climb) | Tall shafts and walls with a cling surface | Shrine, found by exploring | Opens the vertical world; walls are ladders once it exists, so it is earned before the double jump |
-| 3 | Double jump | Ledges 72-108 px up in open air | Mentor / hub pact (or a second shrine, if the lore has no mentor) | The mid-game hinge: where the map opens to three or four valid directions |
+| 1 | Dash | Gaps wider than about 90 px; dash-through barriers | Keeper (Tavik, the Hot-Carrier, region 1's boss) | Horizontal key first in every benchmark; seen as an uncrossable gap in the first minutes |
+| 2 | Wall cling (wall slide, wall jump, climb) | Tall shafts and walls with a cling surface | Shrine, found by exploring (Dorrit's unfinished jar, region 2) | Opens the vertical world; walls are ladders once it exists, so it is earned before the double jump |
+| 3 | Double jump | Ledges 72-108 px up in open air | Mentor / hub pact (Pell's Stacking Loft, region 2) | The mid-game hinge: where the map opens to three or four valid directions |
 | 4 | Grapple | Authored anchors only (> 120 px up or > 200 px apart) | Keeper (a later boss) | Opens only the locks you place, so it is the safe late key; later grows into grapple-to-enemy |
 
 6. The bow and the spell casts are not movement keys and gate nothing in the core build; they are earned later (Alpha). **[Owner]**
@@ -65,7 +65,7 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 17. A room is a place first ("a flooded cavern, a ruined tower stair"), then a layout. Floors and mass terrain carry the room; floating islands are allowed; free-standing platforms are rare and only where a gate needs them. No room has more than 3 free-standing platforms unless it is a designated platforming room. **[Owner for the principle; limit Rec]**
 18. Every room has a job: connector, shaft, combat room, platforming challenge, hub, save, secret or boss antechamber. A room that does none of them is cut. **[Rec]**
 19. A secret follows a pattern the game has already shown (a cracked wall, an off-screen ledge, a dead end with something just out of sight), and a dead end without a secret is cut. **[Sourced]** (Animal Well: break from the pattern; Dread: hidden blocks on the main path always have a hint)
-20. Only bosses and mini-bosses carry a guard. The core region has one boss and one mini-boss. Normal enemies have health only. **[Owner]**
+20. Only bosses and mini-bosses carry a guard (in the lore: glaze). Region 1 has one boss (Keeper Tavik) and no mini-boss; the first mini-boss, Brun, is in region 2. The first minutes meet only unguarded creatures. Normal enemies have health only. **[Owner]**
 21. There is no "region cleared" screen, banner or lock-out. A beaten boss opens doors and changes the world quietly. **[Owner]**
 
 **Backtracking and flow**
@@ -323,7 +323,7 @@ Types: **[Auto]** automated test on room data or the room graph; **[Play]** play
 
 **Room composition**
 - **GIVEN** each shipped room, **WHEN** the grey-box review is run, **THEN** the room has a named job, no more than 3 free-standing platforms unless it is a platforming room, and a dead end carries a secret. **[Auto + Play]** (rules 17-19)
-- **GIVEN** the region, **WHEN** it is searched, **THEN** exactly one boss and one mini-boss carry a guard meter, and no normal enemy does. **[Auto]** (rule 20)
+- **GIVEN** the region, **WHEN** it is searched, **THEN** only the Keeper carries a guard meter in region 1, no mini-boss is present, and no normal enemy has a guard. **[Auto]** (rule 20)
 - **GIVEN** the boss is defeated, **WHEN** the player leaves the arena, **THEN** no "cleared" banner or screen appears and play continues in the world. **[Shot]** (rule 21)
 
 **Cross-system**
@@ -337,9 +337,9 @@ Types: **[Auto]** automated test on room data or the room graph; **[Play]** play
 
 Owner is the project owner unless stated. No dates are set; each has a target step instead.
 
-1. **Lore.** Not yet provided; region names, the mentor and the world's reason to exist wait on it. Target: before the first narrative pass and the mentor channel.
-2. **How many keys does the core region contain?** Rule 2 builds one region; four keys in one region is dense. Options: all four in the core region; dash and wall cling in the core region with the double-jump and grapple gates visible but waiting for later regions. Target: before the first region layout.
-3. **Mentor / hub pact for the double jump.** Needs the lore; fallback is a second shrine (rule table). Target: with the lore.
+1. ~~**Lore.**~~ Resolved 2026-11-18: The Kiln City, in `design/narrative/`.
+2. ~~**How many keys does the core region contain?**~~ Resolved 2026-11-18 (owner): region 1 earns only the dash; the other three are seen there and earned in later regions.
+3. ~~**Mentor / hub pact for the double jump.**~~ Resolved 2026-11-18: Pell, in region 2. Open: the pact's confirm prompt (`mentor.pact.accept`) needs an interaction design, since the Seeker never speaks.
 4. **Is climb part of wall cling?** Assumed yes (slide, wall jump and climb gated together). Needs `PlayerState` flags for dash and wall cling and a gating pass in `player.gd` (a later story). Target: when story 007 sets the real starting state.
 5. **Save spacing of 7 screens** (Blasphemous) is an untested start value for 480 px screens. Target: first playable region.
 6. **Gate signatures and colours.** Waiting on the art bible (`/art-bible`). Target: before the terrain pipeline's painted pass.
