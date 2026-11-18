@@ -33,6 +33,8 @@ we will eventually be using our own art and sprite assets so right now the way i
 
 metroidvanias also start the game having limited abilities, you should be able to run, jump, attack. double jump, dash, wall cling, grapple should come later
 
+also what comes later is the bow, and the spell cast that are in my characters animations
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
