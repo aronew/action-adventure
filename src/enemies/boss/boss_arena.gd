@@ -32,7 +32,7 @@ const RELOAD_DELAY := 1.0
 const BACKGROUND_COLOR := Color(0.1, 0.09, 0.14)
 const SOLID_COLOR := Color(0.32, 0.3, 0.4)
 const HELP_POSITION := Vector2(4, 256)
-const HELP_TEXT := "Arrows/WASD move  Space/Z jump  Shift/C dash  X attack (hold: heavy)  E grapple\nGuarded, the boss shrugs hits off. Wear the guard down or break it with a charged heavy, then hit hard."
+const HELP_TEXT := "Move arrows/WASD  Jump Space/Z  Dash Shift/C  Attack X (hold: heavy)\nGuarded, the boss shrugs hits off.\nBreak its guard (a charged heavy does it at once), then hit hard."
 const FONT_SIZE := 8
 
 const PLAYER_BAR_POSITION := Vector2(4, 4)

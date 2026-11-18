@@ -66,7 +66,7 @@ func _state_patrol(delta: float) -> void:
 ## Faces the player, starts the next pattern when the cooldown is over, otherwise walks up
 ## to [member EnemyConfig.attack_range].
 func _state_chase(delta: float) -> void:
-	if not _target_alive():
+	if not _engaged or not _target_alive():
 		_steer_to(0.0, delta)
 		return
 	var dx := target.global_position.x - global_position.x
@@ -120,7 +120,7 @@ func _die() -> void:
 ## except the last one used. [constant NO_PATTERN] when there is none.
 func _pick_pattern(distance: float) -> int:
 	var candidates: Array[int] = []
-	for pattern in BossConfig.Pattern.values():
+	for pattern: int in BossConfig.Pattern.values():
 		var reach := _boss_config.distance_range(pattern)
 		if pattern != _last_pattern and distance >= reach.x and distance <= reach.y:
 			candidates.append(pattern)
