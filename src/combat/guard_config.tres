@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GuardConfig" format=3]
+
+[ext_resource type="Script" path="res://src/combat/guard_config.gd" id="1_guard"]
+
+[resource]
+script = ExtResource("1_guard")
+max_guard = 100.0
+guard_damage = {
+"attack1": 10.0,
+"attack2": 10.0,
+"attack3": 20.0,
+"down_attack": 8.0,
+"heavy": 30.0,
+"jump_attack": 10.0,
+"up_attack": 10.0
+}
+guarded_damage_multiplier = 0.25
+stagger_time = 2.5
+finisher_bonus_multiplier = 2.0
+finisher_attacks = PackedStringArray("attack3", "heavy")
+recovery_time = 1.0
+regen_delay = 2.0
+regen_rate = 20.0
+max_health = 200.0

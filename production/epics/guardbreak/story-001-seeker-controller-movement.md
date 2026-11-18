@@ -1,7 +1,7 @@
 # Story 001: Seeker controller and movement set
 
 > **Epic**: Guardbreak
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Visual/Feel
 > **Estimate**: L
@@ -29,14 +29,17 @@
 
 *From `design/game-brief.md` (Features item 1; Goal & fail state) and the pack's `Animation_Guide.txt`:*
 
-- [ ] A player scene runs in a blank test room, using the Seeker sheets from `assets/characters/seeker/Spritesheets/Void/` (Void is the default palette), imported with nearest filtering and no compression.
+- [ ] A player scene runs in a blank test room, using the Seeker sheets from `assets/characters/seeker/Spritesheets/Bone/` (Bone is the default palette, changed from Void at the user's request), imported with nearest filtering and no compression.
 - [ ] Every animation's origin is its feet point from `Animation_Guide.txt`, so changing animation or facing never shifts the character.
 - [ ] Idle and run loop with the guide's timings; run playback speed scales with run speed.
 - [ ] Jump and fall pick their frame from vertical speed: 0 takeoff, 1-12 rising, 13-14 apex, 15-25 falling (looped for long falls), 26-27 landing.
 - [ ] Double jump plays its flip once, then returns to fall frames 15-25. Dash loops its animation for 0.2-0.3 s.
 - [ ] Wall slide faces the wall with the back to it; climb shows frame 0 when still; crouch goes down on frames 0-3, holds 3, stands on 4; enter door plays once, then emits a signal for the room change (story 007).
+- [ ] Jumping while wall sliding kicks the player up and away from the wall (wall jump), so a tall wall can be climbed by alternating; its speeds and control-lock time are in the config. *(added after playtest: the test room's 160 px wall could not be crossed)*
+- [ ] The grapple flings the player on when it lets go (part of the pull velocity is kept), and jump during the pull or release launches out of it, restoring the air jump and air dash. *(added after playtest)*
+- [ ] Movement feel pass, every value in the config: ground and air acceleration, braking and turning; dash end and dash-jump momentum; faster fall, apex hang, fast fall; ceiling corner correction and ledge nudge; wall-jump reach and wall coyote time; camera smoothing, look-ahead, fall lead and landing dip. *(added after playtest: "top-tier feel" request)*
 - [ ] Grapple: throw at an anchor point (frames 0-2), pulled along (frames 3-6 looped), release (frame 7), with the sprite rotated toward the anchor and a rope drawn as a line from hand to anchor (the pack has no rope).
-- [ ] Jump, land and dash dust and the double-jump ring spawn at the feet from `assets/characters/seeker/VFX/Void/Dust/`.
+- [ ] Jump, land and dash dust and the double-jump ring spawn at the feet from `assets/characters/seeker/VFX/Bone/Dust/`.
 - [ ] The body collides as a 10 x 22 px box standing on the feet point; all movement values (run speed, jump, gravity, dash time and speed) come from one config resource, not code constants.
 - [ ] Every action is bound for both gamepad and keyboard through the Input Map.
 
@@ -67,10 +70,12 @@
 - `src/player/player.gd`, `src/player/player.tscn`
 - `src/player/player_config.gd`, `src/player/player_config.tres`
 - `src/player/seeker_animations.json`
-- `src/player/player_input_bindings.gd`, `src/player/dust_effect.gd`
+- `src/player/player_input_bindings.gd`, `src/player/dust_effect.gd`, `src/player/player_camera.gd`
 - `src/test_rooms/movement_test_room.gd`, `src/test_rooms/movement_test_room.tscn`
 - `project.godot` (main scene, 480x270 viewport, integer scaling, nearest filtering)
 - No test file: waived at qa.level minimal
+
+---
 
 ## QA Test Cases
 
@@ -93,3 +98,17 @@
 
 - Depends on: None
 - Unlocks: `production/epics/guardbreak/story-002-melee-combat.md`, `production/epics/guardbreak/story-006-ability-gates.md`
+
+## Completion Notes
+**Completed**: 2026-11-17
+**Criteria**: 13/13 passing, by the user's own playtest on their machine (keyboard and gamepad); none observed in a retained image
+**Deviations**: Closed without the required Visual/Feel evidence: no retained screenshot in `production/qa/evidence/story-001-seeker-controller-movement/` and no sign-off file. The user chose "Close anyway, accepting the deviations". Run result here was NOT VERIFIED (no Godot binary in the cloud container); the build was run only on the user's machine.
+**Test Evidence**: none retained (tests waived at qa.level minimal; the screenshot gap was accepted by the user)
+**Reviewed by**: self, no independent review (QL-TEST-COVERAGE and LP-CODE-REVIEW skipped — Solo mode)
+
+## Calls beyond the design
+- Movement values in `src/player/player_config.tres`: run 140, jump 330, double jump 320, dash 370 px/s for 0.25 s, wall jump 380 up and 190 away with a 0.1 s steering lock, grapple pull 360, fall gravity x1.5, apex hang, fast fall, coyote 0.1 s, jump buffer 0.12 s, ground and air acceleration, dash end and dash-jump momentum · kept 2026-11-17
+- Behaviours in `src/player/player.gd`: grapple flings the feet 24 px (one body height) above the anchor; jumping out of a grapple restores the double jump and air dash; nearest anchor in range, no line-of-sight check; wall jump within 3 px of a wall and 0.1 s after leaving it; corner correction 6 px, ledge nudge 5 px; crouch-walking allowed · kept 2026-11-17
+- Controls in `src/player/player_input_bindings.gd` (the Seeker pack's layout, doors on Up, gamepad A/RB/LB/X/Y and triggers) and the camera in `src/player/player_camera.gd` (smooth follow, 28 px look-ahead, 36 px fall lead, 4 px landing dip) · kept 2026-11-17
+- Test room layout in `src/test_rooms/movement_test_room.gd`, and 480x270 base resolution in a 1440x810 window with whole-number scaling in `project.godot` · kept 2026-11-17
+- Default palette Bone instead of Void in `src/player/player.gd` (the user's change) · kept 2026-11-17

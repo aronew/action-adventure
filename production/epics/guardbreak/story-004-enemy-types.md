@@ -1,13 +1,13 @@
 # Story 004: Two or three enemy types with telegraphed attacks
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: L
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-18
 
 ## Context
 
@@ -27,10 +27,10 @@
 
 ## Acceptance Criteria
 
-*From `design/game-brief.md` (Features item 4, Challenge, Goal & fail state):*
+*From `design/game-brief.md` (Features item 4, Challenge, Goal & fail state); updated 2026-11-18 to the user's rule "only bosses and mini-bosses have a guard" and the chosen mix: 3 normal enemies, no mini-boss.*
 
-- [ ] A shared enemy base has health, a guard component (story 003) and a state machine: idle or patrol, chase, telegraph, attack, hurt, stagger, dead.
-- [ ] 2-3 enemy types exist, differing in speed, attack pattern and guard strength *(guessed: one plain, one fast, one heavy)*, all values in config resources.
+- [ ] A shared enemy base has health and a state machine: idle or patrol, chase, telegraph, attack, hurt, stagger, dead. Normal enemies have **no guard**: only bosses and mini-bosses do (design/game-brief.md); the base can still take a guard component for story 005.
+- [ ] Three normal enemy types exist, differing in speed, health and attack pattern *(guessed: one plain, one fast, one heavy-hitting)*, all values in config resources. Each dies to the combo; hits stagger it briefly.
 - [ ] Every damaging attack shows a visible wind-up (telegraph) before it can hurt the player; wind-up length is data-driven.
 - [ ] An enemy hit on the player removes player health, plays the pack's Hurt or HurtKnockback animation and gives a short invulnerability window.
 - [ ] Player health reaching zero plays Death once, holds its last frame, and emits a signal the save system uses to respawn (story 007).

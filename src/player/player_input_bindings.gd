@@ -2,7 +2,11 @@
 ## keyboard keys and a gamepad button or axis. Actions already defined (for example
 ## later added in project.godot) are left untouched.
 ##
-## attack, heavy, bow and cast are reserved for later stories and do nothing yet.
+## Keyboard layout follows the Seeker pack's playable test: Space or Z jump, X attack
+## (tap for the combo, hold for the heavy, up + X up attack, in the air X jump attack and
+## down + X the pogo), Shift or C dash, E grapple, F bow, Q cast or charge, V rapid fire.
+## Up (W or the up arrow) enters doors. bow, cast and rapid_fire are reserved for later
+## stories and do nothing yet.
 ##
 ## Usage: [codeblock]
 ## PlayerInputBindings.register()
@@ -23,14 +27,14 @@ const BINDINGS := {
 	"move_up": {"keys": [KEY_W, KEY_UP], "buttons": [JOY_BUTTON_DPAD_UP], "axis": JOY_AXIS_LEFT_Y, "axis_value": -1.0},
 	"move_down": {"keys": [KEY_S, KEY_DOWN], "buttons": [JOY_BUTTON_DPAD_DOWN], "axis": JOY_AXIS_LEFT_Y, "axis_value": 1.0},
 	"crouch": {"keys": [KEY_S, KEY_DOWN], "buttons": [JOY_BUTTON_DPAD_DOWN], "axis": JOY_AXIS_LEFT_Y, "axis_value": 1.0},
-	"jump": {"keys": [KEY_SPACE], "buttons": [JOY_BUTTON_A]},
-	"dash": {"keys": [KEY_SHIFT], "buttons": [JOY_BUTTON_RIGHT_SHOULDER]},
-	"interact": {"keys": [KEY_E], "buttons": [JOY_BUTTON_B]},
-	"grapple": {"keys": [KEY_Q], "buttons": [JOY_BUTTON_LEFT_SHOULDER]},
-	"attack": {"keys": [KEY_J], "buttons": [JOY_BUTTON_X]},
-	"heavy": {"keys": [KEY_K], "buttons": [JOY_BUTTON_Y]},
-	"bow": {"keys": [KEY_L], "buttons": [], "axis": JOY_AXIS_TRIGGER_RIGHT, "axis_value": 1.0},
-	"cast": {"keys": [KEY_I], "buttons": [], "axis": JOY_AXIS_TRIGGER_LEFT, "axis_value": 1.0},
+	"jump": {"keys": [KEY_SPACE, KEY_Z], "buttons": [JOY_BUTTON_A]},
+	"dash": {"keys": [KEY_SHIFT, KEY_C], "buttons": [JOY_BUTTON_RIGHT_SHOULDER]},
+	"interact": {"keys": [KEY_W, KEY_UP], "buttons": [JOY_BUTTON_DPAD_UP, JOY_BUTTON_B]},
+	"grapple": {"keys": [KEY_E], "buttons": [JOY_BUTTON_LEFT_SHOULDER]},
+	"attack": {"keys": [KEY_X], "buttons": [JOY_BUTTON_X]},
+	"bow": {"keys": [KEY_F], "buttons": [], "axis": JOY_AXIS_TRIGGER_RIGHT, "axis_value": 1.0},
+	"cast": {"keys": [KEY_Q], "buttons": [], "axis": JOY_AXIS_TRIGGER_LEFT, "axis_value": 1.0},
+	"rapid_fire": {"keys": [KEY_V], "buttons": [JOY_BUTTON_Y]},
 }
 
 

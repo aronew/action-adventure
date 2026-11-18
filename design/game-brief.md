@@ -21,20 +21,26 @@ im going to get a character from itch.io who has
 
 * PRO BONUS: the Dream Seeker, a fifth special palette with a custom  holographic dream aesthetic, perfect to add a very unique vibe to your protagonist or as a special empowered state swap.
 
+so the way they have their controls for this character its Space or Z= Jump, X= Attack, Shift or C = Dash, E= Grapple, X Hold = Heavy, Down arrow or W + X= air: Pogo, F= Bow, Q= Cast/Charge, V= Rapid Fire. and have the grapple fling him about his body height higher than what he grapples off of d
+
+one thing too is I want to use the bone sprite not the void sprite
+
+id say only bosses should have a guard like that or a mini boss normal enemies shouldnt s
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
 
-**Controls:** Gamepad first, keyboard too: move, jump/double jump, dash, crouch, attack (3-hit combo; with up, down or in the air for directional attacks), heavy (hold to charge), grapple, interact (doors). *(guessed)*
+**Controls:** Keyboard as in the Seeker pack's playable test: Space or Z jump, X attack, X hold heavy, down + X in the air pogo, Shift or C dash, E grapple, F bow, Q cast/charge, V rapid fire; arrows or WASD move, Up enters doors *(guessed)*. Gamepad too.
 
 **Question:** Does the one move set feel good in a fight and in a room for ten minutes? *(guessed)*
 
-**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Every movement ability opens rooms and adds an attack angle. *(guessed)*
+**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard; normal enemies have health only. Every movement ability opens rooms and adds an attack angle. *(guessed, except the guard rule: you said)*
 
 **Intent:**
 
 ## Look and references
-- Look: 2D pixel side view using the itch.io character pack. Sword FX on their own layer, sparks and glow on hits. The player uses the Void, Ember, Frost or Bone palette, each with matching FX; the default palette is open. *(provisional)*
+- Look: 2D pixel side view using the itch.io character pack, in the Bone palette. Sword FX on their own layer, sparks and glow on hits. The other palettes (Void, Ember, Frost) and the Dream Seeker are for power-ups later.
 - References: Nine Sols (level design, per your words).
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
@@ -54,9 +60,9 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 - Fail: health reaches zero; respawn at the last save point. *(guessed)*
 
 ## Features
-- [ ] Movement from the pack: run, dash, double jump, wall slide, climb, crouch, grapple, enter door
-- [ ] Melee: 3-hit combo, jump, up and down attacks, heavy attack
-- [ ] Guard-break: enemies have a guard meter; the charged heavy shatters it and opens a finisher
+- [x] Movement from the pack: run, dash, double jump, wall slide, climb, crouch, grapple, enter door
+- [x] Melee: 3-hit combo, jump, up and down attacks, heavy attack
+- [x] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
 - [ ] 2–3 enemy types with readable, telegraphed attacks
 - [ ] One boss fight
 - [ ] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
