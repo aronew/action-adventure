@@ -34,7 +34,7 @@
 - [ ] Every damaging attack shows a visible wind-up (telegraph) before it can hurt the player; wind-up length is data-driven.
 - [ ] An enemy hit on the player removes player health, plays the pack's Hurt or HurtKnockback animation and gives a short invulnerability window.
 - [ ] Player health reaching zero plays Death once, holds its last frame, and emits a signal the save system uses to respawn (story 007).
-- [ ] The first tougher enemy appears about a minute in, per the brief's Challenge, in the test layout.
+- ~~The first tougher enemy appears about a minute in~~ — moved to story 012 (level design) on 2026-11-18 at the user's request: the enemy room is a test room, and pacing belongs to the real interconnected world.
 - [ ] Enemies use placeholder art: the Seeker pack has no enemy sprites.
 
 ---
