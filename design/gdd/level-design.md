@@ -223,7 +223,31 @@ The flow_speedup formula is defined as:
 
 ## Dependencies
 
-[To be designed]
+**Upstream (this system needs them):**
+
+| System | Hard / soft | What this system needs | GDD exists |
+|--------|-------------|------------------------|------------|
+| Rooms and transitions | Hard | Room units, exits, doors, per-room camera limits, the room graph | No (provisional) |
+| Terrain pipeline | Hard | The collision and tile rules every room is built from; the grey-box path | No (provisional) |
+| Ability gating | Hard | Gate types, dimensions and visual signatures; the "owned" read | No (code exists: `PlayerState`, `AbilityGate`, `AbilityPickup`; needs dash and wall cling flags) |
+| World state | Hard | Records of keys, boss defeats, shortcuts and secrets | No (provisional) |
+| Bosses | Hard | Boss rooms, the defeat flag, the reward source | No (code exists: `Boss`, `boss_arena`) |
+| Enemies | Soft | Enemy types to place in rooms | No (code exists: three types) |
+| Player controller | Soft | Movement values behind F1-F3 and F5 (`player_config.tres`) | No (code exists) |
+
+**Downstream (these need this system):**
+
+| System | Hard / soft | What it needs from here |
+|--------|-------------|--------------------------|
+| Save points and save/load | Hard | Save locations and the spacing rule (F4) |
+| Grid map | Hard | Room graph, exits, unexplored markers |
+| Collectible upgrades | Soft | Where reward rooms sit |
+| Fast travel | Soft | Which rooms may be travel points |
+| Lore delivery and mentor/hub pact | Soft | Where the mentor hub and lore sit |
+| Elemental palette power-ups | Soft | Gate materials per element |
+
+**Bidirectional check:** none of the other GDDs exists, so each needs a matching entry when it is designed. Ability gating and level design are circular by design (see the systems index); the contract is: gating owns gate types and sizes, level design owns placement and order.
+
 
 ## Visual/Audio Requirements
 
