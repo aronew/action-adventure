@@ -112,7 +112,95 @@ None of the upstream systems has a GDD yet; the interfaces below are the contrac
 
 ## Formulas
 
-[To be designed]
+All Seeker figures are **[Calc]** from `src/player/player_config.tres` at 60 Hz, worked out in the research report. They ignore coyote time, corner correction and ledge nudge, so re-measure in `movement_test_room` before any gate is built. Margins and spacing values are `data file` knobs, not constants.
+
+### F1. Dash gap window
+
+The dash_gap formula is defined as:
+
+`gap_min = run_jump_distance + gap_margin`; `gap_max = dash_jump_distance - gap_margin`; a dash gap of width W is valid when `gap_min <= W <= gap_max`.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| run_jump_distance | float (px) | about 105 | calculated from player_config | Farthest a running jump crosses without dash |
+| dash_jump_distance | float (px) | about 165 | calculated from player_config | Farthest a dash-jump crosses |
+| gap_margin | float (px) | 8-20 | data file | Keeps a perfect jump from leaking through and the dash from missing |
+| W | float (px) | gap_min to gap_max | data file (room data) | Width of the gap |
+
+**Output Range:** 120 to 150 px at margin 15; at margin 0 a perfect jump leaks through at 105 px; above about 30 px the window closes.
+**Example:** a 135 px gap needs the dash and the dash clears it.
+
+### F2. Double-jump ledge window
+
+The double_jump_ledge formula is defined as:
+
+`ledge_min = jump_apex + ledge_margin_low`; `ledge_max = double_jump_total - ledge_margin_high`.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| jump_apex | float (px) | about 60 (59-62) | calculated from player_config | Single jump height |
+| double_jump_total | float (px) | about 115 | calculated from player_config | Jump plus double jump height |
+| ledge_margin_low | float (px) | 8-16 | data file | Stops a plain jump clipping the edge |
+| ledge_margin_high | float (px) | 5-12 | data file | Lets the double jump clear the edge reliably |
+
+**Output Range:** 72 to 108 px at margins 12 and 7. Valid only in open air: wall cling is owned by then, so a wall within wall-jump reach makes the ledge a ladder.
+**Example:** a ledge 90 px above the floor in open air needs the double jump.
+
+### F3. Grapple gate
+
+The grapple_gate rule is defined as:
+
+`target_height >= double_jump_total + grapple_margin`, with an anchor within `grapple_range` of a standing point.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| target_height | float (px) | 121 or more | data file (room data) | Height of the ledge above the standing floor |
+| grapple_range | float (px) | 200 | data file (player_config) | Farthest anchor the grapple reaches |
+| grapple_margin | float (px) | 6-20 | data file | Keeps the double jump from reaching the target |
+
+**Output Range:** targets 121+ px up with an anchor within 200 px.
+**Example:** a ledge 160 px up with an anchor 24 px beyond its edge.
+
+### F4. Save spacing
+
+The save_spacing rule is defined as:
+
+`route_screens(save_a, save_b) <= save_spacing_max` for adjacent saves on the main route; a room of more than one screen counts as that many screens.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| route_screens | int | 1 to save_spacing_max | calculated from the room graph | Screens on the main route between two saves |
+| save_spacing_max | int | 5-10 | data file | Upper bound; starts at 7 (Blasphemous), tuned in playtest |
+
+**Output Range:** at most 7 screens. A 480 px screen crosses in about 3.4 s at 140 px/s, so 7 screens is about 24 s of pure running and roughly 2-4 minutes with fights and platforming.
+**Example:** save, 2-screen hall, 1x3 shaft, 1-screen combat room, boss antechamber: 7 screens, valid.
+**Edge:** 0 is undefined; oversized rooms count by screen, not as one.
+
+### F5. Flow speed-up
+
+The flow_speedup formula is defined as:
+
+`speedup = 1 - t_with_key / t_without_key`; rule 22 requires `speedup >= speedup_min` on at least two old routes per key.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| t_without_key | float (s) | greater than 0 | calculated from route length and player_config | Crossing time before the key |
+| t_with_key | float (s) | greater than 0 | calculated from route length and player_config | Crossing time after the key |
+| speedup_min | float | 0.2-0.5 | data file | Required improvement; starts at 0.3 |
+
+**Output Range:** 0 to under 1; negative means the key slows the route and fails the rule.
+**Example:** dash on a 3-screen hall (1440 px): 10.3 s at 140 px/s; a dash cycle (0.25 s dash, 0.3 s cooldown) averages about 245 px/s, 5.9 s; speedup 0.43. Approximate: ignores dash_end_speed_keep.
+**Edge:** a route of length 0 is excluded.
+
+**Feedback loops:** keys make old rooms faster, which makes revisiting cheaper and encourages exploring; intended, bounded by shortcuts and enemy respawns. A later key leaking into an earlier gate (double jump over a dash gap) is also intended.
+
+**Registry candidates (not owned here):** run_jump_distance, dash_jump_distance, double_jump_total, jump_apex belong in the movement GDD when it exists.
+
 
 ## Edge Cases
 
