@@ -59,3 +59,30 @@ Reviewed-Content-Hash: design/game-brief.md f8a91ee620b183a3c91062efaaa6bcc0ac8f
 Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 3 | Recommended: 7
+Summary: The second review's four fixes held, and a fresh 60 Hz simulation reproduced the run-jump, apex, double-jump and dash-jump figures. This pass found two more start-kit leaks: F1 and F3b compared edge-to-edge gaps with centre travel (the 10 px hitbox and ledge_nudge add up to 15 px), and the pogo (260 px/s, refreshes air moves) was in no gate rule. It also found that the wall-cling gate, the only other region 1 gate, had no spec. All 3 blockers and recommendations 1-5 were revised in the same session after the owner's decisions (pogo clearance rule 24 / F7; dash-through barriers cut; any wall kicks, marked surfaces climb, F6). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (all 4 prior blockers fixed; prior open recommendation F6 escalated to a blocker and fixed)
+Findings:
+- [BLOCKING] Formulas (F1, F3b): gap width compared with centre travel; hitbox 10 px + ledge_nudge 5 px let a run-jump cross up to about 137 px, so gap_min leaked below margin 15; F3b max crossing is about 399, not 396 (fixed: landing_slack, edge-to-edge W, window 145-162 at margin 8, F3b 420+)
+- [BLOCKING] Detailed Design (rules 4-5): start-kit pogo off any hittable bridges gaps and ledges; no rule or Auto check (fixed: rule 24, F7 pogo clearance)
+- [BLOCKING] Detailed Design (key table) / Formulas: no spec for the wall-cling gate; dash-through barriers undefined (fixed: F6 kick shaft and climb wall; barriers cut, Open Question 14)
+- [RECOMMENDED] Formulas (F3b) / Open Question 13: code shows grapple jump-out refreshes air moves; the anchor chain is not necessary (fixed: wording; reach still to measure)
+- [RECOMMENDED] Formulas (F1): run-jump + air dash is about 215 px, not 180 (fixed)
+- [RECOMMENDED] Dependencies: Player controller is Hard for every gate formula; derive Auto checks from the config (fixed; systems index updated)
+- [RECOMMENDED] States and Transitions: a sealed alcove is visible, so it cannot be Hidden (fixed: own states)
+- [RECOMMENDED] Acceptance Criteria: rule 8, 9 and 11 criteria named keys absent from the core build; rule 15 criterion grammar (fixed)
+- [RECOMMENDED] Acceptance Criteria / Overview: carried over: rule 1, no-backward states, Game Feel, "one objective"; lore status vs the brief; enemy respawns (open)
+- [RECOMMENDED] Tuning Knobs: no consolidated table; Implements Pillar "none defined" (open, advisory)
+Reviewed-Content-Hash: design/gdd/level-design.md de4f53e2199abcfa141afbfdd792d23cbb087552
+Reviewed-Content-Hash: design/registry/entities.yaml dfeacb02917f751cb1dfd88cf490c7ec3d8d2d0f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md 72140db0b83eb2018bee045e3aac874552ab5687
+Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6

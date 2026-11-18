@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (second design review 2026-11-18: 4 blockers revised, key mapping confirmed; awaiting re-review) | design/gdd/level-design.md | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (third design review 2026-11-18: 3 blockers revised (hitbox slack, pogo clearance, F6 cling shaft); awaiting re-review) | design/gdd/level-design.md | Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
@@ -108,7 +108,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 3. Enemies: Combat, Health/damage/death.
 4. Bosses: Guard-break, Enemies.
 5. Ability gating: Player controller, World state.
-6. Level design and world layout: Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
+6. Level design and world layout: Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
 7. Save points and save/load: World state, Rooms and transitions.
 8. Collectible upgrades: World state, Level design.
 9. Fast travel: Rooms and transitions, World state, Level design.
