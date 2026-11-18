@@ -1,0 +1,135 @@
+{
+  "section_count": 8,
+  "enclosed_alpha_gaps_repaired": 0,
+  "method": "Identify eight major terrain groups, match their normalized layout positions, fit each separately into original pixel rectangles; preserve new material silhouettes within each rectangle. Repair unintended enclosed transparency only at reference solid-terrain locations.",
+  "sections": [
+    {
+      "native_crop": [
+        529,
+        547,
+        697,
+        703
+      ],
+      "target_rectangle": [
+        1549,
+        1569,
+        493,
+        424
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        75,
+        546,
+        457,
+        709
+      ],
+      "target_rectangle": [
+        246,
+        1567,
+        1047,
+        448
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        542,
+        6,
+        709,
+        547
+      ],
+      "target_rectangle": [
+        1569,
+        31,
+        447,
+        1450
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        333,
+        706,
+        711,
+        1079
+      ],
+      "target_rectangle": [
+        1024,
+        2079,
+        1024,
+        960
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        0,
+        0,
+        531,
+        551
+      ],
+      "target_rectangle": [
+        33,
+        31,
+        1471,
+        1472
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        0,
+        692,
+        707,
+        1254
+      ],
+      "target_rectangle": [
+        0,
+        2048,
+        2048,
+        1536
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        705,
+        710,
+        1246,
+        1254
+      ],
+      "target_rectangle": [
+        2081,
+        2079,
+        1471,
+        1472
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    },
+    {
+      "native_crop": [
+        705,
+        0,
+        1254,
+        716
+      ],
+      "target_rectangle": [
+        2048,
+        0,
+        1536,
+        2048
+      ],
+      "layout_reference": "Mossy - TileSet.png major terrain section bounds (alpha > 127)",
+      "silhouette_locked": false
+    }
+  ]
+}
