@@ -86,3 +86,36 @@ Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 3 | Recommended: 10
+Summary: The fourth review's fixes held: the F1-F3 figures and every boundary criterion re-derive, the config and pogo values match, and the controller is unchanged. This first read of the real region 1 layout (Kiln City lore merged) found three gaps the rules never closed: no minimum room size for double-jump and grapple gates (Saggar Rows and Ropewalk Stair are 480 px wide and fail F8 and F3b), a rule 15 shortcut clause the layout fails, and an F4 count that dropped both save rooms and understated the walk by up to 4 screens. All 3 blockers and recommendations 1, 4-8 and the dependency and signature items were revised in the same session after the owner's decisions (widen rooms; save near, loop returns; count by screen position; dash workshop at the low end of the F1 window). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (all 3 prior blockers fixed; prior open recommendations on rule 1 screen multiples, no-backward states and lore status addressed or superseded)
+Findings:
+- [BLOCKING] Formulas (F3b, F8) / Core Rules 1-2: no minimum room footprint; Saggar Rows (1x2) double-jump gate and Ropewalk Stair (1x3) grapple gap cannot meet F8 or F3b in 480 px (fixed: rule 26, F9; rooms to be widened in the layout, Open Question 18)
+- [BLOCKING] Detailed Design (rule 15) / Acceptance Criteria: "arena within one room of a shortcut back to that save" is ambiguous and the draft layout fails the literal reading (S1 returns to N2, S3 to N4) (fixed: save near, loop returns)
+- [BLOCKING] Formulas (F4): excluding both save rooms counts a multi-screen save room as 0; N2 to N3 is counted 2 but walks up to about 8 (fixed: count by screen position)
+- [RECOMMENDED] Detailed Design (rule 9): "3 rooms" counted in rooms or steps (fixed: graph edges)
+- [RECOMMENDED] Dependencies: Combat (pogo, `hittable`) missing; Enemies soft but F7 needs spawn and patrol bounds (fixed; systems index updated)
+- [RECOMMENDED] Acceptance Criteria: "by any means in the kit" and "never crosses" are [Play] absence claims; "one objective" undefined (fixed: scripted replay, defined criterion)
+- [RECOMMENDED] Detailed Design (rule 11): "smaller instance" meaningless for the dash (17 px window) (fixed: per-key definition)
+- [RECOMMENDED] Detailed Design (rule 10): says boss (a Keeper) but key 1 comes from a mini-boss Keeper (fixed)
+- [RECOMMENDED] Core Rules / Visual-Audio: no_cling candidate (thorn vines, green) collides with the reserved copper-green hue and the Mossy Cavern look (fixed: candidates revised; art bible decides)
+- [RECOMMENDED] Formulas (F6a) / rule 7: which walls carry the wall-cling signature (open: Open Question 19)
+- [RECOMMENDED] Integration doc: Cinder moths in room 5 vs rule 24; check list lacks rules 24-26 (open: Open Question 18, narrative side owns the file)
+- [RECOMMENDED] Systems index: stale "lore not yet provided" (fixed)
+- [RECOMMENDED] Carried over: no consolidated Tuning Knobs or Player Fantasy (advisory); Game Feel targets not acceptance criteria; enemy respawns deferred to the Enemies GDD (open)
+Reviewed-Content-Hash: design/gdd/level-design.md 96e520f7831cb8d5a7032a202e3e6218126009dc
+Reviewed-Content-Hash: design/registry/entities.yaml dfeacb02917f751cb1dfd88cf490c7ec3d8d2d0f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b

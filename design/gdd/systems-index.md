@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (fourth design review 2026-11-18: 3 blockers revised (one wall is a ladder: F6, F8; head height and own faces in F2/F3a; chasm far face in F3b; no_cling surface added); awaiting re-review) | design/gdd/level-design.md | Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (fifth design review 2026-11-18: 3 blockers revised (gate room footprint: rule 26, F9; rule 15 save near, loop returns; F4 counted by screen position); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
@@ -52,7 +52,7 @@ Notes by area (balanced density):
 | 23 | Parallax, lighting and atmosphere (inferred) | Presentation | Vertical Slice | Not Started | — | Terrain pipeline, Camera, Rooms and transitions |
 | 24 | Hit feedback and effects (inferred) | Presentation | MVP | Implemented (no GDD) | — (brief) | Combat, Camera |
 | 25 | Audio (inferred) | Audio | Vertical Slice | Not Started (dash and idle SFX reported missing) | — | Player controller, Combat |
-| 26 | Lore delivery and mentor/hub pact (inferred) | Narrative | Alpha | Not Started (lore not yet provided) | — | Level design, World state, Ability gating |
+| 26 | Lore delivery and mentor/hub pact (inferred) | Narrative | Alpha | Not Started (lore provided 2026-11-18: The Kiln City, in design/narrative/) | — | Level design, World state, Ability gating |
 
 ---
 
@@ -170,7 +170,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 |--------|-----------|-----------------|------------|
 | Terrain pipeline | Technical | Godot 4.7 is HIGH risk (TileMapLayer physics layers, terrain sets); the reference docs may not cover 4.5-4.7 changes | Prototype one painted room before the GDD is final; check `docs/engine-reference/godot/` |
 | Parallax, lighting and atmosphere | Technical | Parallax2D, 2D lights and HDR glow have 4.x pitfalls; smooth camera plus pixel snapping can jitter; Compatibility renderer reduces glow | Prototype early in one room; confirm the editor version supports 4.7-only features |
-| Level design and world layout | Design / Scope | Around 25-35 rooms for the first region; lore has not been provided; exploration must feel natural, not platform-filled | Grey-box every room before art (research rule); use the research metrics; ask for lore before narrative pass |
+| Level design and world layout | Design / Scope | Around 25-35 rooms for the first region; lore provided 2026-11-18 (The Kiln City, in design/narrative/); exploration must feel natural, not platform-filled | Grey-box every room before art (research rule); use the research metrics; ask for lore before narrative pass |
 | Ability gating | Design | Dash-jump (about 165 px) and wall jump leak horizontal and vertical gates; the double-jump gate can be bypassed | Measure in `movement_test_room`, then author gates with those numbers; playtest each gate |
 | Rooms and transitions | Technical | Seamless edge transitions, per-room camera limits and persistence of room state | Build one two-room vertical slice first (story 007) |
 | Elemental palettes and spells | Design | If an element does not change a fight or open a lock it becomes a passive toggle | Define each element's gate material and combat effect before building |
@@ -196,7 +196,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 - [x] Review and approve this systems enumeration (owner, 2026-11-18)
 - [x] Level design GDD drafted (2026-11-18), awaiting `/design-review` in a fresh session
 - [ ] Design the remaining MVP systems in the order above (`/design-system [name]`)
-- [ ] Provide the lore, so level design and the mentor/hub pact can use it
+- [x] Provide the lore, so level design and the mentor/hub pact can use it (done 2026-11-18: The Kiln City, in design/narrative/)
 - [ ] Run `/design-review` on each completed GDD
 - [ ] Run `/gate-check` when the MVP systems are designed (project.stage still says Concept)
 - [ ] Prototype the terrain pipeline and parallax stack in one room (highest technical risk)

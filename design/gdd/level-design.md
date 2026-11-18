@@ -1,6 +1,6 @@
 # Level design and world layout
 
-> **Status**: In Review (fourth `/design-review` 2026-11-18: 3 blockers revised (one wall is a ladder: F6 cling wall and F8 wall launch reach; head height and own faces in F2/F3a; chasm far face and floor in F3b; `no_cling` surface added); awaiting re-review)
+> **Status**: In Review (fifth `/design-review` 2026-11-18: 3 blockers revised (gate room footprint: rule 26 and F9; rule 15 "save near, loop returns"; F4 counted by screen position, not by excluding save rooms); awaiting re-review)
 > **Author**: project owner + Claude
 > **Last Updated**: 2026-11-18
 > **Last Verified**: 2026-11-18
@@ -26,7 +26,7 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 
 **World model**
 
-1. The world is a graph of **rooms**. A room is a whole number of 480x270 screens (1x1 connector, 1x3-4 shaft, 3-4x1 hall, rare set piece up to about 8 screens). Rooms group into **regions**; a region has one identity (palette, enemies, architecture, music), one boss at its apex and at least one save point. **[Rec]**
+1. The world is a graph of **rooms**. A room is a whole number of 480x270 screens, written width x height in screens (1x1 connector, 1x3-4 shaft, 3-4x1 hall, rare set piece up to about 8 screens). Rooms group into **regions**; a region has one identity (palette, enemies, architecture, music), one boss at its apex and at least one save point. **[Rec]**
 2. The full game is **5 regions** **[Owner, 2026-11-18]**. The core build is **one region**, region 1, the Cooling Yards (brief scope; lore in `design/narrative/`), built so the other four can attach at its edges. Its gates for keys region 1 does not give (double jump, grapple) are real and visible. In the core build each leads to a **sealed alcove**: one screen with a reward the player can see but not reach (a pickup or a lore item). The alcove counts as that dead end's secret (rule 19) and as a room with a job (rule 18, secret), and it is filled when its key exists. **[Owner, 2026-11-18]**
 3. Rooms are authored on a grey-box first: collision only, no art, played and approved before any tile or painting is added. **[Sourced]** (Ori's "design approved" gate)
 
@@ -46,7 +46,7 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 
 **One wall is a ladder [Owner, fourth review 2026-11-18].** A wall jump needs only a wall within 3 px (`_wall_jump_direction`), so the Seeker can kick off one wall, steer back and kick again: about 77 px per kick, every 0.4 s, with no limit (**[Calc]**, 60 Hz sim). Once the wall cling is owned, every **plain** face (a solid face not marked `no_cling`) can be climbed to its top. A wall that must stay shut after the wall cling either meets the ceiling or room bound with no opening, or is `no_cling`.
 
-**No-cling surface [Owner, fourth review 2026-11-18].** A face marked `no_cling` cannot be slid on or kicked off. It carries one visual signature that no other surface uses (candidate: the thorn vines of the Mossy Cavern pack; chosen with the art bible). It is how a gate ledge, a chasm or a nearby wall keeps the wall cling from becoming a ladder (F2, F3, F8) without being a thin slab. It needs a controller change (Open Question 16) and is provisional until the Ability gating GDD adopts it.
+**No-cling surface [Owner, fourth review 2026-11-18].** A face marked `no_cling` cannot be slid on or kicked off. It carries one visual signature that no other surface uses (candidates: the thorn vines of the Mossy Cavern pack, or for the kiln city a slick glaze; never copper-green, the wall cling's reserved hue; chosen with the art bible). It is how a gate ledge, a chasm or a nearby wall keeps the wall cling from becoming a ladder (F2, F3, F8) without being a thin slab. It needs a controller change (Open Question 16) and is provisional until the Ability gating GDD adopts it.
 
 **Key-to-region mapping [Owner, confirmed 2026-11-18].** The full game is **5 regions**; the core build is region 1 only (brief). Region 1 gives the dash (its mini-boss, a Keeper, mid-region) and the wall cling (a shrine behind a dash gate); region 2 gives the double jump; region 3's boss (a Keeper) gives the grapple; regions 4 and 5 add no movement key (they remix the four; the bow, spells and grapple-to-enemy come later). Region 1's apex boss sits beyond at least one dash gate and one wall-cling gate, so the core build runs the whole loop (fight, gain a verb, open the world, fight again) twice before its goal. The double-jump and grapple gates are *seen* in region 1 and pay off in later regions (rule 2).
 
@@ -56,16 +56,16 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 **Showing the lock, placing the key**
 
 8. A gate is **seen before its key is found**, at least twice, the first time within the first 10 minutes of play for the dash gate. **[Owner for the principle; counts Rec]**
-9. A key is never found in the same room as its first gate, nor fewer than 3 rooms from it (shortest path through the room graph, ignoring locks), and never in a room that can be reached only by the key itself. **[Owner for "never in front of the gate"; numbers Rec]**
-10. Every key is found by exactly one of the three channels, named by the pickup: boss (a Keeper), shrine / relic pedestal (exploration), or mentor / hub pact (narrative). A pickup does not care which; gating only reads "owned". **[Owner]**
-11. After each key, the next room is a **learning workshop**: a one-room exit that uses the new key on a smaller instance of a lock the player has already seen. The player can always leave again; the workshop is a short test, not a trap. **[Sourced]** (Lost Crown, sandbox escape)
+9. A key is never found in the same room as its first gate, nor fewer than 3 rooms from it (shortest path through the room graph, ignoring locks, counted in room-to-room steps: the path A, B, C, D is 3), and never in a room that can be reached only by the key itself. **[Owner for "never in front of the gate"; numbers Rec]**
+10. Every key is found by exactly one of the three channels, named by the pickup: boss or mini-boss (a Keeper), shrine / relic pedestal (exploration), or mentor / hub pact (narrative). A pickup does not care which; gating only reads "owned". **[Owner]**
+11. After each key, the next room is a **learning workshop**: a one-room exit that uses the new key on a smaller instance of a lock the player has already seen. The player can always leave again; the workshop is a short test, not a trap. **[Sourced]** (Lost Crown, sandbox escape) "Smaller" is measured per key: the wall-cling workshop is a cling wall shorter than the ones already seen; the dash workshop is a gap at the `gap_min` end of the F1 window with a safe floor below and a way back that needs no dash (the window is only about 17 px wide, so a smaller gap could not be seen). **[Owner, fifth review 2026-11-18]**
 12. Soft gates are allowed and not hunted down: a skilled player who gets past a gate early with the current kit is rewarded, as long as the world stays coherent (no soft-lock, no missed boss trigger). **[Sourced]**
 
 **Topology**
 
 13. The first region is a **funnel**: one objective at a time for the first 5-10 rooms, then a fork to two or three directions. Late in the game, openness rises to three or four valid directions. **[Sourced]** (Silksong acts; Team Cherry)
 14. Rooms form **loops**, not trees: every region has at least one shortcut that folds back to a save point (one-way door, breakable wall, lever, lift or drop). Shortcut gates open from the far side first. **[Sourced]** (shortcut folding; Blasphemous found one-use levers overused, so mix breakable walls and doors)
-15. A save point is placed before every boss and mini-boss, and the route from that save to the arena never exceeds `save_spacing_max` screens (F4, starts at 7). The arena is always within one room of a shortcut back to that save. **[Sourced]** (Blasphemous, Ender Lilies)
+15. A save point is placed before every boss and mini-boss, in the room just before its arena (or in an antechamber), so the walk from that save to the arena is one room at most and never exceeds `save_spacing_max` screens (F4, starts at 7). Each arena also has a **loop home**: a shortcut in the arena, or within two rooms past it (rule 11's workshop may sit between), that returns to some save on the main route. It need not return to the pre-arena save. **[Sourced]** (Blasphemous, Ender Lilies) **[Owner, fifth review 2026-11-18: save near, loop returns]**
 16. No more than `save_spacing_max` screens (F4, starts at 7) of travel between two adjacent save points on the main route. **[Sourced]** (Blasphemous)
 
 **Room composition**
@@ -85,6 +85,7 @@ Tags: **[Owner]** = your stated rule; **[Sourced]** = backed by the research (`d
 
 24. **Pogo clearance.** The start kit's pogo (a down attack that hits a `hittable`: launch 260 px/s, about 38 px of rise, air moves refreshed, repeatable) is a free extra jump over anything hittable. No hittable (enemy spawn point or patrol or flight bounds, breakable, target, boss add) may lie inside the **gate volume** of any gate: the gap and the air above it (F1, F3b), the column under the ledge (F2, F3a) or the cling wall (F6a), from the floor up to the earlier kit's reach height plus `pogo_rise` (F7). A column gate's volume is widened by `pogo_clearance_px` on each side; a gap gate's volume ends `hitbox_width` past each lip (F7). A room that breaks this is rebuilt, not logged as a soft gate. Hazards are not pogo targets in the current code (only the `hittable` group is). **[Owner decision 2026-11-18: clearance rule; distance Rec and Calc]**
 25. **Collision and trim.** Terrain is black collision masses with rock or moss trim painted on their edges **[Owner, 2026-11-18]** (the look of the Maaot Brown Cave and Mossy Cavern packs; see Visual/Audio). The collision edge is the line between the black mass and its trim. At every gate (F1-F3, F6) and at every `no_cling` face, the trim may overhang the collision by at most `trim_overhang_max` (starts at 4 px at game scale, **[Rec]**), so a gap or ledge reads at its real size; elsewhere trim is free. All gate figures are measured on collision, never on art. **[Owner for the look; overhang Rec]**
+26. **Gate room footprint.** A room that holds a double-jump or grapple gate is wide enough that no plain wall is a launch face (F8): `room_width` meets F9, unless every plain face within reach is `no_cling` or the ceiling is lower than `target_top - launch_rise`. In practice, at one screen high: a double-jump ledge needs a room 2 or more screens wide, a grapple ledge 2 to 3, and a grapple gap 3. A narrow shaft cannot hold these gates. **[Calc; Owner decision, fifth review 2026-11-18: meet it by widening rooms; `no_cling` stays a tool for particular faces, not the default]**
 
 
 ### States and Transitions
@@ -113,9 +114,10 @@ None of the upstream systems has a GDD yet; the interfaces below are the contrac
 |--------|-----------|--------------|------------------------|
 | Rooms and transitions | In | Room units, exits, doors, per-room camera limits, room graph | Rooms and transitions |
 | Terrain pipeline | In | Collision and tile rules a room is built from; the grey-box to painted path | Terrain pipeline |
-| Ability gating | Both | In: gate types, dimensions and visual signatures. Out: which gate sits where and what key it needs | Gating owns types and visuals; this system owns placement and order and, provisionally, the gate-fit formulas F1-F3, F6 and F8 |
+| Ability gating | Both | In: gate types, dimensions and visual signatures. Out: which gate sits where and what key it needs | Gating owns types and visuals; this system owns placement and order and, provisionally, the gate-fit formulas F1-F3, F6, F8 and F9 |
 | Bosses | In | Boss rooms, defeat flag, what the boss grants | Bosses |
 | Enemies | In | Enemy types and rosters placed in rooms, with spawn points and patrol or flight bounds for the pogo clearance check (rule 24, F7) | Enemies |
+| Combat | In | The pogo (`pogo_speed`, repeatable, air moves refreshed) and the `hittable` group that rule 24 and F7 read | Combat |
 | World state | Both | Out: keys obtained, bosses defeated, shortcuts opened, secrets found. In: reads for gate state | World state |
 | Save points | Out | Save locations and the 7-screen spacing rule | Save points |
 | Grid map | Out | Room graph, exits, unexplored markers | Grid map |
@@ -128,7 +130,7 @@ None of the upstream systems has a GDD yet; the interfaces below are the contrac
 
 All Seeker figures are **[Calc]** from `src/player/player_config.tres` at 60 Hz (the research report, re-simulated in the 2026-11-18 design review). `run_jump_distance` includes coyote time. Every horizontal figure is **centre travel** (how far the Seeker's centre moves), not a gap width: a gap `W` is measured edge to edge, and the 10 px hitbox plus `ledge_nudge` (5 px) let a landing succeed up to `landing_slack` (15 px) beyond the centre travel (F1, F3b). `corner_correction` (6 px) only acts under a low ceiling and is not in any figure. The Seeker's box is 10 x 22 px with its bottom on the feet point (`_apply_hitbox`), and a wall jump starts when any part of the box is within 3 px of a face, so every vertical test uses the **head height** (feet + `hitbox_height`, 22 px), not the feet: at the top of a plain jump the head is at about 81 px. The fourth review (2026-11-18) re-simulated the controller at 60 Hz and reproduced the run-jump (107 + 14 coyote), apex (58.7), dash-jump (164.4), double jump (113.5) and kick (77.6); it found 392.5 for `max_non_grapple_crossing`, so the 399 used below is on the safe side. Re-measure in `movement_test_room` before any gate is built. Margins and spacing values are `data file` knobs, not constants; the Auto checks read the movement figures from `player_config.tres`, not from the constants in this document.
 
-**F1-F3, F6 and F8 are provisional here.** The systems index gives gate dimensions to Ability gating, but that GDD does not exist, so these formulas live in this document until it does. When it is written it adopts them (or amends them with a recorded reason) and this document links to it; neither GDD keeps a second copy.
+**F1-F3, F6, F8 and F9 are provisional here.** The systems index gives gate dimensions to Ability gating, but that GDD does not exist, so these formulas live in this document until it does. When it is written it adopts them (or amends them with a recorded reason) and this document links to it; neither GDD keeps a second copy.
 
 ### F1. Dash gap window
 
@@ -208,17 +210,18 @@ The chain proves a crossing exists with the grapple; it does not make every anch
 
 The save_spacing rule is defined as:
 
-`route_screens(save_a, save_b) <= save_spacing_max` for adjacent saves on the main route. The **main route** is the shortest path through the room graph that collects each key and beats each boss and mini-boss in key order. A room of more than one screen counts as all of its screens; the two save rooms and the boss or mini-boss arena are not counted.
+`route_screens(save_a, save_b) <= save_spacing_max` for adjacent saves on the main route. The **main route** is the shortest path through the room graph that collects each key and beats each boss and mini-boss in key order. `route_screens` is counted **by screen position**: the screens walked after `save_a`'s own screen to the exit of its room on the route, plus every screen of each room between the two saves (a room of more than one screen counts as all of its screens), plus the screens from the entrance of `save_b`'s room up to, not including, `save_b`'s own screen. A save's own screen is never counted, and a boss or mini-boss arena is not counted. A save at the far end of a multi-screen room therefore counts that whole room. (The fifth review found the earlier rule, which dropped both save rooms, understated the walk by up to 4 screens.)
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| route_screens | int | 1 to save_spacing_max | calculated from the room graph | Screens on the main route between two saves |
+| route_screens | int | 0 to save_spacing_max | calculated from the room graph | Screens walked on the main route between two saves, by screen position |
+| save_screen | int | 1 to the room's screen count | data file (room data) | Index of the save's own screen along the route through its room |
 | save_spacing_max | int | 5-10 | data file | Upper bound; starts at 7 (Blasphemous), tuned in playtest |
 
 **Output Range:** at most 7 screens. A 480 px screen crosses in about 3.4 s at 140 px/s, so 7 screens is about 24 s of pure running and roughly 2-4 minutes with fights and platforming.
-**Example:** save, 2-screen hall, 1x3 shaft, 1-screen combat room, 1-screen boss antechamber, boss arena (not counted): 7 screens, valid.
-**Edge:** 0 is undefined; oversized rooms count by screen, not as one.
+**Example:** a save in a 1-screen room, a 2-screen hall, a 1x3 shaft, a 1-screen combat room, a 1-screen boss antechamber, boss arena (not counted): 7 screens, valid. Region 1's draft layout, assuming each save sits at the room end the draft names: N2 to N3 is 2 (the rest of the Yard Gate) + 2 (Saggar Rows) + 2 (Cinder Stair up to its top save screen) = 6; N3 to N4 is 2 (the Hot Lane up to its end save); N4 to N5 is 3 + 4 = 7. All valid, the last with no spare screen.
+**Edge:** 0 is valid (saves on adjacent screens); oversized rooms count by screen, not as one; a save at the far end of a room counts the whole room.
 
 ### F5. Flow speed-up
 
@@ -302,6 +305,29 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 **Example:** a 100 px double-jump ledge with a plain cave wall 180 px away that rises to the ceiling is rejected; the same wall with `no_cling` thorn vines, or 260 px away under a ceiling 40 px above the ledge, passes.
 **Edge:** the start kit has no wall cling, so F8 never applies to F1 or F6. A face that cannot be reached at all with the kit is still counted (conservative); the Auto check may drop it only with a reachability test.
 
+### F9. Gate room footprint
+
+The gate_room_width rule (rule 26) is defined as:
+
+`room_width >= span + 2 x (wall_reach(kit, dh_wall) + landing_slack)`, unless every plain face within that reach is `no_cling` or the ceiling is lower than `target_top - launch_rise` (then F8 finds no launch face). It puts a plain wall, which rises to the ceiling, far enough from the gate on both sides that F8 finds no launch face. `dh_wall = room_height - target_top` is the F8 `dh` of such a wall; `wall_reach` is read from the F8 table and extrapolated beyond `dh` 300 at about 0.3 px per px (re-measure). The take-off side of a grapple gap needs less than this, but the rule keeps both sides equal and conservative.
+
+**Variables:**
+| Variable | Type | Range | Source | Description |
+|----------|------|-------|--------|-------------|
+| span | float (px) | data file (room data) | the ledge's width (F2, F3a) or the gap's width (F3b) | Width of the gate between its two edges |
+| room_height | float (px) | 270 or more, whole screens | data file (room data) | Height to the ceiling |
+| dh_wall | float (px) | 0 or more | calculated | `room_height - target_top` for a wall that rises to the ceiling; F3b's target is the far lip at floor level (`target_top` 0) |
+| wall_reach | float (px) | see F8 | calculated from player_config | F8 table value for the kit (keys 1-2 for F2, keys 1-3 for F3) at `dh_wall` |
+| landing_slack | float (px) | 15 | calculated | From F1 |
+| room_width | float (px) | whole screens | data file (room data) | Width of the room |
+
+**Output Range (plain walls to the ceiling, 1 screen high, 270 px):**
+- F2 double-jump ledge, top 72-108: `dh_wall` 162-198, `wall_reach` about 278-288, so each side needs about 293-303 px: `room_width >= span + about 606`. A room 2 screens wide (960) holds a ledge up to about 350 px wide. In a room 2 screens high (540) `dh_wall` is up to about 470 and each side needs about 375 px: 2 screens wide holds a ledge up to about 210 px wide.
+- F3a grapple ledge, top 160: `dh_wall` 110, `wall_reach` about 364, so each side needs about 379 px: `room_width >= span + about 758`. 2 screens wide holds a ledge up to about 200 px wide; wider or taller rooms need 3.
+- F3b grapple gap, 440 px: `dh_wall` 270, `wall_reach` about 411, so each side needs about 426 px: `room_width >= 440 + about 852`, about 1,290: 3 screens wide (1,440).
+**Example:** Saggar Rows (1x2, 480 px wide) with a double-jump gate and plain saggar columns to the ceiling needs `room_width >= span + about 750`; it is rejected, and at 2x2 (960) it holds a ledge up to about 210 px wide. Ropewalk Stair (1x3, 480 px wide) with a 440 px grapple gap is rejected (needs about 1,290); at 3x3 it passes.
+**Edge:** a room that holds no double-jump or grapple gate is exempt. A room whose near walls are all `no_cling` is exempt for those walls only, not for the others. The wall cling is not owned before key 2, so F1 and F6 gate rooms never need F9.
+
 **Feedback loops:** keys make old rooms faster, which makes revisiting cheaper and encourages exploring; intended, bounded by shortcuts (enemy respawn rules belong to the Enemies GDD, not yet written). A later key leaking into an earlier gate (double jump over a dash gap) is also intended.
 
 **Registry candidates (not owned here):** run_jump_distance, dash_jump_distance, double_jump_total, jump_apex, hitbox_height, kick_rise, wall_reach belong in the movement GDD when it exists.
@@ -325,9 +351,10 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 - **If a room has no job (rule 18) or a dead end has no secret (rule 19)**: it is cut at the grey-box review, not shipped.
 - **If a double-jump or grapple ledge fails the cling test** (F2, F3a: a plain underside below the head height, or a launch face within `wall_reach`, F8): the wall cling is owned by then, so the gate leaks. The faces involved become `no_cling`, the slab is thinned, or the wall is moved or capped by the ceiling.
 - **If a grapple chasm has a deep plain far face or a floor** (F3b): the player catches the far face on the way down, or walks the floor, and kicks up. The far face becomes `no_cling` or at most `far_face_max` deep, and the floor becomes a hazard or kill plane.
+- **If a double-jump or grapple gate sits in a room narrower than F9 requires** (a shaft 1 screen wide, for example): the plain walls are launch faces and the gate leaks. The room is widened (rule 26); a wall is made `no_cling` or capped only for a particular face, not to fit a narrow room.
 - **If painted trim hides a gate's real edge** (rule 25): the trim is cut back to `trim_overhang_max` at the gate; the collision is never moved to fit the art.
 - **If the player owns all four keys and a route's speedup is below the minimum** (F5): the route is redesigned or marked as not part of the key's two-route promise; it is not left as a tiresome back-track.
-- **If save spacing would exceed `save_spacing_max` screens on the main route** (F4): add a save or a shortcut. The rule never counts rooms of more than one screen as one.
+- **If save spacing would exceed `save_spacing_max` screens on the main route** (F4, counted by screen position): add a save or move one. The rule never counts rooms of more than one screen as one, and a save at the far end of a room counts that whole room.
 - **If a mini-boss or boss room locks behind the player**: the player always has a way out by winning or dying; a locked arena never traps without a respawn.
 - **If a player reaches a sealed alcove in the core build** (rule 2): the reward stays visible and unreachable; nothing breaks, and the alcove is listed as a secret, not as Found, until its key exists.
 - **If the tutorial foe is skipped or the player dies to it** (rule 20): it never respawns once beaten; if the player dies before beating it, it is back on respawn, and the path past it stays open either way.
@@ -344,7 +371,8 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 | Ability gating | Hard | Gate types, dimensions and visual signatures; the "owned" read; the `no_cling` surface's signature | No (code exists: `PlayerState`, `AbilityGate`, `AbilityPickup`; needs dash and wall cling flags) |
 | World state | Hard | Records of keys, boss defeats, shortcuts and secrets | No (provisional) |
 | Bosses | Hard | Boss rooms, the defeat flag, the reward source | No (code exists: `Boss`, `boss_arena`) |
-| Enemies | Soft | Enemy types to place in rooms | No (code exists: three types) |
+| Enemies | Hard for the F7 check, soft otherwise | Enemy types to place in rooms; spawn points and patrol or flight bounds, which the F7 [Auto] check reads | No (code exists: three types) |
+| Combat | Hard | The pogo (`pogo_speed` in `attack_data.tres`) and the `hittable` group: a change to either changes every gate volume (rule 24, F7) | No (code exists) |
 | Player controller | Hard | Movement values behind F1-F3 and F5-F8, and the pogo (`player_config.tres`, `attack_data.tres`): a change to gravity, jump, dash or wall-jump speed silently changes every gate, so the Auto checks read the figures from the config. Also the `no_cling` check (no wall slide or wall jump on a `no_cling` face) | No (code exists; `no_cling` not built) |
 
 **Downstream (these need this system):**
@@ -358,7 +386,7 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 | Lore delivery and mentor/hub pact | Soft | Where the mentor hub and lore sit |
 | Elemental palette power-ups | Soft | Gate materials per element |
 
-**Bidirectional check:** none of the other GDDs exists, so each needs a matching entry when it is designed. Ability gating and level design are circular by design (see the systems index); the contract is: gating owns gate types and visuals, level design owns placement and order, and F1-F3, F6 and F8 (gate-fit formulas) sit in this GDD as provisional until the gating GDD adopts them (see the note under Formulas).
+**Bidirectional check:** none of the other GDDs exists, so each needs a matching entry when it is designed. Ability gating and level design are circular by design (see the systems index); the contract is: gating owns gate types and visuals, level design owns placement and order, and F1-F3, F6, F8 and F9 (gate-fit formulas) sit in this GDD as provisional until the gating GDD adopts them (see the note under Formulas).
 
 
 ## Visual/Audio Requirements
@@ -369,7 +397,7 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 - **Region identity:** each region reads as a distinct place by palette, architecture, enemies and music, so the player always knows where they are. **[Sourced]** (Silksong: architecture tells you where you are)
 - **Readability:** play-layer collision edges are the brightest values in a room and the room reads in greyscale; backgrounds and foreground framing never imitate a platform or a gate. **[Sourced]** (Saltsman)
 - **Terrain look [Owner, 2026-11-18]:** solid terrain is black collision masses with rock or moss trim painted on their edges, over fogged, softer parallax layers (the example scenes of the Maaot Brown Cave and Mossy Cavern packs, kept locally in `assets/third_party/`, not in git). The black mass is the grey-box (rule 3), so an approved grey-box keeps its shape when it is painted. Trim obeys rule 25 at gates. The packs are painted at 512-1024 px per tile and the game renders at 480 x 270 with nearest filtering, so the art bible must settle the scale and filtering, and how the pixel-art Seeker sits on painted terrain, before any room is painted.
-- **No-cling signature:** a `no_cling` face shows its material (candidate: thorn vines) over its whole height, so the player can tell from across a room which walls will not hold them.
+- **No-cling signature:** a `no_cling` face shows its material (candidates: thorn vines, or slick glaze for the kiln city; not copper-green) over its whole height, so the player can tell from across a room which walls will not hold them.
 - **Quiet transitions:** a beaten boss, an opened shortcut and a granted key change the world through animation, sound and light only; no banner or "cleared" screen (rule 21).
 - **Audio:** each region has its own music and ambience; a gate you cannot yet open has a small audio tell when first approached; a key pickup has a clear, short cue; a shortcut opening has a distinct sound.
 
@@ -417,23 +445,23 @@ Types: **[Auto]** automated test on room data or the room graph; **[Play]** play
 
 **Start state and keys**
 - **GIVEN** a new game, **WHEN** the Seeker loads in the first room, **THEN** the player owns run, jump, the full sword set, crouch and doors, and owns none of dash, wall cling, double jump, grapple, bow or spells. **[Auto]** (rule 4, 6)
-- **GIVEN** the start kit only, **WHEN** a tester tries every dash gap, cling wall, climb wall, double-jump ledge and grapple target in the region by any means in the kit (pogo off any hittable included), **THEN** each one is blocked, except those logged as deliberate soft gates. **[Play]** (rule 5, 12)
+- **GIVEN** the start kit only, **WHEN** a tester tries every dash gap, cling wall, climb wall, double-jump ledge and grapple target in the region by any means in the kit (pogo off any hittable included), **THEN** each one is blocked, except those logged as deliberate soft gates. **[Auto]** as a scripted input replay in `movement_test_room` (best-timing start-kit inputs, pogo off every hittable in reach, 30 attempts per gate, 0 crossings: a hand test cannot prove an absence), plus a 20-minute **[Play]** pass for what the script does not try (rule 5, 12)
 - **GIVEN** each key in turn, **WHEN** it is collected, **THEN** the gate matching its signature becomes passable, and no gate of another key's signature changes. **[Auto]** (rule 7)
 - **GIVEN** the key table, **WHEN** the map is read, **THEN** each key's pickup names exactly one channel (boss, shrine or mentor). **[Auto]** (rule 10)
 
 **Showing the lock, placing the key**
 - **GIVEN** a new game, **WHEN** a tester plays the first 10 minutes without a guide, **THEN** at least one dash gap has been on screen and the tester can say where it is. **[Play]** (rule 8)
 - **GIVEN** the room graph, **WHEN** each gate type whose key is found in the built region (core build: dash and wall cling) is counted along the main route before its key's pickup room, **THEN** at least two rooms show that gate type, and the first dash gate lies within the funnel's rooms. **[Auto]** (rule 8)
-- **GIVEN** the room graph, **WHEN** the shortest path from each key's first gate room to its pickup room is measured ignoring locks (core build: dash and wall cling), **THEN** it is 3 rooms or more, and at least one path to the pickup room crosses no gate of that key. **[Auto]** (rule 9)
-- **GIVEN** a key was just collected (core build: dash and wall cling), **WHEN** the player leaves the pickup room, **THEN** the next room is a workshop of 1-2 screens that contains one lock of that key's type, and the player can walk back out of it without the key. **[Play]** (rule 11)
+- **GIVEN** the room graph, **WHEN** the shortest path from each key's first gate room to its pickup room is measured ignoring locks (core build: dash and wall cling), **THEN** it is 3 or more room-to-room steps (graph edges), and at least one path to the pickup room crosses no gate of that key. **[Auto]** (rule 9)
+- **GIVEN** a key was just collected (core build: dash and wall cling), **WHEN** the player leaves the pickup room, **THEN** the next room is a workshop of 1-2 screens that contains one lock of that key's type, and the player can walk back out of it without the key; the dash workshop's gap is at the `gap_min` end of the F1 window with a safe floor below, and the wall-cling workshop's wall is shorter than every cling wall seen before it. **[Auto + Play]** **[Play]** (rule 11)
 
 **Topology**
 - **GIVEN** the first region, **WHEN** its room graph is built, **THEN** it contains at least one loop and at least one shortcut that returns to a save point, and no room is reachable only by a path that cannot be left again. **[Auto]** (rules 14, edge case "return path")
-- **GIVEN** the main route, **WHEN** screens between each pair of adjacent saves are counted, **THEN** none exceeds `save_spacing_max` (7), and a save exists before every boss and mini-boss. **[Auto]** (F4, rules 15, 16)
-- **GIVEN** each boss and mini-boss arena, **WHEN** the room graph is read, **THEN** a shortcut back to the save before it exists within one room of the arena. **[Auto]** (rule 15)
+- **GIVEN** the main route, **WHEN** screens walked between each pair of adjacent saves are counted by screen position (F4), **THEN** none exceeds `save_spacing_max` (7), a save at the far end of a multi-screen room counts that whole room, and a save exists before every boss and mini-boss. **[Auto]** (F4, rules 15, 16)
+- **GIVEN** each boss and mini-boss arena, **WHEN** the room graph is read, **THEN** the save before it lies in the room just before the arena or its antechamber, and a loop home exists: a shortcut in the arena or within two rooms past it that returns to some save on the main route. **[Auto]** (rule 15)
 - **GIVEN** region 1 in the core build, **WHEN** every double-jump and grapple gate is followed, **THEN** each leads to a one-screen sealed alcove with a visible reward, and no such gate leads anywhere else. **[Auto + Shot]** (rule 2)
 - **GIVEN** region 1, **WHEN** the main route is read, **THEN** the dash pickup lies before the apex boss, and the apex boss arena lies beyond at least one dash gate and one wall-cling gate. **[Auto]** (key mapping)
-- **GIVEN** a region at its first visit, **WHEN** the player is in the first 5-10 rooms, **THEN** only one objective is open; afterwards at least two directions are open. **[Play]** (rule 13)
+- **GIVEN** a region at its first visit, **WHEN** the room graph is read, ignoring secrets and gated dead ends, **THEN** each of the first 5-10 rooms has exactly one unvisited exit to a new room on the critical path, and from the fork on at least two. **[Auto]** A tester asked "where would you go next?" in rooms 1-6 names that exit. **[Play]** (rule 13)
 
 **Formulas**
 - **GIVEN** a dash gap of edge-to-edge width W, **WHEN** the room data is checked, **THEN** `gap_min <= W <= gap_max` with the reaches computed from `player_config.tres` (at margin 8: 145 to 162); a gap at `gap_min - 1` is rejected, a gap at `gap_max + 1` is rejected, and a 137 px gap (the widest a coyote run-jump can land) is rejected. **[Auto]** (F1, boundary)
@@ -442,9 +470,10 @@ Types: **[Auto]** automated test on room data or the room graph; **[Play]** play
 - **GIVEN** a grapple gap (F3b), **WHEN** checked, **THEN** `gap_width >= max_non_grapple_crossing + far_face_extra + landing_slack + grapple_margin`, every hop (take-off, anchors, far floor) is at most `grapple_range`, the far face is `no_cling` or plain for at most `far_face_max` (16 px), the gap has a hazard or kill plane below with no standing spot or plain face in its span, and no plain face is a launch face for the far lip; a 414 px gap is rejected, a chain with one 210 px hop is rejected, a 430 px gap with a 60 px plain far face is rejected, and a gap with a walkable floor below is rejected. **[Auto]** (F3b, F8, boundary)
 - **GIVEN** a cling wall (F6a) or climb wall (F6b), **WHEN** checked, **THEN** `wall_height >= ledge_min`, the face has no standing spot on it, and a climb wall is `climbable`-marked; a 60 px wall and a wall with a standing spot 50 px up are each rejected, and a single 200 px plain face passes. **[Auto]** (F6, boundary)
 - **GIVEN** every gate in a room, **WHEN** the room data is checked, **THEN** no hittable (enemy spawn, patrol or flight bounds, breakable, target) lies inside its gate volume (F7); a breakable 100 px from a double-jump ledge's column is rejected at `pogo_clearance_px` 120 and one 130 px away passes; a patrol bound 20 px behind a dash gap's near edge passes, and flight bounds over the gap are rejected. **[Auto]** (rule 24, F7, boundary)
+- **GIVEN** each room that holds a double-jump or grapple gate with plain walls, **WHEN** the room data is checked, **THEN** `room_width >= span + 2 x (wall_reach + landing_slack)` (F9, with `wall_reach` read from the F8 table for the kit and `dh_wall`); a 480 px wide room with a double-jump ledge 100 px wide is rejected, a 960 px wide room 1 screen high with a ledge up to about 350 px wide passes, and a 440 px grapple gap in a room under about 1,290 px wide is rejected. **[Auto]** (rule 26, F9, boundary)
 - **GIVEN** a wall that must stay shut after the wall cling (Core Rules), **WHEN** the room data is checked, **THEN** it meets the ceiling or room bound with no opening, or it is `no_cling`. **[Auto]** (Core Rules, one wall is a ladder)
 - **GIVEN** the wall cling owned and a `no_cling` face, **WHEN** the Seeker presses into it and presses jump, **THEN** no wall slide and no wall jump starts; against a plain face both do. **[Auto]** (controller unit test; Core Rules, no-cling surface; needs the story in Open Question 16)
-- **GIVEN** the movement values in `player_config.tres`, **WHEN** the Seeker attempts F1-F3 and F6 gates in `movement_test_room`, **THEN** a perfect run-jump (centre at the edge, full hitbox overlap, nudge) never crosses a dash gap, a plain jump never touches a double-jump ledge, its plain underside or the top of a cling wall, the double jump never reaches a grapple ledge, dash, double jump and air dash together never cross a grapple gap, and a kick off a plain wall farther than `wall_reach` never reaches its target; and with the wall cling a single plain wall can be climbed by repeated kicks. **[Play]** (re-measure the [Calc] figures: `landing_slack`, `max_non_grapple_crossing`, `kick_rise`, `wall_reach`, `far_face_extra`, `pogo_carry`)
+- **GIVEN** the movement values in `player_config.tres`, **WHEN** the Seeker attempts F1-F3 and F6 gates in `movement_test_room`, **THEN** a perfect run-jump (centre at the edge, full hitbox overlap, nudge) never crosses a dash gap, a plain jump never touches a double-jump ledge, its plain underside or the top of a cling wall, the double jump never reaches a grapple ledge, dash, double jump and air dash together never cross a grapple gap, and a kick off a plain wall farther than `wall_reach` never reaches its target; and with the wall cling a single plain wall can be climbed by repeated kicks. **[Auto]** as a scripted input replay in `movement_test_room` (best-timing inputs, 30 attempts per gate, 0 crossings), plus a 20-minute **[Play]** pass for what the script does not try (re-measure the [Calc] figures: `landing_slack`, `max_non_grapple_crossing`, `kick_rise`, `wall_reach`, `far_face_extra`, `pogo_carry`)
 - **GIVEN** each gate and `no_cling` face, **WHEN** the painted room is captured with the collision overlay on, **THEN** the trim overhangs the collision edge by at most `trim_overhang_max` (4 px). **[Shot]** (rule 25)
 - **GIVEN** a key and its changed rooms (rule 22), **WHEN** each faster route is timed with and without the key, **THEN** `speedup >= speedup_min` (0.3), and a route with speedup below 0 is flagged; each newly opened route is passable with the key and impassable without it; and at least one changed room is one the player skipped or could not finish. **[Auto]** for the newly opened checks on the room graph, **[Play]** for the timing (F5, rule 22)
 
@@ -483,3 +512,5 @@ Owner is the project owner unless stated. No dates are set; each has a target st
 15. **Measure the simulated figures.** `landing_slack` (15), `max_non_grapple_crossing` (399; the fourth review's sim found 392.5), `kick_rise` (78) and `kick_cycle` (0.4 s), `wall_reach` (F8 table), `launch_rise` (78 and 132), `far_face_extra` (7), `pogo_rise` (38), `pogo_carry` (96-105) and `pogo_clearance_px` (120) are simulated or recommended, not measured in the engine. Target: `movement_test_room`, before the first gate is built.
 16. **The `no_cling` surface.** Decided by the owner (fourth review, 2026-11-18): a face marked `no_cling` cannot be slid on or kicked off. Needs a controller change (skip the wall slide and `_wall_jump_direction` when the touched face is `no_cling`, for example by a physics layer or group), a unit test, and its visual signature from the art bible (candidate: thorn vines). Target: the story that adds the dash and wall cling flags (Open Question 12), before any double-jump or grapple gate is built.
 17. **Art scale and filtering.** The chosen look (black masses with painted trim, rule 25) comes from packs painted at 512-1024 px per tile; the game renders at 480 x 270 with nearest filtering and integer scaling. Decide the tile size at game scale, the filtering for painted textures, and whether the pixel-art Seeker fits on painted terrain, with one test room. Target: `/art-bible`, before any room is painted.
+18. **Region 1's draft layout vs the fifth-review rules.** `design/narrative/kiln-city-level-integration.md` (draft, awaiting owner approval; the narrative side owns it, this GDD does not edit it) needs: Saggar Rows (room 4) widened to at least 2 screens wide and Ropewalk Stair (room 9) to at least 3 wide (rule 26, F9; owner decision: widen); its check list extended with rules 24-26, in particular the Cinder moths in room 5, whose flight bounds must stay out of that room's two gate volumes (F7); and its saves and shortcuts read by the new rules (loop homes S1 and S3, spacing 6, 2 and 7 screens by position, assuming each save sits at the room end the draft names). Target: before the grey-box of rooms 4 and 9.
+19. **Which walls carry the wall-cling signature.** F6a makes any plain face of 72 px or more a cling gate, while the lore marks cling gates with copper-green finger-drag grooves. Decide whether every cling and climb gate carries the signature or only `climbable` surfaces do, so rule 7 and rule 8's "seen twice" count the same walls. Target: `/art-bible`, with Open Question 6.
