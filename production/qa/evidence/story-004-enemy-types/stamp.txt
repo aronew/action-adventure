@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 82af3471a06d2d85120f006955d9ceeb0d6c9ff7
+Reviewed-Content-Hash: src/enemies/enemy_config.gd fd4325f4af470b4be517eb14024f606d2bec4fb6
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres 084b19417a64ddbd3c5498cfcabbf4e429839bd6
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres 43e3ab36f197ffdbfb4a37538d5bc3d9e819d42b
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres ff5fd5d2e2e6a0fe81f8057792ebfec64eadf948
+Reviewed-Content-Hash: src/player/player_health.gd 1b3845a8d619de08ff3041f78baa21f1a657b0bd
+Reviewed-Content-Hash: src/player/player.gd 601d0cab2a304bc1648cf9fa01f7a1830e377725
+Reviewed-Content-Hash: src/test_rooms/enemy_test_room.gd cfcc0c656211b243020f6e57021cfbbad66e9df2
