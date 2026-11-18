@@ -1,13 +1,13 @@
 # Story 006: Double jump and grapple found in the world
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: M
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-18
 
 ## Context
 
@@ -29,12 +29,12 @@
 
 *From `design/game-brief.md` (Features item 6, Core loop, Hooks):*
 
-- [ ] The player starts without double jump and grapple; owning each is a flag in a player-state resource, not a scene-local variable.
+- [ ] In the gate test rooms the player starts without double jump and grapple; owning each is a flag in a player-state resource, not a scene-local variable. The movement room, enemy room and boss arena keep both unlocked for testing (user's choice, 2026-11-18); story 007 sets the real starting state.
 - [ ] A pickup in the world grants each ability once and the flag persists (the save system stores it in story 007).
 - [ ] Without double jump, the input does nothing (no animation, no dust); with it, story 001's double jump works.
 - [ ] A gate for each ability blocks a route until the ability is owned: a gap too wide for a single jump, and a ledge reachable only by grapple.
 - [ ] No soft-lock: each gate area can be left again whatever the player owns.
-- [ ] Each ability adds one combat option *(guessed)*: a second air attack after the double jump; the grapple pulls the player to a guard-broken enemy.
+- ~~Each ability adds one combat option~~ — left out for now at the user's choice (2026-11-18): the abilities only open routes.
 - [ ] Verified in two or three connected test rooms.
 
 ---
