@@ -10,18 +10,17 @@
 ## and restarts the fight. That reload stands in for the real respawn at a save point
 ## (story 007), the same stand-in the enemy test room uses.
 ##
-## Beating the boss waits for its death animation, then sets [member region_complete], emits
-## [signal region_completed] and shows the completion screen ([RegionComplete]), which
-## restarts the arena on a key press. More regions are out of scope for the project.
+## Beating the boss sets [member is_boss_defeated] and emits [signal boss_defeated]; play
+## simply goes on (no completion screen: the user's call, it is a metroidvania). Saves and
+## gates in story 007 read the flag. More regions are out of scope for the project.
 class_name BossArena
 extends Node2D
 
-## Emitted once, after the boss's death animation, when the region is complete.
-signal region_completed
+## Emitted once, when the boss dies.
+signal boss_defeated
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
 const BOSS_CONFIG := preload("res://src/enemies/boss/boss_config.tres")
-const REGION_COMPLETE_SCENE := preload("res://src/ui/region_complete.tscn")
 ## Feet point of the player's spawn and of the boss.
 const SPAWN_POINT := Vector2(48, 224)
 const BOSS_SPAWN := Vector2(820, 224)
@@ -62,8 +61,8 @@ const SOLIDS: Array[Rect2] = [
 	Rect2(960, 0, 16, 270),        # right wall
 ]
 
-## True once the boss is beaten and its death animation has played (read only).
-var region_complete := false
+## True once the boss is beaten (read only).
+var is_boss_defeated := false
 
 var _player: Player
 var _boss: Boss
@@ -174,22 +173,16 @@ func _on_player_damaged(_amount: float, health_left: float) -> void:
 
 
 ## Stand-in for the respawn (story 007): reload the arena, which resets the boss and the
-## fight. Not after the region is complete: the completion screen restarts it instead.
+## fight.
 func _on_player_died() -> void:
 	_player_status.text = DIED_TEXT
 	await get_tree().create_timer(RELOAD_DELAY).timeout
-	if region_complete:
-		return
 	get_tree().reload_current_scene()
 
 
-## Waits out the death animation (the topple, then the fade), then completes the region.
-func _on_boss_died(boss: EnemyBase) -> void:
-	var animation_time := EnemyBase.DEATH_TOPPLE_TIME + boss.config.death_time
-	await get_tree().create_timer(animation_time).timeout
-	region_complete = true
-	region_completed.emit()
-	add_child(REGION_COMPLETE_SCENE.instantiate())
+func _on_boss_died(_boss: EnemyBase) -> void:
+	is_boss_defeated = true
+	boss_defeated.emit()
 
 
 func _add_solid(rect: Rect2) -> void:

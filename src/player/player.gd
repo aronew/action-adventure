@@ -3,6 +3,11 @@
 ## takes hits from enemies ([method take_hit]): Hurt or HurtKnockback, a blinking
 ## invulnerability window, and Death at zero health (story 004).
 ##
+## The double jump and the grapple are gated by [member player_state] (story 006):
+## without the double jump an air jump does nothing (the air-jump count stays at zero,
+## so neither a plain air jump nor a dash-jump in the air starts); without the grapple
+## the grapple input does nothing. Every other move is always available.
+##
 ## Every gameplay value comes from [member config]. Animation timings and feet
 ## points come from seeker_animations.json; SpriteFrames are built at runtime from
 ## the sheets of [member palette]. The node origin is the feet point.
@@ -62,6 +67,10 @@ const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 ## Palette folder and file-name part of the sheets (Void, Ember, Frost, Bone, Dream).
 ## Read once in _ready.
 @export var palette: StringName = &"Bone"
+## Abilities owned (double jump, grapple), read live. Set it before adding the player to
+## the tree to gate them; left empty, the player makes one that owns both (the movement,
+## enemy and boss rooms rely on this).
+@export var player_state: PlayerState
 
 ## Current controller state (read only).
 var state: State = State.GROUND
@@ -114,6 +123,10 @@ var _blink_time := 0.0
 
 
 func _ready() -> void:
+	if player_state == null:
+		player_state = PlayerState.new()
+		player_state.has_double_jump = true
+		player_state.has_grapple = true
 	PlayerInputBindings.register()
 	health = PlayerHealth.new()
 	health.configure(config.max_health, config.invulnerability_time)
@@ -631,6 +644,8 @@ func _start_enter_door(door: Area2D) -> void:
 
 
 func _try_start_grapple() -> bool:
+	if not player_state.has_grapple:
+		return false
 	var best: Node2D = null
 	var best_distance := config.grapple_range
 	for node in get_tree().get_nodes_in_group(GROUP_GRAPPLE_ANCHOR):
@@ -666,7 +681,8 @@ func _begin_grapple_release(arrived: bool) -> void:
 
 
 ## Jumps out of a grapple pull or release: carries part of the pull velocity, adds an
-## upward kick, and restores the air jump and air dash so moves can be chained.
+## upward kick, and restores the air dash (and the air jump, when the double jump is
+## owned) so moves can be chained.
 func _grapple_jump_out() -> void:
 	var carried := _grapple_direction * config.grapple_speed * config.grapple_jump_keep
 	_set_state(State.AIR)
@@ -729,8 +745,10 @@ func _on_animation_finished() -> void:
 
 # --- Helpers ---------------------------------------------------------------
 
+## Every grant of air jumps goes through here (ground, climb, grapple jump-out, pogo), so
+## without the double jump the count stays 0 and no air jump or air dash-jump can start.
 func _refresh_air_moves() -> void:
-	_air_jumps_left = config.air_jumps
+	_air_jumps_left = config.air_jumps if player_state.has_double_jump else 0
 	_air_dashes_left = config.air_dashes
 
 
