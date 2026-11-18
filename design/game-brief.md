@@ -56,7 +56,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet the tutorial foe, the one guarded enemy that is not a boss or mini-boss: break its guard and land the first finisher. *(guessed; tutorial exception confirmed 2026-11-18, level design rule 20)*
 
 ## Challenge
-A tougher guarded enemy, region 1's mini-boss, mid-region; beating it gives the dash. A loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
+A tougher guarded enemy, region 1's mini-boss (Keeper Tavik, the Hot-Carrier), mid-region; beating it gives the dash. A loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
 
 ## Core loop
 - Fight: wear down a guard, break it, land a finisher.
@@ -64,7 +64,7 @@ A tougher guarded enemy, region 1's mini-boss, mid-region; beating it gives the 
 - Explore: use the ability to reach new rooms, then fight again.
 
 ## Goal & fail state
-- Goal: reach and beat the final boss of the first region. *(guessed)*
+- Goal: reach and beat the final boss of the first region (Brun, the Stacker). *(guessed; boss named 2026-11-18)*
 - Fail: health reaches zero; respawn at the last save point. *(guessed)*
 
 ## Features
