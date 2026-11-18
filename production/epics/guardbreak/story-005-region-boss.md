@@ -1,13 +1,13 @@
 # Story 005: First-region boss fight
 
 > **Epic**: Guardbreak
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: L
 > **Build step**: core
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-18
 
 ## Context
 
@@ -30,7 +30,7 @@
 *From `design/game-brief.md` (Goal & fail state, Hooks, Kill condition):*
 
 - [ ] A boss arena holds one boss with a health bar and a guard meter (story 003), both values in config.
-- [ ] The boss has at least two distinct, telegraphed attack patterns, and its guard-break opens a damage window.
+- [ ] The boss has three distinct, telegraphed attack patterns (user's choice, 2026-11-18): a slow overhead slam and a fast sweeping lunge (melee), and a ranged attack (a projectile or shockwave the player must jump or dash), and its guard-break opens a damage window.
 - [ ] The boss is beatable using only the player's combat set from stories 001-003.
 - [ ] Defeating the boss sets a "region complete" flag and shows a simple completion screen; that is the game's goal.
 - [ ] The player dying in the arena resets the boss and restarts the fight (the respawn point itself comes from story 007).
@@ -56,8 +56,11 @@
 
 ## Files
 
-- `src/enemies/boss/boss.gd`, `src/enemies/boss/boss_config.tres`, `src/enemies/boss/boss_arena.tscn`
-- `src/ui/region_complete.tscn`
+- `src/enemies/boss/boss.gd` (new): Boss extends EnemyBase; three patterns, shockwave, guard
+- `src/enemies/boss/boss_config.gd`, `src/enemies/boss/boss_config.tres` (new): every boss, pattern and guard value
+- `src/enemies/boss/boss_arena.gd`, `src/enemies/boss/boss_arena.tscn` (new): arena, fight trigger, HUD bars, reload on death
+- `src/ui/region_complete.gd`, `src/ui/region_complete.tscn` (new): completion overlay
+- No test file: waived at qa.level minimal
 
 ---
 

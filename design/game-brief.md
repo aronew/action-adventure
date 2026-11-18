@@ -63,7 +63,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 - [x] Movement from the pack: run, dash, double jump, wall slide, climb, crouch, grapple, enter door
 - [x] Melee: 3-hit combo, jump, up and down attacks, heavy attack
 - [x] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
-- [ ] 2–3 enemy types with readable, telegraphed attacks
+- [x] 2–3 enemy types with readable, telegraphed attacks
 - [ ] One boss fight
 - [ ] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
 - [ ] Rooms with doors, save points and a grid map that fills in
