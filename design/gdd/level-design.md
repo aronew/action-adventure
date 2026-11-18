@@ -267,7 +267,43 @@ The flow_speedup formula is defined as:
 
 ## Acceptance Criteria
 
-[To be designed]
+Types: **[Auto]** automated test on room data or the room graph; **[Play]** playtest record; **[Shot]** retained screenshot in `production/qa/evidence/`. At standard rigor, Logic and Integration need a test or a playtest record; Visual and UI need a screenshot. `qa-lead` not consulted: Lean mode; the checks in `references/lens-qa-lead.md` were applied by the author.
+
+**Start state and keys**
+- **GIVEN** a new game, **WHEN** the Seeker loads in the first room, **THEN** the player owns run, jump, the full sword set, crouch and doors, and owns none of dash, wall cling, double jump, grapple, bow or spells. **[Auto]** (rule 4, 6)
+- **GIVEN** the start kit only, **WHEN** a tester tries every dash gap, wall-cling shaft, double-jump ledge and grapple target in the region by any means in the kit, **THEN** each one is blocked, except those logged as deliberate soft gates. **[Play]** (rule 5, 12)
+- **GIVEN** each key in turn, **WHEN** it is collected, **THEN** the gate matching its signature becomes passable, and no gate of another key's signature changes. **[Auto]** (rule 7)
+- **GIVEN** the key table, **WHEN** the map is read, **THEN** each key's pickup names exactly one channel (boss, shrine or mentor). **[Auto]** (rule 10)
+
+**Showing the lock, placing the key**
+- **GIVEN** a new game, **WHEN** a tester plays the first 10 minutes without a guide, **THEN** they pass at least one dash gap they cannot cross and can say where it is. **[Play]** (rule 8)
+- **GIVEN** the room graph, **WHEN** the shortest path from each key's first gate room to its pickup room is measured ignoring locks, **THEN** it is 3 rooms or more, and the pickup room is not entered through its own gate. **[Auto]** (rule 9)
+- **GIVEN** a key was just collected, **WHEN** the player leaves the pickup room, **THEN** the next room is a workshop that uses the key on one smaller lock of a type seen before, and the player can walk back out of it. **[Play]** (rule 11)
+
+**Topology**
+- **GIVEN** the first region, **WHEN** its room graph is built, **THEN** it contains at least one loop and at least one shortcut that returns to a save point, and no room is reachable only by a path that cannot be left again. **[Auto]** (rules 14, edge case "return path")
+- **GIVEN** the main route, **WHEN** screens between each pair of adjacent saves are counted, **THEN** none exceeds `save_spacing_max` (7), and a save exists before every boss. **[Auto]** (F4, rules 15, 16)
+- **GIVEN** each boss room, **WHEN** it is entered from the save before it, **THEN** a shortcut back is within one room of the boss room. **[Auto]** (rule 15)
+- **GIVEN** a region at its first visit, **WHEN** the player is in the first 5-10 rooms, **THEN** only one objective is open; afterwards at least two directions are open. **[Play]** (rule 13)
+
+**Formulas**
+- **GIVEN** a dash gap of width W, **WHEN** the room data is checked, **THEN** `gap_min <= W <= gap_max`; a gap at `gap_min - 1` is rejected, and a gap at `gap_max + 1` is rejected. **[Auto]** (F1, boundary)
+- **GIVEN** a double-jump ledge of height h in open air, **WHEN** checked, **THEN** `ledge_min <= h <= ledge_max`, and no cling surface lies within wall-jump reach. **[Auto]** (F2)
+- **GIVEN** a grapple gate, **WHEN** checked, **THEN** `target_height >= double_jump_total + grapple_margin` and an anchor lies within 200 px of a standing spot; a ledge 120 px up is rejected. **[Auto]** (F3, boundary)
+- **GIVEN** the movement values in `player_config.tres`, **WHEN** the Seeker attempts F1-F3 gates in `movement_test_room`, **THEN** a perfect run-jump never crosses a dash gap, a plain jump never touches a double-jump ledge, and the double jump never reaches a grapple target. **[Play]** (re-measure the [Calc] figures)
+- **GIVEN** a key and its two promised routes, **WHEN** each is timed with and without the key, **THEN** `speedup >= 0.3` on both, and a route with speedup below 0 is flagged. **[Play]** (F5, rule 22)
+
+**Room composition**
+- **GIVEN** each shipped room, **WHEN** the grey-box review is run, **THEN** the room has a named job, no more than 3 free-standing platforms unless it is a platforming room, and a dead end carries a secret. **[Auto + Play]** (rules 17-19)
+- **GIVEN** the region, **WHEN** it is searched, **THEN** exactly one boss and one mini-boss carry a guard meter, and no normal enemy does. **[Auto]** (rule 20)
+- **GIVEN** the boss is defeated, **WHEN** the player leaves the arena, **THEN** no "cleared" banner or screen appears and play continues in the world. **[Shot]** (rule 21)
+
+**Cross-system**
+- **GIVEN** a key collected and the player dying before the next save, **WHEN** the game reloads, **THEN** the key is still owned and its pickup is gone. **[Auto + Play]** (edge case; depends on world state and save points)
+- **GIVEN** the map, **WHEN** a room is visited, **THEN** it appears as a box with exits as lines, unexplored exits marked, and no item locations shown. **[Shot]** (rule 23; depends on the grid map)
+
+**Gaps found by the QA checks:** rules 17 ("a place first") and 13 (funnel then fork) are partly subjective; their criteria are playtest questions, not pass/fail numbers. The dash, wall-cling and double-jump gates cannot be tested until `PlayerState` has dash and wall cling flags (a later story).
+
 
 ## Open Questions
 
