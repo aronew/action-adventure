@@ -79,6 +79,14 @@ const BAR_GAP := 3.0
 const LABEL_WIDTH := 80.0
 const LABEL_FONT_SIZE := 8
 const LEDGE_PROBE := 4.0
+## Pixels the body snaps back from a hit, and how fast it returns (px/s).
+const HIT_RECOIL := 3.0
+const RECOIL_RETURN := 40.0
+## Seconds the dead body takes to fall over.
+const DEATH_TOPPLE_TIME := 0.25
+## Death fragments: seconds they live, and their min and max size multiplier.
+const BURST_LIFETIME := 0.6
+const BURST_PIECE_SIZE := Vector2(1.5, 3.0)
 
 ## Tuning of this enemy type. Set before adding to the tree.
 @export var config: EnemyConfig
@@ -104,6 +112,7 @@ var _patrol_direction := -1.0
 var _patrol_pause_left := 0.0
 var _attack_landed := false
 var _flash_left := 0.0
+var _recoil := 0.0
 var _guard_damage := 0.0
 
 var _visual: Node2D
@@ -186,7 +195,8 @@ func _physics_process(delta: float) -> void:
 			if guard == null or _state_time >= guard.config.stagger_time:
 				_fire(Event.STAGGER_ENDED)
 		State.DEAD:
-			velocity.x = 0.0
+			if is_on_floor():
+				velocity.x = move_toward(velocity.x, 0.0, config.hurt_deceleration * delta)
 	velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
 	move_and_slide()
 	_update_visuals(delta)
@@ -208,7 +218,12 @@ func take_hit(attack: String, damage: float, charged: bool, from_x: float) -> vo
 	health = maxf(health - amount, 0.0)
 	_flash_left = FLASH_TIME
 	damaged.emit(amount, health)
+	var away := signf(global_position.x - from_x)
+	if away == 0.0:
+		away = float(-facing)
+	_recoil = away * HIT_RECOIL
 	if health <= 0.0:
+		velocity = Vector2(away * config.death_knockback_speed, -config.death_lift_speed)
 		_fire(Event.KILLED)
 		return
 	if state == State.STAGGER:
@@ -216,9 +231,10 @@ func take_hit(attack: String, damage: float, charged: bool, from_x: float) -> vo
 	var winding := state == State.TELEGRAPH or state == State.ATTACK
 	if winding and not config.flinch_during_attack:
 		return
-	var away := signf(global_position.x - from_x)
 	_fire(Event.HIT)
 	velocity.x = away * config.hurt_knockback_speed
+	if is_on_floor() and config.hurt_knockback_lift > 0.0:
+		velocity.y = -config.hurt_knockback_lift
 
 
 # --- States ----------------------------------------------------------------
@@ -310,13 +326,52 @@ func _fire(event: Event) -> void:
 	state_changed.emit(previous, state)
 
 
+## The killing blow: a hit-pause, a camera shake, a burst of fragments, and the body
+## launched away (velocity set by [method take_hit]) falling over before it fades.
 func _die() -> void:
 	_hurtbox.set_deferred(&"monitorable", false)
 	_hurtbox.remove_from_group(PlayerCombat.GROUP_HITTABLE)
 	died.emit(self)
+	_hit_stop()
+	var camera := get_viewport().get_camera_2d()
+	if camera is PlayerCamera:
+		(camera as PlayerCamera).request_shake(config.death_shake_size, config.death_shake_time)
+	_burst()
+	var fall_side := signf(velocity.x) if velocity.x != 0.0 else float(-facing)
 	var tween := create_tween()
-	tween.tween_property(_visual, "modulate:a", 0.0, config.death_time)
+	tween.tween_property(_visual, "rotation", fall_side * PI * 0.5, DEATH_TOPPLE_TIME)
+	tween.tween_property(self, "modulate:a", 0.0, config.death_time)
 	tween.tween_callback(queue_free)
+
+
+## Slows the whole game for death_hitstop_time (real seconds), then restores it.
+func _hit_stop() -> void:
+	if config.death_hitstop_time <= 0.0:
+		return
+	Engine.time_scale = config.death_hitstop_scale
+	await get_tree().create_timer(config.death_hitstop_time, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+
+## Fragments in the body's colour flying out of its middle; they outlive the enemy.
+func _burst() -> void:
+	var particles := CPUParticles2D.new()
+	particles.amount = config.death_burst_amount
+	particles.lifetime = BURST_LIFETIME
+	particles.one_shot = true
+	particles.explosiveness = 1.0
+	particles.direction = Vector2.UP
+	particles.spread = 180.0
+	particles.gravity = Vector2(0.0, config.gravity)
+	particles.initial_velocity_min = config.death_burst_speed * 0.5
+	particles.initial_velocity_max = config.death_burst_speed
+	particles.scale_amount_min = BURST_PIECE_SIZE.x
+	particles.scale_amount_max = BURST_PIECE_SIZE.y
+	particles.color = config.body_color
+	get_parent().add_child(particles)
+	particles.global_position = global_position + Vector2(0.0, -config.body_size.y * 0.5)
+	particles.emitting = true
+	get_tree().create_timer(BURST_LIFETIME + 0.2).timeout.connect(particles.queue_free)
 
 
 # --- Helpers ---------------------------------------------------------------
@@ -420,6 +475,8 @@ func _build_visuals() -> void:
 ## Live attack: the reach turns red. Hurt: white. Dead: grey.
 func _update_visuals(delta: float) -> void:
 	_flash_left = maxf(_flash_left - delta, 0.0)
+	_recoil = move_toward(_recoil, 0.0, RECOIL_RETURN * delta)
+	_visual.position.x = _recoil
 	_visual.scale.x = float(facing)
 	_health_fill.size.x = config.body_size.x * health / config.max_health
 	var color := config.body_color

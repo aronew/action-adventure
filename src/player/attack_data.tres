@@ -21,6 +21,7 @@ heavy_ready_flash_color = Color(2.5, 2.5, 2.5, 1)
 pogo_speed = 260.0
 down_attack_max_fall_speed = 220.0
 swing_glide_deceleration = 500.0
+charge_deceleration = 2000.0
 attacks = {
 "attack1": {
 "chain_from": 5,

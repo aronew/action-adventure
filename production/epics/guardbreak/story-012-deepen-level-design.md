@@ -30,6 +30,7 @@
 *Start with `/design-system level-design`: it writes `design/gdd/level-design.md`, which this story's criteria come from.*
 
 - [ ] Level design is built out as `design/gdd/level-design.md` describes.
+- [ ] The first real trouble (a tougher enemy) arrives about a minute in, per the brief's Challenge. *(moved here from story 004 on 2026-11-18)*
 
 ---
 

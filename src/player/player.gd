@@ -378,7 +378,8 @@ func _state_dash(delta: float) -> void:
 
 ## Ground swings and the heavy charge. The player keeps running while swinging (input
 ## steers as on the ground) but facing is locked for the swing (the combo may turn it
-## when chaining). With no input, the swing's forward step glides out at
+## when chaining). While the heavy winds up and charges he is planted: he skids to a
+## stop at charge_deceleration and ignores left/right until the release. With no input, the swing's forward step glides out at
 ## swing_glide_deceleration. Dash, jump and grapple cancel once the attack allows it
 ## ([method PlayerCombat.is_locked]); walking off an edge ends the attack.
 func _state_attack(delta: float) -> void:
@@ -394,8 +395,11 @@ func _state_attack(delta: float) -> void:
 		if _jump_buffer_timer > 0.0:
 			_start_ground_jump()
 			return
-	_steer(delta, config.ground_acceleration, attack_config.swing_glide_deceleration,
-			config.ground_turn_acceleration, config.ground_overspeed_deceleration)
+	if combat.phase == PlayerCombat.Phase.CHARGE:
+		velocity.x = move_toward(velocity.x, 0.0, attack_config.charge_deceleration * delta)
+	else:
+		_steer(delta, config.ground_acceleration, attack_config.swing_glide_deceleration,
+				config.ground_turn_acceleration, config.ground_overspeed_deceleration)
 	velocity.y = config.gravity * delta
 	move_and_slide()
 	if not is_on_floor():
