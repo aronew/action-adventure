@@ -172,3 +172,19 @@ extends Resource
 @export var camera_landing_dip_min_speed: float
 ## How fast the dip recovers (px/s).
 @export var camera_landing_dip_recover_speed: float
+
+@export_group("Health")
+## Health the Seeker starts and respawns with (story 004).
+@export var max_health: float
+## Seconds after a landed hit during which further hits are ignored.
+@export var invulnerability_time: float
+## Seconds of one blink of the sprite while invulnerable (half visible, half faded).
+@export var invulnerability_blink_period: float
+## Opacity of the sprite during the faded half of a blink.
+@export var invulnerability_blink_alpha: float
+## Seconds the player has no control after a hit (the Hurt clip may keep playing after).
+@export var hurt_lock_time: float
+## A hit of at least this much damage plays HurtKnockback instead of Hurt.
+@export var hurt_knockback_damage: float
+## How fast leftover horizontal speed bleeds off while hurt (px/s per second).
+@export var hurt_deceleration: float

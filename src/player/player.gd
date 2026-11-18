@@ -1,5 +1,7 @@
 ## The Seeker player controller: run, jump, double jump, dash, wall slide, climb,
-## crouch, grapple, enter door and melee attacks, animated from the pack's sheets.
+## crouch, grapple, enter door and melee attacks, animated from the pack's sheets. It
+## takes hits from enemies ([method take_hit]): Hurt or HurtKnockback, a blinking
+## invulnerability window, and Death at zero health (story 004).
 ##
 ## Every gameplay value comes from [member config]. Animation timings and feet
 ## points come from seeker_animations.json; SpriteFrames are built at runtime from
@@ -27,10 +29,16 @@ extends CharacterBody2D
 signal door_entered(door: Area2D)
 ## Emitted when the player lands from the air, with the fall speed at impact (px/s).
 signal landed(impact_speed: float)
+## Emitted on every hit that lands, with the damage taken and the health left.
+signal damaged(amount: float, health_left: float)
+## Emitted once the Death animation has played; the player holds its last frame until
+## [method revive] is called. The save system (story 007) respawns from this.
+signal died
 
 ## Controller states.
-## ATTACK is a ground swing or the heavy charge; air attacks play in AIR.
-enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK }
+## ATTACK is a ground swing or the heavy charge; air attacks play in AIR. HURT is the
+## short loss of control after a hit, DEAD lasts until [method revive].
+enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK, HURT, DEAD }
 ## Steps of a grapple: throw (frames 0-2), pull (3-6 looped), release (7).
 enum GrapplePhase { THROW, PULL, RELEASE }
 
@@ -61,6 +69,8 @@ var state: State = State.GROUND
 var facing: int = 1
 ## Melee combat node: its signals report hits and camera shake (read only).
 var combat: PlayerCombat
+## Health and invulnerability (read only). Its values come from [member config].
+var health: PlayerHealth
 
 var _sprite: AnimatedSprite2D
 var _aura: AnimatedSprite2D
@@ -99,10 +109,15 @@ var _grapple_phase := GrapplePhase.THROW
 var _anchor: Node2D
 var _grapple_direction := Vector2.ZERO
 var _door: Area2D
+var _hurt_timer := 0.0
+var _blink_time := 0.0
 
 
 func _ready() -> void:
 	PlayerInputBindings.register()
+	health = PlayerHealth.new()
+	health.configure(config.max_health, config.invulnerability_time)
+	health.damaged.connect(func(amount: float, left: float) -> void: damaged.emit(amount, left))
 	collision_layer = LAYER_PLAYER
 	collision_mask = LAYER_WORLD
 
@@ -180,6 +195,7 @@ func _physics_process(delta: float) -> void:
 	_down_hold_time = _down_hold_time + delta if _vertical > 0.0 else 0.0
 	_wall_jump_lock_timer = maxf(_wall_jump_lock_timer - delta, 0.0)
 	_wall_coyote_timer = maxf(_wall_coyote_timer - delta, 0.0)
+	health.tick(delta)
 
 	match state:
 		State.GROUND:
@@ -200,6 +216,10 @@ func _physics_process(delta: float) -> void:
 			velocity = Vector2.ZERO
 		State.ATTACK:
 			_state_attack(delta)
+		State.HURT:
+			_state_hurt(delta)
+		State.DEAD:
+			_state_dead(delta)
 
 	combat.update(delta)
 	_sprite.scale.x = float(facing)
@@ -209,6 +229,34 @@ func _physics_process(delta: float) -> void:
 ## Leaves the enter-door state and gives control back to the player. Call it after
 ## handling [signal door_entered].
 func resume_from_door() -> void:
+	_set_state(State.GROUND)
+	_play_loop(&"idle")
+
+
+## Takes a hit of [param damage] from something at [param source] (global position).
+## Ignored while invulnerable or dead. A landed hit cancels whatever the player was
+## doing, turns him to face the source and plays Hurt (HurtKnockback for a hit of at
+## least hurt_knockback_damage, whose step back is drawn into the frames); at zero
+## health it plays Death instead. Returns true when the hit landed.
+func take_hit(damage: float, source: Vector2) -> bool:
+	if state == State.DEAD or not health.take_damage(damage):
+		return false
+	var toward := signf(source.x - global_position.x)
+	if toward != 0.0:
+		facing = int(toward)
+	if health.is_depleted():
+		_start_death()
+	else:
+		_start_hurt(damage >= config.hurt_knockback_damage)
+	return true
+
+
+## Brings the player back at [param at] (global position) with full health, standing.
+## The respawn itself, and where, is the save system's (story 007).
+func revive(at: Vector2) -> void:
+	global_position = at
+	velocity = Vector2.ZERO
+	health.reset()
 	_set_state(State.GROUND)
 	_play_loop(&"idle")
 
@@ -354,6 +402,23 @@ func _state_attack(delta: float) -> void:
 		_set_state(State.AIR)
 
 
+## No control for hurt_lock_time; leftover speed bleeds off and gravity still pulls.
+func _state_hurt(delta: float) -> void:
+	_hurt_timer -= delta
+	velocity.x = move_toward(velocity.x, 0.0, config.hurt_deceleration * delta)
+	velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
+	move_and_slide()
+	if _hurt_timer <= 0.0:
+		_set_state(State.GROUND if is_on_floor() else State.AIR)
+
+
+## Falls to the floor and stays; the Death clip holds its last frame.
+func _state_dead(delta: float) -> void:
+	velocity.x = 0.0
+	velocity.y = minf(velocity.y + config.gravity * delta, config.max_fall_speed)
+	move_and_slide()
+
+
 func _state_wall_slide(delta: float) -> void:
 	if Input.is_action_just_pressed(&"grapple") and _try_start_grapple():
 		return
@@ -460,6 +525,20 @@ func _set_state(new_state: State) -> void:
 	_flipping = false
 	_standing_up = false
 	state = new_state
+
+
+func _start_hurt(knockback: bool) -> void:
+	_set_state(State.HURT)
+	_hurt_timer = config.hurt_lock_time
+	velocity.x = 0.0
+	velocity.y = maxf(velocity.y, 0.0)
+	_start_clip(&"hurt_knockback" if knockback else &"hurt")
+
+
+func _start_death() -> void:
+	_set_state(State.DEAD)
+	velocity.x = 0.0
+	_start_clip(&"death")
 
 
 func _start_ground_jump() -> void:
@@ -639,6 +718,9 @@ func _on_animation_finished() -> void:
 		&"grapple_release":
 			if state == State.GRAPPLE:
 				_set_state(State.AIR)
+		&"death":
+			if state == State.DEAD:
+				died.emit()
 
 
 # --- Helpers ---------------------------------------------------------------
@@ -795,9 +877,14 @@ func _show_frame(clip: StringName, index: int) -> void:
 	_sprite.frame = index
 
 
-## The idle aura (shown after idle_aura_delay of standing still) and the dash
-## afterimage trail.
+## The idle aura (shown after idle_aura_delay of standing still), the invulnerability
+## blink and the dash afterimage trail.
 func _update_effects(delta: float) -> void:
+	_blink_time = _blink_time + delta if health.is_invulnerable() and state != State.DEAD else 0.0
+	var faded := fmod(_blink_time, config.invulnerability_blink_period) \
+			> config.invulnerability_blink_period * 0.5
+	_sprite.self_modulate.a = config.invulnerability_blink_alpha if faded else 1.0
+
 	var idle := state == State.GROUND and _move_x == 0.0 and absf(velocity.x) < 1.0
 	_idle_time = _idle_time + delta if idle else 0.0
 	var show_aura := _idle_time >= config.idle_aura_delay
