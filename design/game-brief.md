@@ -31,6 +31,8 @@ In a real metroidvania it makes sense to see something you cant yet get up to th
 
 we will eventually be using our own art and sprite assets so right now the way it is, is fine but later we will be changing the place holder stuff for real art assets
 
+metroidvanias also start the game having limited abilities, you should be able to run, jump, attack. double jump, dash, wall cling, grapple should come later
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
@@ -49,7 +51,7 @@ we will eventually be using our own art and sprite assets so right now the way i
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
 ## First minute
-Wake in a quiet room, learn move, jump and dash by crossing a gap, then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
+Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
 
 ## Challenge
 A tougher guarded enemy about one minute in; a loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*

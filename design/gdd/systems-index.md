@@ -4,7 +4,7 @@
 > **Created**: 2026-11-18
 > **Last Updated**: 2026-11-18
 > **Source Concept**: design/game-brief.md (no game-concept.md; the brief is the design record up to this point)
-> **Research**: reports/Metroidvania world design research.md (local; `reports/` is git-ignored) and research_notes/Metroidvania world design research/
+> **Research**: design/research/metroidvania-world-design.md and research_notes/Metroidvania world design research/
 
 ---
 
