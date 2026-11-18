@@ -6,7 +6,7 @@ Status: DRAFT. Intent only; the owner's own sprites replace placeholders. Target
 
 - Ground: soot-umber and ash-aubergine, low value, low saturation. Light comes from below: dim amber from kiln windows and fireboxes, dithered, never brighter than mid value.
 - The Seeker (bone-pale) is the lightest matte value on screen; play-layer collision edges are the brightest values in a room. Background and foreground framing stay darker than both.
-- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple).
+- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple). Region 1 opens only orange; green, yellow and violet appear as unreachable gates.
 
 ## Glazed vs unglazed
 
@@ -16,8 +16,8 @@ Status: DRAFT. Intent only; the owner's own sprites replace placeholders. Target
 ## Silhouettes
 
 - **Tavik:** tall, narrow, leaning forward, a flat tray held out like a table, a trailing cloth.
-- **Brun:** wide square block, a tall column on his back.
-- **Pell:** stooped, one shoulder dropped, apron, wrapped hands, small lamp.
+- **Brun (region 2):** wide square block, a tall column on his back.
+- **Pell (region 2):** stooped, one shoulder dropped, apron, wrapped hands, small lamp.
 - **Seeker:** small, hooded, upright, readable against dark ground.
 
 ## Parallax

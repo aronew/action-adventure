@@ -20,6 +20,7 @@ A city of potters learned to make things that outlast their makers, then began g
 | The Seeker | Made by Teodra, last unglazed master of Wheel Row, from clay of the dry bed. Fired once to bisque and deliberately never glazed. Porous, so a Keeper's craft (a habit of the hands) soaks in when the glaze breaks. | Canon |
 | Teodra's errand | "A kiln that is never allowed to cool is never unloaded." Let the kilns go cold, so the work can finally be finished. Teodra is dust now. | Canon |
 | Wasters | Flawed pieces thrown on the heaps; warmth from the banked kilns keeps them twitching toward the shape they were meant to be. No memory, no glaze. | Provisional |
+| Palettes as firings | Bone = bisque (the Seeker's default), Ember = a hot firing, Frost = a crackle glaze, Void = a black reduction. | Provisional |
 | Dream Seeker | Not hinted in region 1. Left open. | Open |
 
 ## True answers to every hinted mystery
