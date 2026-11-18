@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3aa0eb3e69c
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/world/ability_pickup.gd 9270408e0368b3f27b40ddc324cb4039bb391736
+Reviewed-Content-Hash: src/world/ability_gate.gd fffd5aa626f6a4e7bf76f1b7f3761e28a3abec76
+Reviewed-Content-Hash: src/test_rooms/gate_test_rooms.gd 78489bdb3876659293d2e829f2e6e30d2393f8e4
+Reviewed-Content-Hash: src/test_rooms/gate_test_rooms.tscn 31f8091aaec21481a44a0bda31dfa4af1123968c

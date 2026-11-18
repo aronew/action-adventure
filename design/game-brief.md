@@ -27,6 +27,14 @@ one thing too is I want to use the bone sprite not the void sprite
 
 id say only bosses should have a guard like that or a mini boss normal enemies shouldnt s
 
+In a real metroidvania it makes sense to see something you cant yet get up to that you need double jump for, or a grapple section you cant get to until you get grapple ability. How you obtain them though should be done with more planned out thought, like through a boss, or some sort of found location not just right in front of the gate itself. the top metroidvania games use these systems you see an ability gate you know at some point you'll have to return to that location to get whatever you need. in a metroidvania game exploration and curiosity comes first.
+
+we will eventually be using our own art and sprite assets so right now the way it is, is fine but later we will be changing the place holder stuff for real art assets
+
+metroidvanias also start the game having limited abilities, you should be able to run, jump, attack. double jump, dash, wall cling, grapple should come later
+
+also what comes later is the bow, and the spell cast that are in my characters animations
+
 **Pitch:** A hand-animated side-scrolling metroidvania where one move set breaks enemy guards in duels and carries you through a hand-built, ability-gated world. *(guessed)*
 
 **Genre:** 2D side-scrolling action-adventure metroidvania.
@@ -45,7 +53,7 @@ id say only bosses should have a guard like that or a mini boss normal enemies s
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
 ## First minute
-Wake in a quiet room, learn move, jump and dash by crossing a gap, then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
+Wake in a quiet room, learn move and jump (dash comes later, found in the world), then meet one guarded enemy: break its guard and land the first finisher. *(guessed)*
 
 ## Challenge
 A tougher guarded enemy about one minute in; a loss sends you back to the last save point. Later fights add faster guards and mixed groups. *(guessed)*
@@ -65,7 +73,7 @@ A tougher guarded enemy about one minute in; a loss sends you back to the last s
 - [x] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
 - [x] 2–3 enemy types with readable, telegraphed attacks
 - [x] One boss fight
-- [ ] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
+- [x] Double jump and grapple found in the world, each opening routes and new attack angles *(guessed)*
 - [ ] Rooms with doors, save points and a grid map that fills in
 
 ## Your systems

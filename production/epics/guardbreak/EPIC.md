@@ -28,7 +28,7 @@ Out of scope for the core (built only by the thin and deepen stories, after the 
 | 003 | Guard-break | Logic | Complete | N/A |
 | 004 | Two or three enemy types with telegraphed attacks | Logic | Complete | N/A |
 | 005 | First-region boss fight | Logic | Complete | N/A |
-| 006 | Double jump and grapple found in the world | Integration | Ready | N/A |
+| 006 | Double jump and grapple found in the world | Integration | Complete | N/A |
 | 007 | Rooms, doors, save points and the grid map | Integration | Ready | N/A |
 | 008 | Bow, thin | Logic | Ready | N/A |
 | 009 | Spell casts, thin | Logic | Ready | N/A |

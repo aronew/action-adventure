@@ -80,7 +80,7 @@ const ABILITIES := [
 ]
 ## Area names: text, top-left corner.
 const AREA_LABELS := [
-	["AREA 1  START", Vector2(20, 330)],
+	["AREA 1  START", Vector2(64, 330)],
 	["AREA 2  MID SHELF", Vector2(380, 240)],
 	["AREA 3  SUMMIT (end of route)", Vector2(880, 70)],
 ]
