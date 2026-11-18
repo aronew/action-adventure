@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | Not Started (thin stand-in) | — | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (draft complete 2026-11-18) | design/gdd/level-design.md | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions |
@@ -182,7 +182,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 0 |
+| Design docs started | 1 (level design) |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
@@ -194,7 +194,8 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 ## Next Steps
 
 - [x] Review and approve this systems enumeration (owner, 2026-11-18)
-- [ ] Design MVP systems in the order above (`/design-system [name]`), or start `level design` early
+- [x] Level design GDD drafted (2026-11-18), awaiting `/design-review` in a fresh session
+- [ ] Design the remaining MVP systems in the order above (`/design-system [name]`)
 - [ ] Provide the lore, so level design and the mentor/hub pact can use it
 - [ ] Run `/design-review` on each completed GDD
 - [ ] Run `/gate-check` when the MVP systems are designed (project.stage still says Concept)

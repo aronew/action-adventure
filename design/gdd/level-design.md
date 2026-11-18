@@ -1,6 +1,6 @@
 # Level design and world layout
 
-> **Status**: In Design
+> **Status**: In Review (draft complete, awaiting `/design-review` in a fresh session)
 > **Author**: project owner + Claude
 > **Last Updated**: 2026-11-18
 > **Last Verified**: 2026-11-18
@@ -8,9 +8,9 @@
 
 ## Summary
 
-[To be designed]
+Level design and world layout decides how rooms form regions and loops, which key opens which route, where each key is found, and where saves, shortcuts, bosses and secrets sit. It turns the Seeker's earned abilities (dash, wall cling, double jump, grapple) into a world worth exploring and returning to, with gates seen first and keys found elsewhere. Without it the finished systems would be a movement and combat test with no reason to travel.
 
-> **Quick reference** — Layer: `Feature` · Priority: `MVP` · Key deps: `Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state`
+> **Quick reference** — Layer: `Feature` · Priority: `MVP` · Key deps: `Rooms and transitions, Terrain pipeline, Ability gating, World state, Bosses`
 
 ## Overview
 
@@ -251,19 +251,47 @@ The flow_speedup formula is defined as:
 
 ## Visual/Audio Requirements
 
-[To be designed]
+`art-director` and `audio-director` not consulted: Lean mode. Review manually before production. The look itself is owned by the terrain pipeline and the parallax, lighting and atmosphere systems; this section lists only what level design needs from them.
+
+- **Gate language:** each key has one signature (shape, material and colour) that nothing else in the world uses, so a gate is readable from across a room. The palette is chosen with the art bible (not yet written) and replaces the placeholder colours of the gate test room.
+- **Region identity:** each region reads as a distinct place by palette, architecture, enemies and music, so the player always knows where they are. **[Sourced]** (Silksong: architecture tells you where you are)
+- **Readability:** play-layer collision edges are the brightest values in a room and the room reads in greyscale; backgrounds and foreground framing never imitate a platform or a gate. **[Sourced]** (Saltsman)
+- **Quiet transitions:** a beaten boss, an opened shortcut and a granted key change the world through animation, sound and light only; no banner or "cleared" screen (rule 21).
+- **Audio:** each region has its own music and ambience; a gate you cannot yet open has a small audio tell when first approached; a key pickup has a clear, short cue; a shortcut opening has a distinct sound.
+
+📌 **Asset Spec** — Visual/Audio requirements are defined. After the art bible is approved, run `/asset-spec system:level-design` to produce per-asset descriptions and generation prompts from this section.
 
 ## Game Feel
 
-[To be designed]
+Targets are measurable, so they can be checked in a playtest; the Seeker's movement and combat feel is owned by the controller and combat systems.
+
+- **Reading a room:** a first-time visitor can tell the exits and the main route within about 5 seconds; a typical room is crossed in 15-60 s (micro loop).
+- **A lock remembered:** after the first 10 minutes the player can name at least one place they cannot yet reach.
+- **Key moment:** the pickup is followed at once by the workshop room (rule 11): the player uses the new key within about 30 seconds of collecting it.
+- **Friction to flow:** an old route crossed with a new key is at least 30% faster (F5), and the player notices.
+- **Shortcut moment:** opening a shortcut shows where it leads, so the player sees the loop close.
 
 ## UI Requirements
 
-[To be designed]
+- The grid map shows rooms as boxes, exits as lines and unexplored exits as markers; it does not mark item locations (rule 23). Owned by the grid map system.
+- A key's gate may carry a diegetic sign (the gate test room's signs dim until owned); no HUD "region cleared" message (rule 21).
+- A short on-screen note on the first pickup of each key says what it is called; its text comes with the lore.
+
+📌 **UX Flag — Level design and world layout**: This system has UI requirements. In Phase 4 (Pre-Production), run `/ux-design` to create a UX spec for each screen or HUD element this system contributes to **before** writing epics. Stories that reference UI should cite `design/ux/[screen].md`, not the GDD directly.
 
 ## Cross-References
 
-[To be designed]
+None of the other GDDs exists yet; these are the values and rules this GDD relies on, each provisional until its owner is written.
+
+| This GDD uses | Owner (system) | Status |
+|---------------|----------------|--------|
+| run_jump_distance, dash_jump_distance, double_jump_total, jump_apex (F1-F3) | Player controller / movement | Calculated from `player_config.tres`; to be registered |
+| grapple_range (F3) | Player controller / movement | In `player_config.tres` (200 px) |
+| Gate types, dimensions, signatures | Ability gating | Code exists; GDD to be written |
+| Room graph, exits, camera limits | Rooms and transitions | Not designed |
+| Key, boss, shortcut and secret flags | World state | Not designed |
+| Boss defeat flag, boss reward | Bosses | Code exists (`boss_defeated`) |
+| Save locations, spacing (F4) | Save points and save/load | Not designed |
 
 ## Acceptance Criteria
 
@@ -307,4 +335,14 @@ Types: **[Auto]** automated test on room data or the room graph; **[Play]** play
 
 ## Open Questions
 
-[To be designed]
+Owner is the project owner unless stated. No dates are set; each has a target step instead.
+
+1. **Lore.** Not yet provided; region names, the mentor and the world's reason to exist wait on it. Target: before the first narrative pass and the mentor channel.
+2. **How many keys does the core region contain?** Rule 2 builds one region; four keys in one region is dense. Options: all four in the core region; dash and wall cling in the core region with the double-jump and grapple gates visible but waiting for later regions. Target: before the first region layout.
+3. **Mentor / hub pact for the double jump.** Needs the lore; fallback is a second shrine (rule table). Target: with the lore.
+4. **Is climb part of wall cling?** Assumed yes (slide, wall jump and climb gated together). Needs `PlayerState` flags for dash and wall cling and a gating pass in `player.gd` (a later story). Target: when story 007 sets the real starting state.
+5. **Save spacing of 7 screens** (Blasphemous) is an untested start value for 480 px screens. Target: first playable region.
+6. **Gate signatures and colours.** Waiting on the art bible (`/art-bible`). Target: before the terrain pipeline's painted pass.
+7. **Region size.** The 25-35 room figure in the research is a recommendation for scope, not a measured target. Target: before the first region layout.
+8. **Room data format and camera zones** are owned by the rooms-and-transitions GDD. Target: that GDD.
+9. **Double jump as a mid-game key** changes the brief's earlier wording (double jump found in region 1); the brief's start-kit note has been recorded. Confirm there are no leftover references in stories 006-007.
