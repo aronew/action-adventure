@@ -1,0 +1,96 @@
+[gd_resource type="Resource" script_class="AttackConfig" format=3]
+
+[ext_resource type="Script" path="res://src/player/attack_config.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+hold_threshold = 0.14
+windup_speed_scale = 2.5
+charge_hold_frame = 4
+heavy_release_frame = 5
+charge_time = 0.55
+charged_damage_multiplier = 2.0
+glow_cycle = PackedInt32Array(3, 1, 3, 1, 0, 1)
+glow_step_time_slow = 0.22
+glow_step_time_fast = 0.05
+glow_ready_cycle = PackedInt32Array(0, 2)
+glow_ready_step_time = 0.04
+heavy_ready_fx_offset = Vector2(-14, -12)
+heavy_ready_flash_time = 0.15
+heavy_ready_flash_color = Color(2.5, 2.5, 2.5, 1)
+pogo_speed = 260.0
+down_attack_max_fall_speed = 220.0
+swing_glide_deceleration = 500.0
+attacks = {
+"attack1": {
+"chain_from": 5,
+"damage": 10.0,
+"lunge": 60.0,
+"hit_from": 3,
+"hit_to": 4,
+"hitbox": Rect2(-8, -29, 74, 34),
+"move_cancel_from": 5,
+"next": "attack2",
+"shake_size": 0.0,
+"shake_time": 0.0
+},
+"attack2": {
+"chain_from": 4,
+"damage": 12.0,
+"lunge": 70.0,
+"hit_from": 1,
+"hit_to": 2,
+"hitbox": Rect2(-8, -42, 64, 47),
+"move_cancel_from": 3,
+"next": "attack3",
+"shake_size": 0.0,
+"shake_time": 0.0
+},
+"attack3": {
+"damage": 20.0,
+"lunge": 100.0,
+"hit_from": 5,
+"hit_to": 6,
+"hitbox": Rect2(20, -22, 72, 27),
+"move_cancel_from": 7,
+"shake_size": 3.0,
+"shake_time": 0.15
+},
+"jump_attack": {
+"damage": 10.0,
+"hit_from": 3,
+"hit_to": 4,
+"hitbox": Rect2(-8, -36, 70, 37),
+"move_cancel_from": 5,
+"shake_size": 0.0,
+"shake_time": 0.0
+},
+"up_attack": {
+"damage": 10.0,
+"hit_from": 3,
+"hit_to": 4,
+"hitbox": Rect2(-23, -76, 49, 47),
+"move_cancel_from": 5,
+"shake_size": 0.0,
+"shake_time": 0.0
+},
+"down_attack": {
+"damage": 8.0,
+"hit_from": 3,
+"hit_to": 4,
+"hitbox": Rect2(-21, -9, 48, 41),
+"move_cancel_from": 5,
+"shake_size": 0.0,
+"shake_time": 0.0
+},
+"heavy": {
+"damage": 30.0,
+"lunge": 140.0,
+"hit_from": 5,
+"hit_to": 6,
+"hitbox": Rect2(-21, -67, 103, 72),
+"move_cancel_from": 7,
+"shake_size": 0.0,
+"shake_time": 0.0
+}
+}
