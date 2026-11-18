@@ -146,3 +146,33 @@ Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b6262
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 6
+Summary: The sixth review's fixes held (F1 pit rule registered; region 1 legs 3, 3, 4, 2, 7, 3 re-derive with N2b), and the rest of the registry values agree. Two blockers: the key table still gave the double-jump window as 72-108 against the registry's 72-106, and the gate states had no path for a leak or a key owned before its gate was seen. Both were revised in the same session, with two owner decisions: save spacing counts new ground only (backtracking and the walk back out of a dead end count 0), and spikes can be pogoed (rule 24 and F7 widened; a spiked dash pit needs hazard_pit_depth_min, about 84 px; grapple gaps use a kill plane until ability gating sets a depth, Open Question 20). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (both sixth-review blockers fixed)
+Findings:
+- [BLOCKING] Detailed Design (rule 5 key table, line 42): double-jump ledges 72-108 vs registry double_jump_ledge_window [72, 106] (fixed)
+- [BLOCKING] States and Transitions (Gate): no transition for a leak (Seen to Passed without the key) or a key owned before the gate is seen (fixed: Seen and Passed stored, Passable derived from "owned")
+- [RECOMMENDED] Formulas (F4): a dead-end shrine detour walked back out of counts 8 (fixed by owner decision: new ground only; post-dash legs now at most 5 and 2)
+- [RECOMMENDED] Game Feel: targets carried three reviews without criteria (fixed: relabelled as design targets)
+- [RECOMMENDED] Formulas (F7): pogo_carry assumes a contact level with the lips (fixed: re-measure a gap reached by a drop)
+- [RECOMMENDED] Detailed Design (rule 24): hazards "not pogo targets in the current code" (superseded by owner decision: spikes can be pogoed; hazard_pogo_reach and hazard_pit_depth_min added; Combat story; ability gating F1 and F3b and the registry's pit note to follow, Open Question 20)
+- [RECOMMENDED] Open Questions 13 and 15: spend rule missing; "now measured" wording (fixed)
+- [RECOMMENDED] Formulas (F4): save_spacing_max range 5-10, but the region 1 layout needs 7 or more (open, not approved for this pass)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard)
+- [NICE-TO-HAVE] Dash signature colour bisque vs reserved orange (open: art bible); integration draft still holds the bisque pane back (narrative side, ability gating Open Question 5)
+Reviewed-Content-Hash: design/gdd/level-design.md 53d80590e3a2ef9e9a364372611dca6cb5906355
+Reviewed-Content-Hash: design/registry/entities.yaml de075a01f7a8c2305ada96e1ea74493b65e1791f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 69d70bda7bc48dee7538eee52c901fe625813f01
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb

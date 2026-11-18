@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (sixth design review 2026-11-18: 2 blockers revised (F1 pit spec; region 1 save spacing after the rule 26 widening, new save N2b in Saggar Rows); sealed alcoves sit in the gate room; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (seventh design review 2026-11-18: 2 blockers revised (key 3 window 72-106; gate state Seen + Passed, Passable derived); owner decisions: save spacing counts new ground only, spikes can be pogoed (ability gating to follow, Open Question 20); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
