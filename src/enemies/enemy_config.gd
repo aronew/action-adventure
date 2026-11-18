@@ -74,6 +74,8 @@ extends Resource
 @export var hurt_time: float
 ## Speed the enemy is pushed away from the player by a hit.
 @export var hurt_knockback_speed: float
+## Upward speed a hit gives the enemy when it is on the ground (a small hop); 0 for none.
+@export var hurt_knockback_lift: float
 ## How fast the knockback bleeds off (px/s per second).
 @export var hurt_deceleration: float
 ## When false, hits during the wind-up and the attack deal damage but do not stagger:
@@ -81,3 +83,19 @@ extends Resource
 @export var flinch_during_attack: bool
 ## Seconds the body fades out after death before the enemy is removed.
 @export var death_time: float
+
+@export_group("Death impact")
+## Speed the killing blow launches the body away from the player.
+@export var death_knockback_speed: float
+## Upward speed the killing blow launches the body with.
+@export var death_lift_speed: float
+## Seconds the game slows down on the killing blow (hit-pause); 0 for none.
+@export var death_hitstop_time: float
+## Game speed during that hit-pause (0.05 = nearly frozen).
+@export var death_hitstop_scale: float
+## Camera shake on the killing blow, in pixels, and its length in seconds.
+@export var death_shake_size: float
+@export var death_shake_time: float
+## Fragments that burst out of the body on death, and how fast they fly.
+@export var death_burst_amount: int
+@export var death_burst_speed: float
