@@ -56,8 +56,11 @@
 
 ## Files
 
-- `src/enemies/boss/boss.gd`, `src/enemies/boss/boss_config.tres`, `src/enemies/boss/boss_arena.tscn`
-- `src/ui/region_complete.tscn`
+- `src/enemies/boss/boss.gd` (new): Boss extends EnemyBase; three patterns, shockwave, guard
+- `src/enemies/boss/boss_config.gd`, `src/enemies/boss/boss_config.tres` (new): every boss, pattern and guard value
+- `src/enemies/boss/boss_arena.gd`, `src/enemies/boss/boss_arena.tscn` (new): arena, fight trigger, HUD bars, reload on death
+- `src/ui/region_complete.gd`, `src/ui/region_complete.tscn` (new): completion overlay
+- No test file: waived at qa.level minimal
 
 ---
 
