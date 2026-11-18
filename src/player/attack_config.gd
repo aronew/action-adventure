@@ -61,6 +61,9 @@ extends Resource
 ## Ground slowdown with no input during a swing (lower than the run's braking, so the
 ## swing's forward step glides a little). With input the player runs as normal.
 @export var swing_glide_deceleration: float
+## How fast the player skids to a stop once the heavy starts winding up (px/s per
+## second). He cannot move while charging; the release still steps forward.
+@export var charge_deceleration: float
 
 @export_group("Attacks")
 ## One entry per attack, keyed "attack1", "attack2", "attack3", "jump_attack",
