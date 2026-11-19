@@ -34,3 +34,34 @@ Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b6262
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 2 | Recommended: 7
+Summary: All four prior blockers held: the freeze at the crossing is consistent across rules 5, 6, 9, the states table, R1, R2 and the ACs; R3 has build_time; object ids are defined; R5 bounds falls by fast_fall_speed. Registry values match. The revision introduced one defect: the apron was exit_rearm deep, the depth of the arrived centre, so the box's far half (11 px through a fall or rise exit, 5 px through a side opening) could overlap solid, and the line 326 AC certified it. Two ACs (lines 329, 337) were scoped to frames a correct build fails on. Both were revised in the same session. Owner decision: apron per axis.
+Prior verdict resolved: Yes
+Findings:
+- [BLOCKING] Rule 4 / R2 / AC line 326: apron depth = exit_rearm reaches the arrived centre, not the box; a solid tile 12 px in overlaps the box by 11 px (fall) or 5 px (side)
+- [BLOCKING] Acceptance Criteria lines 329, 337: "from the crossing" and "fade alpha below 1" include the crossing and fade-out frames, which a correct build fails
+- [RECOMMENDED] Rule 3 / Edge Cases: "never reused" needs a retired-id record per room and globally; a cut room's region is unrecorded
+- [RECOMMENDED] Edge Cases: corner tie keeps the tangential coordinate outside the opening span; likely unreachable (solid beyond the corner), say so or clamp
+- [RECOMMENDED] Rule 6: perpendicular openings shut during the fade-in act as floor or ceiling; unstated
+- [RECOMMENDED] Carried over: residency cancel path and free-before-load; arrival safety (enemy reach, hazards, invulnerability_time); graph edge attributes; overlapping zones and shake vs bounds; death-state crossing and door area
+- [RECOMMENDED] R5: arrival points omit save-point and default arrival points (rule 8)
+- [RECOMMENDED] Dependencies line 273: stale (index line 102 lists World state)
+- [RECOMMENDED] Tuning Knobs absent (advisory at standard); fade ranges plus build_time can exceed the 0.5 s comfort limit
+Receipt note: the GDD stamp is the reviewed (pre-revision) version, HEAD blob of commit fb64ba3, so the next run reads CHANGED and re-reviews; the systems index is stamped before this session's tracking edit.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 80a1f88a1234eaf87c345b6faf18020afc9eb3a1
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md 43dd773287e10e0e6f0c93c14e11cd268366d88a
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
