@@ -95,3 +95,36 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 7
+Summary: Both third-review blockers are resolved (dressing checks on every save and build; a placement record per gate), every registry value, T1 and T4 output and code claim reproduces, and no registry conflict was found. Two new gaps sat in the revised area: T3 measured every opaque pixel at any height, so any prop standing on a gate ledge failed and blocked `dressed`, and its segment domain disagreed with the stretch-scoped bound; and records listed faces only by example while the check failed the room for any measured surface outside them (pit floors, standing floors). Both were revised the same day (owner: T3 measures trim and "reads solid" props over edge ranges only; a per-type table of edge, reference and scanned surfaces), with 5 of the 7 recommendations; the GDD awaits re-review in a fresh session.
+Prior verdict resolved: Yes (both prior blockers)
+Findings:
+- [BLOCKING] T3 / rules 11-12: measure counts every opaque pixel at any height (no trim / reads-solid / decoration split); `overhang(segment)` vs stretch-scoped bound
+- [BLOCKING] Rule 6: record faces only illustrated; F1 pit floor, F2 standing floor, F3a underside, F6a foot read but unlisted, yet the check fails the room
+- [RECOMMENDED] Edge Cases (passage): one-way tile counted as a top bound, contradicting the one-way AC; `sealed` mark extent undefined
+- [RECOMMENDED] Edge Cases (passage): `sealed` mark collides with level design's sealed alcove (renamed `crack`)
+- [RECOMMENDED] Edge Cases (passage): 2 and 4 tile thresholds hardcoded from the hitbox, not read from `player_config.tres`
+- [RECOMMENDED] Rules 12-13: flag lifecycle undefined (recomputed vs stored, who clears, build writes)
+- [RECOMMENDED] Rule 13: net-total `undressed_face_max` lets removed ground offset new ground (now positional; moved masses count none)
+- [RECOMMENDED] Acceptance Criteria: seam and passage ACs not measurable; ACs 285 and 289 compound
+- [RECOMMENDED] T3 / AC (node count): trim undershoot and node-count ceiling still open (Open Question 11)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); systems index Core vs Foundation; moving-platform grid wording; no forced play review after large edits
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 81aa9a21c05459b0dcd7c7cf2918bd62c4f1fe78
+Reviewed-Content-Hash: design/registry/entities.yaml 81257fdc2577f75fec1f661554d6561892157fff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md b941616585bfbb663e3fe3d69ef07bef9bf4aa77
+Reviewed-Content-Hash: design/gdd/systems-index.md 454aaf21891e63448f55d6411092b2c1988a9554
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
