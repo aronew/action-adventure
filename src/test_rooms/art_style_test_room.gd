@@ -103,12 +103,10 @@ const HANGING_PROPS := [
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
-## Foreground strips (the owner's v5 loops): sideways they move faster than the play
-## layer, 1.2, the loops' own camera_motion_factor (foreground-layers.json). Up and down
-## they are locked to the world (1.0), at the owner's request: nothing in the foreground
-## follows the camera vertically. The top loop sits at the room's top, the bottom loop's
-## art at the room's floor.
-const FOREGROUND_SCALE := Vector2(1.2, 1.0)
+## Foreground strips (the owner's v5 loops): on screen they move faster than the play
+## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
+## up and down 1.1, the GameMaker article's vertical weight of -0.1.
+const FOREGROUND_SCALE := Vector2(1.2, 1.1)
 ## Each loop is a full screen-height canvas (3840x1080) that repeats every 3840 px.
 const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
 ## Optional room-end pieces from the same pack, placed at this test room's dead ends.
