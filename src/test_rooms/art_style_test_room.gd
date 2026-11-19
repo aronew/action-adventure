@@ -9,18 +9,22 @@
 ## block. The painted art sits under a node with linear, mipmapped filtering and is
 ## scaled so one source pixel lands on about one screen pixel.
 ##
-## Terrain is black-box geometry: each mass is a solid rectangle (the collision) filled
-## black, with the pack's 9-slice rock cells painted along its exposed edges. Cell size
-## and the rock-edge insets come from the tiles themselves (measured from their alpha).
-## Props and parallax layers come from the same pack. Values here are test-room
-## constants, not tuned gameplay data.
+## Terrain is a grid of solid cells, like an autotile: each solid cell picks its rock
+## edge from which neighbours are empty (top, sides, bottom, corners) and an interior
+## cell is plain black. Collision follows the painted rock faces, using each edge
+## tile's measured inset (from its alpha). Props stand on their solid edge, not their
+## soft glow. Values here are test-room constants, not tuned gameplay data.
+##
+## Parallax follows the GameMaker article the owner pointed to ("Creating depth and
+## immersion: parallax"): every layer is the camera position times a weight. Far layers
+## move slower than the world; the foreground lives in the world and moves faster than
+## it (about 2x sideways, 1.1x up and down), built from strips that repeat sideways.
 extends Node2D
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
 const BIOME := "res://assets/environment/cinderheart-caldera/"
 const RENDER_SIZE := Vector2i(1920, 1080)
 const ZOOM := 4.0
-const ROOM_SIZE := Vector2(1440, 360)
 const VIEW_SIZE := Vector2(480, 270)
 const SPAWN_POINT := Vector2(96, 260)
 const TERRAIN_COLOR := Color(0, 0, 0)
@@ -31,30 +35,47 @@ const CELL := 36.0
 const TILE_SOURCE := 512.0
 ## The atlas is a 3584 px export of 1254 px native art; props are at native size.
 const ATLAS_PER_NATIVE := 3584.0 / 1254.0
-## Rock-edge insets inside the edge cells, in source px (from the tiles' alpha).
-const TOP_INSET := 78.0
-const LEFT_INSET := 33.0
-const RIGHT_INSET := 51.0
-const BOTTOM_INSET := 33.0
-## 9-slice tile ids in the 7x7 sheet (row * 7 + column).
-const T_TL := 0
-const T_T := 1
-const T_TR := 2
-const T_L := 7
-const T_R := 9
-const T_BL := 14
-const T_B := 15
-const T_BR := 16
-
-## Terrain masses in cells: column, row, columns, rows, then which edges are exposed
-## (top, left, right, bottom). A hidden edge runs into a wall or off the room.
-const MASSES := [
-	[0, 0, 40, 1, false, false, false, true],     # ceiling
-	[0, 8, 16, 2, true, false, true, false],      # left floor, surface y 293.5
-	[16, 9, 6, 1, true, false, false, false],     # pit floor, surface y 329.5
-	[22, 7, 18, 3, true, true, false, false],     # right floor, surface y 257.5
-	[31, 4, 9, 3, true, true, false, false],      # high ledge, surface y 149.5
+## Edge tiles in the 7x7 sheet (row * 7 + column) and where each one's painted rock face
+## sits inside its 512 px cell: [top, bottom, left, right] insets in source px.
+const TILE_TL := 0
+const TILE_T := 1
+const TILE_TR := 2
+const TILE_L := 7
+const TILE_R := 9
+const TILE_BL := 14
+const TILE_B := 15
+const TILE_BR := 16
+const TILE_INSETS := {
+	0: [69, 0, 82, 0], 1: [78, 0, 0, 0], 2: [79, 0, 0, 90],
+	7: [0, 0, 73, 0], 9: [0, 0, 0, 90],
+	14: [0, 62, 76, 0], 15: [0, 64, 0, 0], 16: [0, 69, 0, 102],
+}
+## The room in cells ('#' solid). Cells outside the grid count as solid, so the room's
+## own border shows no rock face.
+const GRID := [
+	"########################################",
+	"........................................",
+	"........................................",
+	"........................................",
+	"...............................#########",
+	"...............................#########",
+	"...............................#########",
+	"......................##################",
+	"################......##################",
+	"########################################",
 ]
+
+## Solid bounds of each prop (alpha over half), in source px: left, top, right, bottom.
+const PROP_BOUNDS := {
+	"platform-short": [11, 11, 181, 179], "platform-medium": [13, 17, 257, 219],
+	"platform-long": [12, 33, 373, 218], "rocks-small": [16, 133, 213, 263],
+	"rocks-large": [11, 65, 329, 263], "ruin-prop": [11, 17, 321, 262],
+	"decoration-low": [12, 107, 260, 264], "decoration-tall": [83, 16, 287, 292],
+	"wall-left": [47, 17, 251, 318], "wall-right": [29, 14, 243, 315],
+	"ceiling-overhang": [12, 81, 312, 270], "hanging-decoration": [57, 11, 144, 255],
+}
+## How far a ground prop sinks into the surface it stands on, in world px.
+const PROP_SINK := 2.0
 ## Floating islands: prop, centre x, surface y (world), surface y in the source image.
 const ISLANDS := [
 	["platform-short", 420.0, 232.0, 67.0],
@@ -68,39 +89,36 @@ const GROUND_PROPS := [
 	["ruin-prop", 200.0, 293.5],
 	["rocks-large", 820.0, 257.5],
 	["decoration-low", 1010.0, 257.5],
-	["wall-right", 1300.0, 149.5],
 	["decoration-tall", 1180.0, 149.5],
+	["wall-right", 1300.0, 149.5],
 ]
-## Hanging props: prop, left x (their top meets the ceiling).
+## Hanging props: prop, left x (their top tucks into the ceiling).
 const HANGING_PROPS := [
 	["ceiling-overhang", 280.0],
 	["hanging-decoration", 560.0],
 	["ceiling-overhang", 860.0],
 	["hanging-decoration", 1240.0],
 ]
-## Parallax layers from the pack's layers.json: file, scroll scale, whether the painting
-## repeats (mirrored, so the seams meet) instead of stretching to cover the room.
-const PARALLAX_BACK := [["background", 0.15, false], ["midground", 0.5, true]]
-const FOREGROUND_SCALE := 1.2
-## The foreground painting has no fully clear column, so each end keeps the painting's
-## left half (mirrored at the right end) and fades out across its middle.
-const FOREGROUND_FADE_SHADER := """
-shader_type canvas_item;
-uniform float fade_from = 0.38;
-uniform float fade_to = 0.5;
-void fragment() {
-	vec4 c = texture(TEXTURE, UV) * COLOR;
-	c.a *= 1.0 - smoothstep(fade_from, fade_to, UV.x);
-	COLOR = c;
-}
-"""
+## Background layers: file, scroll scale (how fast it moves on screen against the
+## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
+## of stretching to cover the room.
+const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
+## Foreground strips (the owner's v5 loops): on screen they move faster than the play
+## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
+## up and down 1.1, the GameMaker article's vertical weight of -0.1.
+const FOREGROUND_SCALE := Vector2(1.2, 1.1)
+## Each loop is a full screen-height canvas (3840x1080) that repeats every 3840 px.
+const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
+## Optional room-end pieces from the same pack, placed at this test room's dead ends.
+const BORDERS := ["border-left", "border-right"]
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
 var _textures := {}
 var _camera: Camera2D
-## Manual parallax: [layer node, scroll scale, base offset]. Parallax2D placed the
-## layers wrongly under the 4x camera zoom in this test, so the layers follow the camera
-## here instead: on screen each moves by scroll scale times the camera's motion.
+var _room_size := Vector2.ZERO
+## Manual parallax: [layer node, scroll scale, base]. Each frame a layer is placed at
+## camera_centre * (1 - scroll scale) + base, so on screen it moves by scroll scale times
+## the camera's motion. (Parallax2D placed the layers wrongly under the 4x zoom here.)
 var _layers: Array = []
 
 
@@ -110,28 +128,27 @@ func _ready() -> void:
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
+	_room_size = Vector2(GRID[0].length(), GRID.size()) * CELL
 
 	var world := Node2D.new()
 	world.name = "PaintedWorld"
 	world.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(world)
 
-	_add_parallax(world)
-	for mass in MASSES:
-		_add_mass(world, mass)
+	_add_back_layers(world)
+	_add_terrain(world)
 	for island in ISLANDS:
 		_add_island(world, island)
+	var s := _prop_scale()
 	for entry in GROUND_PROPS:
-		var texture := _texture(BIOME + "assets/%s.png" % entry[0])
-		var used := _used_rect(entry[0])
-		var sprite := _prop_sprite(world, texture)
-		sprite.position = Vector2(entry[1] - used.position.x * _prop_scale(),
-				entry[2] - used.end.y * _prop_scale() + 3.0)
+		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var sprite := _prop_sprite(world, entry[0])
+		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
+	var ceiling_bottom := CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
 	for entry in HANGING_PROPS:
-		var texture := _texture(BIOME + "assets/%s.png" % entry[0])
-		var used := _used_rect(entry[0])
-		var sprite := _prop_sprite(world, texture)
-		sprite.position = Vector2(entry[1], CELL - 6.0 - used.position.y * _prop_scale())
+		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var sprite := _prop_sprite(world, entry[0])
+		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
 	_add_foreground(world)
 
 	var player: Player = PLAYER_SCENE.instantiate()
@@ -142,8 +159,8 @@ func _ready() -> void:
 	camera.zoom = Vector2(ZOOM, ZOOM)
 	camera.limit_left = 0
 	camera.limit_top = 0
-	camera.limit_right = int(ROOM_SIZE.x)
-	camera.limit_bottom = int(ROOM_SIZE.y)
+	camera.limit_right = int(_room_size.x)
+	camera.limit_bottom = int(_room_size.y)
 	player.add_child(camera)
 	camera.setup(player)
 
@@ -154,6 +171,16 @@ func _ready() -> void:
 	help.text = HELP_TEXT
 	hud.add_child(help)
 	add_child(hud)
+
+
+func _process(_delta: float) -> void:
+	if _camera == null:
+		return
+	var center := _camera.get_screen_center_position()
+	for entry in _layers:
+		var layer: Node2D = entry[0]
+		var factor: Vector2 = entry[1]
+		layer.position = center * (Vector2.ONE - factor) + entry[2]
 
 
 ## World px per source px for props (native-size art).
@@ -171,92 +198,125 @@ func _texture(path: String) -> Texture2D:
 	return _textures[path]
 
 
-func _used_rect(prop: String) -> Rect2:
-	var image := _texture(BIOME + "assets/%s.png" % prop).get_image()
-	return Rect2(image.get_used_rect())
-
-
-func _prop_sprite(parent: Node2D, texture: Texture2D) -> Sprite2D:
+func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 	var sprite := Sprite2D.new()
-	sprite.texture = texture
+	sprite.texture = _texture(BIOME + "assets/%s.png" % prop)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * _prop_scale()
 	parent.add_child(sprite)
 	return sprite
 
 
-func _add_mass(parent: Node2D, mass: Array) -> void:
-	var col: int = mass[0]
-	var row: int = mass[1]
-	var cols: int = mass[2]
-	var rows: int = mass[3]
-	var top: bool = mass[4]
-	var left: bool = mass[5]
-	var right: bool = mass[6]
-	var bottom: bool = mass[7]
-	var k := CELL / TILE_SOURCE
-	var x0 := col * CELL + (LEFT_INSET * k if left else 0.0)
-	var x1 := (col + cols) * CELL - (RIGHT_INSET * k if right else 0.0)
-	var y0 := row * CELL + (TOP_INSET * k if top else 0.0)
-	var y1 := (row + rows) * CELL - (BOTTOM_INSET * k if bottom else 0.0)
-	var rect := Rect2(x0, y0, x1 - x0, y1 - y0)
+func _solid(col: int, row: int) -> bool:
+	if row < 0 or row >= GRID.size() or col < 0 or col >= GRID[0].length():
+		return true
+	return GRID[row][col] == "#"
 
+
+## The edge tile for a solid cell, or -1 for an interior cell (plain black).
+func _edge_tile(col: int, row: int) -> int:
+	var up := not _solid(col, row - 1)
+	var down := not _solid(col, row + 1)
+	var left := not _solid(col - 1, row)
+	var right := not _solid(col + 1, row)
+	if up:
+		return TILE_TL if left and not right else (TILE_TR if right and not left else TILE_T)
+	if down:
+		return TILE_BL if left and not right else (TILE_BR if right and not left else TILE_B)
+	if left:
+		return TILE_L
+	if right:
+		return TILE_R
+	return -1
+
+
+## For an interior cell at an inside corner (solid above and beside it, empty
+## diagonally above), the wall face above it continues down to the floor beside it:
+## TILE_L or TILE_R. Otherwise -1.
+func _inside_corner_tile(col: int, row: int) -> int:
+	if not _solid(col, row - 1):
+		return -1
+	if not _solid(col - 1, row - 1) and _solid(col - 1, row):
+		return TILE_L
+	if not _solid(col + 1, row - 1) and _solid(col + 1, row):
+		return TILE_R
+	return -1
+
+
+## Paints every solid cell and builds the collision: one shape per run of cells in a row
+## that share the same top and bottom insets, trimmed to the painted rock faces.
+func _add_terrain(parent: Node2D) -> void:
+	var k := CELL / TILE_SOURCE
 	var body := StaticBody2D.new()
-	body.position = rect.get_center()
+	parent.add_child(body)
+	for row in GRID.size():
+		var run_start := -1
+		var run_insets: Array = []
+		var run_left := 0.0
+		for col in GRID[0].length() + 1:
+			var solid := col < GRID[0].length() and _solid(col, row)
+			var tile := _edge_tile(col, row) if solid else -1
+			var corner := _inside_corner_tile(col, row) if solid and tile < 0 else -1
+			var insets: Array = TILE_INSETS[tile] if tile >= 0 else [0, 0, 0, 0]
+			if corner >= 0:
+				# The floor beside it runs on under the wall face at its surface height.
+				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0]
+			var same: bool = solid and run_start >= 0 and insets[0] == run_insets[0] \
+					and insets[1] == run_insets[1]
+			if run_start >= 0 and not same:
+				var prev_tile := _edge_tile(col - 1, row)
+				var prev_insets: Array = TILE_INSETS[prev_tile] if prev_tile >= 0 else [0, 0, 0, 0]
+				var x1: float = col * CELL - prev_insets[3] * k
+				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k,
+						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k))
+				run_start = -1
+			if solid and run_start < 0:
+				run_start = col
+				run_insets = insets
+				run_left = col * CELL + insets[2] * k
+			if not solid:
+				continue
+			if tile >= 0:
+				_add_tile(parent, tile, col, row)
+			elif corner >= 0:
+				# Inside corner: the floor's top runs on under the wall face above.
+				_add_tile(parent, TILE_T, col, row)
+				_add_tile(parent, corner, col, row)
+			else:
+				var fill := Polygon2D.new()
+				var p := Vector2(col * CELL, row * CELL)
+				fill.polygon = PackedVector2Array([p, p + Vector2(CELL, 0),
+						p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
+				fill.color = TERRAIN_COLOR
+				parent.add_child(fill)
+
+
+func _add_tile(parent: Node2D, tile: int, col: int, row: int) -> void:
+	var sprite := Sprite2D.new()
+	sprite.texture = _texture(BIOME + "terrain/tiles/tile-%02d.png" % tile)
+	sprite.centered = false
+	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
+	sprite.position = Vector2(col * CELL, row * CELL)
+	parent.add_child(sprite)
+
+
+func _add_box(body: StaticBody2D, rect: Rect2) -> void:
 	var shape := RectangleShape2D.new()
 	shape.size = rect.size
 	var collision := CollisionShape2D.new()
 	collision.shape = shape
+	collision.position = rect.get_center()
 	body.add_child(collision)
-	parent.add_child(body)
-
-	var fill := Polygon2D.new()
-	fill.polygon = PackedVector2Array([rect.position, Vector2(rect.end.x, rect.position.y),
-			rect.end, Vector2(rect.position.x, rect.end.y)])
-	fill.color = TERRAIN_COLOR
-	parent.add_child(fill)
-
-	for j in rows:
-		for i in cols:
-			var tile := _edge_tile(i, j, cols, rows, top, left, right, bottom)
-			if tile < 0:
-				continue
-			var sprite := Sprite2D.new()
-			sprite.texture = _texture(BIOME + "terrain/tiles/tile-%02d.png" % tile)
-			sprite.centered = false
-			sprite.scale = Vector2.ONE * k
-			sprite.position = Vector2((col + i) * CELL, (row + j) * CELL)
-			parent.add_child(sprite)
-
-
-## The 9-slice cell for one position in a mass, or -1 for an interior cell (the black fill).
-func _edge_tile(i: int, j: int, cols: int, rows: int, top: bool, left: bool, right: bool,
-		bottom: bool) -> int:
-	var at_top := top and j == 0
-	var at_bottom := bottom and j == rows - 1
-	var at_left := left and i == 0
-	var at_right := right and i == cols - 1
-	if at_top:
-		return T_TL if at_left else (T_TR if at_right else T_T)
-	if at_bottom:
-		return T_BL if at_left else (T_BR if at_right else T_B)
-	if at_left:
-		return T_L
-	if at_right:
-		return T_R
-	return -1
 
 
 func _add_island(parent: Node2D, island: Array) -> void:
-	var texture := _texture(BIOME + "assets/%s.png" % island[0])
-	var used := _used_rect(island[0])
+	var bounds: Array = PROP_BOUNDS[island[0]]
 	var s := _prop_scale()
-	var sprite := _prop_sprite(parent, texture)
-	sprite.position = Vector2(island[1] - (used.position.x + used.size.x * 0.5) * s,
-			island[2] - island[3] * s)
+	var sprite := _prop_sprite(parent, island[0])
+	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s, island[2] - island[3] * s)
 	var body := StaticBody2D.new()
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(used.size.x * s - 8.0, 8.0)
+	shape.size = Vector2((bounds[2] - bounds[0]) * s - 8.0, 8.0)
 	var collision := CollisionShape2D.new()
 	collision.shape = shape
 	collision.one_way_collision = true
@@ -268,10 +328,10 @@ func _add_island(parent: Node2D, island: Array) -> void:
 ## Background and midground: the background is scaled to cover the view at both ends
 ## of the room for its scroll scale; the midground repeats mirrored at a near-native
 ## size. Both are centred on the room when the camera is centred.
-func _add_parallax(parent: Node2D) -> void:
-	var camera_travel := ROOM_SIZE - VIEW_SIZE
+func _add_back_layers(parent: Node2D) -> void:
+	var camera_travel := _room_size - VIEW_SIZE
 	var index := -30
-	for entry in PARALLAX_BACK:
+	for entry in BACK_LAYERS:
 		var factor: float = entry[1]
 		var repeats: bool = entry[2]
 		var texture := _texture(BIOME + "parallax/%s.png" % entry[0])
@@ -280,54 +340,65 @@ func _add_parallax(parent: Node2D) -> void:
 				else maxf(needed.x / texture.get_width(), needed.y / texture.get_height())
 		var tile := texture.get_size() * image_scale
 		var copies := int(ceil(needed.x / tile.x)) if repeats else 1
-		var layer := Node2D.new()
-		layer.z_index = index
+		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, copies, index)
 		index += 10
-		for i in copies:
-			var sprite := Sprite2D.new()
-			sprite.texture = texture
-			sprite.centered = false
-			sprite.scale = Vector2.ONE * image_scale
-			sprite.position = Vector2(i * tile.x, 0.0)
-			sprite.flip_h = i % 2 == 1
-			layer.add_child(sprite)
-		parent.add_child(layer)
 		var size := Vector2(tile.x * copies, tile.y)
-		_layers.append([layer, Vector2(factor, factor), ROOM_SIZE * 0.5 * factor - size * 0.5])
+		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## Foreground framing: one screen-sized copy framing the room's left end and a mirrored
-## copy framing its right end. They slide away faster than the play layer sideways and
-## stay pinned to the screen's top and bottom edges, so they never drift into play.
+## Foreground: the top and bottom loops, both in the world, both repeating sideways.
+## Each canvas is a screen tall with its art at the top or bottom, so the top loop's
+## canvas meets the screen's top when the camera is at the room's top, and the bottom
+## loop's canvas meets it when the camera is at the room's floor. Then the room-end
+## borders at the room's left and right edges.
 func _add_foreground(parent: Node2D) -> void:
-	var texture := _texture(BIOME + "parallax/foreground.png")
-	var image_scale := VIEW_SIZE.x / texture.get_width()
-	var factor := Vector2(FOREGROUND_SCALE, 0.0)
-	var start_center := Vector2(VIEW_SIZE.x * 0.5, ROOM_SIZE.y - VIEW_SIZE.y * 0.5)
-	var shader := Shader.new()
-	shader.code = FOREGROUND_FADE_SHADER
-	var fade := ShaderMaterial.new()
-	fade.shader = shader
-	for at_end in [false, true]:
-		var center := start_center + (Vector2(ROOM_SIZE.x - VIEW_SIZE.x, 0.0) if at_end else Vector2.ZERO)
-		var layer := Node2D.new()
-		layer.z_index = 10
+	var camera_travel := _room_size - VIEW_SIZE
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var z := 10
+	for strip in FOREGROUND_STRIPS:
+		var texture := _texture(BIOME + "parallax/%s.png" % strip)
+		var image_scale := VIEW_SIZE.y / texture.get_height()
+		var period := texture.get_width() * image_scale
+		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * FOREGROUND_SCALE.x) / period)) + 1
+		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, copies, z, false)
+		z += 1
+		var reference_y := center_min.y if strip == "foreground-top" else center_max.y
+		# On screen: top-left = base - scale * centre + VIEW_SIZE / 2. Solve for the base
+		# that puts the canvas top at the screen's top at the reference height, and its
+		# left edge at the screen's left at the room's left.
+		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
+		_layers.append([layer, FOREGROUND_SCALE, base])
+	# Borders are screen-tall too: fixed to the room's edge sideways (scroll scale 1) and
+	# pinned to the screen's top and bottom (scroll scale 0), so a room taller than one
+	# screen never shows the canvas's cut top or bottom edge.
+	for border in BORDERS:
+		var texture := _texture(BIOME + "parallax/%s.png" % border)
+		var image_scale := VIEW_SIZE.y / texture.get_height()
+		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, 1, z, false)
+		var width := texture.get_width() * image_scale
+		var x := 0.0 if border == "border-left" else _room_size.x - width
+		_layers.append([layer, Vector2(1.0, 0.0), Vector2(x, -VIEW_SIZE.y * 0.5)])
+
+
+## A layer of [param copies] side-by-side copies of one region of a texture. With
+## [param mirror], every other copy is flipped so the seams of a non-looping painting meet.
+func _strip_layer(parent: Node2D, texture: Texture2D, region: Rect2, image_scale: float,
+		copies: int, z: int, mirror := true) -> Node2D:
+	var layer := Node2D.new()
+	layer.z_index = z
+	for i in copies:
 		var sprite := Sprite2D.new()
 		sprite.texture = texture
 		sprite.centered = false
+		sprite.region_enabled = true
+		sprite.region_rect = region
 		sprite.scale = Vector2.ONE * image_scale
-		sprite.flip_h = at_end
-		sprite.material = fade
+		sprite.position = Vector2(i * region.size.x * image_scale, 0.0)
+		sprite.flip_h = mirror and i % 2 == 1
 		layer.add_child(sprite)
-		parent.add_child(layer)
-		_layers.append([layer, factor, center * factor - VIEW_SIZE * 0.5])
-
-
-func _process(_delta: float) -> void:
-	if _camera == null:
-		return
-	var center := _camera.get_screen_center_position()
-	for entry in _layers:
-		var layer: Node2D = entry[0]
-		var factor: Vector2 = entry[1]
-		layer.position = center * (Vector2.ONE - factor) + entry[2]
+	parent.add_child(layer)
+	return layer
