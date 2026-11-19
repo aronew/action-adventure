@@ -169,14 +169,15 @@ formulas:
       - design/gdd/level-design.md
     variables:
       - double_jump_total
+      - ledge_nudge
       - grapple_margin
       - max_non_grapple_crossing
       - far_face_extra
       - landing_slack
       - grapple_range
-    output_range: [121, 441]
-    expression: "F3a: target_height >= double_jump_total + grapple_margin; F3b: gap_width >= max_non_grapple_crossing + far_face_extra + landing_slack + grapple_margin"
-    notes: "F3. Ledge 121+ px (no_cling faces) or 151+ (8 px plain slab); gap 420-434+ px (no_cling far face) or 427-441+ (plain far face up to 16 px), over a kill plane only, never a hazard (a pogo refreshes the air moves); chain of at least two gate anchors; F8 test with keys 1-3 (ability-gating.md second design review)."
+    output_range: [126, 441]
+    expression: "F3a: target_height >= double_jump_total + ledge_nudge + grapple_margin, anchor at or above the ledge top with the near edge within exit_reach_min(h_a, theta) + landing_slack - anchor_margin; F3b: gap_width >= max_non_grapple_crossing + far_face_extra + landing_slack + grapple_margin"
+    notes: "F3. Ledge 126+ px (no_cling faces; was 121, third review added ledge_nudge) or 151+ (8 px plain slab); gap 420-434+ px (no_cling far face) or 427-441+ (plain far face up to 16 px), over a kill plane only, never a hazard (a pogo refreshes the air moves); chain of at least two gate anchors; F8 test with keys 1-3 (ability-gating.md second design review)."
     added: 2026-11-18
     revised: 2026-11-19
   - name: cling_wall
@@ -220,9 +221,9 @@ formulas:
       - landing_slack
       - anchor_margin
       - chain_window
-    output_range: [306, 402]
+    output_range: [176, 221]
     expression: "grapple hops <= grapple_range; far_x(a_n) <= exit_reach_min(h_n, theta_n) + landing_slack - anchor_margin; far_x(a_(n-1)) > release_reach(h_(n-1)) + landing_slack + anchor_margin; anchors hooked in order; hooking a gate anchor spends the air jump and air dash; no plain anchor within grapple_range of the flight envelope, no climbable or hittable in it"
-    notes: "F11. Output is the least far_x of the second-to-last anchor, px, for anchor heights h 50-200 above the far lip at anchor_margin 16. release_reach(h) (release plus a late jump-out) estimated 275-371, exit_reach_min(h, theta) (plain release) 162-285: 60 Hz sim, unmeasured. Second review: reaches depend on anchor height; the 147/293 example chain was rejected; climb restores air moves (ability-gating.md)."
+    notes: "F11. Output is the least far_x of the second-to-last anchor, px, for anchor heights h 50-200 above the far lip at anchor_margin 16. release_reach(h) estimated 145-190, exit_reach_min(h, theta) (plain release, no input; the intended last flight must land with no input) about 129-146 for a level hop, 14 at 60 deg: 60 Hz sim of the grapple and air states with the release ending after grapple_release_time (0.08 s, to add to player_config), unmeasured. Third review (ability-gating.md): the second review's 275-371 and 162-285 modelled the whole fall as the release and are withdrawn; example chain now 140/310 px over a 440 px chasm."
     added: 2026-11-18
     revised: 2026-11-19
   - name: wall_launch_reach
@@ -336,12 +337,12 @@ constants:
     notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash + knockback_travel), grown by body half-width: grunt 119, skitter 144, brute 63 px. Not in code (enemy_base.gd chases to lose_range). Registered here until the Enemies GDD exists; that GDD must adopt it."
     added: 2026-11-19
   - name: save_spacing_max
-    status: active
+    status: deprecated
     source: design/gdd/level-design.md
     referenced_by: []
     value: 7
     unit: screens
-    notes: "F4. New ground only, counted by screen position; range 7-10; optional branches held to the same limit."
+    notes: "Withdrawn 2026-11-19 (level-design.md eleventh review, owner): saves are placed by role (near bosses and mini-bosses, hubs, rewards) and spacing is judged in playtest; no distance rule, F4 removed. Was: F4, new ground counted by screen position, 7 screens, range 7-10."
     added: 2026-11-19
 
 # Example:
