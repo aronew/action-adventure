@@ -1,0 +1,66 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "straight_alpha": true,
+  "collision": false,
+  "draw_order": [
+    "playable-terrain",
+    "middle-strips-and-room-borders",
+    "nearest-dark-foreground"
+  ],
+  "middle_camera_motion_factor": 1.08,
+  "nearest_camera_motion_factor": 1.2,
+  "loop_period": 4096,
+  "piece_order": "A → B → A",
+  "layers": [
+    {
+      "name": "middle-ceiling",
+      "pieces": [
+        "middle-top-A.png",
+        "middle-top-B.png"
+      ],
+      "canvas_per_piece": [
+        2048,
+        512
+      ],
+      "position_y": 0,
+      "repeat_x": true
+    },
+    {
+      "name": "middle-bottom",
+      "pieces": [
+        "middle-bottom-A.png",
+        "middle-bottom-B.png"
+      ],
+      "canvas_per_piece": [
+        2048,
+        512
+      ],
+      "position_y": 568,
+      "repeat_x": true
+    },
+    {
+      "name": "left-room-border",
+      "file": "border-left.png",
+      "canvas": [
+        512,
+        1080
+      ],
+      "anchor": "room-left",
+      "repeat_x": false
+    },
+    {
+      "name": "right-room-border",
+      "file": "border-right.png",
+      "canvas": [
+        512,
+        1080
+      ],
+      "anchor": "room-right",
+      "repeat_x": false
+    }
+  ],
+  "notes": "AB images are prejoined alternatives to the two pieces, not additional layers. Use borders only at room boundaries. Strips have 512px canvases; visible art is at most 435px high. Bottom stays at most 112px high at each piece midpoint, with higher clusters toward piece ends. As the camera moves, clusters move across the screen; the central 210px horizontal band remains fully clear without borders."
+}

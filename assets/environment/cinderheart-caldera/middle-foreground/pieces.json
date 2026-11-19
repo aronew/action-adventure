@@ -1,0 +1,196 @@
+{
+  "canvas": [
+    2048,
+    2048
+  ],
+  "cell": [
+    512,
+    512
+  ],
+  "columns": 4,
+  "rows": 4,
+  "spacing": 0,
+  "margin": 0,
+  "alpha": "straight",
+  "collision": false,
+  "core": "nine-slice core uses indices 0,1,2 / 4,5,6 / 8,9,10. Repeat edge/fill cells to enlarge a black solid mass.",
+  "extras": "Indices 3,7,11–15 are free-placement scenery; overlap hidden ends where necessary. No automatic Wang/autotile rules.",
+  "pieces": [
+    {
+      "id": 0,
+      "role": "outer-top-left",
+      "rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "file": "pieces/00-outer-top-left.png"
+    },
+    {
+      "id": 1,
+      "role": "top-edge",
+      "rect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "file": "pieces/01-top-edge.png"
+    },
+    {
+      "id": 2,
+      "role": "outer-top-right",
+      "rect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "file": "pieces/02-outer-top-right.png"
+    },
+    {
+      "id": 3,
+      "role": "curved-column",
+      "rect": [
+        1536,
+        0,
+        512,
+        512
+      ],
+      "file": "pieces/03-curved-column.png"
+    },
+    {
+      "id": 4,
+      "role": "left-wall",
+      "rect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "file": "pieces/04-left-wall.png"
+    },
+    {
+      "id": 5,
+      "role": "solid-fill",
+      "rect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "file": "pieces/05-solid-fill.png"
+    },
+    {
+      "id": 6,
+      "role": "right-wall",
+      "rect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "file": "pieces/06-right-wall.png"
+    },
+    {
+      "id": 7,
+      "role": "hanging-overhang",
+      "rect": [
+        1536,
+        512,
+        512,
+        512
+      ],
+      "file": "pieces/07-hanging-overhang.png"
+    },
+    {
+      "id": 8,
+      "role": "outer-bottom-left",
+      "rect": [
+        0,
+        1024,
+        512,
+        512
+      ],
+      "file": "pieces/08-outer-bottom-left.png"
+    },
+    {
+      "id": 9,
+      "role": "underside",
+      "rect": [
+        512,
+        1024,
+        512,
+        512
+      ],
+      "file": "pieces/09-underside.png"
+    },
+    {
+      "id": 10,
+      "role": "outer-bottom-right",
+      "rect": [
+        1024,
+        1024,
+        512,
+        512
+      ],
+      "file": "pieces/10-outer-bottom-right.png"
+    },
+    {
+      "id": 11,
+      "role": "rounded-mound",
+      "rect": [
+        1536,
+        1024,
+        512,
+        512
+      ],
+      "file": "pieces/11-rounded-mound.png"
+    },
+    {
+      "id": 12,
+      "role": "concave-left",
+      "rect": [
+        0,
+        1536,
+        512,
+        512
+      ],
+      "file": "pieces/12-concave-left.png"
+    },
+    {
+      "id": 13,
+      "role": "concave-right",
+      "rect": [
+        512,
+        1536,
+        512,
+        512
+      ],
+      "file": "pieces/13-concave-right.png"
+    },
+    {
+      "id": 14,
+      "role": "arch-left",
+      "rect": [
+        1024,
+        1536,
+        512,
+        512
+      ],
+      "file": "pieces/14-arch-left.png"
+    },
+    {
+      "id": 15,
+      "role": "arch-right",
+      "rect": [
+        1536,
+        1536,
+        512,
+        512
+      ],
+      "file": "pieces/15-arch-right.png"
+    }
+  ]
+}
