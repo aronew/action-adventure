@@ -75,5 +75,5 @@
       "anchor": "room right boundary"
     }
   ],
-  "notes": "Top and bottom loop independently. Their full 1080px canvases align at y=0; do not additionally shift the bottom image downward. Artwork is confined to the top or bottom 435px, as requested in v5. Only these two foreground strips repeat; background, midground and side borders remain finite. Borders are separate optional room pieces. Use straight-alpha blending; foregrounds are decoration, not collision geometry."
+  "notes": "Top and bottom loop independently. Their full 1080px canvases align at y=0; do not additionally shift the bottom image downward. Artwork is confined to the top or bottom 435px, as requested in v5. Only these two foreground strips repeat; background, midground and side borders remain finite. Borders are separate optional room pieces. Use straight-alpha blending; foregrounds are decoration, not collision geometry. Brighter variant: RGB multiplied by 2.8; alpha and shapes preserved exactly."
 }

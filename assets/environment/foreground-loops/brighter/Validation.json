@@ -1,0 +1,170 @@
+{
+  "Drowned-Bell-Sanctum": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  },
+  "Amber-Hive-Catacombs": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  },
+  "Ashen-Root-Ossuary": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  },
+  "Cinderheart-Caldera": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  },
+  "Marrow-Vault": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  },
+  "Amethyst-Echo-Grotto": {
+    "foreground-top": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    },
+    "foreground-bottom": {
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height": 435,
+      "alpha_identical_to_dark": true,
+      "loop_edges_identical": true,
+      "A_B_join_identical": true,
+      "middle_435_to_644_clear": true,
+      "max_rgb": 78,
+      "brightness_multiplier": 2.8
+    }
+  }
+}
