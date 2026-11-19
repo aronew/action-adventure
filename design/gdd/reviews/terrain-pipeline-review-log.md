@@ -153,3 +153,46 @@ Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7
 Reviewed-Content-Hash: design/gdd/systems-index.md 9f98ef91610c9e8d88782a20ea7f81d24bc4b289
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+
+## Review — 2026-11-19 — Verdict: MAJOR REVISION NEEDED
+Review mode: full · Workflow: standard
+Scope signal: XL
+Specialists: game-designer, systems-designer, qa-lead, level-designer, godot-specialist, performance-analyst, technical-artist; creative-director (senior)
+Blocking items: 6 | Recommended: 13
+Summary: The player-facing design holds (grid, gate windows, T1, T4, registry values all reproduce; no registry conflict). All seven specialists found that T3's attached region fails at every concave corner (pit-floor trim measures the gap width), that T5's undefined "mass" leaves almost every real ledge unexempt, and that rule 12 and States deadlock `dressed` on the stored undressed-ground flag; the "small fixes stay small" promise is contradicted by prop flags and stale placement records. The creative director judged the revision approach non-converging (six rounds of prose algorithms, 74 KB) and recommended restructuring: keep player-facing guarantees in the GDD, move check and bake mechanics to a tools spec and the collision ADR, and freeze the GDD until the prototype room runs.
+Prior verdict resolved: Partly (decoration-flag blocker resolved; the T3 attached-region fix covers the mid-air gap but fails at concave corners)
+Findings:
+- [BLOCKING] T3: attached region connects floor trim at concave corners (pit floor, cling-wall foot, wall-attached ledge) to the wall's stretch; Example l.155 and AC l.340 false once a pit floor exists
+- [BLOCKING] T5 / rule 13: "mass" undefined; attached ledges never count as moved, so a one-tile move of a wall-attached 6 x 1 ledge flags (14 tiles)
+- [BLOCKING] Game Feel / rule 13 / AC l.332: a one-tile platform move flags every "reads solid" prop on it and leaves gate placement records on the old tiles
+- [BLOCKING] Rule 12 / States: "any flag" and "no flag open" deadlock against the stored undressed-ground flag closed only by `dressed`
+- [BLOCKING] T3: "game px" scale and the 8-bit alpha threshold undefined
+- [BLOCKING] Rules 10 / 13 / Edge Cases: spawn points and exits fingerprinted by rule 10 but absent from rule 13's edit list
+- [RECOMMENDED] Structure: move T3 pixel method, T5 matching, fingerprints, config hash, flag lifecycle, save hooks and pre-export command to a tools spec and the collision ADR
+- [RECOMMENDED] Rules 11-12: room check and bake as a headless pre-export command; per-key config hash; save-hook re-entrancy; check-time budget
+- [RECOMMENDED] T3: resampling kernel, pixel-centre convention, source PNGs, per-asset profiles (flood fill estimated 1-40 s per 10-screen room)
+- [RECOMMENDED] AC l.346: draw calls and fps to [Play]; fixed node ceiling (OQ 11)
+- [RECOMMENDED] OQ 11: trim undershoot unbounded; move to an art-bible import bound
+- [RECOMMENDED] Rule 11: hard 4 px clip leaves a visible step at range ends mid-face
+- [RECOMMENDED] T1: read unrounded 164.4; k = 0 and open-ended windows; visible gap W - 2 x trim_overhang_max can read run-jumpable
+- [RECOMMENDED] Edge Cases (passage): floor(h/ct)+1; headroom restarts at a one-way top; optional crouch_h; flood fill from exits and spawns
+- [RECOMMENDED] T4: collinear solid and one-way tiles need two shapes; each segment inside one shape; coverage criterion
+- [RECOMMENDED] AC: split bundled criteria (l.322, l.327, l.328, l.340); label tooling-dependent criteria; [Shot] pass tests; missing criteria listed by qa-lead
+- [RECOMMENDED] Rule 6 / tuning: dry-run report before tuning changes; derive record ranges from a gate marker
+- [RECOMMENDED] Prop catalogue and signatures: hash source texture beside the mark; corner-trim spec; groove phase; relief clipped
+- [RECOMMENDED] Memory: no ceiling (two biomes about 194 MB); 1-bit baseline mask; constant-node trim build
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard)
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md c9926228b75b22697b58e21156dd851865ecef5b
+Reviewed-Content-Hash: design/registry/entities.yaml 81257fdc2577f75fec1f661554d6561892157fff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md a58f0b60b6813efb5c73000584307ebaef4a904b
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae

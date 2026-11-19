@@ -275,10 +275,10 @@ formulas:
       - lo
       - hi
     output_range: [0, null]
-    expression: "on_grid(lo, hi) = { k x collision_tile : ceil(lo / collision_tile) <= k <= floor(hi / collision_tile) }"
-    notes: "T1. The gate figures the 6 px grid allows inside a window owned by ability gating or level design: dash gap 150, 156 (162 sits exactly on gap_max, unused until measured); F2 ledge 72-102 step 6; F3a slab underside 144+; F3b plain far face 12 or less; pane 12. An empty set fails the layout check as gate type unbuildable."
+    expression: "on_grid(lo, hi) = { k x collision_tile : ceil(lo / collision_tile) <= k <= floor(hi / collision_tile), k >= 0 }"
+    notes: "T1. The gate figures the 6 px grid allows inside a window owned by ability gating or level design, with lo and hi computed from the owner's formula at the current player_config (never rounded figures): dash gap 150, 156 (gap_max 161.4 from the sim's dash_jump_distance 164.4; 162 enters only if a measured value reaches 165); F2 ledge 72-102 step 6; F3a slab underside 144+; F3b plain far face 0, 6 or 12; pane 12. An open-ended window takes hi = room size. An empty set fails the layout check as gate type unbuildable."
     added: 2026-11-19
-    revised: ""
+    revised: 2026-11-19
   - name: band_on_grid
     status: deprecated
     source: design/gdd/terrain-pipeline.md
