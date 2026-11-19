@@ -317,7 +317,7 @@ constants:
     referenced_by: []
     value: 250   # was 140 (start-kit run-speed carry); level-design.md ninth design review
     unit: px
-    notes: "F7. F2 and F6a column gates, whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
+    notes: "F7. F2, F6a and F6b column gates (fifteenth review added F6b, the climb wall), whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
     added: 2026-11-19
     revised: 2026-11-19
   - name: pogo_clearance_f3a_px
@@ -334,7 +334,7 @@ constants:
     referenced_by: []
     value: 48   # range 24-96, Rec; level-design.md tenth design review
     unit: px
-    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash), grown by body half-width, a vertical strip for a ground enemy (fourteenth review: the hurt state has no floor-edge check, so a knockback off a ledge could land the enemy in a gate volume below; the placement check compares x-ranges at any height), a hard clamp on every source of horizontal motion (twelfth review: take_hit restarts the push on every hit, so pushes stack; thirteenth review: _state_attack lunges, skitter about 126 px with its slide-out): grunt 103, skitter 118, brute 59 px. Not in code (enemy_base.gd chases to lose_range, re-homes where a chase stopped, sets unlimited knockback per hit and lunges unclamped). Registered here until the Enemies GDD exists; that GDD must adopt it."
+    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash), grown by body half-width, a vertical strip for a ground enemy (fourteenth review: the hurt state has no floor-edge check, so a knockback off a ledge could land the enemy in a gate volume below; the placement check compares x-ranges at any height), a hard clamp on every source of horizontal motion (twelfth review: take_hit restarts the push on every hit, so pushes stack; thirteenth review: _state_attack lunges, skitter about 126 px with its slide-out): grunt 103, skitter 118, brute 59 px. Fifteenth review: a stranded enemy walks toward its spawn x, else patrols in place (the clamp anchors to the original spawn x), and an enemy knocked out of its room reappears at its spawn point. Not in code (enemy_base.gd chases to lose_range, re-homes where a chase stopped, sets unlimited knockback per hit and lunges unclamped). Registered here until the Enemies GDD exists; that GDD must adopt it."
     added: 2026-11-19
   - name: save_spacing_max
     status: deprecated

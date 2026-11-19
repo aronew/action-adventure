@@ -380,3 +380,28 @@ Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
 Reviewed-Content-Hash: src/enemies/enemy.tscn f72794131df1e34b9aa5a3efaf9e5fa9305cee4f
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 4
+Summary: The fourteenth review's vertical strip holds against enemy_base.gd (take_hit, _state_attack and _floor_ahead match rule 24), and every registry value the GDD restates agrees (21 lines for pogo_clearance_px, pogo_clearance_f3a_px, pogo_far_ext, hazard_pit_depth_min and chase_leash; leash bounds, knockback_travel, lunge_travel, pogo_rise, hazard_pogo_reach, the pogo hitbox reaches and F5's example re-derived). One blocker: climb walls (F6b), a wall-cling gate in the key table, had no gate volume in rule 24, F7 or the placement criterion, although a pogo off a hittable at the foot of a 72-97 px climb wall tops it exactly as for a cling wall. Revised in the same session with the owner's decisions; the GDD and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full. Stamps cover only the files this review read.
+Prior verdict resolved: Yes (2026-11-19 fourteenth review: leash bound had no vertical extent, now a vertical strip)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Acceptance Criteria: climb walls (F6b) had no pogo gate volume (fixed: F6b joins the column gates at pogo_clearance_px, F7 example and criterion case, registry note)
+- [RECOMMENDED] Core Rules (rule 24) / F7: the strip rejects x-overlap at every height, even with solid mass between the enemy's floor and the gate (owner: keep the strict rule; a fall-reachable refinement recorded in Open Question 21)
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a stranded enemy's walk-back was undefined (fixed, owner: walks toward its spawn x, else patrols in place; clamp anchored to the spawn x; unit-test case added)
+- [RECOMMENDED] Edge Cases: an enemy knocked out of its room had no rule (fixed, owner: reappears at its spawn point after a short delay; Enemies and Rooms GDDs adopt it)
+- [RECOMMENDED] Formulas (F7 example): "20 px short of the span" ambiguous against pogo_far_ext (fixed: the gate volume's x-range)
+- [ADVISORY] GDD is about 84 KB and rule 24 is one long paragraph (split the placement check from the enemy-code contract); the sweep criterion is compound; knockback_travel, lunge_travel, leash_bound and the pogo carries not registered; kiln-city-level-integration.md still says saves within 7 screens; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md 3123c7e604dc8b6ba45962c5e450eda586be42cd
+Reviewed-Content-Hash: design/registry/entities.yaml 6f44a191bf5172363b2fb0046f2543e5ed8b4321
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
