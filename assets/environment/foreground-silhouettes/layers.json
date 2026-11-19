@@ -1,0 +1,57 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "pieces": [
+    {
+      "id": "A",
+      "file": "Foreground-Bottom-A.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 0,
+      "y": 568
+    },
+    {
+      "id": "B",
+      "file": "Foreground-Bottom-B.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 2048,
+      "y": 568
+    },
+    {
+      "id": "C",
+      "file": "Foreground-Bottom-C.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 4096,
+      "y": 568
+    }
+  ],
+  "repeat_order": [
+    "A",
+    "B",
+    "C"
+  ],
+  "repeat_period_x": 6144,
+  "joined_alternative": "Foreground-Bottom-ABC-Loop.png",
+  "pair_alternatives": [
+    "pairs/Foreground-Bottom-AB.png",
+    "pairs/Foreground-Bottom-BC.png",
+    "pairs/Foreground-Bottom-CA.png"
+  ],
+  "all_pair_orders_supported": true,
+  "colour": "#000000",
+  "alpha": "straight",
+  "z_order": 20,
+  "camera_motion_factor": 1.2,
+  "collision": false,
+  "notes": "Use individual pieces in sequence or the joined ABC loop, not both at once. Align bottoms to screen bottom. Pair PNGs are convenience joins, not separate depth layers."
+}

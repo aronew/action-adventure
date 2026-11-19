@@ -1,0 +1,80 @@
+{
+  "pieces": [
+    {
+      "piece": "A",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 339,
+      "new": false,
+      "source_canvas": null
+    },
+    {
+      "piece": "B",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 320,
+      "new": false,
+      "source_canvas": null
+    },
+    {
+      "piece": "C",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 311,
+      "new": false,
+      "source_canvas": null
+    },
+    {
+      "piece": "D",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 480,
+      "new": true,
+      "source_canvas": [
+        2172,
+        724
+      ]
+    },
+    {
+      "piece": "E",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 468,
+      "new": true,
+      "source_canvas": [
+        2172,
+        724
+      ]
+    },
+    {
+      "piece": "F",
+      "canvas": [
+        2048,
+        512
+      ],
+      "visible_height": 492,
+      "new": true,
+      "source_canvas": [
+        2172,
+        724
+      ]
+    }
+  ],
+  "ordered_pairs_checked": 36,
+  "all_joins_exact_RGBA": true,
+  "join_pixel_comparisons": 18432,
+  "original_ABC_unchanged": true,
+  "all_RGB_zero": true,
+  "source_method": "Built-in image generation followed by pure-black normalization, visible-height normalization and compatible low-base endpoints.",
+  "engine_tested": false
+}
