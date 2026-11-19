@@ -337,12 +337,12 @@ constants:
     notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash + knockback_travel), grown by body half-width: grunt 119, skitter 144, brute 63 px. Not in code (enemy_base.gd chases to lose_range). Registered here until the Enemies GDD exists; that GDD must adopt it."
     added: 2026-11-19
   - name: save_spacing_max
-    status: active
+    status: deprecated
     source: design/gdd/level-design.md
     referenced_by: []
     value: 7
     unit: screens
-    notes: "F4. New ground only, counted by screen position; range 7-10; optional branches held to the same limit."
+    notes: "Withdrawn 2026-11-19 (level-design.md eleventh review, owner): saves are placed by role (near bosses and mini-bosses, hubs, rewards) and spacing is judged in playtest; no distance rule, F4 removed. Was: F4, new ground counted by screen position, 7 screens, range 7-10."
     added: 2026-11-19
 
 # Example:

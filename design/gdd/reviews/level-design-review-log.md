@@ -262,3 +262,33 @@ Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b
 Reviewed-Content-Hash: design/gdd/level-design.md 933369ab033e08191d5245f88b4adb68ac8c5ecc
 Reviewed-Content-Hash: design/registry/entities.yaml f8bf7a3e1c6f3551b787f63e74ad0cf1287dc018
 Reviewed-Content-Hash: design/gdd/ability-gating.md 8755589bf5ec7f0e76e6544671c5e912ed13d98b
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 4
+Summary: The tenth review's leash blocker is resolved and the F5 and F7 arithmetic re-derives; every registry value the GDD restates agrees. Two owner changes made after that review (8 regions; large rooms with open-edge exits) were unreviewed. The large-rooms change updated rules 1, 9, 11, 13, 17 and 18 but not F4: F4 counted screens two ways (screens the walk enters, or every screen of each room), which differ in a non-linear room (a 4x5 cavern crossed along one row: 4 or 20), so the save checker could not be written. Owner decisions, revised in the same session: saves placed by role (near bosses, hubs, rewards) with no distance rule and no data check, judged in playtest as in Hollow Knight and Silksong (F4 withdrawn, `save_spacing_max` deprecated); room sizes unnumbered (a 10-screen room is ordinary); key distance judged in playtest; a fall exit never leads past a gate without its key (rule 27). The GDD and registry hash stamps below are of the files as reviewed (HEAD, before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 tenth review: enemy leash in rule 24, F7, Edge Cases, the leash unit test and Open Question 21)
+Findings:
+- [BLOCKING] Formulas (F4) / rules 1, 9, 15, 16: save spacing and key distance could not be counted in large rooms (fixed: saves by role, no distance rule; F4 withdrawn; rule 9 without a number; save sections allowed in large rooms; ACs, Tuning Knobs, Edge Cases, dependencies and Open Questions 5 and 18 updated; owner)
+- [RECOMMENDED] Acceptance Criteria (rule 11): workshop criterion required the next room, the rule allows a section of the pickup room (fixed)
+- [RECOMMENDED] Core Rules (rule 1, open edges): a pit or bottom edge could drop into a room that leads around a gate (fixed: rule 27, an Edge Case and a room-graph criterion; owner)
+- [RECOMMENDED] Open Questions (17): "this branch does not have that change yet" was stale; the brief now records 1920x1080 (fixed)
+- [RECOMMENDED] Open Questions (18) / F4: region 1 save legs followed the small-room draft (fixed: superseded, noted in Open Question 18)
+- [ADVISORY] Funnel criterion's min(k - 1, 6) redundant (fixed); ability gating still called "In Design" (its header too; update together); upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md cb3c26ae74d3abc81f90d66ade871ff402cc136b
+Reviewed-Content-Hash: design/registry/entities.yaml 0cb8b52c14be7e5dccf83edffc5259c406a3488c
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 13f0d21644ef2ae8bb423478a9f74c87a1bf0555
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
