@@ -94,7 +94,7 @@ A tougher guarded enemy, region 1's mini-boss (Keeper Tavik, the Hot-Carrier), m
 ## Out of scope
 - Multiplayer, crafting, loot and shops
 - Full story and dialogue (lore comes after the core feels good)
-- More than one region in the core build (the full game is 5 regions); localization
+- More than one region in the core build (the full game is 8 regions, one per biome; you chose, 2026-11-19); localization
 - Bow, spell casts, elemental palette power-ups and the Dream Seeker state (after the core feels good)
 
 ## Build order
