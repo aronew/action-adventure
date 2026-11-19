@@ -1,0 +1,284 @@
+{
+  "Drowned-Bell-Sanctum": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": true,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  },
+  "Amber-Hive-Catacombs": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  },
+  "Ashen-Root-Ossuary": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  },
+  "Cinderheart-Caldera": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  },
+  "Marrow-Vault": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  },
+  "Amethyst-Echo-Grotto": {
+    "top": {
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": false,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "bottom": {
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "visible_height_alpha_gt8": 435,
+      "outer_band_limit": 435,
+      "middle_y_435_through_644_fully_transparent": true,
+      "max_rgb_channel": 28,
+      "full_loop_edge_rgba_equal": true,
+      "half_A_to_B_edge_rgba_equal": true,
+      "half_B_to_A_edge_rgba_equal": true,
+      "alpha_mode": "straight",
+      "native_source_size": [
+        2172,
+        724
+      ],
+      "source_reoriented": false,
+      "source_pale_matte_removed": true,
+      "readability": "Full original-pack-style shaded clusters, broad fronds and softly faceted mounds; no flat terrain slabs or platforms."
+    },
+    "approved_side_borders_preserved": true
+  }
+}

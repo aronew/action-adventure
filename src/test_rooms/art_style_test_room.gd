@@ -103,12 +103,14 @@ const HANGING_PROPS := [
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
-## Foreground strips: on screen they move faster than the play layer. The article's
-## weights of -1 (x) and -0.1 (y) are scroll scales of 2.0 and 1.1 here.
-const FOREGROUND_SCALE := Vector2(2.0, 1.1)
-## Stand-in strips cut from the pack's single foreground painting (top half, bottom
-## half) until the owner's own repeating strips replace them.
-const FOREGROUND_SPLIT := 0.5
+## Foreground strips (the owner's v5 loops): on screen they move faster than the play
+## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
+## up and down 1.1, the GameMaker article's vertical weight of -0.1.
+const FOREGROUND_SCALE := Vector2(1.2, 1.1)
+## Each loop is a full screen-height canvas (3840x1080) that repeats every 3840 px.
+const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
+## Optional room-end pieces from the same pack, placed at this test room's dead ends.
+const BORDERS := ["border-left", "border-right"]
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
 var _textures := {}
@@ -345,39 +347,47 @@ func _add_back_layers(parent: Node2D) -> void:
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## Foreground: a top strip hanging from the room's ceiling line and a bottom strip rising
-## from its floor line, both in the world, both repeating sideways (mirrored, so the
-## seams meet). The top strip lines up with the top of the screen when the camera is at
-## the room's top; the bottom strip with the bottom of the screen when it is at the floor.
+## Foreground: the top and bottom loops, both in the world, both repeating sideways.
+## Each canvas is a screen tall with its art at the top or bottom, so the top loop's
+## canvas meets the screen's top when the camera is at the room's top, and the bottom
+## loop's canvas meets it when the camera is at the room's floor. Then the room-end
+## borders at the room's left and right edges.
 func _add_foreground(parent: Node2D) -> void:
-	var texture := _texture(BIOME + "parallax/foreground.png")
-	var size := texture.get_size()
-	var image_scale := VIEW_SIZE.x / size.x
-	var split := size.y * FOREGROUND_SPLIT
 	var camera_travel := _room_size - VIEW_SIZE
-	var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * FOREGROUND_SCALE.x) / VIEW_SIZE.x)) + 1
 	var center_min := VIEW_SIZE * 0.5
 	var center_max := _room_size - VIEW_SIZE * 0.5
-	var strips := [
-		[Rect2(0, 0, size.x, split), 0.0, center_min.y],
-		[Rect2(0, split, size.x, size.y - split), VIEW_SIZE.y - (size.y - split) * image_scale,
-				center_max.y],
-	]
-	for strip in strips:
-		var layer := _strip_layer(parent, texture, strip[0], image_scale, copies, 10)
+	var z := 10
+	for strip in FOREGROUND_STRIPS:
+		var texture := _texture(BIOME + "parallax/%s.png" % strip)
+		var image_scale := VIEW_SIZE.y / texture.get_height()
+		var period := texture.get_width() * image_scale
+		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * FOREGROUND_SCALE.x) / period)) + 1
+		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, copies, z, false)
+		z += 1
+		var reference_y := center_min.y if strip == "foreground-top" else center_max.y
 		# On screen: top-left = base - scale * centre + VIEW_SIZE / 2. Solve for the base
-		# that puts the strip's top at the wanted screen y when the camera is at the
-		# reference height, and its left edge at the screen's left at the room's left.
-		var base := Vector2(
-				FOREGROUND_SCALE.x * center_min.x - VIEW_SIZE.x * 0.5,
-				strip[1] + FOREGROUND_SCALE.y * strip[2] - VIEW_SIZE.y * 0.5)
+		# that puts the canvas top at the screen's top at the reference height, and its
+		# left edge at the screen's left at the room's left.
+		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
 		_layers.append([layer, FOREGROUND_SCALE, base])
+	# Borders are screen-tall too: fixed to the room's edge sideways (scroll scale 1) and
+	# pinned to the screen's top and bottom (scroll scale 0), so a room taller than one
+	# screen never shows the canvas's cut top or bottom edge.
+	for border in BORDERS:
+		var texture := _texture(BIOME + "parallax/%s.png" % border)
+		var image_scale := VIEW_SIZE.y / texture.get_height()
+		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, 1, z, false)
+		var width := texture.get_width() * image_scale
+		var x := 0.0 if border == "border-left" else _room_size.x - width
+		_layers.append([layer, Vector2(1.0, 0.0), Vector2(x, -VIEW_SIZE.y * 0.5)])
 
 
-## A layer of [param copies] side-by-side copies of one region of a texture, every
-## other copy mirrored so the seams meet.
+## A layer of [param copies] side-by-side copies of one region of a texture. With
+## [param mirror], every other copy is flipped so the seams of a non-looping painting meet.
 func _strip_layer(parent: Node2D, texture: Texture2D, region: Rect2, image_scale: float,
-		copies: int, z: int) -> Node2D:
+		copies: int, z: int, mirror := true) -> Node2D:
 	var layer := Node2D.new()
 	layer.z_index = z
 	for i in copies:
@@ -388,7 +398,7 @@ func _strip_layer(parent: Node2D, texture: Texture2D, region: Rect2, image_scale
 		sprite.region_rect = region
 		sprite.scale = Vector2.ONE * image_scale
 		sprite.position = Vector2(i * region.size.x * image_scale, 0.0)
-		sprite.flip_h = i % 2 == 1
+		sprite.flip_h = mirror and i % 2 == 1
 		layer.add_child(sprite)
 	parent.add_child(layer)
 	return layer
