@@ -131,10 +131,22 @@ const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
 ## height (else to one screen, top-aligned, for a corridor that is less than a screen
 ## tall). The open cave's left border at the room's left end; the corridor's right border
 ## over the rock wall that closes the corridor.
+## Then the z order, and how far it slides past the room's edge (world px): the middle
+## layer's left border is a solid column 100 px wide at room height, so it is pushed
+## 62 px past the room's left edge to frame the wall without covering the spawn point.
 const BORDERS := [
-	["parallax/border-left.png", true, true],
-	["corridor/brighter/border-right.png", false, false],
+	["middle-strips/border-left.png", true, true, MIDDLE_Z, 62.0],
+	["corridor/brighter/border-right.png", false, false, 12, 0.0],
 ]
+## Middle layer (the owner's middle-strips/layers.json): top and bottom loops between the
+## playable terrain and the dark nearest strips, at scroll scale 1.08, over the open cave
+## only. Each loop is the prejoined A+B piece (4096x512, repeating every 4096 px). The top
+## canvas meets the screen's top with the camera at the room's top; the bottom canvas
+## sits at screen y 568 of 1080 with the camera at the room's floor.
+const MIDDLE_SCALE := Vector2(1.08, 1.08)
+const MIDDLE_Z := 5
+const MIDDLE_STRIPS := [["middle-top-AB", 0.0], ["middle-bottom-AB", 568.0]]
+const REFERENCE_HEIGHT := 1080.0
 ## Camera dead zone in this room (fractions of half the screen): a jump stays inside it,
 ## so the view only scrolls up near the top and follows real falls. The bottom margin
 ## (0.3 = 40 px) is a little larger than the camera's fall lead (36 px), so a normal
@@ -421,6 +433,7 @@ func _add_foreground(parent: Node2D) -> void:
 	# the room's top there, so both loops are set for that height.
 	_add_foreground_set(open_mask, "parallax/", center_min.y, center_max.y)
 	_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
+	_add_middle_strips(parent, mouth)
 	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
 	for border in BORDERS:
 		var texture := _texture(BIOME + border[0])
@@ -430,10 +443,33 @@ func _add_foreground(parent: Node2D) -> void:
 		sprite.texture = texture
 		sprite.centered = false
 		sprite.scale = Vector2.ONE * image_scale
-		sprite.z_index = 12
+		sprite.z_index = border[3]
 		var width := texture.get_width() * image_scale
-		sprite.position = Vector2(0.0 if border[1] else _room_size.x - width, 0.0)
+		var slide: float = border[4]
+		sprite.position = Vector2(-slide if border[1] else _room_size.x - width + slide, 0.0)
 		parent.add_child(sprite)
+
+
+## The middle layer's two loops over the open cave, fading out at the corridor's mouth.
+func _add_middle_strips(parent: Node2D, mouth: float) -> void:
+	var mask := _blend_mask(parent, 0.0, mouth + LAYER_BLEND * 0.5, false, MIDDLE_Z)
+	var camera_travel := _room_size - VIEW_SIZE
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var screen_scale := VIEW_SIZE.y / REFERENCE_HEIGHT
+	for strip in MIDDLE_STRIPS:
+		var texture := _texture(BIOME + "middle-strips/%s.png" % strip[0])
+		var period := texture.get_width() * screen_scale
+		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * MIDDLE_SCALE.x) / period)) + 1
+		var layer := _strip_layer(mask, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				screen_scale, copies, 0, false)
+		var top: bool = strip[0] == "middle-top-AB"
+		var reference_y := center_min.y if top else center_max.y
+		var screen_y: float = strip[1] * screen_scale
+		# On screen: top-left = base - scale * centre + VIEW_SIZE / 2.
+		var base := MIDDLE_SCALE * Vector2(center_min.x, reference_y) \
+				+ Vector2(0.0, screen_y) - VIEW_SIZE * 0.5
+		_layers.append([layer, MIDDLE_SCALE, base])
 
 
 ## One set of top and bottom foreground loops from [param folder], under [param mask].
