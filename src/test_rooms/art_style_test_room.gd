@@ -164,6 +164,12 @@ var ground_props: Array = GROUND_PROPS
 var hanging_props: Array = HANGING_PROPS
 var spawn_point := SPAWN_POINT
 var help_text := HELP_TEXT
+## The corridor's first column, or -1 for a room with no corridor (then the open cave's
+## layers cover the whole room); its props; and the room-end borders.
+var corridor_start_col := CORRIDOR_START_COL
+var corridor_ground_props: Array = CORRIDOR_GROUND_PROPS
+var corridor_hanging_props: Array = CORRIDOR_HANGING_PROPS
+var borders: Array = BORDERS
 
 var _textures := {}
 var _camera: Camera2D
@@ -202,12 +208,12 @@ func _ready() -> void:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
-	for entry in CORRIDOR_GROUND_PROPS:
+	for entry in corridor_ground_props:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
 	var corridor_ceiling := 2.0 * CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
-	for entry in CORRIDOR_HANGING_PROPS:
+	for entry in corridor_hanging_props:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], corridor_ceiling - bounds[1] * s - PROP_SINK)
@@ -432,19 +438,22 @@ func _add_back_layers(parent: Node2D) -> void:
 ## room with a soft blend at the corridor's mouth. Both sets live in the world and repeat
 ## sideways. Then the room-end borders.
 func _add_foreground(parent: Node2D) -> void:
-	var mouth := CORRIDOR_START_COL * CELL
+	var has_corridor := corridor_start_col >= 0
+	var mouth := corridor_start_col * CELL if has_corridor else _room_size.x + LAYER_BLEND
 	var open_mask := _blend_mask(parent, 0.0, mouth + LAYER_BLEND * 0.5, false, 10)
-	var corridor_mask := _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x, true, 10)
+	var corridor_mask: Node2D = _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x,
+			true, 10) if has_corridor else null
 	var center_min := VIEW_SIZE * 0.5
 	var center_max := _room_size - VIEW_SIZE * 0.5
 	# Open cave: the top loop meets the screen's top with the camera at the room's top,
 	# the bottom loop with the camera at the room's floor. Corridor: the camera stays at
 	# the room's top there, so both loops are set for that height.
 	_add_foreground_set(open_mask, "parallax/", center_min.y, center_max.y)
-	_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
+	if has_corridor:
+		_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
 	_add_middle_strips(parent, mouth)
 	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
-	for border in BORDERS:
+	for border in borders:
 		var texture := _texture(BIOME + border[0])
 		var height := _room_size.y if border[2] else VIEW_SIZE.y
 		var image_scale := height / texture.get_height()
@@ -505,7 +514,9 @@ func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_re
 ## The corridor's close rear wall: a loop just behind the play layer (scroll scale 0.85),
 ## masked to the corridor so the open cave keeps its distant background.
 func _add_corridor_wall(parent: Node2D) -> void:
-	var mouth := CORRIDOR_START_COL * CELL
+	if corridor_start_col < 0:
+		return
+	var mouth := corridor_start_col * CELL
 	var mask := _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x, true, -10)
 	var texture := _texture(BIOME + "corridor/background-loop.png")
 	var image_scale := VIEW_SIZE.y / texture.get_height()

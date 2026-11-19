@@ -64,3 +64,12 @@ func _init() -> void:
 	hanging_props = LONG_HANGING_PROPS
 	spawn_point = LONG_SPAWN_POINT
 	help_text = LONG_HELP_TEXT
+	# This room has no corridor: the open cave's layers cover all of it, and it keeps the
+	# open cave's right border at its far end.
+	corridor_start_col = -1
+	corridor_ground_props = []
+	corridor_hanging_props = []
+	borders = [
+		["middle-strips/border-left.png", true, true, MIDDLE_Z, 62.0],
+		["parallax/border-right.png", false, true, 12, 0.0],
+	]
