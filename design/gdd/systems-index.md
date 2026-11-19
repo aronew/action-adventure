@@ -35,7 +35,7 @@ Notes by area (balanced density):
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
 | 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
-| 9 | Ability gating | Progression | MVP | In Review (second design review 2026-11-19: NEEDS REVISION, 3 blockers revised (pogoable spikes: F1 hazard floor at hazard_pit_depth_min 84, F3b kill plane only; climb restores air moves, no climbable in a grapple gate's flight envelope; F11 reaches by anchor height, old example chain rejected); awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft); supplies Terrain pipeline its `no_cling` and pane materials |
+| 9 | Ability gating | Progression | MVP | Approved (fourth design review 2026-11-19, lean: APPROVED, 0 blockers, 7 recommended revisions open (F11 skip bound to add `far_face_extra`; F3a arrival pose and swept-box pull check; split the sweep AC; release-time AC to state 141 ± 10 px; grapple chain one-way, say so; `grapple_margin` start value; dash bisque vs reserved orange); F11 reach table independently re-simulated from `player.gd` and reproduced within about 1.5 px. Third design review 2026-11-19: NEEDS REVISION, 1 blocker revised (F11 reach table re-simulated from the code: the release ends after `grapple_release_time` 0.08 s, then ordinary air physics; reaches about 40% shorter, example chain now 140/310 px); owner decisions: last flight lands with no input, release time a config knob, F3a adds `ledge_nudge` (126 px); awaiting re-review. Second design review 2026-11-19: NEEDS REVISION, 3 blockers revised (pogoable spikes: F1 hazard floor at hazard_pit_depth_min 84, F3b kill plane only; climb restores air moves, no climbable in a grapple gate's flight envelope; F11 reaches by anchor height, old example chain rejected); awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat; supplies Terrain pipeline its `no_cling` and pane materials |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
@@ -107,7 +107,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 2. Guard-break: Combat.
 3. Enemies: Combat, Health/damage/death.
 4. Bosses: Guard-break, Enemies.
-5. Ability gating: Player controller, World state, Combat (soft). Terrain pipeline builds the `no_cling` and bisque pane materials it defines (a contract, not a design-order dependency: the pipeline stays Foundation).
+5. Ability gating: Player controller, World state, Combat (hard: the pogo and the `hittable` group decide which gates leak; it said soft before the third design review, 2026-11-19). Terrain pipeline builds the `no_cling` and bisque pane materials it defines (a contract, not a design-order dependency: the pipeline stays Foundation).
 6. Level design and world layout: Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
 7. Save points and save/load: World state, Rooms and transitions.
 8. Collectible upgrades: World state, Level design.
