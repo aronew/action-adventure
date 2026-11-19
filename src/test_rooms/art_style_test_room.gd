@@ -124,15 +124,16 @@ const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 ## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
 ## slabs, pieces A, B, C repeating, between the far layers and the playable terrain. It
 ## scrolls at CLOSE_ROCKS_SCALE (the pack suggests 0.75) and is drawn after the midground
-## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. Its
-## bottom meets the screen's bottom with the camera at the room's floor, so the rocks rise
-## from behind the lowest floor; CLOSE_ROCKS_DROP moves the band down (world px). The
-## corridor's own rear wall is drawn in front of it. Empty folder: no band.
+## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. With
+## the camera at the room's bottom, the band's bottom sits CLOSE_ROCKS_SINK world px below
+## the room's lowest floor line, so the rocks rise from just behind the floors (and a
+## little higher behind higher floors as the camera climbs, since the band scrolls
+## slower). The corridor's own rear wall is drawn in front of it. Empty folder: no band.
 const CLOSE_ROCKS := "close-rocks/"
 const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
 const CLOSE_ROCKS_SCALE := 0.75
 const CLOSE_ROCKS_Z := -12
-const CLOSE_ROCKS_DROP := 0.0
+const CLOSE_ROCKS_SINK := 12.0
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -620,14 +621,21 @@ func _add_close_rocks(parent: Node2D) -> void:
 		x += texture.get_width() * image_scale
 		height = texture.get_height() * image_scale
 		i += 1
+	# The lowest floor line: the lowest open cell standing on solid ground.
+	var floor_y := 0.0
+	for row in grid.size() - 1:
+		for col in grid[0].length():
+			if not _solid(col, row) and _solid(col, row + 1):
+				floor_y = maxf(floor_y, (row + 1) * CELL)
 	# On screen: top-left = base - factor * centre + VIEW_SIZE / 2. The band's left edge
-	# meets the screen's left at the room's left; its bottom meets the screen's bottom
-	# with the camera at the room's floor.
+	# meets the screen's left at the room's left; with the camera at the room's bottom,
+	# its bottom sits CLOSE_ROCKS_SINK below the lowest floor.
 	var factor := Vector2.ONE * CLOSE_ROCKS_SCALE
 	var center_min := VIEW_SIZE * 0.5
 	var center_max := _room_size - VIEW_SIZE * 0.5
+	var bottom_on_screen := floor_y - center_max.y + VIEW_SIZE.y * 0.5 + CLOSE_ROCKS_SINK
 	var base := factor * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5 \
-			+ Vector2(0.0, VIEW_SIZE.y - height + CLOSE_ROCKS_DROP)
+			+ Vector2(0.0, bottom_on_screen - height)
 	_layers.append([layer, factor, base])
 
 
