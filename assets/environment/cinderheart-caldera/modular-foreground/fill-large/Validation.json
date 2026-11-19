@@ -1,0 +1,12 @@
+{
+  "combined_fill_tiles": 28,
+  "new_variants": 12,
+  "large_1024_features": 3,
+  "feature_parts_512": 12,
+  "ordered_fill_pairs_checked": 784,
+  "RGBA_boundary_pixel_comparisons": 802816,
+  "all_upright_fill_pairs_compatible": true,
+  "all_feature_outer_edges_compatible_with_fill": true,
+  "opaque": true,
+  "engine_tested": false
+}

@@ -1,0 +1,174 @@
+{
+  "image": "Combined-FillTileSet.png",
+  "canvas": [
+    2048,
+    3584
+  ],
+  "columns": 4,
+  "rows": 7,
+  "cell": [
+    512,
+    512
+  ],
+  "margin": 0,
+  "spacing": 0,
+  "existing_ids": [
+    0,
+    15
+  ],
+  "new_ids": [
+    16,
+    27
+  ],
+  "new_variants": [
+    {
+      "id": 16,
+      "file": "tiles/fill-16.png",
+      "type": "Lava-Rock-Cluster",
+      "source_crop": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": 17,
+      "file": "tiles/fill-17.png",
+      "type": "Lava-Rock-Cluster",
+      "source_crop": [
+        36,
+        45,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 18,
+      "file": "tiles/fill-18.png",
+      "type": "Lava-Rock-Cluster",
+      "source_crop": [
+        406,
+        203,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 19,
+      "file": "tiles/fill-19.png",
+      "type": "Lava-Rock-Cluster",
+      "source_crop": [
+        226,
+        433,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 20,
+      "file": "tiles/fill-20.png",
+      "type": "Massive-Basalt-Boulders",
+      "source_crop": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": 21,
+      "file": "tiles/fill-21.png",
+      "type": "Massive-Basalt-Boulders",
+      "source_crop": [
+        36,
+        45,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 22,
+      "file": "tiles/fill-22.png",
+      "type": "Massive-Basalt-Boulders",
+      "source_crop": [
+        406,
+        203,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 23,
+      "file": "tiles/fill-23.png",
+      "type": "Massive-Basalt-Boulders",
+      "source_crop": [
+        226,
+        433,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 24,
+      "file": "tiles/fill-24.png",
+      "type": "Fractured-Obsidian-Mass",
+      "source_crop": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": 25,
+      "file": "tiles/fill-25.png",
+      "type": "Fractured-Obsidian-Mass",
+      "source_crop": [
+        36,
+        45,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 26,
+      "file": "tiles/fill-26.png",
+      "type": "Fractured-Obsidian-Mass",
+      "source_crop": [
+        406,
+        203,
+        803,
+        803
+      ]
+    },
+    {
+      "id": 27,
+      "file": "tiles/fill-27.png",
+      "type": "Fractured-Obsidian-Mass",
+      "source_crop": [
+        226,
+        433,
+        803,
+        803
+      ]
+    }
+  ],
+  "large_features": [
+    {
+      "name": "Lava-Rock-Cluster",
+      "file": "features/Lava-Rock-Cluster/Feature-1024.png",
+      "layout": "features/Lava-Rock-Cluster/layout.json"
+    },
+    {
+      "name": "Massive-Basalt-Boulders",
+      "file": "features/Massive-Basalt-Boulders/Feature-1024.png",
+      "layout": "features/Massive-Basalt-Boulders/layout.json"
+    },
+    {
+      "name": "Fractured-Obsidian-Mass",
+      "file": "features/Fractured-Obsidian-Mass/Feature-1024.png",
+      "layout": "features/Fractured-Obsidian-Mass/layout.json"
+    }
+  ]
+}

@@ -157,12 +157,23 @@ const MIDDLE_PIECE_SCALE := 1.0
 ## face, as the terrain does), so it traces the outline with the terrain's exact shapes.
 ## When empty, the rim uses the older corner kit below.
 const MIDDLE_TILESET := "modular-foreground/textured/tiles/"
-## The owner's wall-fill add-on (modular-foreground/fill/): sixteen opaque rock tiles that
-## join any other on all four sides. Every interior cell of the rim layer (solid on all
-## sides, not an inside corner) gets one, picked by a fixed hash of the cell so the room
-## looks the same every run. Empty: interior cells stay the terrain's plain black.
-const MIDDLE_FILL := "modular-foreground/fill/fill-tiles/"
-const MIDDLE_FILL_VARIANTS := 16
+## The owner's wall fill (modular-foreground/fill-large/, which carries the first pack's
+## sixteen variants unchanged plus twelve new ones): opaque rock tiles that join any
+## other on all four sides. Every interior cell of the rim layer (solid on all sides, not
+## an inside corner) gets one, picked by a fixed hash of the cell so the room looks the
+## same every run. Empty: interior cells stay the terrain's plain black.
+const MIDDLE_FILL := "modular-foreground/fill-large/tiles/"
+const MIDDLE_FILL_VARIANTS := 28
+## The pack's three large 2x2 rock features, whose outside edges match every fill tile.
+## Where four interior cells make a free 2x2 block, about one block start in
+## MIDDLE_FEATURE_CHANCE gets a feature instead of fill, as an accent that breaks up the
+## small stones' repetition. Empty list: fill only.
+const MIDDLE_FEATURES := [
+	"modular-foreground/fill-large/features/Lava-Rock-Cluster/Feature-1024.png",
+	"modular-foreground/fill-large/features/Massive-Basalt-Boulders/Feature-1024.png",
+	"modular-foreground/fill-large/features/Fractured-Obsidian-Mass/Feature-1024.png",
+]
+const MIDDLE_FEATURE_CHANCE := 7
 ## Terrain edge tile -> the kit's nine-slice piece for the same edge.
 const MIDDLE_PIECES := {
 	0: "00-outer-top-left", 1: "01-top-edge", 2: "02-outer-top-right",
@@ -494,6 +505,7 @@ func _add_foreground(parent: Node2D) -> void:
 ## inside the solid on each exposed side, fixed in the world like the terrain.
 func _add_middle_rim(parent: Node2D) -> void:
 	var size := CELL * MIDDLE_PIECE_SCALE
+	var featured := _add_middle_features(parent) if not MIDDLE_FILL.is_empty() else {}
 	for row in grid.size():
 		for col in grid[0].length():
 			if not _solid(col, row):
@@ -501,7 +513,8 @@ func _add_middle_rim(parent: Node2D) -> void:
 			var tile := _edge_tile(col, row)
 			if not MIDDLE_TILESET.is_empty():
 				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
-				if tiles.is_empty() and not MIDDLE_FILL.is_empty():
+				if tiles.is_empty() and not MIDDLE_FILL.is_empty() \
+						and not featured.has(Vector2i(col, row)):
 					_add_middle_fill(parent, col, row)
 				for each in tiles:
 					_add_middle_tile(parent, each, col, row)
@@ -554,6 +567,47 @@ func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> void:
 	var outer_corner := tile in [TILE_TL, TILE_TR, TILE_BL, TILE_BR]
 	sprite.z_index = MIDDLE_Z + (1 if outer_corner else 0)
 	parent.add_child(sprite)
+
+
+## True for a cell the wall fill covers: solid, not an edge, not an inside corner.
+func _fill_cell(col: int, row: int) -> bool:
+	return _solid(col, row) and col >= 0 and row >= 0 and col < grid[0].length() \
+			and row < grid.size() and _edge_tile(col, row) < 0 \
+			and _inside_corner_tiles(col, row).is_empty()
+
+
+## Places the large 2x2 rock features (see MIDDLE_FEATURES) and returns the cells they
+## cover, so the fill skips them. Scans top-left to bottom-right; a block is taken only
+## when all four cells are free fill cells, so features never overlap or touch an edge.
+func _add_middle_features(parent: Node2D) -> Dictionary:
+	var covered := {}
+	if MIDDLE_FEATURES.is_empty():
+		return covered
+	for row in grid.size() - 1:
+		for col in grid[0].length() - 1:
+			var block: Array[Vector2i] = [Vector2i(col, row), Vector2i(col + 1, row),
+					Vector2i(col, row + 1), Vector2i(col + 1, row + 1)]
+			var free := true
+			for cell in block:
+				if covered.has(cell) or not _fill_cell(cell.x, cell.y):
+					free = false
+					break
+			if not free:
+				continue
+			var roll := hash(Vector2i(col * 31 + 7, row * 17 + 3))
+			if posmod(roll, MIDDLE_FEATURE_CHANCE) != 0:
+				continue
+			for cell in block:
+				covered[cell] = true
+			var texture := _texture(BIOME + MIDDLE_FEATURES[posmod(roll / 7, MIDDLE_FEATURES.size())])
+			var sprite := Sprite2D.new()
+			sprite.texture = texture
+			sprite.centered = false
+			sprite.scale = Vector2.ONE * 2.0 * CELL / texture.get_width()
+			sprite.position = Vector2(col * CELL, row * CELL)
+			sprite.z_index = MIDDLE_Z - 1
+			parent.add_child(sprite)
+	return covered
 
 
 ## One wall-fill tile over an interior cell, under the rim's edge tiles (their textured
