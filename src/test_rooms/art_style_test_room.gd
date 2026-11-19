@@ -156,7 +156,13 @@ const MIDDLE_PIECE_SCALE := 1.0
 ## draws each edge cell's own terrain tile ID from it (inside corners too, base then
 ## face, as the terrain does), so it traces the outline with the terrain's exact shapes.
 ## When empty, the rim uses the older corner kit below.
-const MIDDLE_TILESET := "modular-foreground/tiles/"
+const MIDDLE_TILESET := "modular-foreground/textured/tiles/"
+## The owner's wall-fill add-on (modular-foreground/fill/): sixteen opaque rock tiles that
+## join any other on all four sides. Every interior cell of the rim layer (solid on all
+## sides, not an inside corner) gets one, picked by a fixed hash of the cell so the room
+## looks the same every run. Empty: interior cells stay the terrain's plain black.
+const MIDDLE_FILL := "modular-foreground/fill/fill-tiles/"
+const MIDDLE_FILL_VARIANTS := 16
 ## Terrain edge tile -> the kit's nine-slice piece for the same edge.
 const MIDDLE_PIECES := {
 	0: "00-outer-top-left", 1: "01-top-edge", 2: "02-outer-top-right",
@@ -495,6 +501,8 @@ func _add_middle_rim(parent: Node2D) -> void:
 			var tile := _edge_tile(col, row)
 			if not MIDDLE_TILESET.is_empty():
 				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
+				if tiles.is_empty() and not MIDDLE_FILL.is_empty():
+					_add_middle_fill(parent, col, row)
 				for each in tiles:
 					_add_middle_tile(parent, each, col, row)
 				continue
@@ -545,6 +553,19 @@ func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> void:
 	# being cut off square by them.
 	var outer_corner := tile in [TILE_TL, TILE_TR, TILE_BL, TILE_BR]
 	sprite.z_index = MIDDLE_Z + (1 if outer_corner else 0)
+	parent.add_child(sprite)
+
+
+## One wall-fill tile over an interior cell, under the rim's edge tiles (their textured
+## cores overlap it by MIDDLE_INSET where they move into the solid).
+func _add_middle_fill(parent: Node2D, col: int, row: int) -> void:
+	var variant := posmod(hash(Vector2i(col, row)), MIDDLE_FILL_VARIANTS)
+	var sprite := Sprite2D.new()
+	sprite.texture = _texture(BIOME + MIDDLE_FILL + "fill-%02d.png" % variant)
+	sprite.centered = false
+	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
+	sprite.position = Vector2(col * CELL, row * CELL)
+	sprite.z_index = MIDDLE_Z - 1
 	parent.add_child(sprite)
 
 

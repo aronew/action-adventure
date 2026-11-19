@@ -1,0 +1,504 @@
+{
+  "image": "ForegroundTileSet-Textured.png",
+  "image_width": 3584,
+  "image_height": 3584,
+  "tile_width": 512,
+  "tile_height": 512,
+  "columns": 7,
+  "rows": 7,
+  "margin": 0,
+  "spacing": 0,
+  "origin": "top-left",
+  "tiles": [
+    {
+      "id": 0,
+      "row": 0,
+      "column": 0,
+      "x": 0,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-00.png"
+    },
+    {
+      "id": 1,
+      "row": 0,
+      "column": 1,
+      "x": 512,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-01.png"
+    },
+    {
+      "id": 2,
+      "row": 0,
+      "column": 2,
+      "x": 1024,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-02.png"
+    },
+    {
+      "id": 3,
+      "row": 0,
+      "column": 3,
+      "x": 1536,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-03.png"
+    },
+    {
+      "id": 4,
+      "row": 0,
+      "column": 4,
+      "x": 2048,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-04.png"
+    },
+    {
+      "id": 5,
+      "row": 0,
+      "column": 5,
+      "x": 2560,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-05.png"
+    },
+    {
+      "id": 6,
+      "row": 0,
+      "column": 6,
+      "x": 3072,
+      "y": 0,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-06.png"
+    },
+    {
+      "id": 7,
+      "row": 1,
+      "column": 0,
+      "x": 0,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-07.png"
+    },
+    {
+      "id": 8,
+      "row": 1,
+      "column": 1,
+      "x": 512,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-08.png"
+    },
+    {
+      "id": 9,
+      "row": 1,
+      "column": 2,
+      "x": 1024,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-09.png"
+    },
+    {
+      "id": 10,
+      "row": 1,
+      "column": 3,
+      "x": 1536,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-10.png"
+    },
+    {
+      "id": 11,
+      "row": 1,
+      "column": 4,
+      "x": 2048,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-11.png"
+    },
+    {
+      "id": 12,
+      "row": 1,
+      "column": 5,
+      "x": 2560,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-12.png"
+    },
+    {
+      "id": 13,
+      "row": 1,
+      "column": 6,
+      "x": 3072,
+      "y": 512,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-13.png"
+    },
+    {
+      "id": 14,
+      "row": 2,
+      "column": 0,
+      "x": 0,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-14.png"
+    },
+    {
+      "id": 15,
+      "row": 2,
+      "column": 1,
+      "x": 512,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-15.png"
+    },
+    {
+      "id": 16,
+      "row": 2,
+      "column": 2,
+      "x": 1024,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-16.png"
+    },
+    {
+      "id": 17,
+      "row": 2,
+      "column": 3,
+      "x": 1536,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-17.png"
+    },
+    {
+      "id": 18,
+      "row": 2,
+      "column": 4,
+      "x": 2048,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-18.png"
+    },
+    {
+      "id": 19,
+      "row": 2,
+      "column": 5,
+      "x": 2560,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-19.png"
+    },
+    {
+      "id": 20,
+      "row": 2,
+      "column": 6,
+      "x": 3072,
+      "y": 1024,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-20.png"
+    },
+    {
+      "id": 21,
+      "row": 3,
+      "column": 0,
+      "x": 0,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-21.png"
+    },
+    {
+      "id": 22,
+      "row": 3,
+      "column": 1,
+      "x": 512,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-22.png"
+    },
+    {
+      "id": 23,
+      "row": 3,
+      "column": 2,
+      "x": 1024,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-23.png"
+    },
+    {
+      "id": 24,
+      "row": 3,
+      "column": 3,
+      "x": 1536,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-24.png"
+    },
+    {
+      "id": 25,
+      "row": 3,
+      "column": 4,
+      "x": 2048,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-25.png"
+    },
+    {
+      "id": 26,
+      "row": 3,
+      "column": 5,
+      "x": 2560,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-26.png"
+    },
+    {
+      "id": 27,
+      "row": 3,
+      "column": 6,
+      "x": 3072,
+      "y": 1536,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-27.png"
+    },
+    {
+      "id": 28,
+      "row": 4,
+      "column": 0,
+      "x": 0,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-28.png"
+    },
+    {
+      "id": 29,
+      "row": 4,
+      "column": 1,
+      "x": 512,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-29.png"
+    },
+    {
+      "id": 30,
+      "row": 4,
+      "column": 2,
+      "x": 1024,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-30.png"
+    },
+    {
+      "id": 31,
+      "row": 4,
+      "column": 3,
+      "x": 1536,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-31.png"
+    },
+    {
+      "id": 32,
+      "row": 4,
+      "column": 4,
+      "x": 2048,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-32.png"
+    },
+    {
+      "id": 33,
+      "row": 4,
+      "column": 5,
+      "x": 2560,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-33.png"
+    },
+    {
+      "id": 34,
+      "row": 4,
+      "column": 6,
+      "x": 3072,
+      "y": 2048,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-34.png"
+    },
+    {
+      "id": 35,
+      "row": 5,
+      "column": 0,
+      "x": 0,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-35.png"
+    },
+    {
+      "id": 36,
+      "row": 5,
+      "column": 1,
+      "x": 512,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-36.png"
+    },
+    {
+      "id": 37,
+      "row": 5,
+      "column": 2,
+      "x": 1024,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-37.png"
+    },
+    {
+      "id": 38,
+      "row": 5,
+      "column": 3,
+      "x": 1536,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-38.png"
+    },
+    {
+      "id": 39,
+      "row": 5,
+      "column": 4,
+      "x": 2048,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-39.png"
+    },
+    {
+      "id": 40,
+      "row": 5,
+      "column": 5,
+      "x": 2560,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-40.png"
+    },
+    {
+      "id": 41,
+      "row": 5,
+      "column": 6,
+      "x": 3072,
+      "y": 2560,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-41.png"
+    },
+    {
+      "id": 42,
+      "row": 6,
+      "column": 0,
+      "x": 0,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-42.png"
+    },
+    {
+      "id": 43,
+      "row": 6,
+      "column": 1,
+      "x": 512,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-43.png"
+    },
+    {
+      "id": 44,
+      "row": 6,
+      "column": 2,
+      "x": 1024,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-44.png"
+    },
+    {
+      "id": 45,
+      "row": 6,
+      "column": 3,
+      "x": 1536,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-45.png"
+    },
+    {
+      "id": 46,
+      "row": 6,
+      "column": 4,
+      "x": 2048,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-46.png"
+    },
+    {
+      "id": 47,
+      "row": 6,
+      "column": 5,
+      "x": 2560,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-47.png"
+    },
+    {
+      "id": 48,
+      "row": 6,
+      "column": 6,
+      "x": 3072,
+      "y": 3072,
+      "width": 512,
+      "height": 512,
+      "file": "tiles/tile-48.png"
+    }
+  ]
+}
