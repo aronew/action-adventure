@@ -405,3 +405,34 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 0 | Recommended: 6
+Summary: Re-review of the fifteenth review's revisions (climb walls F6b joining the F7 column gates, stranded-enemy walk-back, knocked-out-of-room respawn). They hold: rule 24, F7, Edge Cases 204-208, the registry and the criteria agree, and every restated figure reproduces against the enemy and player data files (leash bounds 103/118/59, knockback_travel, lunge_travel, pogo reaches, hazard_pit_depth_min 84, pogo_far_ext 9+5). The code claims behind rule 24 match enemy_base.gd, and damage applies no impulse to the Seeker (_start_hurt), so no launch vector. Open items are specification polish, not gate leaks. The pogo carries remain simulated, not measured (Open Question 15); the sims were not re-run this review.
+Prior verdict resolved: Yes (2026-11-19 fifteenth review: climb walls had no pogo gate volume, now column gates at pogo_clearance_px)
+Findings:
+- [RECOMMENDED] Tuning Knobs / F7 table: safe ranges run below the derived minimums (pogo_clearance_px 220-300 vs derived 242; pogo_clearance_f3a_px 300-380 vs derived 318); pogo_far_ext already uses its derived floor
+- [RECOMMENDED] Core Rules (rule 24): "floor hazards such as spikes" leaves wall- and ceiling-mounted hazards undefined as pogo targets
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a stranded enemy's "patrols in place" has no defined interval
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: knocked-out-of-room respawn has no AC, value or knob (or an explicit owner in Enemies)
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a shortcut approached from its near side stays blocked, with no AC
+- [RECOMMENDED] Acceptance Criteria: the sweep criterion and the leash unit test are compound; split per gate type and per motion source
+- [ADVISORY] F3 volume top 153 vs 151 sim reach is a 2 px margin; record that damage gives the Seeker no impulse; GDD is about 85 KB with rule 24 one long paragraph repeated in F7 and Edge Cases; kiln-city-level-integration.md still says saves within 7 screens; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md dd6e3796d01b2ca99ab988bd041fdc28d5d2c6e9
+Reviewed-Content-Hash: design/registry/entities.yaml 750a2c1525f1350c80248b578f6beacfe07bcc02
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950

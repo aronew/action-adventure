@@ -130,6 +130,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - run_jump_distance
       - dash_jump_distance
@@ -148,6 +149,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - jump_apex
       - double_jump_total_low
@@ -167,6 +169,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - double_jump_total
       - ledge_nudge
@@ -186,6 +189,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - ledge_min
     output_range: [72, null]
@@ -199,6 +203,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - dash_speed
       - sim_hz
@@ -260,6 +265,33 @@ formulas:
     notes: "F9. Width needed beyond the span, px, for plain walls to the ceiling at 270 px room height: about 606 (F2 ledge), 758 (F3a ledge), 852 (F3b gap). Exempt where every plain face in reach is no_cling. Level design rule 26 reads it."
     added: 2026-11-18
     revised: ""
+  - name: on_grid
+    status: active
+    source: design/gdd/terrain-pipeline.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    variables:
+      - collision_tile
+      - lo
+      - hi
+    output_range: [0, null]
+    expression: "on_grid(lo, hi) = { k x collision_tile : ceil(lo / collision_tile) <= k <= floor(hi / collision_tile) }"
+    notes: "T1. The gate figures the 6 px grid allows inside a window owned by ability gating or level design: dash gap 150, 156 (162 sits exactly on gap_max, unused until measured); F2 ledge 72-102 step 6; F3a slab underside 144+; F3b plain far face 12 or less; pane 12. An empty set fails the layout check as gate type unbuildable."
+    added: 2026-11-19
+    revised: ""
+  - name: band_on_grid
+    status: active
+    source: design/gdd/terrain-pipeline.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    variables:
+      - band
+      - collision_tile
+    output_range: [0, null]
+    expression: "band_on_grid = collision_tile x ceil(band / collision_tile)"
+    notes: "T2. How a level design F7 clearance acts once edges lie on the grid: pogo_clearance_px 250 acts as 252, pogo_clearance_f3a_px 320 as 324, pogo_far_ext 14 as 18. Consequence of the grid, not a new value; rounding only widens a band."
+    added: 2026-11-19
+    revised: ""
 
 # Example:
 #
@@ -298,6 +330,7 @@ constants:
     source: design/gdd/level-design.md
     referenced_by:
       - design/gdd/ability-gating.md
+      - design/gdd/terrain-pipeline.md
     value: 84
     unit: px
     notes: "F7. Least height of both dash-pit lips above a hazard floor: hazard_pogo_reach (about 76) + gap_margin (8). Spikes can be pogoed (rule 24); a grapple gap never has a hazard floor."
@@ -307,6 +340,7 @@ constants:
     source: design/gdd/level-design.md
     referenced_by:
       - design/gdd/ability-gating.md
+      - design/gdd/terrain-pipeline.md
     value: 14
     unit: px
     notes: "F7. How far past a gap lip a pogo target is still hit from over the gap: down-attack forward reach 27 (attack_data.tres) - centre shortfall 18 at gap_min = 9 (11 for a grapple gap at 420), kept at 14 at both lips as a 5 px safety band (ninth review corrected the derivation; value unchanged). Measured to the target's hit-area edge."
@@ -314,7 +348,8 @@ constants:
   - name: pogo_clearance_px
     status: active
     source: design/gdd/level-design.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
     value: 250   # was 140 (start-kit run-speed carry); level-design.md ninth design review
     unit: px
     notes: "F7. F2, F6a and F6b column gates (fifteenth review added F6b, the climb wall), whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
@@ -323,7 +358,8 @@ constants:
   - name: pogo_clearance_f3a_px
     status: active
     source: design/gdd/level-design.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
     value: 320
     unit: px
     notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
@@ -343,6 +379,24 @@ constants:
     value: 7
     unit: screens
     notes: "Withdrawn 2026-11-19 (level-design.md eleventh review, owner): saves are placed by role (near bosses and mini-bosses, hubs, rewards) and spacing is judged in playtest; no distance rule, F4 removed. Was: F4, new ground counted by screen position, 7 screens, range 7-10."
+    added: 2026-11-19
+  - name: collision_tile
+    status: active
+    source: design/gdd/terrain-pipeline.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    value: 6
+    unit: px
+    notes: "Rule 2. Side of a black collision tile, anchored at the room top-left; a 480 x 270 screen is 80 x 45 tiles. Must divide 30 and the art cell (36 px in the art-style test room); every collision, room and gate edge lies on the grid. Owner decision 2026-11-19 (Hollow Knight-style block-out)."
+    added: 2026-11-19
+  - name: trim_overhang_max
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    value: 4
+    unit: px
+    notes: "Level design rule 25 (range 2-6, Rec). How far painted trim or dressing may cover the collision edge at a gate or no_cling face, at game scale; measured by terrain pipeline T3 (alpha_solid 0.5). Registered 2026-11-19 by the terrain pipeline GDD."
     added: 2026-11-19
 
 # Example:
