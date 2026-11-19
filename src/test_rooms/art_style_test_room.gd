@@ -149,7 +149,7 @@ const BORDERS := [
 ## drifted 2 px apart into black cracks. It still reads nearer, drawn in front of the
 ## playable edge and the player.
 const MIDDLE_Z := 5
-const MIDDLE_INSET := 10.0
+const MIDDLE_INSET := 5.0
 const MIDDLE_PIECE_SCALE := 1.0
 ## The owner's modular foreground tileset (modular-foreground/): the terrain atlas redrawn
 ## as nearer scoria rock on the same 7x7 grid with the same tile IDs. When set, the rim
