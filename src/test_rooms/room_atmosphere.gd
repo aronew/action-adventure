@@ -31,30 +31,30 @@ const MID_BLUR := 1.2
 
 ## Fog: [colour, density, noise scale (per world px), drift speed, parallax factor,
 ## screen height where it starts and where it is full (0 top, 1 bottom)].
-const FAR_FOG := [Color(0.62, 0.36, 0.36, 0.42), 1.0, 0.012, 0.018, 0.4, 0.15, 0.85]
-const GROUND_FOG := [Color(0.55, 0.32, 0.34, 0.22), 1.0, 0.02, 0.03, 1.15, 0.62, 1.0]
+const FAR_FOG := [Color(0.78, 0.47, 0.44, 0.5), 1.0, 0.012, 0.018, 0.4, 0.2, 0.9]
+const GROUND_FOG := [Color(0.66, 0.4, 0.4, 0.3), 1.0, 0.02, 0.03, 1.15, 0.55, 1.0]
 
 ## Embers rising from the lava: count, lifetime (s), rise speed range (world px/s), size
 ## range (world px), colour.
-const EMBERS := [46, 7.0, Vector2(3.0, 9.0), Vector2(0.8, 1.7), Color(1.0, 0.56, 0.22, 0.95)]
+const EMBERS := [90, 7.0, Vector2(4.0, 12.0), Vector2(1.4, 2.8), Color(1.0, 0.58, 0.24, 1.0)]
 ## Dust and ash drifting in the air, behind the play layer.
-const DUST := [70, 9.0, Vector2(0.8, 3.0), Vector2(0.6, 1.2), Color(0.95, 0.82, 0.8, 0.28)]
+const DUST := [90, 9.0, Vector2(0.8, 3.0), Vector2(1.0, 2.0), Color(0.95, 0.84, 0.82, 0.4)]
 
 ## Prop glow: colour and flicker (fraction of strength, speed).
 const GLOW_COLOR := Color(1.0, 0.5, 0.18, 0.32)
 const GLOW_FLICKER := Vector2(0.12, 2.3)
 
 ## Grade: contrast, saturation, shadow tint, highlight tint, split-tone strength.
-const CONTRAST := 1.08
-const SATURATION := 0.92
-const SHADOW_TINT := Color(0.82, 0.78, 1.0)
+const CONTRAST := 1.06
+const SATURATION := 1.0
+const SHADOW_TINT := Color(0.88, 0.84, 1.0)
 const HIGHLIGHT_TINT := Color(1.08, 0.97, 0.88)
-const SPLIT_TONE := 0.6
+const SPLIT_TONE := 0.5
 ## Light around the player: radius (fraction of screen height), how much the rest of the
 ## screen dims, how much the light lifts.
-const PLAYER_LIGHT := Vector3(0.42, 0.14, 0.06)
+const PLAYER_LIGHT := Vector3(0.45, 0.08, 0.08)
 ## Vignette: where it starts and ends (distance from centre, screen heights) and strength.
-const VIGNETTE := Vector3(0.48, 1.05, 0.55)
+const VIGNETTE := Vector3(0.55, 1.1, 0.42)
 const VIGNETTE_COLOR := Color(0.07, 0.02, 0.05)
 
 const BLUR_SHADER := """
@@ -108,7 +108,7 @@ void fragment() {
 	vec2 p = world * noise_scale * vec2(1.0, 2.2);
 	float n = fbm(p + vec2(TIME * speed * 6.0, TIME * speed));
 	float m = fbm(p * 0.45 + vec2(17.0 - TIME * speed * 3.0, 4.0));
-	float d = smoothstep(0.32, 0.78, n * 0.55 + m * 0.45) * density;
+	float d = smoothstep(0.25, 0.72, n * 0.55 + m * 0.45) * density;
 	float mask = smoothstep(band.x, band.y, UV.y);
 	COLOR = vec4(fog_color.rgb, fog_color.a * d * mask);
 }
