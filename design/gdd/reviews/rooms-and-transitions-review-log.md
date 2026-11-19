@@ -1,0 +1,36 @@
+# Review log: Rooms and transitions
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 4 | Recommended: 8
+Summary: The design is coherent and honest about its gaps (memory, the room-storage ADR and the provisional interfaces are marked NOT ASSESSED), and its owner decisions align with the brief and level design. The blockers were local: the Seeker's state between crossing an exit and the screen going dark was undefined and contradicted across rules 5, 6 and 9, R1, R2 and the ACs; R3 had no build time; object ids for world state were undefined; R5's speed bound missed fast falls. All four were revised in the same session. Owner decisions: freeze at the crossing with an arrival inset, a dark build term, authored object ids, blockers only.
+Prior verdict resolved: First review
+Findings:
+- [BLOCKING] Rules 5, 6, 9 / R1, R2 / States: crossing-to-dark interval undefined (world runs during fade-out yet dash time "unchanged"; up to 96 px of travel beyond bounds; re-arm fall-back through space with no room)
+- [BLOCKING] R3: no build_time term; measured 0.33 s rebuild contradicts the 0.35 s and 16.6 ms ACs
+- [BLOCKING] Rules 3, 12 / Interactions: object ids promised to world state but never defined
+- [BLOCKING] R5: dash_speed 370 bound ignores fast_fall_speed 640; load_time has no source (example 1.07 s vs AC 0.75 s)
+- [RECOMMENDED] Rule 11 / R6: no Loading-to-Unloaded path; free-before-load order unset (three biomes transient on an X-X-Y-Y-Z chain); "neighbours span three biomes" wording omits the room's own biome
+- [RECOMMENDED] Edge Cases: 48 px spawn clearance ignores enemy reach (leash ±103, lunge about 126 px); hazards near arrivals unchecked; immunity vs invulnerability_time 1.0 s
+- [RECOMMENDED] Rule 15: graph edges carry no kind, side or one-way/locked flag (level design rules 14, 27)
+- [RECOMMENDED] Rules 13, 14: overlapping camera zones, boundary re-trigger, shake vs bounds untested
+- [RECOMMENDED] Edge Cases: death-state Seeker carried across an exit; door area size unowned
+- [RECOMMENDED] Acceptance Criteria: missing ACs for rules 8, 10 and shake; grounded fixture for the buffered jump
+- [RECOMMENDED] R3 / tuning: fade sum can reach 0.8 s against a 0.5 s comfort limit; no Tuning Knobs section (advisory at standard)
+- [RECOMMENDED] Dependencies: stale line 270 (index already lists World state); Rooms and World state soft cycle unrecorded
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard)
+Receipt note: the GDD stamp is the reviewed (pre-revision) version, HEAD blob of commit 7becc1a, so the next run reads CHANGED and re-reviews; the registry and systems index are stamped before this session's tracking edits.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 1f732f7dbb299f4335ef60c7f032a6ac9c5ed287
+Reviewed-Content-Hash: design/registry/entities.yaml 5cc8842d035ec61ef3d5f43f6bf92fedeb6fc215
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md d0cad1f45606cdf1f50889fb73e065cf525d675d
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d

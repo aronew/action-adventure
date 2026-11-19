@@ -1,6 +1,6 @@
 # Rooms and transitions
 
-> **Status**: Designed 2026-11-19 (lean, standard), pending `/design-review` in a fresh session
+> **Status**: In Review. Designed 2026-11-19 (lean, standard). First `/design-review` 2026-11-19 (lean): NEEDS REVISION, 4 blockers revised (freeze at the crossing with an arrival inset, `build_time` in R3, authored object ids, R5 speed bound); awaiting re-review in a fresh session
 > **Creative Director Review (CD-GDD-ALIGN)**: skipped — Lean mode
 > **Author**: project owner + Claude
 > **Last Updated**: 2026-11-19
@@ -9,7 +9,7 @@
 
 ## Summary
 
-Rooms and transitions makes the room the unit of the world: a rectangle of whole screens with one biome, placed on a single world grid, with exits that line up by world position. The Seeker crosses an open edge or a door behind a 0.35 s fade and arrives still moving, into a neighbour that was already loaded. Each room is rebuilt fresh on entry from its data and world state, and the camera never shows past its bounds. It exists so that level design, the grid map, save points and fast travel can address the world by room and exit, and so that a run through many rooms is never broken by its seams.
+Rooms and transitions makes the room the unit of the world: a rectangle of whole screens with one biome, placed on a single world grid, with exits that line up by world position. The Seeker crosses an open edge or a door behind a fade and arrives still moving 0.45 s later (the room swap included), into a neighbour whose data was already loaded. Each room is rebuilt fresh on entry from its data and world state, and the camera never shows past its bounds. It exists so that level design, the grid map, save points and fast travel can address the world by room and exit, and so that a run through many rooms is never broken by its seams.
 
 > **Quick reference** — Layer: `Core` · Priority: `MVP` · Key deps: `Terrain pipeline, Player controller, Camera`
 
@@ -27,22 +27,22 @@ Tags: **[Owner]** = your decision; **[Rec]** = recommendation, change freely; **
 
 **Rooms and the world grid**
 
-1. **A room.** A room is a rectangle of whole 480 x 270 screens (80 x 45 terrain tiles each), written width x height in screens. It names one region and one biome (terrain rule 14). Its data holds its terrain (terrain pipeline), its exits, its doors, its camera zones, its encounter data (spawn points; terrain rule 10) and the objects other systems place in it (save points, gates, pickups). **[Owner: level design rule 1; terrain rules 2, 14]**
+1. **A room.** A room is a rectangle of whole 480 x 270 screens (80 x 45 terrain tiles each), written width x height in screens. It names one region and one biome (terrain rule 14). Its data holds its terrain (terrain pipeline), its exits, its doors, its camera zones, its encounter data (spawn points; terrain rule 10) and the objects other systems place in it (save points, gates, pickups), each with an object id (rule 3). **[Owner: level design rule 1; terrain rules 2, 14]**
 2. **The world grid.** Every room has a **world position**: the world-grid cell, in whole screens, of its top-left corner. All rooms of the game share one world grid. The cells a room covers belong to it alone: two rooms never overlap. A point in a room has one world position, `room origin + local position`, and that is how exits line up (rule 4) and how the grid map draws rooms as boxes (level design rule 23). **[Owner, 2026-11-19: world grid]**
-3. **Room ids.** Each room has a stable id, used by world state, save files, the grid map and fast travel. An id never changes and is never reused, even if a room is moved on the world grid or cut. **[Rec]**
+3. **Room ids and object ids.** Each room has a stable id, used by world state, save files, the grid map and fast travel. An id never changes and is never reused, even if a room is moved on the world grid or cut. Every object whose state rule 12 may keep (doors, gates, breakable walls, shortcuts, boss triggers, pickups, save points) has an **object id**, authored in the room data, unique within its room and never reused after the object is removed. The pair (room id, object id) is the key that world state and saves use. Moving an object on the grid keeps its id; an object removed and placed again is a new object with a new id. The room check rejects a duplicate id in a room and any such object without an id, and names the room. **[Rec: room ids; Owner, 2026-11-19: authored object ids]**
 
 **Exits**
 
-4. **Open edges.** An open edge is an opening in a room's solid border: a run of empty tiles, on grid lines, on one side of the room's bounds (terrain: outside its bounds a room is solid except at exits). It leads to the room whose cells border it at the same world position, and that room must have an opening covering exactly the same world span on its facing edge. The room check rejects an opening with no room beyond it, or whose neighbour's opening differs, and names both rooms. Openings on the bottom and top edges are **fall exits** and **rise exits**: a pit or shaft into the room below or above. Level design rule 27 decides where a fall exit may lead. **[Owner: world grid; Rec: exact match]**
-5. **Crossing an open edge.** The Seeker crosses an exit when the centre of its collision box passes the room's bounds within the opening. It arrives in the neighbour at the same world position, with the same velocity, facing and state (running, dashing, falling, wall-sliding), and with its timers and air moves (air jump, air dash, coyote time) as they were. Held input carries on. Only the Seeker crosses: enemies, projectiles and pickups stop at a room's bounds (Edge Cases). **[Owner, 2026-11-19: keep momentum]**
-6. **No bounce-back.** After arriving through an exit, the Seeker cannot cross back through it until its centre has moved `exit_rearm` px inside the new room or `rearm_time` has passed (R2). A weak jump up a rise exit that falls back down returns through the same exit only after that. **[Rec]**
+4. **Open edges.** An open edge is an opening in a room's solid border: a run of empty tiles, on grid lines, on one side of the room's bounds (terrain: outside its bounds a room is solid except at exits). It leads to the room whose cells border it at the same world position, and that room must have an opening covering exactly the same world span on its facing edge. The room check rejects an opening with no room beyond it, or whose neighbour's opening differs, and names both rooms. Openings on the bottom and top edges are **fall exits** and **rise exits**: a pit or shaft into the room below or above. Level design rule 27 decides where a fall exit may lead. The strip `exit_rearm` px deep just inside the bounds along an opening's span (the **apron**, R2) holds no solid tile; the room check rejects a room whose apron does and names it, so an arrival is never inside solid. **[Owner: world grid; Rec: exact match, apron]**
+5. **Crossing an open edge.** The Seeker crosses an exit when the centre of its collision box passes the room's bounds within the opening. On that frame its state is captured (velocity, facing, state: running, dashing, falling, wall-sliding; timers and air moves: dash time left, air jump, air dash, coyote time) and the transition starts (rule 9). It arrives in the neighbour at the same world position across the opening, inset `exit_rearm` px into the new room (R1), with the captured state, so a dash arrives with the dash time it had on the crossing frame. Held input carries on. Only the Seeker crosses: enemies, projectiles and pickups stop at a room's bounds (Edge Cases). **[Owner, 2026-11-19: keep momentum]**
+6. **Arrival inset and shut exits.** The Seeker arrives `exit_rearm` px inside the new room (R1), so the whole of its collision box is inside the bounds and crossing back needs the same travel in reverse. From the freeze until the fade-in ends, every opening of the live room is shut: the bounds line across it acts as a wall, so no second transition starts and the Seeker is never in space beyond a room's bounds. A weak jump up a rise exit that falls back down rests on the shut line and crosses back only after the fade-in ends (R2). **[Rec; Owner, 2026-11-19: freeze at the crossing]**
 7. **Doors.** A door is an object on the grid (terrain rule 4) with a paired door, in another room or the same one. Doors need not line up on the world grid. Pressing up while the Seeker stands in a door's area, on the ground and not attacking, plays the EnterDoor animation once, then the transition. The Seeker arrives standing in front of the paired door, facing out of it, with zero velocity. A locked or one-way door reads its state from world state (level design rule 14: shortcut gates open from the far side first). **[Owner: level design rule 1, story 007]**
 8. **Arrivals with no exit.** A respawn after death, a load from a save, and fast travel enter a room at a named **arrival point** (a save point, or a room's default point) through the same load path and the same fade, with zero velocity and the Seeker standing. Which point they use is owned by Save points and Fast travel. **[Rec]**
 
 **The transition**
 
-9. **Sequence.** The screen fades out over `fade_out_time`. While it is dark the world is paused: physics, enemies, hazards, timers and the Seeker are all frozen. The rooms are swapped, the Seeker is placed (rules 5, 7, 8), and the camera snaps to the Seeker clamped to the new room's bounds. The world resumes as the fade-in begins, so the player sees the arrival move over `fade_in_time`. Input pressed while the screen is dark is buffered as usual (the controller's jump and dash buffers). **[Rec]**
-10. **Waiting for a load.** If the next room has not finished loading when the fade-out ends, the screen stays dark until it has. After `load_wait_notice` (Formulas) a small loading mark shows. The transition never cancels and never shows a half-built room. **[Rec]**
+9. **Sequence.** At the crossing frame (rule 5), when EnterDoor ends (rule 7), or when a respawn, load or fast travel is requested (rule 8), the world freezes: physics, enemies, hazards, projectiles, timers and the Seeker all stop, and the Seeker's state is captured. The screen fades out over `fade_out_time` on real time. When it is dark, the old live room is discarded, the next room is built (rule 12), the Seeker is placed (rules 5, 7, 8), and the camera snaps to the Seeker clamped to the new room's bounds. The world resumes as the fade-in begins, so the player sees the arrival move over `fade_in_time`. Input pressed from the freeze until the fade-in starts is buffered and counts as pressed on the first frame of the fade-in. **[Rec; Owner, 2026-11-19: freeze at the crossing]**
+10. **Waiting for a load.** If the next room has not finished loading when the fade-out ends, the screen stays dark until it has loaded and been built. After `load_wait_notice` (Formulas) a small loading mark shows. The transition never cancels and never shows a half-built room. **[Rec]**
 
 **Loading**
 
@@ -65,11 +65,11 @@ Tags: **[Owner]** = your decision; **[Rec]** = recommendation, change freely; **
 | State | Meaning | Enter when | Leave when |
 |---|---|---|---|
 | In room | Normal play in the current room | The game starts; or a fade-in ends | The Seeker crosses an exit (rule 5), enters a door (rule 7, after EnterDoor), or a respawn, load or fast travel is requested (rule 8): to Fading out |
-| Fading out | Screen fading to dark; world still running until dark | From In room | The fade-out ends: to Swapping |
-| Swapping | Screen dark, world paused; rooms swapped, Seeker placed, camera snapped | From Fading out | The next room is loaded and built (rules 10, 12): to Fading in |
-| Fading in | Screen fading from dark; world running in the new room | From Swapping | The fade-in ends: to In room |
+| Fading out | Screen fading to dark; world frozen from the crossing, openings shut (rule 6) | From In room | The fade-out ends: to Swapping |
+| Swapping | Screen dark, world frozen; rooms swapped, Seeker placed, camera snapped; lasts `load_left` + `build_time` (R3) | From Fading out | The next room is loaded and built (rules 10, 12): to Fading in |
+| Fading in | Screen fading from dark; world running in the new room, openings still shut | From Swapping | The fade-in ends: to In room |
 
-During Fading out and Fading in, another exit or door does not start a second transition. The Seeker cannot be hurt or killed from the frame it crosses until the fade-in ends (Edge Cases), so no death interrupts a transition.
+From the crossing until the fade-in ends, every opening of the live room is shut (rule 6) and no door starts a second transition. The Seeker cannot be hurt or killed from the frame it crosses until the fade-in ends (Edge Cases), so no death interrupts a transition.
 
 **A room's residency** (per room):
 
@@ -88,9 +88,9 @@ Only terrain pipeline and level design have GDDs; the other interfaces are **pro
 |---|---|---|---|
 | Terrain pipeline | Both | In: the tile grid inside a room's bounds, whole screens of 80 x 45 tiles, one biome, solid outside the bounds except at exits. Out: room bounds, exit openings on grid lines, the room's biome | Terrain pipeline owns the tiles; this system owns bounds and exits |
 | Level design | Both | In: room layouts, sizes, world positions, exits and doors. Out: the room graph (rule 15) for its checks (rule 27) and the room unit (rule 1) | Level design owns where rooms go; this system owns what a room is |
-| Player controller | Both | Out: placement on arrival with velocity, facing, state, timers and air moves kept (rule 5); the pause while dark. In: the collision box centre; the door input (up), EnterDoor animation | The controller owns its state; this system owns when it is moved and frozen |
+| Player controller | Both | Out: placement on arrival, inset into the new room, with velocity, facing, state, timers and air moves as captured at the crossing (rule 5); the freeze from the crossing until the fade-in starts (rule 9); the shut opening as a wall (rule 6). In: the collision box centre; the door input (up), EnterDoor animation | The controller owns its state; this system owns when it is moved and frozen |
 | Camera | Out | The current bounds (room or zone), the snap on arrival, zone blends (rules 13, 14) | Camera owns follow and shake; this system owns the limits |
-| World state | Both | Out: room ids and object ids within rooms. In: saved states applied at each build (rule 12) | World state |
+| World state | Both | Out: room ids and object ids (rule 3). In: saved states applied at each build (rule 12) | World state |
 | Save points and save/load | Out | Enter room R at arrival point P (rule 8); the current room id | Save points |
 | Grid map | Out | Room cells on the world grid, exits as edges, the room the Seeker is in | Grid map |
 | Enemies | Both | Out: room bounds (enemies stop there), rebuilt-on-entry respawn (rule 12). In: spawn points, exceptions stored in world state | Enemies |
@@ -105,51 +105,52 @@ Only terrain pipeline and level design have GDDs; the other interfaces are **pro
 
 The arrival_position formula is defined as:
 
-`local_new = (origin_old - origin_new) x (480, 270) + local_old`
+`local_new = (origin_old - origin_new) x (480, 270) + local_old + n x exit_rearm`
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
 | origin_old, origin_new | int pair (screens) | any world-grid cell | data file (room data) | World positions of the room left and the room entered (rule 2) |
-| local_old | float pair (game px) | inside the old room, at its bounds | calculated | The Seeker's position when its centre crosses the exit (rule 5) |
-| local_new | float pair (game px) | inside the new room, at its bounds | calculated | Where the Seeker is placed in the new room |
+| local_old | float pair (game px) | on the old room's bounds, within the opening | calculated | The Seeker's centre at the crossing frame, with its coordinate along the exit's normal set to the bounds line, so overshoot in the crossing frame adds nothing (rule 5) |
+| n | unit vector | axis-aligned | calculated | The direction of the crossing: out of the old room, into the new one |
+| exit_rearm | float (game px) | 12-48, starts at 12 | data file | The arrival inset (R2) |
+| local_new | float pair (game px) | inside the new room, `exit_rearm` px from its bounds | calculated | Where the Seeker is placed in the new room |
 
-**Output Range:** a point on the new room's facing edge, within its opening; the openings match exactly (rule 4), so it can never fall outside the room or inside solid. Velocity, facing and state are carried unchanged (rule 5).
-**Example:** a room at cell (3, 1) whose right edge at local x 1440 (3 screens wide) opens into a room at cell (6, 1): the Seeker crossing at local (1440, 200) arrives at (3 - 6) x 480 + 1440 = 0, so at local (0, 200), still running right.
+**Output Range:** a point `exit_rearm` px inside the new room's facing edge, within its opening; the openings match exactly and the apron is free of solid (rule 4), so it is never outside the room or inside solid. Velocity, facing and state are the ones captured at the crossing (rule 5).
+**Example:** a room at cell (3, 1) whose right edge at local x 1440 (3 screens wide) opens into a room at cell (6, 1): the Seeker crossing at local (1440, 200) arrives at x = (3 - 6) x 480 + 1440 + 12 = 12, so at local (12, 200), still running right. A fall through local (300, 270) from a room at cell (2, 0) into one at cell (2, 1) arrives at local (300, 12).
 
-### R2. Exit re-arm
+### R2. Arrival inset and shut exits
 
-The exit_rearm formula is defined as:
+The arrival_inset formula is defined as:
 
-`may_cross_back = inside_distance >= exit_rearm or time_since_arrival >= rearm_time`
+`arrival_inset = apron_depth = exit_rearm`, with `exit_rearm >= half_height + 1 = 12`; every opening of the live room is shut from the crossing until `transition_time` (R3) has passed
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| inside_distance | float (game px) | 0 or more | calculated | How far the Seeker's centre has moved inside the new room from the exit it arrived through, along the exit's normal |
-| exit_rearm | float (game px) | 6-48, starts at 12 | data file | Two tiles: about the Seeker's width plus a tile **[Rec]** |
-| time_since_arrival | float (s) | 0 or more | calculated | World time since the fade-in began |
-| rearm_time | float (s) | 0.2-1.0, starts at 0.5 | data file | Cap, so a large `exit_rearm` never traps the Seeker at an exit **[Rec]** |
+| exit_rearm | float (game px) | 12-48, starts at 12 | data file | The depth, along the exit's normal, at which the Seeker arrives inside the new room, and of the empty apron behind it. Two tiles; the floor is the collision box's half height (11 px, `hitbox_size` 22) plus 1, so the whole box is inside the bounds on arrival **[Rec]** |
+| transition_time | float (s) | 0.2 or more | calculated (R3) | How long every opening of the live room stays shut after a crossing |
 
-**Output Range:** a yes or no for the arrival exit only; other exits are always armed. At `exit_rearm` 0 and `rearm_time` 0, a weak jump up a rise exit that falls back flickers between rooms every frame, which is why both have floors.
-**Example:** the Seeker jumps up a rise exit, arrives 2 px inside the room above and falls back at once: `inside_distance` 2 < 12 and 0.1 s < 0.5 s, so it does not cross back; it lands on the room's floor by the opening, or, if there is none, crosses back at 0.5 s.
+**Output Range:** the earliest a second crossing can start is `transition_time` after the first (0.45 s at the starting values) plus the walk back over the line. The Seeker arrives inside the bounds and the openings stay shut until the fade-in ends, so it is never in space beyond a room's bounds, and nothing flickers between rooms: each crossing costs a full transition and real travel. Below 11 px the box of a Seeker arriving through a rise or fall exit would still overlap the bounds line, which is why the knob has a floor of 12.
+**Example:** the Seeker jumps up a rise exit with too little speed and arrives 12 px inside the room above, still moving up weakly. It is frozen until the fade-in starts, then falls back onto the shut line and rests there until the fade-in ends. It then falls through and crosses back down; that second crossing starts at least 0.45 s after the first.
 
 ### R3. Transition time
 
 The transition_time formula is defined as:
 
-`transition_time = fade_out_time + max(0, load_left) + fade_in_time`
+`transition_time = fade_out_time + max(0, load_left) + build_time + fade_in_time`
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| fade_out_time | float (s) | 0.1-0.4, starts at 0.15 | data file | Fade to dark; the world still runs **[Rec]** |
+| fade_out_time | float (s) | 0.1-0.4, starts at 0.15 | data file | Fade to dark; the world is already frozen from the crossing (rule 9) **[Rec]** |
 | load_left | float (s) | 0 or more | calculated | Time the next room still needs to finish loading when the fade-out ends; 0 for a preloaded neighbour (rule 11) |
+| build_time | float (s) | 0.02-0.4, budget 0.10 | measured per room | Time to build the live room from its preloaded data and apply world state (rule 12), while dark. Budget 0.10 s **[Rec]**. The container measured about 0.33 s to rebuild a same-biome room (level design Open Question 22; software Vulkan at about 100 ms a frame), so that is a pessimistic bound, not a measurement of the target machine |
 | fade_in_time | float (s) | 0.1-0.4, starts at 0.2 | data file | Fade from dark; the world runs, so the arrival move is seen **[Rec]** |
 | load_wait_notice | float (s) | 0.25-1.0, starts at 0.5 | data file | Dark wait after which the loading mark shows (rule 10) **[Rec]** |
 
-**Output Range:** 0.35 s for a preloaded room at the starting values; 0.2-0.8 s across the fade ranges, plus any load wait. Below 0.1 s a fade is a hard cut that shows the swap; above about 0.5 s in total, a run through a chain of small connector rooms reads as broken.
-**Example:** running right into a preloaded neighbour: 0.15 + 0 + 0.2 = 0.35 s, of which the world is frozen only while the screen is dark. A respawn into a room that was not resident with a 1.07 s biome load: 0.15 + about 1.07 + 0.2 = about 1.4 s, with the loading mark showing after 0.5 s of dark.
+**Output Range:** 0.45 s for a preloaded room at the starting values (0.15 + 0 + 0.10 + 0.20), of which the world is frozen for the first 0.25 s; 0.2-0.8 s across the fade ranges alone, plus `build_time` and any load wait. Below 0.1 s a fade is a hard cut that shows the swap; above about 0.5 s in total, a run through a chain of small connector rooms reads as broken, so the starting values leave only 0.05 s for `build_time` to overrun its budget.
+**Example:** running right into a preloaded neighbour: 0.15 + 0 + 0.10 + 0.2 = 0.45 s, with the world frozen from the crossing to the start of the fade-in (0.25 s) and running again for the 0.2 s fade-in. A respawn into a room that was not resident with a 1.07 s biome load: 0.15 + about 0.92 (the load still needed when the fade-out ends) + 0.10 + 0.2 = about 1.37 s, with the loading mark showing after 0.5 s of dark.
 
 ### R4. Camera clamp and zone blend
 
@@ -173,17 +174,18 @@ The camera_clamp formula is defined as:
 
 The preload_deadline formula is defined as:
 
-`t_reach(exit) = d_min(exit) / dash_speed`  ·  listed when `t_reach(exit) < load_time(target of exit)`
+`t_reach(exit) = min over arrival points a of max(dx(a, exit) / dash_speed, dy(a, exit) / fast_fall_speed)`  ·  listed when `t_reach(exit) < load_time(target of exit)`
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| d_min | float (game px) | 0 or more | calculated (room data) | Shortest straight distance from any arrival point of the room (an exit's opening or a door) to this exit's crossing line, ignoring terrain (a conservative bound) |
-| dash_speed | float (px/s) | about 370 | `player_config.tres` | The fastest sustained ground speed; read, never copied |
-| load_time | float (s) | measured | measured per biome | How long the target room takes to load when its biome is not already resident: 0.75-1.07 s measured for a biome's first load (level design Open Question 22); near 0 when the biome is resident |
+| dx, dy | float (game px) | 0 or more | calculated (room data) | Horizontal and vertical distance from an arrival point of the room (an exit's opening or a door) to this exit's crossing line, ignoring terrain. Each term is a lower bound on the time, so the check never lists too few |
+| dash_speed | float (px/s) | about 370 | `player_config.tres` | The fastest sustained horizontal speed (the grapple's 360 is lower); read, never copied |
+| fast_fall_speed | float (px/s) | about 640 | `player_config.tres` | The fastest vertical speed (`max_fall_speed` is 480; a held fast fall reaches 640; a jump or pogo rises slower); read, never copied |
+| load_time | float (s) | 0 or more | data file, per biome | How long the target room takes to load when its biome is not already resident. Starts at 1.07 s for every biome, the worst of the 0.75-1.07 s the container measured for a first load (level design Open Question 22), until measured on the owner's machine **[Rec]**; 0 when the target is in the arrival room's own biome |
 
-**Output Range:** 0 s upward. The check only lists exits; it never refuses a room. At `d_min` 0 (two exits meeting at a room's corner) any load the neighbour needs shows as a dark wait (rule 10).
-**Example:** a 1-screen connector at a region border, arriving at its left edge with the other biome's room beyond its right edge: `d_min` about 480, `t_reach` = 480 / 370 = about 1.3 s, more than 1.07 s, so it is not listed. The same connector with the new biome's exit 120 px from the arrival: 0.32 s, listed.
+**Output Range:** 0 s upward. The check only lists exits; it never refuses a room. At `dx` and `dy` both 0 (two exits meeting at a room's corner) any load the neighbour needs shows as a dark wait (rule 10).
+**Example:** a 1-screen connector at a region border, arriving at its left edge with the other biome's room beyond its right edge: `dx` 480, `dy` 0, `t_reach` = 480 / 370 = about 1.3 s, more than 1.07 s, so it is not listed. The same connector with the new biome's exit 120 px from the arrival: 0.32 s, listed. A shaft with the new biome's fall exit 480 px below the arrival: 480 / 640 = 0.75 s, listed (a bound using `dash_speed` alone would give 1.3 s and miss it).
 
 ### R6. Resident set
 
@@ -210,7 +212,7 @@ The resident_set formula is defined as:
 - **If the Seeker is hit, or touches a hazard or kill plane, while a transition runs**: it cannot be hurt or killed from the frame it crosses an exit or starts EnterDoor until the fade-in ends. Hazards and enemies in the new room act normally after that. **[Rec]**
 - **If the Seeker crosses an exit mid-attack**: its state is carried (rule 5), but the attack's hits in the old room are discarded and the attack hits nothing in the new room until the next attack starts.
 - **If the Seeker's centre crosses two openings on the same frame** (a room corner where a side opening meets a fall exit): it takes the exit whose bounds line the centre passed farther. On a tie, it takes the side exit, so a run keeps its direction.
-- **If a rise exit is reached with too little upward speed** (a jump that only just reaches the opening): the Seeker arrives, falls back, and returns through the same exit only once `exit_rearm` or `rearm_time` allows it (R2). It never flickers between rooms.
+- **If a rise exit is reached with too little upward speed** (a jump that only just reaches the opening): the Seeker arrives `exit_rearm` px inside, falls back onto the shut opening, and crosses back down only after the fade-in has ended (R2, rule 6). Each crossing costs a full transition, so it never flickers between rooms.
 - **If an opening is too narrow for the Seeker**: it fails the terrain pipeline's passage check (`pass_w`, `pass_h` tiles) like any other space, so it is rejected before approval. A crack in the border that only reads as an opening is not an exit and stays solid.
 - **If a room's opening faces a region not yet built** (the core build has one region, level design rule 2): the opening is solid until that region exists, so the room check sees no exit there and does not reject the room.
 
@@ -220,7 +222,7 @@ The resident_set formula is defined as:
 - **If a one-way or locked door is used from its closed side**: it shows as locked and no transition starts (level design rule 14).
 
 **Loading**
-- **If the Seeker turns round and goes straight back through the exit it came in by**: the room it left is a neighbour, so it is still resident and the transition does not wait.
+- **If the Seeker turns round and goes straight back through the exit it came in by**: the room it left is a neighbour, so it is still resident and the transition does not wait for a load (the build still takes `build_time`).
 - **If the Seeker reaches an exit before its target has loaded**: the screen stays dark until it has (rule 10). R5 lists the exits where that can happen at a biome change, for level design.
 - **If the game is paused or a save is requested during a transition**: the pause opens, or the save runs, only after the fade-in ends.
 - **If a respawn, load or fast travel targets the room the Seeker is in**: the room is rebuilt fresh (rule 12) behind the same fade.
@@ -237,6 +239,7 @@ The resident_set formula is defined as:
 **World grid**
 - **If two rooms would overlap on the world grid**: the room check rejects both by name (rule 2).
 - **If a room is moved on the world grid or cut after release**: saves hold room ids and arrival points, never world positions (rule 3), so a save still loads into the right room. A cut room's id stays reserved; a save inside it loads at the region's first save point.
+- **If an object is removed from a room, or saved state names an object id the room no longer has**: the saved state is ignored and the id is never reused (rule 3). An object edited out and placed again is a new object with a new id and starts as the data says.
 
 ## Dependencies
 
@@ -247,7 +250,7 @@ The systems index places this system in the Core layer, depending on Player cont
 | System | Hard / soft | What this system needs | GDD exists |
 |--------|-------------|------------------------|------------|
 | Terrain pipeline | Hard | The tile grid inside a room's bounds in whole 80 x 45-tile screens, solid outside the bounds except at exits, openings on grid lines, one biome per room, the passage check that rejects too-narrow openings (terrain rules 2, 4, 14; Edge Cases) | Yes, In Review (`design/gdd/terrain-pipeline.md`) |
-| Player controller | Hard | The Seeker's collision box centre (rule 5), its state, velocity, facing, timers and air moves to carry across (rule 5), a way to freeze it while the screen is dark (rule 9), the door input (up) and EnterDoor (rule 7), `dash_speed` (R5) | No (`player.gd`, `player_config.tres`) |
+| Player controller | Hard | The Seeker's collision box centre (rule 5), its state, velocity, facing, timers and air moves to carry across (rule 5), a way to capture its state and freeze it from the crossing until the fade-in starts, and to hold it behind a shut opening (rules 6, 9), the door input (up) and EnterDoor (rule 7), `dash_speed` and `fast_fall_speed` (R5) | No (`player.gd`, `player_config.tres`) |
 | Camera | Hard | A camera that takes bounds and a snap (rules 9, 13, 14) | No (`player_camera.gd`: follow, look-ahead, dip, shake; no bounds yet) |
 | World state | Soft | Saved states of a room's objects, applied at each build (rule 12). Without it a room still builds, from its data alone | No (Not Started) |
 
@@ -284,8 +287,8 @@ The systems index places this system in the Core layer, depending on Player cont
 
 These are design targets; the acceptance criteria check the measurable parts.
 
-- **The run is never broken.** A Seeker dashing off an edge arrives dashing, in 0.35 s (R3), and keeps its air moves. A player chaining connector rooms at speed should not feel the seams as stops.
-- **Arrivals are safe and readable.** The Seeker is never hurt during a transition (Edge Cases), never arrives into solid (rule 4), and never bounces straight back (R2).
+- **The run is not broken by more than a fade.** A Seeker dashing off an edge stops for 0.25 s (fade-out and build, frozen at the edge), then arrives dashing, with its dash time and air moves as they were; the whole crossing takes 0.45 s (R3). The stop is the price of freezing at the crossing (rule 9). Whether it reads as a seam or as a beat is a playtest question (Acceptance Criteria, Open Question 6); if it breaks the run, shorten `fade_out_time` first.
+- **Arrivals are safe and readable.** The Seeker is never hurt during a transition (Edge Cases), never arrives into solid (rule 4), and never flickers between rooms (R2).
 - **The camera tells you where the room ends.** It stops at the room's edge, so a stop of the camera reads as "the room ends here", and an open edge in view reads as a way on.
 
 ## UI Requirements
@@ -304,7 +307,7 @@ These are design targets; the acceptance criteria check the measurable parts.
 | Tile grid, whole screens of 80 x 45 tiles, solid outside bounds except exits, one biome per room, passage check | Terrain pipeline | `design/gdd/terrain-pipeline.md`, In Review |
 | Encounter data is not layout (rule 10) | Terrain pipeline | In Review |
 | Biome texture memory about 97 MB, first load 0.75-1.07 s | Level design Open Question 22 | Measured 2026-11-19 in the container (no GPU) |
-| `dash_speed` 370, collision box 10 x 22, EnterDoor animation | Player controller | `player_config.tres`, `player.gd`, `seeker_animations.json`; no GDD |
+| `dash_speed` 370, `fast_fall_speed` 640, collision box 10 x 22, EnterDoor animation | Player controller | `player_config.tres`, `player.gd`, `seeker_animations.json`; no GDD |
 | Camera follow, look-ahead, dip, shake | Camera | `player_camera.gd`; no GDD |
 | Rooms as separate scenes, paired doors, camera inside room bounds | Story 007 | `production/epics/guardbreak/story-007-rooms-saves-map.md`, Ready |
 
@@ -316,25 +319,27 @@ Types: **[Auto]** automated test on room-data fixtures; **[Auto, engine]** autom
 - **GIVEN** a room's data, **WHEN** the room check runs, **THEN** it has a whole number of screens in each dimension, one region, one biome and a world position; **GIVEN** a room with no biome, **THEN** it is rejected and named. **[Auto]** (rule 1)
 - **GIVEN** two rooms whose world-grid cells overlap by one cell, **WHEN** the room check runs, **THEN** both are rejected and named. **[Auto]** (rule 2)
 - **GIVEN** a save made in room X at its save point, **WHEN** room X is moved two cells on the world grid and the save is loaded, **THEN** the Seeker arrives in room X at the same save point. **[Auto, engine]** (rule 3, Edge Cases)
+- **GIVEN** a room with two doors sharing one object id, **WHEN** the room check runs, **THEN** the room is rejected and named; **GIVEN** a door with no id, **THEN** it is rejected. **GIVEN** a room where door D (id `d1`) was opened and saved, **WHEN** a breakable is added to the room data and the room is rebuilt, **THEN** D is still open and the new breakable is whole; **GIVEN** the saved id `d1` and a room that no longer has `d1`, **THEN** the build succeeds and the saved state is ignored. **[Auto]** for the check, **[Auto, engine]** for the rebuild (rules 3, 12, Edge Cases)
 
 **Exits**
 - **GIVEN** two rooms side by side whose facing openings cover the same world span, **THEN** the room check passes; **GIVEN** the neighbour's opening one tile shorter, **THEN** both rooms are rejected and named; **GIVEN** an opening with no room beyond it, **THEN** its room is rejected. **[Auto]** (rule 4)
-- **GIVEN** a 3 x 1 screen room at cell (3, 1) whose right edge opens into a room at cell (6, 1), **WHEN** the Seeker runs right at `run_speed` and its centre crosses the edge at local y 200, **THEN** it arrives at local (0, 200) of the new room, running right at `run_speed`. **[Auto, engine]** (rule 5, R1)
-- **GIVEN** the same exit, **WHEN** the Seeker crosses mid-dash with its air jump unused, **THEN** it arrives in the dash state with the dash's remaining time unchanged and its air jump still available. **WHEN** instead it falls through a fall exit at `max_fall_speed`, **THEN** it arrives at the top of the room below falling at `max_fall_speed`. **[Auto, engine]** (rule 5)
-- **GIVEN** a rise exit, **WHEN** the Seeker arrives through it 2 px inside the room above and falls straight back, **THEN** it does not cross back before 0.5 s, and crosses back at most once in the first second. **GIVEN** `exit_rearm` 12, **WHEN** it has moved exactly 12 px inside, **THEN** it may cross back at once. **[Auto, engine]** (rule 6, R2)
+- **GIVEN** a solid tile whose nearest edge is 6 px inside the bounds along an opening's span, **WHEN** the room check runs with `exit_rearm` 12, **THEN** the room is rejected and named; **GIVEN** the nearest edge at 12 px, **THEN** it passes. **[Auto]** (rule 4, R2)
+- **GIVEN** a 3 x 1 screen room at cell (3, 1) whose right edge opens into a room at cell (6, 1), **WHEN** the Seeker runs right at `run_speed` and its centre crosses the edge at local y 200, **THEN** it arrives at local (12, 200) of the new room, running right at `run_speed`. **[Auto, engine]** (rule 5, R1)
+- **GIVEN** the same exit, **WHEN** the Seeker crosses mid-dash with its air jump unused, **THEN** it arrives in the dash state with the dash time it had on the crossing frame (the dash does not tick while frozen) and its air jump still available. **WHEN** instead it falls through a fall exit at `max_fall_speed`, **THEN** it arrives at local (x, 12) of the room below, x as on the crossing frame, falling at `max_fall_speed`. **[Auto, engine]** (rule 5)
+- **GIVEN** a rise exit, **WHEN** the Seeker arrives through it with too little upward speed and falls straight back, **THEN** it arrives 12 px inside the room above, on no frame from the crossing until the fade-in ends is its centre beyond the bounds line, and its second crossing starts no earlier than `transition_time` (0.45 s) after the first. **GIVEN** the Seeker pressing into a shut opening during the fade-in, **THEN** no second transition starts before the fade-in ends. **[Auto, engine]** (rule 6, R2)
 - **GIVEN** the Seeker standing on the ground in a door's area, **WHEN** up is pressed, **THEN** EnterDoor plays once, the transition runs, and the Seeker arrives standing in front of the paired door, facing out of it, with zero velocity. **[Auto, engine]** (rule 7)
 - **GIVEN** the Seeker in the air, or attacking, in a door's area, **WHEN** up is pressed, **THEN** no transition starts, and none starts on landing. **GIVEN** a one-way door seen from its closed side, **THEN** pressing up starts no transition. **[Auto, engine]** (rule 7, Edge Cases)
 - **GIVEN** the Seeker dies, **WHEN** it respawns, **THEN** it arrives standing at its save point's arrival point with zero velocity, behind the same fade. **[Auto, engine]** (rule 8)
 
 **The transition**
-- **GIVEN** a preloaded neighbour and the starting values, **WHEN** the Seeker crosses an exit, **THEN** the time from the crossing frame to the end of the fade-in is 0.35 s, within one frame at 60 Hz. **[Auto, engine]** (rule 9, R3)
-- **GIVEN** a transition in progress, **WHEN** the screen is fully dark, **THEN** the Seeker's and every enemy's position, velocity and timers are unchanged from frame to frame; **WHEN** jump is pressed while dark, **THEN** the Seeker jumps on the first frame of the fade-in. **[Auto, engine]** (rule 9)
-- **GIVEN** a target room whose load is held back by 1.0 s (test hook), **WHEN** the Seeker crosses into it, **THEN** the screen stays dark until the room is built, the loading mark appears after 0.5 s of dark, and no frame shows a partly built room. **[Auto, engine]** (rule 10, R3)
+- **GIVEN** a preloaded neighbour, the starting values and `build_time` held at its 0.10 s budget (test hook), **WHEN** the Seeker crosses an exit, **THEN** the time from the crossing frame to the end of the fade-in is 0.45 s, within one frame at 60 Hz, and the world runs again on the first frame of the fade-in. **[Auto, engine]** (rule 9, R3)
+- **GIVEN** a transition in progress, **WHEN** any frame from the crossing frame to the start of the fade-in is sampled, **THEN** the Seeker's and every enemy's position, velocity and timers are unchanged from frame to frame; **GIVEN** the Seeker standing on the ground at the arrival, **WHEN** jump is pressed during that time, **THEN** the Seeker jumps on the first frame of the fade-in. **[Auto, engine]** (rule 9)
+- **GIVEN** a target room whose load is held back by 1.0 s (test hook), **WHEN** the Seeker crosses into it, **THEN** the screen stays dark until the room is built, the loading mark appears after 0.5 s of dark, and on every rendered frame where the fade alpha is below 1 the new room's `built` flag is true. **[Auto, engine]** (rule 10, R3)
 
 **Loading and rebuilding**
 - **GIVEN** a room with three neighbours, **WHEN** the Seeker enters it, **THEN** the resident rooms are exactly it and its three neighbours, every other room is freed, and the resident set holds at most two biomes. **GIVEN** a room whose neighbours span three biomes, **THEN** the room check rejects it. **[Auto, engine]** for residency, **[Auto]** for the check (rule 11, R6)
 - **GIVEN** a room where the Seeker killed an enemy, broke an unsaved breakable and opened a door that world state saves, **WHEN** it leaves and comes back, **THEN** the enemy is alive at its spawn point, the breakable is whole and the door is open. **[Auto, engine]** (rule 12)
-- **GIVEN** the Seeker crosses an exit, **WHEN** it turns round and crosses straight back once re-armed, **THEN** the transition does not wait for a load. **[Auto, engine]** (Edge Cases, rule 11)
+- **GIVEN** the Seeker crosses an exit, **WHEN** it turns round and crosses straight back once the fade-in has ended, **THEN** the transition does not wait for a load. **[Auto, engine]** (Edge Cases, rule 11)
 
 **Camera**
 - **GIVEN** a 3 x 1 screen room, **WHEN** the Seeker runs its whole length and back, **THEN** on every frame the camera's centre x is within [240, 1200] and its centre y is 135, so the view never shows past the room's bounds. **[Auto, engine]** (rule 13, R4)
@@ -346,8 +351,8 @@ Types: **[Auto]** automated test on room-data fixtures; **[Auto, engine]** autom
 - **GIVEN** a fall exit whose room below leads past a gate's far side with only the earlier keys, **WHEN** level design's rule 27 check runs on the room graph, **THEN** it fails and names the fall exit. **[Auto]** (rule 15, cross-system: level design rule 27)
 
 **Formulas**
-- **GIVEN** a 1-screen connector whose arrival is 120 px from an exit into a room of another biome, **WHEN** the R5 check runs, **THEN** that exit is listed (0.32 s, below 0.75 s); **GIVEN** the arrival 480 px from it, **THEN** it is not listed (1.30 s); **GIVEN** two exits meeting at the room's corner, **THEN** it is listed (0 s). **[Auto]** unit test (R5)
-- **GIVEN** R1 with origins (3, 1) and (6, 1) and a crossing at local (1440, 200), **THEN** the arrival is local (0, 200); **GIVEN** origins (2, 0) and (2, 1) and a fall through local (300, 270), **THEN** the arrival is local (300, 0). **[Auto]** unit test (R1)
+- **GIVEN** a 1-screen connector whose arrival is 120 px from an exit into a room of another biome, **WHEN** the R5 check runs, **THEN** that exit is listed (0.32 s, below the 1.07 s `load_time`); **GIVEN** the arrival 480 px from it, **THEN** it is not listed (1.30 s); **GIVEN** a shaft whose fall exit is 480 px below the arrival, **THEN** it is listed (0.75 s from `fast_fall_speed` 640, where `dash_speed` alone would give 1.30 s and miss it); **GIVEN** two exits meeting at the room's corner, **THEN** it is listed (0 s). **[Auto]** unit test (R5)
+- **GIVEN** R1 with origins (3, 1) and (6, 1) and a crossing at local (1440, 200), **THEN** the arrival is local (12, 200); **GIVEN** origins (2, 0) and (2, 1) and a fall through local (300, 270), **THEN** the arrival is local (300, 12); **GIVEN** a crossing frame whose centre is 8 px past the bounds line, **THEN** `local_old` is on the line and the arrival is unchanged. **[Auto]** unit test (R1)
 
 **Edge cases that could ship broken**
 - **GIVEN** a spike hazard at an arrival point and an enemy attacking the Seeker as it crosses, **WHEN** the transition runs, **THEN** the Seeker takes no damage until the fade-in ends. **[Auto, engine]** (Edge Cases)
@@ -357,11 +362,12 @@ Types: **[Auto]** automated test on room-data fixtures; **[Auto, engine]** autom
 - **GIVEN** a door whose pair is missing, **WHEN** the room check runs, **THEN** both rooms are rejected by name. **GIVEN** pause pressed during a transition, **THEN** the pause opens on the first frame after the fade-in ends. **[Auto]** for the check, **[Auto, engine]** for pause (Edge Cases)
 
 **Feel and cost**
-- **GIVEN** the two-room slice of story 007 on the owner's machine, **WHEN** the Seeker crosses between the rooms 20 times at `dash_speed`, **THEN** no frame of any transition exceeds 16.6 ms, and three playtesters asked "did the edge exits interrupt your run?" answer no. **[Play]** (Game Feel, R3)
+- **GIVEN** the two-room slice of story 007 on the owner's machine, **WHEN** the Seeker crosses between the rooms 20 times at `dash_speed`, **THEN** no frame with the fade alpha below 1 exceeds 16.6 ms, `build_time` is at most 0.10 s on every crossing (or the measured value is recorded and the budget revised), and three playtesters asked "did the edge exits interrupt your run?" answer no. **[Play]** (Game Feel, R3)
 
 **Gaps found by the QA lens:**
 - Memory (R6) has no criterion: the memory ceiling is not set (Open Question 3). This is NOT ASSESSED, not a pass.
 - R5's load times are the container's measurements; the real values must be measured on the owner's machine before the check's listings are trusted.
+- `build_time` (R3) starts as a budget: the container's 0.33 s rebuild is a pessimistic bound, so the 0.45 s total is unproven until measured on the owner's machine.
 - Camera bounds at the 4x display (Open Question 2) cannot be tested until the display migration is built; R4's criteria are in game px and hold either way.
 
 ## Open Questions
@@ -373,5 +379,5 @@ Owner is the project owner unless stated. No dates are set; each has a target st
 3. **Memory ceiling.** R6 cannot be checked until the project's memory ceiling is set (terrain Open Question 4). Owner: technical director.
 4. **Region music and a region title card.** Whether crossing a region border changes music with a cross-fade, and whether a first entry shows the region's name. Owner: audio and level design. Target: Vertical Slice.
 5. **Enemies that stay dead.** Rule 12 rebuilds every enemy on entry; exceptions are the Enemies GDD's. Owner: `/design-system enemies`.
-6. **Starting values to check in play.** `fade_out_time` 0.15 s, `fade_in_time` 0.2 s, `exit_rearm` 12 px, `rearm_time` 0.5 s, `zone_blend_time` 0.4 s, `enemy_return_delay` 2 s and the 48 px spawn clearance are recommendations. Target: the two-room slice of story 007.
+6. **Starting values to check in play.** `fade_out_time` 0.15 s, `fade_in_time` 0.2 s, `exit_rearm` 12 px, `build_time` budget 0.10 s (and so the 0.25 s freeze at the edge), `zone_blend_time` 0.4 s, `enemy_return_delay` 2 s and the 48 px spawn clearance are recommendations. Target: the two-room slice of story 007.
 7. **World-grid editor view.** The tools story for authoring rooms on the world grid (UI Requirements). Target: before region 1's grey-box.
