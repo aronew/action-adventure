@@ -176,3 +176,9 @@ $RECYCLE.BIN/
 
 # === Godot editor cache ===
 .godot/
+
+# === Third-party art packs ===
+# Licences forbid redistribution and this repo is public: the pack files stay
+# local. Only the README (sources, licences, expected layout) is tracked.
+assets/third_party/*
+!assets/third_party/README.md

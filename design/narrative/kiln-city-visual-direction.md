@@ -1,12 +1,12 @@
 # Region 1 Visual Direction: The Cooling Yards
 
-Status: Approved by the project owner 2026-11-18 (drafts and history in `production/narrative/`). Intent only; the owner's own sprites replace placeholders. Target 480x270 pixel art, limited palette.
+Status: Approved by the project owner 2026-11-18 (drafts and history in `production/narrative/`). Intent only; the owner's own sprites replace placeholders. Target 480x270 pixel art, limited palette. **Open (2026-11-18):** after this was approved the owner chose black collision masses with painted rock or moss trim (level design rule 25, the Maaot packs); the art bible reconciles that look with this pixel-art target (level design Open Question 17).
 
 ## Palette and light
 
 - Ground: soot-umber and ash-aubergine, low value, low saturation. Light comes from below: dim amber from kiln windows and fireboxes, dithered, never brighter than mid value.
 - The Seeker (bone-pale) is the lightest matte value on screen; play-layer collision edges are the brightest values in a room. Background and foreground framing stay darker than both.
-- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple). Region 1 opens only orange; green, yellow and violet appear as unreachable gates.
+- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple). Region 1 opens orange and copper-green; yellow and violet appear as unreachable gates.
 
 ## Glazed vs unglazed
 
@@ -16,7 +16,7 @@ Status: Approved by the project owner 2026-11-18 (drafts and history in `product
 ## Silhouettes
 
 - **Tavik:** tall, narrow, leaning forward, a flat tray held out like a table, a trailing cloth.
-- **Brun (region 2):** wide square block, a tall column on his back.
+- **Brun (region 1's boss):** wide square block, a tall column on his back.
 - **Pell (region 2):** stooped, one shoulder dropped, apron, wrapped hands, small lamp.
 - **Seeker:** small, hooded, upright, readable against dark ground.
 

@@ -35,24 +35,24 @@ Notes by area (balanced density):
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
 | 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
-| 9 | Ability gating | Progression | MVP | Implemented (test rooms, no GDD) | — (brief) | Player controller, World state |
+| 9 | Ability gating | Progression | MVP | In Review (first design review 2026-11-18: NEEDS REVISION, 3 blockers revised (F11 gate-anchor spend rule and last-flight bound, pane breaks on band entry); F2 window now 72-106; awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft) |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
-| 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating |
+| 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (draft complete 2026-11-18) | design/gdd/level-design.md | Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (seventh design review 2026-11-18: 2 blockers revised (key 3 window 72-106; gate state Seen + Passed, Passable derived); owner decisions: save spacing counts new ground only, spikes can be pogoed (ability gating to follow, Open Question 20); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
-| 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions |
+| 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
 | 19 | Collectible upgrades (inferred) | Progression | Vertical Slice | Not Started | — | World state, Level design |
 | 20 | HUD (inferred) | UI | MVP | Implemented (debug HUD only) | — | Health/damage/death, Ability gating |
-| 21 | Grid map | UI | MVP | Not Started | — | Rooms and transitions, World state |
+| 21 | Grid map | UI | MVP | Not Started | — | Rooms and transitions, World state, Level design |
 | 22 | Pause and menus, incl. control remapping (inferred) | UI | Vertical Slice | Not Started | — | Player controller (input), Save points |
 | 23 | Parallax, lighting and atmosphere (inferred) | Presentation | Vertical Slice | Not Started | — | Terrain pipeline, Camera, Rooms and transitions |
 | 24 | Hit feedback and effects (inferred) | Presentation | MVP | Implemented (no GDD) | — (brief) | Combat, Camera |
 | 25 | Audio (inferred) | Audio | Vertical Slice | Not Started (dash and idle SFX reported missing) | — | Player controller, Combat |
-| 26 | Lore delivery and mentor/hub pact (inferred) | Narrative | Alpha | Not Started (lore not yet provided) | — | Level design, World state, Ability gating |
+| 26 | Lore delivery and mentor/hub pact (inferred) | Narrative | Alpha | Not Started (lore provided 2026-11-18: The Kiln City, in design/narrative/) | — | Level design, World state, Ability gating |
 
 ---
 
@@ -108,7 +108,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 3. Enemies: Combat, Health/damage/death.
 4. Bosses: Guard-break, Enemies.
 5. Ability gating: Player controller, World state.
-6. Level design and world layout: Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
+6. Level design and world layout: Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
 7. Save points and save/load: World state, Rooms and transitions.
 8. Collectible upgrades: World state, Level design.
 9. Fast travel: Rooms and transitions, World state, Level design.
@@ -170,7 +170,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 |--------|-----------|-----------------|------------|
 | Terrain pipeline | Technical | Godot 4.7 is HIGH risk (TileMapLayer physics layers, terrain sets); the reference docs may not cover 4.5-4.7 changes | Prototype one painted room before the GDD is final; check `docs/engine-reference/godot/` |
 | Parallax, lighting and atmosphere | Technical | Parallax2D, 2D lights and HDR glow have 4.x pitfalls; smooth camera plus pixel snapping can jitter; Compatibility renderer reduces glow | Prototype early in one room; confirm the editor version supports 4.7-only features |
-| Level design and world layout | Design / Scope | Around 25-35 rooms for the first region; lore has not been provided; exploration must feel natural, not platform-filled | Grey-box every room before art (research rule); use the research metrics; ask for lore before narrative pass |
+| Level design and world layout | Design / Scope | Around 25-35 rooms for the first region; lore provided 2026-11-18 (The Kiln City, in design/narrative/); exploration must feel natural, not platform-filled | Grey-box every room before art (research rule); use the research metrics; ask for lore before narrative pass |
 | Ability gating | Design | Dash-jump (about 165 px) and wall jump leak horizontal and vertical gates; the double-jump gate can be bypassed | Measure in `movement_test_room`, then author gates with those numbers; playtest each gate |
 | Rooms and transitions | Technical | Seamless edge transitions, per-room camera limits and persistence of room state | Build one two-room vertical slice first (story 007) |
 | Elemental palettes and spells | Design | If an element does not change a fight or open a lock it becomes a passive toggle | Define each element's gate material and combat effect before building |
@@ -182,7 +182,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 1 (level design) |
+| Design docs started | 2 (level design, ability gating) |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
@@ -196,7 +196,7 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 - [x] Review and approve this systems enumeration (owner, 2026-11-18)
 - [x] Level design GDD drafted (2026-11-18), awaiting `/design-review` in a fresh session
 - [ ] Design the remaining MVP systems in the order above (`/design-system [name]`)
-- [ ] Provide the lore, so level design and the mentor/hub pact can use it
+- [x] Provide the lore, so level design and the mentor/hub pact can use it (done 2026-11-18: The Kiln City, in design/narrative/)
 - [ ] Run `/design-review` on each completed GDD
 - [ ] Run `/gate-check` when the MVP systems are designed (project.stage still says Concept)
 - [ ] Prototype the terrain pipeline and parallax stack in one room (highest technical risk)

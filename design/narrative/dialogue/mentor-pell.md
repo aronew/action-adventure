@@ -1,10 +1,10 @@
 # Mentor Dialogue: Pell
 
-Status: Approved by the project owner 2026-11-18 (drafts and history in `production/narrative/`). Speaker: Pell, unglazed loader. Voice: dry, tender, brittle; short sentences; objects and hands. The Seeker never speaks.
+Status: Approved by the project owner 2026-11-18 (drafts and history in `production/narrative/`). Placement notes updated 2026-11-18 to the level design key mapping (wall cling and Brun now in region 1); no line of dialogue changed. Speaker: Pell, unglazed loader. Voice: dry, tender, brittle; short sentences; objects and hands. The Seeker never speaks.
 All lines under 120 characters. 18 lines in total.
 
 ## First meeting
-Context: region 2. Seeker climbs into the Stacking Loft by wall cling. Plays once, on first entry. Region 2's order must give wall cling before the Loft, or line .04 is reworded.
+Context: region 2. Seeker climbs into the Stacking Loft by wall cling, which is earned in region 1 (Dorrit's jar), so line .04 stands. Plays once, on first entry.
 
 - `mentor.first_meeting.01`: Don't touch that rung. It's been loose since before you were thrown.
 - `mentor.first_meeting.02`: Bisque. Fired once, never glazed. So somebody is still making things.
@@ -27,7 +27,7 @@ Context: Pell has shown the move; the Seeker must confirm to receive it. Interac
 - `mentor.pact.accept`: Good. Then the air is yours.
 
 ## Later visit 1
-Condition: region 2, after the double-jump workshop, any later entry to the Loft; line .02 also needs Brun defeated (region 2 mini-boss). Pell at the lamp.
+Condition: region 2, after the double-jump workshop, any later entry to the Loft; line .02 also needs Brun defeated (region 1's boss). Pell at the lamp.
 
 - `mentor.visit_01.01`: Still unglazed, you and me. We're a rare pair.
 - `mentor.visit_01.02`: Brun's stack is down in the Hall. Leave it lie.
@@ -39,7 +39,7 @@ Condition: provisional, in region 2 or later, after a Keeper beyond region 1. Pe
 - `mentor.visit_02.02`: I'm rehearsing the asking. Keep your no ready.
 
 ## Key pickups
-Context: shown once on first pickup. No mechanics described. `pickup.dash` fires in region 1; `pickup.wall_cling` and `pickup.double_jump` fire in region 2.
+Context: shown once on first pickup. No mechanics described. `pickup.dash` and `pickup.wall_cling` fire in region 1; `pickup.double_jump` fires in region 2.
 
 - `pickup.dash`: Dash. Tavik's carry, the last steps before the niche.
 - `pickup.wall_cling`: Wall cling. Dorrit's flat hand, finished.
