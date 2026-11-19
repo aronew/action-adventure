@@ -156,6 +156,15 @@ const CAMERA_DRAG_TOP := 0.5
 const CAMERA_DRAG_BOTTOM := 0.3
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
+## The room's layout. These start as the constants above; a longer test room
+## (art_style_long_room.gd) swaps in its own in _init, before _ready builds the room.
+var grid: Array = GRID
+var islands: Array = ISLANDS
+var ground_props: Array = GROUND_PROPS
+var hanging_props: Array = HANGING_PROPS
+var spawn_point := SPAWN_POINT
+var help_text := HELP_TEXT
+
 var _textures := {}
 var _camera: Camera2D
 var _room_size := Vector2.ZERO
@@ -171,7 +180,7 @@ func _ready() -> void:
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
-	_room_size = Vector2(GRID[0].length(), GRID.size()) * CELL
+	_room_size = Vector2(grid[0].length(), grid.size()) * CELL
 
 	var world := Node2D.new()
 	world.name = "PaintedWorld"
@@ -181,15 +190,15 @@ func _ready() -> void:
 	_add_back_layers(world)
 	_add_corridor_wall(world)
 	_add_terrain(world)
-	for island in ISLANDS:
+	for island in islands:
 		_add_island(world, island)
 	var s := _prop_scale()
-	for entry in GROUND_PROPS:
+	for entry in ground_props:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
 	var ceiling_bottom := CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
-	for entry in HANGING_PROPS:
+	for entry in hanging_props:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
@@ -205,7 +214,7 @@ func _ready() -> void:
 	_add_foreground(world)
 
 	var player: Player = PLAYER_SCENE.instantiate()
-	player.position = SPAWN_POINT
+	player.position = spawn_point
 	add_child(player)
 	var camera := PlayerCamera.new()
 	_camera = camera
@@ -224,7 +233,7 @@ func _ready() -> void:
 	var help := Label.new()
 	help.position = Vector2(16, 12)
 	help.add_theme_font_size_override(&"font_size", 22)
-	help.text = HELP_TEXT
+	help.text = help_text
 	hud.add_child(help)
 	add_child(hud)
 
@@ -272,9 +281,9 @@ func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 
 
 func _solid(col: int, row: int) -> bool:
-	if row < 0 or row >= GRID.size() or col < 0 or col >= GRID[0].length():
+	if row < 0 or row >= grid.size() or col < 0 or col >= grid[0].length():
 		return true
-	return GRID[row][col] == "#"
+	return grid[row][col] == "#"
 
 
 ## The edge tile for a solid cell, or -1 for an interior cell (plain black).
@@ -318,12 +327,12 @@ func _add_terrain(parent: Node2D) -> void:
 	var k := CELL / TILE_SOURCE
 	var body := StaticBody2D.new()
 	parent.add_child(body)
-	for row in GRID.size():
+	for row in grid.size():
 		var run_start := -1
 		var run_insets: Array = []
 		var run_left := 0.0
-		for col in GRID[0].length() + 1:
-			var solid := col < GRID[0].length() and _solid(col, row)
+		for col in grid[0].length() + 1:
+			var solid: bool = col < grid[0].length() and _solid(col, row)
 			var tile := _edge_tile(col, row) if solid else -1
 			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
 			var insets: Array = TILE_INSETS[tile] if tile >= 0 else [0, 0, 0, 0]

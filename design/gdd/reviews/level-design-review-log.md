@@ -176,3 +176,119 @@ Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da1666
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 7
+Summary: The seventh review's fixes held, and every registry value the GDD restates agrees (145-162, 72-106, the F9 widths). One blocker: F7's gap-gate volume ended `hitbox_width` (10 px) past each lip and the column clearance was body-based. But the down attack's hitbox in `attack_data.tres` reaches 27 px ahead of the centre and 21 px behind it and hits the target's whole Area2D, so a hittable just past a far lip could be pogoed from over the gap. Everything was revised in the same session, with three owner decisions: alcoves get a one-way return in their room, `save_spacing_max` becomes 7-10 with saves in optional branches, and Passed gets a pass-line trigger. The GDD and registry hashes below are of the versions as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (both seventh-review blockers fixed)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24): gap volume and `pogo_clearance_px` ignored the down attack's reach (27 forward, 21 back) and the target's hit area (fixed: `pogo_far_ext` 14, `pogo_clearance_px` 140, examples and criterion re-derived)
+- [RECOMMENDED] Core Rules (rule 24) / Open Question 20: stale after ability gating's second review, which made grapple gaps kill plane only at any depth (fixed: resolved)
+- [RECOMMENDED] Core Rules (rule 2): "no door" vs "a door that opens only from inside"; a drop cannot cross a grapple gap (fixed: one-way return in the gate room, owner)
+- [RECOMMENDED] Formulas (F4): range 5-10 vs the region 1 leg of 7; optional branches unruled (fixed: 7-10, branches held to the limit, owner)
+- [RECOMMENDED] States and Transitions (Gate): Passed had no trigger (fixed: pass line per gate type, leak logged, new criterion, owner)
+- [RECOMMENDED] Acceptance Criteria: rule 8 and rule 13 playtests had no threshold; the 20-minute pass had no pass condition; the F5 timing was [Play] (fixed: 4 of 5 testers, 0 crossings, scripted sim run)
+- [RECOMMENDED] Registry: level-design-owned values were unregistered (fixed: hazard_pit_depth_min, pogo_far_ext, pogo_clearance_px, save_spacing_max added as constants)
+- [RECOMMENDED] Core Rules (rule 11): workshop size only in the criterion (fixed)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); 8 hard upstream GDDs still missing
+- [NICE-TO-HAVE] Ability gating's F11 flight envelope ("no hittable in it") should adopt `pogo_far_ext` at the lips at its re-review
+Reviewed-Content-Hash: design/gdd/level-design.md b6de19ba4d19ad38d37c20fe016ce2a9050d379c
+Reviewed-Content-Hash: design/registry/entities.yaml 557c2b7bbfc9f6faa61ee000cf547fe82f5b0a2f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 02339fc256489a49753b3cbde2cf03d3974c5b21
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 6
+Summary: The eighth review's fixes held and every registry value the GDD restates agrees. One blocker: F7's column clearance (140) used the start kit's run-speed pogo carry, but every column gate's earlier kit owns the dash, and a pogo refreshes the air dash (and the air jump once the double jump is owned); a 60 Hz sim puts the carry at about 211 px with the dash and 287 with the F3a kit. Owner chose to widen the clearance per kit and keep the Hollow Knight-style refresh: `pogo_clearance_px` 250, new `pogo_clearance_f3a_px` 320; the sweep criterion now uses each gate's earlier kit with the pogo, and ability gating's sweep includes it. All items revised in the same session; the hashes below are of the versions as reviewed (git HEAD before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (the eighth review's F7 down-attack reach blocker is fixed)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24): column clearance ignored the air dash and air jump a pogo refreshes for the dash-owning earlier kits (fixed: per-kit `pogo_clearance_px` 250 and `pogo_clearance_f3a_px` 320 from a sim; sweep criterion per earlier kit; owner)
+- [RECOMMENDED] Interactions (World state): interface omitted gate Seen/Passed, alcove Found, room Visited, region Entered (fixed; Player controller row added)
+- [RECOMMENDED] Formulas (F4): Output Range "at most 7" stale against range 7-10 (fixed)
+- [RECOMMENDED] Acceptance Criteria (rule 11): "at the gap_min end" not measurable (fixed: at most gap_min + 4 px)
+- [RECOMMENDED] Acceptance Criteria (rule 22): no criterion for "at least two old rooms per key" (fixed)
+- [RECOMMENDED] Formulas (F7): `pogo_far_ext` derivation took the leading edge's shortfall for the centre's; derives to 9 (fixed: 14 kept as a stated safety band)
+- [RECOMMENDED] Core Rules (rule 2): grapple-gap alcove return by a drop cannot cross the chasm (fixed: lever door into a passage beneath the kill plane)
+- [NICE-TO-HAVE] Volume lower bound, Quick reference deps, Elemental palettes row, gaps note, F11 citing `pogo_far_ext` (all fixed); ability gating lists Combat as Soft where level design says Hard (open)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md ba453f960fbe41443b5d8d52a7958b54c9896514
+Reviewed-Content-Hash: design/registry/entities.yaml 9f695b61183a384e292e23f81e231f0dc8341fde
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 02339fc256489a49753b3cbde2cf03d3974c5b21
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 5
+Summary: The ninth review's per-kit F7 clearance holds and re-derives from attack_data.tres and player_config.tres; every registry value the GDD restates agrees. One blocker: rule 24 and F7 bounded enemies by spawn and patrol bounds, but enemy_base.gd chases the Seeker out to lose_range (240-280 px), stops only at floor edges and re-homes where a lost chase stops, so an enemy placed outside a gate volume can be lured into it (a skitter to a dash gap's far lip; any chaser under a ledge column). Owner chose to leash the chase to the spawn point: enemies are measured by their leash bound, spawn +/- (patrol_distance + chase_leash 48 + knockback_travel), grown by half-width. All items revised in the same session; the hashes below are of the revised files' versions as reviewed (git HEAD before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (the ninth review's F7 per-kit clearance blocker is fixed)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: chasing enemies leave their patrol bounds and can be lured into gate volumes (fixed: leash bound, `chase_leash` 48 px registered, boundary criterion, sweep lures each enemy to its leash edges, leash unit test, Open Question 21; leash not in code, an Enemies story; owner)
+- [RECOMMENDED] Dependencies: ability gating listed Combat as Soft where level design says Hard (fixed in ability-gating.md: Hard)
+- [RECOMMENDED] Status / rule 24 / F4 / F7: review history woven into rules (fixed: moved out; decision tags kept)
+- [RECOMMENDED] Tuning Knobs: absent (advisory at standard) (fixed: 11-knob table, new ranges marked Rec)
+- [RECOMMENDED] Player Fantasy: absent (advisory at standard) (fixed)
+- [RECOMMENDED] Acceptance Criteria (rule 13): funnel "first 5-10 rooms" had no defined bound (fixed: funnel length k per region)
+- [ADVISORY] Upstream GDDs other than ability gating still missing; GDD is 74 KB
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/gdd/level-design.md 933369ab033e08191d5245f88b4adb68ac8c5ecc
+Reviewed-Content-Hash: design/registry/entities.yaml f8bf7a3e1c6f3551b787f63e74ad0cf1287dc018
+Reviewed-Content-Hash: design/gdd/ability-gating.md 8755589bf5ec7f0e76e6544671c5e912ed13d98b
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 4
+Summary: The tenth review's leash blocker is resolved and the F5 and F7 arithmetic re-derives; every registry value the GDD restates agrees. Two owner changes made after that review (8 regions; large rooms with open-edge exits) were unreviewed. The large-rooms change updated rules 1, 9, 11, 13, 17 and 18 but not F4: F4 counted screens two ways (screens the walk enters, or every screen of each room), which differ in a non-linear room (a 4x5 cavern crossed along one row: 4 or 20), so the save checker could not be written. Owner decisions, revised in the same session: saves placed by role (near bosses, hubs, rewards) with no distance rule and no data check, judged in playtest as in Hollow Knight and Silksong (F4 withdrawn, `save_spacing_max` deprecated); room sizes unnumbered (a 10-screen room is ordinary); key distance judged in playtest; a fall exit never leads past a gate without its key (rule 27). The GDD and registry hash stamps below are of the files as reviewed (HEAD, before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 tenth review: enemy leash in rule 24, F7, Edge Cases, the leash unit test and Open Question 21)
+Findings:
+- [BLOCKING] Formulas (F4) / rules 1, 9, 15, 16: save spacing and key distance could not be counted in large rooms (fixed: saves by role, no distance rule; F4 withdrawn; rule 9 without a number; save sections allowed in large rooms; ACs, Tuning Knobs, Edge Cases, dependencies and Open Questions 5 and 18 updated; owner)
+- [RECOMMENDED] Acceptance Criteria (rule 11): workshop criterion required the next room, the rule allows a section of the pickup room (fixed)
+- [RECOMMENDED] Core Rules (rule 1, open edges): a pit or bottom edge could drop into a room that leads around a gate (fixed: rule 27, an Edge Case and a room-graph criterion; owner)
+- [RECOMMENDED] Open Questions (17): "this branch does not have that change yet" was stale; the brief now records 1920x1080 (fixed)
+- [RECOMMENDED] Open Questions (18) / F4: region 1 save legs followed the small-room draft (fixed: superseded, noted in Open Question 18)
+- [ADVISORY] Funnel criterion's min(k - 1, 6) redundant (fixed); ability gating still called "In Design" (its header too; update together); upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md cb3c26ae74d3abc81f90d66ade871ff402cc136b
+Reviewed-Content-Hash: design/registry/entities.yaml 0cb8b52c14be7e5dccf83edffc5259c406a3488c
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 13f0d21644ef2ae8bb423478a9f74c87a1bf0555
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950

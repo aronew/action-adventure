@@ -50,6 +50,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 ## Look and references
 - Look: 2D pixel side view using the itch.io character pack, in the Bone palette. Sword FX on their own layer, sparks and glow on hits. The other palettes (Void, Ember, Frost) and the Dream Seeker are for power-ups later.
 - World art (you chose, 2026-11-18): painted, high-resolution environments (the six-biome pack; Cinderheart Caldera first, in `assets/environment/`) with the pixel-art Seeker and enemies drawn at a whole-number scale (4x) with crisp filtering. The game moves from a 480x270 base to 1920x1080 for the world; a test room is built to judge the mix before any other change.
+- Rooms (you chose, 2026-11-19): large, Hollow Knight / Silksong-style rooms you leave by running or falling through an open edge; doors only where the place has one.
 - References: Nine Sols (level design, per your words).
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
@@ -95,7 +96,7 @@ A tougher guarded enemy, region 1's mini-boss (Keeper Tavik, the Hot-Carrier), m
 ## Out of scope
 - Multiplayer, crafting, loot and shops
 - Full story and dialogue (lore comes after the core feels good)
-- More than one region in the core build (the full game is 5 regions); localization
+- More than one region in the core build (the full game is 8 regions, one per biome; you chose, 2026-11-19); localization
 - Bow, spell casts, elemental palette power-ups and the Dream Seeker state (after the core feels good)
 
 ## Build order
