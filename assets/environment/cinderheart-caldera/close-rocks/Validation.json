@@ -1,0 +1,54 @@
+{
+  "pieces": [
+    {
+      "id": "A",
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "canvas": [
+        2048,
+        512
+      ],
+      "art_height": 400,
+      "source_grade_scale": 0.7502016166844839,
+      "export_p90_luma": 39.546,
+      "terrain_p90_luma": 159.4134
+    },
+    {
+      "id": "B",
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "canvas": [
+        2048,
+        512
+      ],
+      "art_height": 440,
+      "source_grade_scale": 0.7762227448788704,
+      "export_p90_luma": 39.623400000000004,
+      "terrain_p90_luma": 159.4134
+    },
+    {
+      "id": "C",
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "canvas": [
+        2048,
+        512
+      ],
+      "art_height": 420,
+      "source_grade_scale": 0.8,
+      "export_p90_luma": 35.830799999999996,
+      "terrain_p90_luma": 159.4134
+    }
+  ],
+  "all_nine_ordered_joins_exact_RGBA": true,
+  "join_pixel_checks": 4608,
+  "opaque_rock_bodies": true,
+  "transparent_exterior": true,
+  "engine_tested": false
+}

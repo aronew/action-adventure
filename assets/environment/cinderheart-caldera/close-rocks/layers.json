@@ -1,0 +1,33 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "strip_canvas": [
+    2048,
+    512
+  ],
+  "order": [
+    "A",
+    "B",
+    "C"
+  ],
+  "loop_period_x": 6144,
+  "position_y_example": 448,
+  "position_y_bottom_aligned": 568,
+  "draw_order": [
+    "far-background",
+    "close-rock-background",
+    "playable-terrain",
+    "black-silhouette-foreground"
+  ],
+  "close_rock_z_order": -10,
+  "close_rock_camera_motion_factor": 0.75,
+  "terrain_camera_motion_factor": 1,
+  "foreground_camera_motion_factor": 1.2,
+  "alpha": "straight",
+  "repeat_x": true,
+  "collision": false,
+  "all_piece_orders_compatible": true,
+  "notes": "This is a lower near-background scenery band, not an opaque full-screen cave wall. Raise or lower its baseline to sit behind your floor. Use individual pieces or joined loop as alternatives."
+}

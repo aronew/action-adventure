@@ -121,6 +121,18 @@ const CORRIDOR_HANGING_PROPS := [
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
+## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
+## slabs, pieces A, B, C repeating, between the far layers and the playable terrain. It
+## scrolls at CLOSE_ROCKS_SCALE (the pack suggests 0.75) and is drawn after the midground
+## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. Its
+## bottom meets the screen's bottom with the camera at the room's floor, so the rocks rise
+## from behind the lowest floor; CLOSE_ROCKS_DROP moves the band down (world px). The
+## corridor's own rear wall is drawn in front of it. Empty folder: no band.
+const CLOSE_ROCKS := "close-rocks/"
+const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
+const CLOSE_ROCKS_SCALE := 0.75
+const CLOSE_ROCKS_Z := -12
+const CLOSE_ROCKS_DROP := 0.0
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -318,6 +330,7 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
+	_add_close_rocks(world)
 	_add_corridor_wall(world)
 	_add_terrain(world)
 	for island in islands:
@@ -581,6 +594,41 @@ func _add_back_layers(parent: Node2D) -> void:
 		index += 10
 		var size := Vector2(tile.x * copies, tile.y)
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
+
+
+## The close rock band (see CLOSE_ROCKS) as one repeating A-B-C layer.
+func _add_close_rocks(parent: Node2D) -> void:
+	if CLOSE_ROCKS.is_empty():
+		return
+	var image_scale := VIEW_SIZE.y / 1080.0
+	var layer := Node2D.new()
+	layer.z_index = CLOSE_ROCKS_Z
+	parent.add_child(layer)
+	var needed := VIEW_SIZE.x + (_room_size.x - VIEW_SIZE.x) * CLOSE_ROCKS_SCALE
+	var x := 0.0
+	var i := 0
+	var height := 0.0
+	while x < needed:
+		var piece: String = CLOSE_ROCK_PIECES[i % CLOSE_ROCK_PIECES.size()]
+		var texture := _texture(BIOME + CLOSE_ROCKS + "%s.png" % piece)
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * image_scale
+		sprite.position = Vector2(x, 0.0)
+		layer.add_child(sprite)
+		x += texture.get_width() * image_scale
+		height = texture.get_height() * image_scale
+		i += 1
+	# On screen: top-left = base - factor * centre + VIEW_SIZE / 2. The band's left edge
+	# meets the screen's left at the room's left; its bottom meets the screen's bottom
+	# with the camera at the room's floor.
+	var factor := Vector2.ONE * CLOSE_ROCKS_SCALE
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var base := factor * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5 \
+			+ Vector2(0.0, VIEW_SIZE.y - height + CLOSE_ROCKS_DROP)
+	_layers.append([layer, factor, base])
 
 
 ## Foreground: the open cave's loops (parallax/) over the open cave and the corridor's
