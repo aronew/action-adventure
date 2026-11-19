@@ -258,9 +258,10 @@ const CAMERA_DRAG_BOTTOM := 0.3
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack  V mood on/off"
 ## The owner's black silhouette foliage (shared, any biome): the nearest layer, pieces
 ## A, D, B, E, C, F repeating in that order (each tall piece D-F between two lower ones,
-## as the pack suggests) along the bottom of the screen, scrolling with the
-## foreground loops (FOREGROUND_SCALE). It meets the screen's bottom with the camera at
-## the room's floor and sits a little lower when the camera is higher. Empty: none.
+## as the pack suggests) along the bottom of the screen. It scrolls sideways with the
+## foreground loops (FOREGROUND_SCALE.x) and stays on the screen's bottom edge as the
+## camera rises and falls, so it shows in every part of a room, tall ones included (as
+## in the owner's reference). Empty: none.
 const SILHOUETTES := "res://assets/environment/foreground-silhouettes/"
 const SILHOUETTE_PIECES := ["Foreground-Bottom-A", "Foreground-Bottom-D", "Foreground-Bottom-B",
 		"Foreground-Bottom-E", "Foreground-Bottom-C", "Foreground-Bottom-F"]
@@ -896,10 +897,11 @@ func _add_silhouettes(parent: Node2D) -> void:
 		layer.add_child(sprite)
 		x += texture.get_width() * image_scale
 		i += 1
-	var center_min := VIEW_SIZE * 0.5
-	var center_max := _room_size - VIEW_SIZE * 0.5
-	var base := FOREGROUND_SCALE * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5
-	_layers.append([layer, FOREGROUND_SCALE, base])
+	# Sideways: the canvas's left edge meets the screen's left at the room's left.
+	# Up and down: scroll factor 0, so the canvas top stays on the screen's top.
+	var factor := Vector2(FOREGROUND_SCALE.x, 0.0)
+	var base := Vector2(FOREGROUND_SCALE.x * VIEW_SIZE.x * 0.5, 0.0) - VIEW_SIZE * 0.5
+	_layers.append([layer, factor, base])
 
 
 ## A strip of the bottom loop's own bottom-row colour hanging under it, one screen tall:
