@@ -151,6 +151,12 @@ const BORDERS := [
 const MIDDLE_Z := 5
 const MIDDLE_INSET := 10.0
 const MIDDLE_PIECE_SCALE := 1.0
+## The owner's modular foreground tileset (modular-foreground/): the terrain atlas redrawn
+## as nearer scoria rock on the same 7x7 grid with the same tile IDs. When set, the rim
+## draws each edge cell's own terrain tile ID from it (inside corners too, base then
+## face, as the terrain does), so it traces the outline with the terrain's exact shapes.
+## When empty, the rim uses the older corner kit below.
+const MIDDLE_TILESET := "modular-foreground/tiles/"
 ## Terrain edge tile -> the kit's nine-slice piece for the same edge.
 const MIDDLE_PIECES := {
 	0: "00-outer-top-left", 1: "01-top-edge", 2: "02-outer-top-right",
@@ -487,6 +493,11 @@ func _add_middle_rim(parent: Node2D) -> void:
 			if not _solid(col, row):
 				continue
 			var tile := _edge_tile(col, row)
+			if not MIDDLE_TILESET.is_empty():
+				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
+				for each in tiles:
+					_add_middle_tile(parent, each, col, row)
+				continue
 			if not MIDDLE_PIECES.has(tile):
 				continue
 			var inset := Vector2.ZERO
@@ -509,6 +520,32 @@ func _add_middle_rim(parent: Node2D) -> void:
 			sprite.scale = Vector2.ONE * size / 512.0
 			layer.add_child(sprite)
 			layer.position = spot
+
+
+## One tile of the modular foreground tileset at a terrain cell, moved MIDDLE_INSET px
+## into the solid on each side its tile faces open air (an inside corner's base and face
+## each move by their own side), fixed in the world like the terrain.
+func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> void:
+	var inset := Vector2.ZERO
+	if tile in [TILE_TL, TILE_T, TILE_TR]:
+		inset.y += MIDDLE_INSET
+	if tile in [TILE_BL, TILE_B, TILE_BR]:
+		inset.y -= MIDDLE_INSET
+	if tile in [TILE_TL, TILE_L, TILE_BL]:
+		inset.x += MIDDLE_INSET
+	if tile in [TILE_TR, TILE_R, TILE_BR]:
+		inset.x -= MIDDLE_INSET
+	var sprite := Sprite2D.new()
+	sprite.texture = _texture(BIOME + MIDDLE_TILESET + "tile-%02d.png" % tile)
+	sprite.centered = false
+	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
+	sprite.position = Vector2(col * CELL, row * CELL) + inset
+	# An outer corner moves on both axes, so it overlaps its neighbours by MIDDLE_INSET.
+	# Drawn on top, its rim runs on over theirs (a small shift along the band) instead of
+	# being cut off square by them.
+	var outer_corner := tile in [TILE_TL, TILE_TR, TILE_BL, TILE_BR]
+	sprite.z_index = MIDDLE_Z + (1 if outer_corner else 0)
+	parent.add_child(sprite)
 
 
 ## One set of top and bottom foreground loops from [param folder], under [param mask].

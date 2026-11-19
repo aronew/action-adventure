@@ -1,0 +1,141 @@
+{
+  "section_count": 8,
+  "sections": [
+    {
+      "id": 0,
+      "file": "sections/section-00.png",
+      "rect": [
+        2065,
+        0,
+        1519,
+        2017
+      ],
+      "source_rect": [
+        715,
+        4,
+        536,
+        705
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 1,
+      "file": "sections/section-01.png",
+      "rect": [
+        1592,
+        55,
+        399,
+        1417
+      ],
+      "source_rect": [
+        542,
+        12,
+        164,
+        511
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 2,
+      "file": "sections/section-02.png",
+      "rect": [
+        48,
+        58,
+        1424,
+        1432
+      ],
+      "source_rect": [
+        9,
+        13,
+        514,
+        517
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 3,
+      "file": "sections/section-03.png",
+      "rect": [
+        1558,
+        1590,
+        470,
+        381
+      ],
+      "source_rect": [
+        538,
+        552,
+        174,
+        150
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 4,
+      "file": "sections/section-04.png",
+      "rect": [
+        258,
+        1592,
+        1025,
+        403
+      ],
+      "source_rect": [
+        79,
+        546,
+        372,
+        163
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 5,
+      "file": "sections/section-05.png",
+      "rect": [
+        0,
+        2069,
+        2028,
+        1515
+      ],
+      "source_rect": [
+        5,
+        719,
+        705,
+        527
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 6,
+      "file": "sections/section-06.png",
+      "rect": [
+        2089,
+        2099,
+        1454,
+        1419
+      ],
+      "source_rect": [
+        719,
+        725,
+        530,
+        516
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    },
+    {
+      "id": 7,
+      "file": "sections/section-07.png",
+      "rect": [
+        1047,
+        2107,
+        977,
+        917
+      ],
+      "source_rect": [
+        351,
+        729,
+        363,
+        340
+      ],
+      "placement_method": "Whole section normalized into matching uploaded terrain section bounds, preserving foreground material contour and openings."
+    }
+  ]
+}
