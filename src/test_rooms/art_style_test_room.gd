@@ -138,15 +138,25 @@ const BORDERS := [
 	["middle-strips/border-left.png", true, true, MIDDLE_Z, 62.0],
 	["corridor/brighter/border-right.png", false, false, 12, 0.0],
 ]
-## Middle layer (the owner's middle-strips/layers.json): top and bottom loops between the
-## playable terrain and the dark nearest strips, at scroll scale 1.08, over the open cave
-## only. Each loop is the prejoined A+B piece (4096x512, repeating every 4096 px). The top
-## canvas meets the screen's top with the camera at the room's top; the bottom canvas
-## sits at screen y 568 of 1080 with the camera at the room's floor.
-const MIDDLE_SCALE := Vector2(1.08, 1.08)
+## Middle layer (the owner's corner kit in middle-foreground/): a nearer rock rim that
+## traces the terrain's outline. Every exposed terrain edge cell gets the kit's matching
+## nine-slice piece (top edge, outer corners, walls, underside), set MIDDLE_INSET px
+## inside the solid so it reads as a closer lip just within the outline and never covers
+## the path. Pieces sit edge to edge, one per cell (MIDDLE_PIECE_SCALE 1), because the
+## kit's core edges are made to mate exactly; overlapping them showed seams. The rim moves
+## with the terrain (scroll scale 1, not the kit's 1.06): a layer at another speed cannot
+## stay on the terrain's outline across a room, and pieces with separate references
+## drifted 2 px apart into black cracks. It still reads nearer, drawn in front of the
+## playable edge and the player.
 const MIDDLE_Z := 5
-const MIDDLE_STRIPS := [["middle-top-AB", 0.0], ["middle-bottom-AB", 568.0]]
-const REFERENCE_HEIGHT := 1080.0
+const MIDDLE_INSET := 10.0
+const MIDDLE_PIECE_SCALE := 1.0
+## Terrain edge tile -> the kit's nine-slice piece for the same edge.
+const MIDDLE_PIECES := {
+	0: "00-outer-top-left", 1: "01-top-edge", 2: "02-outer-top-right",
+	7: "04-left-wall", 9: "06-right-wall",
+	14: "08-outer-bottom-left", 15: "09-underside", 16: "10-outer-bottom-right",
+}
 ## Camera dead zone in this room (fractions of half the screen): a jump stays inside it,
 ## so the view only scrolls up near the top and follows real falls. The bottom margin
 ## (0.3 = 40 px) is a little larger than the camera's fall lead (36 px), so a normal
@@ -451,7 +461,7 @@ func _add_foreground(parent: Node2D) -> void:
 	_add_foreground_set(open_mask, "parallax/", center_min.y, center_max.y)
 	if has_corridor:
 		_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
-	_add_middle_strips(parent, mouth)
+	_add_middle_rim(parent)
 	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
 	for border in borders:
 		var texture := _texture(BIOME + border[0])
@@ -468,26 +478,37 @@ func _add_foreground(parent: Node2D) -> void:
 		parent.add_child(sprite)
 
 
-## The middle layer's two loops over the open cave, fading out at the corridor's mouth.
-func _add_middle_strips(parent: Node2D, mouth: float) -> void:
-	var mask := _blend_mask(parent, 0.0, mouth + LAYER_BLEND * 0.5, false, MIDDLE_Z)
-	var camera_travel := _room_size - VIEW_SIZE
-	var center_min := VIEW_SIZE * 0.5
-	var center_max := _room_size - VIEW_SIZE * 0.5
-	var screen_scale := VIEW_SIZE.y / REFERENCE_HEIGHT
-	for strip in MIDDLE_STRIPS:
-		var texture := _texture(BIOME + "middle-strips/%s.png" % strip[0])
-		var period := texture.get_width() * screen_scale
-		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * MIDDLE_SCALE.x) / period)) + 1
-		var layer := _strip_layer(mask, texture, Rect2(Vector2.ZERO, texture.get_size()),
-				screen_scale, copies, 0, false)
-		var top: bool = strip[0] == "middle-top-AB"
-		var reference_y := center_min.y if top else center_max.y
-		var screen_y: float = strip[1] * screen_scale
-		# On screen: top-left = base - scale * centre + VIEW_SIZE / 2.
-		var base := MIDDLE_SCALE * Vector2(center_min.x, reference_y) \
-				+ Vector2(0.0, screen_y) - VIEW_SIZE * 0.5
-		_layers.append([layer, MIDDLE_SCALE, base])
+## The middle rim: for every exposed terrain edge cell, the kit's matching piece, set
+## inside the solid on each exposed side, fixed in the world like the terrain.
+func _add_middle_rim(parent: Node2D) -> void:
+	var size := CELL * MIDDLE_PIECE_SCALE
+	for row in grid.size():
+		for col in grid[0].length():
+			if not _solid(col, row):
+				continue
+			var tile := _edge_tile(col, row)
+			if not MIDDLE_PIECES.has(tile):
+				continue
+			var inset := Vector2.ZERO
+			if not _solid(col, row - 1):
+				inset.y += MIDDLE_INSET
+			if not _solid(col, row + 1):
+				inset.y -= MIDDLE_INSET
+			if not _solid(col - 1, row):
+				inset.x += MIDDLE_INSET
+			if not _solid(col + 1, row):
+				inset.x -= MIDDLE_INSET
+			var center := Vector2(col + 0.5, row + 0.5) * CELL + inset
+			var spot := center - Vector2(size, size) * 0.5
+			var layer := Node2D.new()
+			layer.z_index = MIDDLE_Z
+			parent.add_child(layer)
+			var sprite := Sprite2D.new()
+			sprite.texture = _texture(BIOME + "middle-foreground/pieces/%s.png" % MIDDLE_PIECES[tile])
+			sprite.centered = false
+			sprite.scale = Vector2.ONE * size / 512.0
+			layer.add_child(sprite)
+			layer.position = spot
 
 
 ## One set of top and bottom foreground loops from [param folder], under [param mask].
