@@ -63,3 +63,35 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 7
+Summary: Both second-review blockers are resolved, and every registry value, T1-T4 output and code claim reproduces. Two process gaps remained: nothing ran the overhang (T3) and rule 5 prop checks on a first dressing pass or a dressing-only edit, so a prop could cover a gate lip and ship as Dressed; and the single-valued `gate` mark could not serve a segment two gates measure, with the mark's extent along a face undefined. Both were revised the same day (owner: dressing checks on every editor save and every build, with flags that block or clear `dressed`; a placement record per gate listing face tile ranges), along with 5 of the 7 recommendations; the GDD awaits re-review in a fresh session.
+Prior verdict resolved: Yes (both prior blockers)
+Findings:
+- [BLOCKING] Rules 12-13 / States / T3: no trigger for the dressing checks; Dressed requires "overhang check passed" but only a post-edit re-bake raises flags
+- [BLOCKING] Rule 6 / T3: one `gate` mark per segment; two gates sharing a segment fail a legal room; mark extent and segment granularity undefined
+- [RECOMMENDED] Rule 13: a flag-free re-bake keeps `dressed` however much ground is added (owner: `undressed_face_max` on total exposed face length)
+- [RECOMMENDED] T4: `<= edge_tiles` is met by one shape per edge tile (now `<= face_segments`)
+- [RECOMMENDED] Dependencies (also ability gating row 95): "F1-F11" need marks, but marks exist only for F1, F2, F3a, F3b, F6
+- [RECOMMENDED] Edge Cases: "route" for the minimum passage has no computation (owner: check all empty space, `sealed` marks)
+- [RECOMMENDED] T3: trim undershoot unbounded (still open, Open Question 11)
+- [RECOMMENDED] AC (node count): compares two rooms, depends on the ADR (still open, Open Question 11)
+- [RECOMMENDED] Rules 4, 11 / States: no bake stamp for never-approved rooms; Dressed Enter omits config re-check; exits not in rule 4's grid list
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); T1 float boundary tolerance; T3 convex corners; T1 margin-12 sentence garbled; systems index Core vs Foundation; only two dash widths legal; kiln-city "480x270 pixel art" awaits the art bible
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 00da8081b82132ff3a63dc2c4e41a8846638f930
+Reviewed-Content-Hash: design/registry/entities.yaml 81257fdc2577f75fec1f661554d6561892157fff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md f1f696c36b337422707cb9a6e7dba122339a2972
+Reviewed-Content-Hash: design/gdd/level-design.md 52842735dbde4856a4a76d0626c73a900f441d8f
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
