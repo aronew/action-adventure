@@ -104,3 +104,44 @@ Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80
 Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
 Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 16
+Summary: The freeze AC held. The third review's overhang (6 px side, 12 px fall or rise, "just enough" for the centre to pass the line) guaranteed the crossing fires but made the crossing frame a collision frame at almost any speed. Checked against player.gd at 60 physics ticks: a dash hits the wall beyond on about 5 in 6 crossings and ends with velocity.x 0; a fall hits the floor beyond on about 10 in 11 at fast_fall_speed, runs _land() and refreshes the air jump, air dash and coyote time; a jump head-bonks on about 4 in 5 and loses its upward speed. Revised in the same session. Owner decisions: exit lip = tile x ceil((half_extent + one frame of the fastest move) / tile), 12 px side and 24 px fall or rise, carved by the room build; carried state re-derived from contact on the first frame of the fade-in; invulnerable and input locked from the up press for EnterDoor (1.62 s, door trip 2.07 s). Registry values match.
+Prior verdict resolved: Yes (freeze AC held; overhang blocker superseded by the lip fix)
+Findings:
+- [BLOCKING] Rules 4, 5 / R2: overhang of half_extent + 1 makes the crossing frame collide; dash ends, fall exits refill air moves and emit landed, rise exits zero upward velocity (AC 334 fails)
+- [RECOMMENDED] Rule 5: captured state names 4 of the controller's 11 states; arrival rule for wall-slide, climb, grapple, crouch, hurt (fixed this session: re-derive from contact)
+- [RECOMMENDED] Rule 4 / AC 331: who creates the overhang outside the bounds (fixed this session: carved by the build)
+- [RECOMMENDED] Rule 4: "overhang" collides with terrain's trim overhang (T3); renamed exit lip here, terrain and level design do not yet mention the apron or lip
+- [RECOMMENDED] Rule 7 / States: EnterDoor 1.62 s had no invulnerability, input lock or timing; same-room door pair (fixed this session)
+- [RECOMMENDED] Game Feel: the frozen Seeker is cut by the screen edge for 0.25 s (playtest note added this session)
+- [RECOMMENDED] Dependencies line 277: stale, World state already in index row 3 (fixed this session)
+- [RECOMMENDED] Rule 3 / Edge Cases: retired-id record per room and globally
+- [RECOMMENDED] Registry: collision_tile referenced_by lacks this GDD; exit_rearm and the apron and lip depths unregistered. The third review's "transition_time minimum 0.32 s" was an arithmetic slip (0.22 s); R2 and the registry's 0.2 floor are correct, item withdrawn
+- [RECOMMENDED] Edge Cases: corner tie keeps the tangential coordinate outside the opening span
+- [RECOMMENDED] Rule 6: perpendicular openings shut during the fade-in act as floor or ceiling, unstated
+- [RECOMMENDED] Rule 11 / R6: no Loading-to-Unloaded cancel path, no free-before-load order, "neighbours span three biomes" omits the room's own biome
+- [RECOMMENDED] Edge Cases: arrival safety (48 px clearance vs enemy reach, hazards at arrivals, fade-in immunity vs invulnerability_time 1.0 s); death-state Seeker carried; door area size unowned
+- [RECOMMENDED] Rule 15: graph edges carry no kind, side or one-way flag; "two-way" contradicts a one-way fall exit
+- [RECOMMENDED] Rules 13, 14 / R5: overlapping zones, arrival snap in a zone, shake vs bounds untested; R5 omits save-point and default arrival points
+- [RECOMMENDED] Tuning Knobs absent (advisory); fade sum plus build_time can exceed 0.5 s (0.68 s at the measured rebuild)
+- [RECOMMENDED] ACs: crossing-back AC now holds build_time (fixed this session); compound ACs at 326, 330, 333-335, 342 still to split
+Receipt note: the GDD stamp is the reviewed (pre-revision) version, HEAD blob of commit 916bedb, so the next run reads CHANGED and re-reviews; the systems index is stamped before this session's tracking edit. project.godot is stamped for the first time (physics_ticks default).
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md cb19171854c8ab58caba75a3ebe4ad6399139b44
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md 203211cbaef9e96d28bfa2170bbe31d0ebc68007
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
+Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
