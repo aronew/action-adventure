@@ -128,3 +128,28 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 5
+Summary: Both fourth-review blockers are resolved (T3 scoped to edge ranges and "reads solid" props; a per-type record table), every registry value, T1 and T4 output and code claim reproduces, and no registry conflict was found. Two new gaps sat in the revised area: T3 never tied a measured pixel to its stretch, so read literally the far face's trim across every dash gap counted as overhang; and the stale-dressing flag covered all dressing, so hanging decoration would hold a recomputed flag open and `dressed` could never be set. Both were revised the same day (owner: T3 counts only the region attached to the collision line within the stretch; a ground check for "reads solid" props only, decoration never flagged), with 4 of the 5 recommendations; the GDD awaits re-review in a fresh session.
+Prior verdict resolved: Yes (both prior blockers)
+Findings:
+- [BLOCKING] T3: measured pixels not attributed to a stretch; the farthest pixel on the normal is the far gap face's trim, so every dash gap fails
+- [BLOCKING] Rules 12-13 / Edge Cases: stale-dressing flag (overlaps or floats) applied to decoration, contradicting "decoration never needs tiles"; no overlap threshold; not among the checks that run on save and build
+- [RECOMMENDED] Rule 13 / Formulas: new-face count and `undressed_face_max` had no formula entry or safe range; moved-mass exemption unbounded (now T5, `move_max` 6)
+- [RECOMMENDED] Rule 11 / T3: no route when baked trim exceeds the bound (bake now clips; a failure is a bake defect)
+- [RECOMMENDED] Rule 12 / States: dev-build handling of open flags unstated; the build wrote to authored room data (now the room-check step writes, the export never does)
+- [RECOMMENDED] Edge Cases (passage): one-way tiles' share of vertical and horizontal run length unstated
+- [RECOMMENDED] T3 / AC (node count): trim undershoot and node-count ceiling still open (Open Question 11)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); systems index Core vs Foundation; game brief and narrative not re-read this pass (unchanged since review 4)
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md b2bebfc3863042ebec86ab87a4da53269bce1477
+Reviewed-Content-Hash: design/registry/entities.yaml 81257fdc2577f75fec1f661554d6561892157fff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md 9f98ef91610c9e8d88782a20ea7f81d24bc4b289
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
