@@ -65,3 +65,42 @@ Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b6262
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 2 | Recommended: 14
+Summary: Both prior blockers held (apron per axis: 18 px side, 24 px fall or rise; the two ACs scoped to the fade-in) and registry values match. Two new defects: rule 5 fires when the box centre passes the bounds line, so the box already overhangs it by 5 or 11 px, yet nothing says what lies beyond the bounds at an opening (at zero depth no crossing fires) and rule 6 and R2 claimed the Seeker is never beyond the bounds; and the freeze AC spanned the swap, where the Seeker is placed and the enemies replaced. Both were revised in the same session. Owner decision: overhang per axis, just enough (6 px side, 12 px fall or rise).
+Prior verdict resolved: Yes
+Findings:
+- [BLOCKING] Rules 4, 5, 6 / R2: no free overhang beyond an opening although the centre-at-the-line trigger needs half_extent + 1 of it; "never in space beyond the bounds" false in the old room through the fade-out
+- [BLOCKING] Acceptance Criteria (freeze AC): "unchanged from frame to frame" from the crossing to the fade-in start includes the swap, where positions and enemies must change
+- [RECOMMENDED] Rule 3 / Edge Cases: "never reused" needs a retired-id record per room and globally; a cut room's region is unrecorded
+- [RECOMMENDED] Edge Cases: corner tie keeps the tangential coordinate outside the opening span; likely unreachable (solid beyond the corner), say so or clamp
+- [RECOMMENDED] Rule 6: perpendicular openings shut during the fade-in act as floor or ceiling; unstated
+- [RECOMMENDED] Rule 11 / R6: no Loading-to-Unloaded cancel path; free-before-load order unset (B-A-A-C chain holds 3 biomes if C loads first); "neighbours span three biomes" (R6, AC) omits the room's own biome
+- [RECOMMENDED] Edge Cases: arrival safety (48 px spawn clearance vs enemy reach about 103-126 px, hazards at arrivals, fade-in immunity vs invulnerability_time 1.0 s)
+- [RECOMMENDED] Rule 15: graph edges carry no kind, side or one-way/locked flag
+- [RECOMMENDED] Rules 13, 14: overlapping zones, arrival snap inside a zone, shake vs bounds untested
+- [RECOMMENDED] Edge Cases: death-state Seeker carried across an exit; door area size unowned
+- [RECOMMENDED] R5: arrival points omit save-point and default arrival points (rule 8)
+- [RECOMMENDED] Dependencies line 276: stale (index line 102 lists World state)
+- [RECOMMENDED] Tuning Knobs absent (advisory at standard); fade ranges plus build_time can exceed the 0.5 s comfort limit (0.68 s at the measured 0.33 s rebuild)
+- [RECOMMENDED] AC (rise-exit crossing-back): 0.45 s assumes build_time at budget, hold it as AC 338 does; split compound ACs (lines 325, 331, 332)
+- [RECOMMENDED] R2 / registry: transition_time minimum is 0.32 s (0.1 + 0.02 + 0.1), not 0.2; half_height in the formula was undefined (fixed this session)
+- [RECOMMENDED] Rule 7: EnterDoor is 1.62 s (seeker_animations.json) and in no timing; same-room door pair: rebuild or not
+Receipt note: the GDD stamp is the reviewed (pre-revision) version, HEAD blob of commit 920161b, so the next run reads CHANGED and re-reviews; the systems index is stamped before this session's tracking edit. seeker_animations.json is stamped for the first time.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md daebbe9f2ed094edd3a8072864378263b0b10173
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md 1f9d67099ffb807987bf29db900a559eda8e3894
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a7983a8fcfc0a2
+Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
