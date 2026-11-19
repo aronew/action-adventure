@@ -3,8 +3,9 @@
 ## each slice drops behind the floor in front of it, so the rocks rise from behind low
 ## floors, high ledges and tall sections alike. Sideways the art still scrolls slower
 ## than the room ([member factor]) for depth. A slice spanning a drop takes the lower
-## floor, so rock never hangs over open air, and where neighbouring slices sit at
-## different heights each fades out across its width, so no straight cut shows.
+## floor, so rock never hangs over open air, and the rock fades out gradually over the
+## FADE_SLICES slices leading up to any change of height (or a pit), so no straight cut
+## shows where a ledge steps up or down.
 ##
 ## Usage: [codeblock]
 ## var band := CloseRockBand.new()
@@ -18,21 +19,20 @@ extends Node2D
 
 ## World px each slice covers. Must divide a piece's world width.
 const SLICE_WIDTH := 16.0
+## How many slices the rock takes to fade out before a change of floor height.
+const FADE_SLICES := 5
 
 const FADE_SHADER := """
 shader_type canvas_item;
-// UV x range of this slice's region, and whether to fade its left and right sides.
+// UV x range of this slice's region, and the band's opacity at its left and right
+// edges (a ramp running across neighbouring slices).
 uniform vec2 span = vec2(0.0, 1.0);
-uniform vec2 fade = vec2(0.0);
+uniform vec2 edge_alpha = vec2(1.0);
 void fragment() {
 	COLOR = texture(TEXTURE, UV);
 	float t = clamp((UV.x - span.x) / (span.y - span.x), 0.0, 1.0);
-	if (fade.x > 0.5) {
-		COLOR.a *= smoothstep(0.0, 1.0, t);
-	}
-	if (fade.y > 0.5) {
-		COLOR.a *= smoothstep(0.0, 1.0, 1.0 - t);
-	}
+	float a = mix(edge_alpha.x, edge_alpha.y, t);
+	COLOR.a *= a * a * (3.0 - 2.0 * a);
 }
 """
 
@@ -66,7 +66,9 @@ func setup(pieces: Array[Texture2D], image_scale: float, scroll_factor: float,
 	_height = pieces[0].get_height() * image_scale
 	var shader := Shader.new()
 	shader.code = FADE_SHADER
-	var count := int(ceil(view_size.x / SLICE_WIDTH)) + 2
+	# FADE_SLICES extra on each side, off screen, so a change of height just outside the
+	# view already fades the rock inside it (no pop as it scrolls in).
+	var count := int(ceil(view_size.x / SLICE_WIDTH)) + 2 + FADE_SLICES * 2
 	for i in count:
 		var sprite := Sprite2D.new()
 		sprite.centered = false
@@ -88,7 +90,7 @@ func place(center: Vector2) -> void:
 	var view_top := center.y - _view_size.y * 0.5
 	var view_bottom := view_top + _view_size.y
 	var scroll := center.x * factor
-	var first := int(floor(scroll / SLICE_WIDTH))
+	var first := int(floor(scroll / SLICE_WIDTH)) - FADE_SLICES
 	var floors: Array[float] = []
 	floors.resize(_slices.size())
 	for k in _slices.size():
@@ -114,8 +116,19 @@ func place(center: Vector2) -> void:
 		var width := float(texture.get_width())
 		var material := _materials[k]
 		material.set_shader_parameter("span", Vector2(region.position.x / width, region.end.x / width))
-		var left_differs := k == 0 or floors[k - 1] != floor_y
-		var right_differs := k == _slices.size() - 1 or floors[k + 1] != floor_y
-		material.set_shader_parameter("fade", Vector2(
-				1.0 if left_differs and k > 0 else 0.0,
-				1.0 if right_differs and k < _slices.size() - 1 else 0.0))
+		# Slices from here to the nearest change of height on each side (the view's own
+		# edges are not a change).
+		var left := 0
+		while k - left - 1 >= 0 and floors[k - left - 1] == floor_y:
+			left += 1
+		if k - left - 1 < 0:
+			left = FADE_SLICES
+		var right := 0
+		while k + right + 1 < _slices.size() and floors[k + right + 1] == floor_y:
+			right += 1
+		if k + right + 1 >= _slices.size():
+			right = FADE_SLICES
+		var ramp := float(FADE_SLICES)
+		material.set_shader_parameter("edge_alpha", Vector2(
+				clampf(minf(left, right + 1) / ramp, 0.0, 1.0),
+				clampf(minf(left + 1, right) / ramp, 0.0, 1.0)))
