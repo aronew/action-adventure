@@ -292,3 +292,147 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The eleventh review's save-spacing blocker is resolved (saves by role, F4 withdrawn, rule 27 added), and every registry value the GDD restates agrees (38 lines checked; leash bounds re-derived from the enemy .tres files). One blocker: F7 counted one hit's knockback in the leash bound, but enemy_base.gd sets a fresh knockback on every hit and a hit during HURT restarts it, so chained hits stack and can push an enemy into a gate volume. Owner chose a hard clamp: the bound holds the enemy's position under knockback too, and knockback_travel leaves the bound (grunt 103, skitter 118, brute 59 px). Revised in the same session; the GDD, registry and ability-gating stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 eleventh review: save spacing in large rooms)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: stacked knockback from chained hits could carry an enemy past its leash bound into a gate volume (fixed: hard clamp, knockback_travel out of the bound, chained-hit cases in the sweep and the leash unit test, new Edge Case, registry note, Open Question 21; combo hit spacing unmeasured; owner)
+- [RECOMMENDED] Interactions / Dependencies / Cross-References: ability gating called "In Design" though Approved in the index and its log (fixed here and in ability-gating.md's header)
+- [RECOMMENDED] Core Rules (rule 27) / Edge Cases: rule said "the kit the player had when they fell", its criterion "only the keys before the gate's key" (fixed: rule and Edge Case use the criterion's wording)
+- [RECOMMENDED] Core Rules (rule 24): "never leaves its leash bound" stated as fact while not in code (fixed: "held inside it", with the clamp in the not-in-code note)
+- [ADVISORY] Acceptance Criteria: boss-save check duplicated (fixed); Open Question 18 still carries withdrawn F4 arithmetic; GDD is 75 KB; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md bab1f6ecac79e45a7a9a163e70c773ce4bb79820
+Reviewed-Content-Hash: design/registry/entities.yaml ba2b69414dae8d61e5e8d6964033204ba23034a2
+Reviewed-Content-Hash: design/gdd/ability-gating.md 13f0d21644ef2ae8bb423478a9f74c87a1bf0555
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The twelfth review's knockback clamp holds and every registry value the GDD restates agrees (52 name lines and the numeric keys checked; leash bounds, knockback_travel, pogo_rise and the clearances re-derived from the enemy .tres files and player_config.tres). One blocker: the hard clamp listed patrol, chase and knockback but not attack lunge. enemy_base.gd's _state_attack sets the lunge speed for the live window and then slides to a stop at hurt_deceleration, so the skitter (280 px/s, 0.25 s) travels about 126 px past the edge of its 118 px bound; a skitter lured to a gate's far side could end inside a gate volume. Owner chose to clamp every source of horizontal motion (lunge stops at the edge); bounds unchanged (grunt 103, skitter 118, brute 59 px) and lunge_travel added as a test-sizing variable. Revised in the same session; the GDD and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 twelfth review: stacked knockback, now a hard clamp)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: attack lunge and its slide-out could carry an enemy past its leash bound (fixed: clamp covers all horizontal motion, lunge_travel variable, lunge edge case, lunge case in the leash unit test and the sweep, registry note, Open Question 21; not in code, an Enemies story; owner)
+- [RECOMMENDED] Tuning Knobs / Acceptance Criteria (rule 8): "Dash gate first seen by" ranged to 900 s against rule 8's 10 minutes, and the criterion hardcoded 600 s (fixed: range 300-600, criterion reads the knob; owner)
+- [RECOMMENDED] Core Rules (rule 24) / F7: volume height worded two ways (fixed: the greater of reach plus pogo_rise and the gate's own height)
+- [RECOMMENDED] Open Questions (18): still carried the withdrawn F4 leg arithmetic (fixed)
+- [ADVISORY] GDD is 77 KB; upstream GDDs other than ability gating still missing; knockback_travel, leash_bound and the pogo_carry figures not registered
+Reviewed-Content-Hash: design/gdd/level-design.md 21ee4ce4ffdef871dcea34745be7c8450049674b
+Reviewed-Content-Hash: design/registry/entities.yaml 575df9498d99081f2c1085b2d72fc7606d79991c
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The thirteenth review's lunge clamp holds and every registry value the GDD restates agrees (about 52 lines checked; leash bounds, knockback_travel, lunge_travel, pogo_rise, the clearances and F5's example re-derived from the enemy .tres files, player_config.tres and attack_data.tres; the enemy hurtbox is body_size, so the half-width growth is right). One blocker: the leash bound was only an x-interval with no vertical extent, and enemy_base.gd's hurt state has no floor-edge check (_floor_ahead guards patrol, chase and lunge only) while take_hit adds hurt_knockback_lift, so a hit near a ledge inside the bound could drop a ground enemy onto a lower floor inside a gate volume with no way back to its spawn point. Owner chose a vertical strip: a ground enemy's bound covers every height and the F7 check rejects any x-overlap with a gate volume's x-range; a floor-edge stop on knockback was offered and not chosen. Revised in the same session; the GDD and registry stamps below are their working-tree versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 thirteenth review: attack lunge, now clamped)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: a knockback off a ledge could land a ground enemy in a gate volume the bound's x-interval did not reach in height (fixed: ground bound is a vertical strip, x-overlap rejected at any height, shelf example, new Edge Case, registry note, Open Question 21; owner)
+- [RECOMMENDED] Core Rules (rule 24) / F7: "position is held inside" the grown bound, while the criterion says hit area (fixed: hit area held inside; centre within patrol_distance + chase_leash of the spawn point)
+- [RECOMMENDED] Acceptance Criteria (rule 9): "not visible from the gate" was [Auto] with no definition (fixed: no unobstructed line to any standing spot within one screen of the gate, through open edges, on collision data)
+- [RECOMMENDED] Tuning Knobs / Acceptance Criteria (rule 8): "Dash gate first seen by" started at its 600 s ceiling (fixed: starts at 420 s)
+- [ADVISORY] GDD is about 80 KB (rule 24 and F7 could move to their own GDD); knockback_travel, lunge_travel, leash_bound and the pogo carries not registered; kiln-city-level-integration.md line 49 still says saves within 7 screens (Open Question 18); the sweep and leash criteria are compound; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md 9d8721ba5cfdd0969485ab20e9e19a2148a01cb7
+Reviewed-Content-Hash: design/registry/entities.yaml 04f1413cfe2d1cc68982153d24c14291e3e47d4e
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: src/enemies/enemy.tscn f72794131df1e34b9aa5a3efaf9e5fa9305cee4f
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 4
+Summary: The fourteenth review's vertical strip holds against enemy_base.gd (take_hit, _state_attack and _floor_ahead match rule 24), and every registry value the GDD restates agrees (21 lines for pogo_clearance_px, pogo_clearance_f3a_px, pogo_far_ext, hazard_pit_depth_min and chase_leash; leash bounds, knockback_travel, lunge_travel, pogo_rise, hazard_pogo_reach, the pogo hitbox reaches and F5's example re-derived). One blocker: climb walls (F6b), a wall-cling gate in the key table, had no gate volume in rule 24, F7 or the placement criterion, although a pogo off a hittable at the foot of a 72-97 px climb wall tops it exactly as for a cling wall. Revised in the same session with the owner's decisions; the GDD and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full. Stamps cover only the files this review read.
+Prior verdict resolved: Yes (2026-11-19 fourteenth review: leash bound had no vertical extent, now a vertical strip)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Acceptance Criteria: climb walls (F6b) had no pogo gate volume (fixed: F6b joins the column gates at pogo_clearance_px, F7 example and criterion case, registry note)
+- [RECOMMENDED] Core Rules (rule 24) / F7: the strip rejects x-overlap at every height, even with solid mass between the enemy's floor and the gate (owner: keep the strict rule; a fall-reachable refinement recorded in Open Question 21)
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a stranded enemy's walk-back was undefined (fixed, owner: walks toward its spawn x, else patrols in place; clamp anchored to the spawn x; unit-test case added)
+- [RECOMMENDED] Edge Cases: an enemy knocked out of its room had no rule (fixed, owner: reappears at its spawn point after a short delay; Enemies and Rooms GDDs adopt it)
+- [RECOMMENDED] Formulas (F7 example): "20 px short of the span" ambiguous against pogo_far_ext (fixed: the gate volume's x-range)
+- [ADVISORY] GDD is about 84 KB and rule 24 is one long paragraph (split the placement check from the enemy-code contract); the sweep criterion is compound; knockback_travel, lunge_travel, leash_bound and the pogo carries not registered; kiln-city-level-integration.md still says saves within 7 screens; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md 3123c7e604dc8b6ba45962c5e450eda586be42cd
+Reviewed-Content-Hash: design/registry/entities.yaml 6f44a191bf5172363b2fb0046f2543e5ed8b4321
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 0 | Recommended: 6
+Summary: Re-review of the fifteenth review's revisions (climb walls F6b joining the F7 column gates, stranded-enemy walk-back, knocked-out-of-room respawn). They hold: rule 24, F7, Edge Cases 204-208, the registry and the criteria agree, and every restated figure reproduces against the enemy and player data files (leash bounds 103/118/59, knockback_travel, lunge_travel, pogo reaches, hazard_pit_depth_min 84, pogo_far_ext 9+5). The code claims behind rule 24 match enemy_base.gd, and damage applies no impulse to the Seeker (_start_hurt), so no launch vector. Open items are specification polish, not gate leaks. The pogo carries remain simulated, not measured (Open Question 15); the sims were not re-run this review.
+Prior verdict resolved: Yes (2026-11-19 fifteenth review: climb walls had no pogo gate volume, now column gates at pogo_clearance_px)
+Findings:
+- [RECOMMENDED] Tuning Knobs / F7 table: safe ranges run below the derived minimums (pogo_clearance_px 220-300 vs derived 242; pogo_clearance_f3a_px 300-380 vs derived 318); pogo_far_ext already uses its derived floor
+- [RECOMMENDED] Core Rules (rule 24): "floor hazards such as spikes" leaves wall- and ceiling-mounted hazards undefined as pogo targets
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a stranded enemy's "patrols in place" has no defined interval
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: knocked-out-of-room respawn has no AC, value or knob (or an explicit owner in Enemies)
+- [RECOMMENDED] Edge Cases / Acceptance Criteria: a shortcut approached from its near side stays blocked, with no AC
+- [RECOMMENDED] Acceptance Criteria: the sweep criterion and the leash unit test are compound; split per gate type and per motion source
+- [ADVISORY] F3 volume top 153 vs 151 sim reach is a 2 px margin; record that damage gives the Seeker no impulse; GDD is about 85 KB with rule 24 one long paragraph repeated in F7 and Edge Cases; kiln-city-level-integration.md still says saves within 7 screens; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md dd6e3796d01b2ca99ab988bd041fdc28d5d2c6e9
+Reviewed-Content-Hash: design/registry/entities.yaml 750a2c1525f1350c80248b578f6beacfe07bcc02
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
