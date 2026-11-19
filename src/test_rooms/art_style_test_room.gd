@@ -121,6 +121,19 @@ const CORRIDOR_HANGING_PROPS := [
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
+## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
+## slabs, pieces A, B, C repeating, between the far layers and the playable terrain. It
+## scrolls at CLOSE_ROCKS_SCALE (the pack suggests 0.75) and is drawn after the midground
+## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. With
+## the camera at the room's bottom, the band's bottom sits CLOSE_ROCKS_SINK world px below
+## the room's lowest floor line, so the rocks rise from just behind the floors (and a
+## little higher behind higher floors as the camera climbs, since the band scrolls
+## slower). The corridor's own rear wall is drawn in front of it. Empty folder: no band.
+const CLOSE_ROCKS := "close-rocks/"
+const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
+const CLOSE_ROCKS_SCALE := 0.75
+const CLOSE_ROCKS_Z := -12
+const CLOSE_ROCKS_SINK := 12.0
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -258,9 +271,10 @@ const CAMERA_DRAG_BOTTOM := 0.3
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack  V mood on/off"
 ## The owner's black silhouette foliage (shared, any biome): the nearest layer, pieces
 ## A, D, B, E, C, F repeating in that order (each tall piece D-F between two lower ones,
-## as the pack suggests) along the bottom of the screen, scrolling with the
-## foreground loops (FOREGROUND_SCALE). It meets the screen's bottom with the camera at
-## the room's floor and sits a little lower when the camera is higher. Empty: none.
+## as the pack suggests) along the bottom of the screen. It scrolls sideways with the
+## foreground loops (FOREGROUND_SCALE.x) and stays on the screen's bottom edge as the
+## camera rises and falls, so it shows in every part of a room, tall ones included (as
+## in the owner's reference). Empty: none.
 const SILHOUETTES := "res://assets/environment/foreground-silhouettes/"
 const SILHOUETTE_PIECES := ["Foreground-Bottom-A", "Foreground-Bottom-D", "Foreground-Bottom-B",
 		"Foreground-Bottom-E", "Foreground-Bottom-C", "Foreground-Bottom-F"]
@@ -317,6 +331,7 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
+	_add_close_rocks(world)
 	_add_corridor_wall(world)
 	_add_terrain(world)
 	for island in islands:
@@ -580,6 +595,48 @@ func _add_back_layers(parent: Node2D) -> void:
 		index += 10
 		var size := Vector2(tile.x * copies, tile.y)
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
+
+
+## The close rock band (see CLOSE_ROCKS) as one repeating A-B-C layer.
+func _add_close_rocks(parent: Node2D) -> void:
+	if CLOSE_ROCKS.is_empty():
+		return
+	var image_scale := VIEW_SIZE.y / 1080.0
+	var layer := Node2D.new()
+	layer.z_index = CLOSE_ROCKS_Z
+	parent.add_child(layer)
+	var needed := VIEW_SIZE.x + (_room_size.x - VIEW_SIZE.x) * CLOSE_ROCKS_SCALE
+	var x := 0.0
+	var i := 0
+	var height := 0.0
+	while x < needed:
+		var piece: String = CLOSE_ROCK_PIECES[i % CLOSE_ROCK_PIECES.size()]
+		var texture := _texture(BIOME + CLOSE_ROCKS + "%s.png" % piece)
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * image_scale
+		sprite.position = Vector2(x, 0.0)
+		layer.add_child(sprite)
+		x += texture.get_width() * image_scale
+		height = texture.get_height() * image_scale
+		i += 1
+	# The lowest floor line: the lowest open cell standing on solid ground.
+	var floor_y := 0.0
+	for row in grid.size() - 1:
+		for col in grid[0].length():
+			if not _solid(col, row) and _solid(col, row + 1):
+				floor_y = maxf(floor_y, (row + 1) * CELL)
+	# On screen: top-left = base - factor * centre + VIEW_SIZE / 2. The band's left edge
+	# meets the screen's left at the room's left; with the camera at the room's bottom,
+	# its bottom sits CLOSE_ROCKS_SINK below the lowest floor.
+	var factor := Vector2.ONE * CLOSE_ROCKS_SCALE
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var bottom_on_screen := floor_y - center_max.y + VIEW_SIZE.y * 0.5 + CLOSE_ROCKS_SINK
+	var base := factor * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5 \
+			+ Vector2(0.0, bottom_on_screen - height)
+	_layers.append([layer, factor, base])
 
 
 ## Foreground: the open cave's loops (parallax/) over the open cave and the corridor's
@@ -896,10 +953,11 @@ func _add_silhouettes(parent: Node2D) -> void:
 		layer.add_child(sprite)
 		x += texture.get_width() * image_scale
 		i += 1
-	var center_min := VIEW_SIZE * 0.5
-	var center_max := _room_size - VIEW_SIZE * 0.5
-	var base := FOREGROUND_SCALE * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5
-	_layers.append([layer, FOREGROUND_SCALE, base])
+	# Sideways: the canvas's left edge meets the screen's left at the room's left.
+	# Up and down: scroll factor 0, so the canvas top stays on the screen's top.
+	var factor := Vector2(FOREGROUND_SCALE.x, 0.0)
+	var base := Vector2(FOREGROUND_SCALE.x * VIEW_SIZE.x * 0.5, 0.0) - VIEW_SIZE * 0.5
+	_layers.append([layer, factor, base])
 
 
 ## A strip of the bottom loop's own bottom-row colour hanging under it, one screen tall:

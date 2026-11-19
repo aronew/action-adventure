@@ -26,8 +26,8 @@ const GROUND_FOG_Z := 7
 const EMBER_Z := 8
 
 ## Blur radius in screen px: the far city a little, the midground less.
-const FAR_BLUR := 2.6
-const MID_BLUR := 1.2
+const FAR_BLUR := 3.8
+const MID_BLUR := 2.0
 
 ## Fog: [colour, density, noise scale (per world px), drift speed, parallax factor,
 ## screen height where it starts and where it is full (0 top, 1 bottom)].
@@ -41,28 +41,37 @@ const EMBERS := [90, 7.0, Vector2(4.0, 12.0), Vector2(1.4, 2.8), Color(1.0, 0.58
 const DUST := [90, 9.0, Vector2(0.8, 3.0), Vector2(1.0, 2.0), Color(0.95, 0.84, 0.82, 0.4)]
 
 ## Prop glow: colour and flicker (fraction of strength, speed).
-const GLOW_COLOR := Color(1.0, 0.5, 0.18, 0.32)
+const GLOW_COLOR := Color(1.0, 0.5, 0.18, 0.42)
 const GLOW_FLICKER := Vector2(0.12, 2.3)
 
 ## Grade: contrast, saturation, shadow tint, highlight tint, split-tone strength.
-const CONTRAST := 1.06
+const CONTRAST := 1.1
 const SATURATION := 1.0
-const SHADOW_TINT := Color(0.88, 0.84, 1.0)
+const SHADOW_TINT := Color(0.84, 0.8, 1.0)
 const HIGHLIGHT_TINT := Color(1.08, 0.97, 0.88)
-const SPLIT_TONE := 0.5
+const SPLIT_TONE := 0.7
 ## Light around the player: radius (fraction of screen height), how much the rest of the
 ## screen dims, how much the light lifts.
-const PLAYER_LIGHT := Vector3(0.45, 0.08, 0.08)
+const PLAYER_LIGHT := Vector3(0.5, 0.16, 0.1)
 ## Vignette: where it starts and ends (distance from centre, screen heights) and strength.
-const VIGNETTE := Vector3(0.55, 1.1, 0.42)
+const VIGNETTE := Vector3(0.5, 1.1, 0.5)
 const VIGNETTE_COLOR := Color(0.07, 0.02, 0.05)
 ## Bloom on the player: the bright parts of the screen near the player (the Seeker's pale
 ## cloak, red eyes and effects) glow softly. [brightness threshold, intensity, blur step
 ## in screen px]. The glow only exists inside a soft circle around the player: full
 ## within BLOOM_AREA.x, fading out smoothly to nothing at BLOOM_AREA.y (screen heights),
 ## so there is no line where it ends.
-const BLOOM := Vector3(0.58, 1.4, 5.5)
-const BLOOM_AREA := Vector2(0.05, 0.17)
+const BLOOM := Vector3(0.5, 1.9, 8.0)
+const BLOOM_AREA := Vector2(0.06, 0.28)
+## A soft radiance around the player on top of the bloom: an added warm light, strongest
+## at the body and easing to nothing (squared falloff, so no visible rim). [colour,
+## strength, radius in screen heights].
+const RADIANCE_COLOR := Color(1.0, 0.86, 0.76)
+const RADIANCE := Vector2(0.2, 0.2)
+## Ambient light gradient over the screen: the top a little cooler and darker, the bottom
+## warmer (the lava is below), multiplied in.
+const AMBIENT_TOP := Color(0.84, 0.82, 0.97)
+const AMBIENT_BOTTOM := Color(1.06, 0.95, 0.86)
 ## The player's origin is at its feet; light and bloom centre on its body, this far up
 ## (world px).
 const PLAYER_CENTRE := Vector2(0.0, -13.0)
@@ -137,8 +146,12 @@ uniform vec3 player_light = vec3(0.42, 0.14, 0.06);
 uniform vec3 vignette = vec3(0.48, 1.05, 0.55);
 uniform vec3 vignette_color = vec3(0.07, 0.02, 0.05);
 uniform float aspect = 1.7778;
-uniform vec3 bloom = vec3(0.58, 1.15, 7.0);
-uniform vec2 bloom_area = vec2(0.05, 0.17);
+uniform vec3 bloom = vec3(0.5, 1.9, 8.0);
+uniform vec2 bloom_area = vec2(0.06, 0.28);
+uniform vec3 radiance_color = vec3(1.0, 0.86, 0.76);
+uniform vec2 radiance = vec2(0.2, 0.2);
+uniform vec3 ambient_top = vec3(0.84, 0.82, 0.97);
+uniform vec3 ambient_bottom = vec3(1.06, 0.95, 0.86);
 vec3 bright(vec2 uv, float threshold) {
 	vec3 s = texture(screen_tex, uv).rgb;
 	float l = dot(s, vec3(0.299, 0.587, 0.114));
@@ -152,8 +165,8 @@ void fragment() {
 	if (near > 0.001) {
 		vec3 glow = bright(SCREEN_UV, bloom.x);
 		float total = 1.0;
-		for (int ring = 1; ring <= 4; ring++) {
-			float w = exp(-float(ring * ring) / 7.0);
+		for (int ring = 1; ring <= 5; ring++) {
+			float w = exp(-float(ring * ring) / 10.0);
 			for (int k = 0; k < 12; k++) {
 				float a = (float(k) + 0.37 * float(ring)) * 0.523599;
 				vec2 offset = vec2(cos(a), sin(a)) * float(ring) * bloom.z * SCREEN_PIXEL_SIZE;
@@ -162,6 +175,8 @@ void fragment() {
 			}
 		}
 		c += glow / total * bloom.y * near;
+		float r = 1.0 - smoothstep(0.0, radiance.y, length(to_player));
+		c += radiance_color * radiance.x * r * r;
 	}
 	c = (c - 0.5) * contrast + 0.5;
 	float l = dot(c, vec3(0.299, 0.587, 0.114));
@@ -169,6 +184,7 @@ void fragment() {
 	c = mix(c, c * highlight_tint, smoothstep(0.35, 1.0, l) * split);
 	l = dot(c, vec3(0.299, 0.587, 0.114));
 	c = mix(vec3(l), c, saturation);
+	c *= mix(ambient_top, ambient_bottom, SCREEN_UV.y);
 	float lit = 1.0 - smoothstep(0.0, player_light.x, length(to_player));
 	c *= mix(1.0 - player_light.y, 1.0 + player_light.z, lit);
 	vec2 v = (SCREEN_UV - 0.5) * vec2(aspect, 1.0);
@@ -350,6 +366,12 @@ func _add_grade() -> void:
 			Vector3(VIGNETTE_COLOR.r, VIGNETTE_COLOR.g, VIGNETTE_COLOR.b))
 	material.set_shader_parameter("bloom", BLOOM)
 	material.set_shader_parameter("bloom_area", BLOOM_AREA)
+	material.set_shader_parameter("radiance_color",
+			Vector3(RADIANCE_COLOR.r, RADIANCE_COLOR.g, RADIANCE_COLOR.b))
+	material.set_shader_parameter("radiance", RADIANCE)
+	material.set_shader_parameter("ambient_top", Vector3(AMBIENT_TOP.r, AMBIENT_TOP.g, AMBIENT_TOP.b))
+	material.set_shader_parameter("ambient_bottom",
+			Vector3(AMBIENT_BOTTOM.r, AMBIENT_BOTTOM.g, AMBIENT_BOTTOM.b))
 	_grade.material = material
 	_post.add_child(_grade)
 
