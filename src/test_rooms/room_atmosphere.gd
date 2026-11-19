@@ -1,7 +1,7 @@
 ## Mood pass for a painted room: the far layers slightly blurred, a fog bank between the
 ## distant city and the play layer plus a thin ground fog in front, floating embers and
-## dust, warm glows on lit props, and a final grade (contrast, split tone, a soft light
-## around the player, vignette). Every look value is a constant below so it can be tuned
+## dust, warm glows on lit props, and a final grade (a soft bloom on the player,
+## contrast, split tone, a soft light around the player, vignette). Every look value is a constant below so it can be tuned
 ## in one place; [method set_enabled] switches the whole pass for side-by-side looks.
 ##
 ## Usage (from a room's _ready, after its layers are built): [codeblock]
@@ -56,6 +56,16 @@ const PLAYER_LIGHT := Vector3(0.45, 0.08, 0.08)
 ## Vignette: where it starts and ends (distance from centre, screen heights) and strength.
 const VIGNETTE := Vector3(0.55, 1.1, 0.42)
 const VIGNETTE_COLOR := Color(0.07, 0.02, 0.05)
+## Bloom on the player: the bright parts of the screen near the player (the Seeker's pale
+## cloak, red eyes and effects) glow softly. [brightness threshold, intensity, blur step
+## in screen px]. The glow only exists inside a soft circle around the player: full
+## within BLOOM_AREA.x, fading out smoothly to nothing at BLOOM_AREA.y (screen heights),
+## so there is no line where it ends.
+const BLOOM := Vector3(0.58, 1.4, 5.5)
+const BLOOM_AREA := Vector2(0.05, 0.17)
+## The player's origin is at its feet; light and bloom centre on its body, this far up
+## (world px).
+const PLAYER_CENTRE := Vector2(0.0, -13.0)
 
 const BLUR_SHADER := """
 shader_type canvas_item;
@@ -127,15 +137,38 @@ uniform vec3 player_light = vec3(0.42, 0.14, 0.06);
 uniform vec3 vignette = vec3(0.48, 1.05, 0.55);
 uniform vec3 vignette_color = vec3(0.07, 0.02, 0.05);
 uniform float aspect = 1.7778;
+uniform vec3 bloom = vec3(0.58, 1.15, 7.0);
+uniform vec2 bloom_area = vec2(0.05, 0.17);
+vec3 bright(vec2 uv, float threshold) {
+	vec3 s = texture(screen_tex, uv).rgb;
+	float l = dot(s, vec3(0.299, 0.587, 0.114));
+	// Soft knee: pixels just over the threshold glow a little, bright ones fully.
+	return s * smoothstep(threshold, threshold + 0.25, l);
+}
 void fragment() {
 	vec3 c = texture(screen_tex, SCREEN_UV).rgb;
+	vec2 to_player = (SCREEN_UV - player_uv) * vec2(aspect, 1.0);
+	float near = 1.0 - smoothstep(bloom_area.x, bloom_area.y, length(to_player));
+	if (near > 0.001) {
+		vec3 glow = bright(SCREEN_UV, bloom.x);
+		float total = 1.0;
+		for (int ring = 1; ring <= 4; ring++) {
+			float w = exp(-float(ring * ring) / 7.0);
+			for (int k = 0; k < 12; k++) {
+				float a = (float(k) + 0.37 * float(ring)) * 0.523599;
+				vec2 offset = vec2(cos(a), sin(a)) * float(ring) * bloom.z * SCREEN_PIXEL_SIZE;
+				glow += bright(SCREEN_UV + offset, bloom.x) * w;
+				total += w;
+			}
+		}
+		c += glow / total * bloom.y * near;
+	}
 	c = (c - 0.5) * contrast + 0.5;
 	float l = dot(c, vec3(0.299, 0.587, 0.114));
 	c = mix(c, c * shadow_tint, (1.0 - smoothstep(0.0, 0.45, l)) * split);
 	c = mix(c, c * highlight_tint, smoothstep(0.35, 1.0, l) * split);
 	l = dot(c, vec3(0.299, 0.587, 0.114));
 	c = mix(vec3(l), c, saturation);
-	vec2 to_player = (SCREEN_UV - player_uv) * vec2(aspect, 1.0);
 	float lit = 1.0 - smoothstep(0.0, player_light.x, length(to_player));
 	c *= mix(1.0 - player_light.y, 1.0 + player_light.z, lit);
 	vec2 v = (SCREEN_UV - 0.5) * vec2(aspect, 1.0);
@@ -213,7 +246,7 @@ func follow(center: Vector2) -> void:
 		fog.set_shader_parameter("view_origin", origin)
 	if _player != null and _grade != null:
 		var viewport := _grade.get_viewport()
-		var screen := viewport.get_canvas_transform() * _player.global_position
+		var screen := viewport.get_canvas_transform() * (_player.global_position + PLAYER_CENTRE)
 		var size := viewport.get_visible_rect().size
 		_grade.material.set_shader_parameter("player_uv", screen / size)
 		_grade.material.set_shader_parameter("aspect", size.x / size.y)
@@ -315,6 +348,8 @@ func _add_grade() -> void:
 	material.set_shader_parameter("vignette", VIGNETTE)
 	material.set_shader_parameter("vignette_color",
 			Vector3(VIGNETTE_COLOR.r, VIGNETTE_COLOR.g, VIGNETTE_COLOR.b))
+	material.set_shader_parameter("bloom", BLOOM)
+	material.set_shader_parameter("bloom_area", BLOOM_AREA)
 	_grade.material = material
 	_post.add_child(_grade)
 

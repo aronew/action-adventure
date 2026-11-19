@@ -256,6 +256,15 @@ const MIDDLE_PIECES := {
 const CAMERA_DRAG_TOP := 0.5
 const CAMERA_DRAG_BOTTOM := 0.3
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack  V mood on/off"
+## The owner's black silhouette foliage (shared, any biome): the nearest layer, pieces
+## A, B, C repeating in that order along the bottom of the screen, scrolling with the
+## foreground loops (FOREGROUND_SCALE). It meets the screen's bottom with the camera at
+## the room's floor and sits a little lower when the camera is higher. Empty: none.
+const SILHOUETTES := "res://assets/environment/foreground-silhouettes/"
+const SILHOUETTE_PIECES := ["Foreground-Bottom-A", "Foreground-Bottom-B", "Foreground-Bottom-C"]
+## Where the 512 px strips sit on the pack's 1920x1080 reference screen, and their z.
+const SILHOUETTE_TOP := 568.0
+const SILHOUETTE_Z := 20
 ## Props that carry lava light get a soft warm glow from the mood pass, [prop: radius in
 ## world px] (see RoomAtmosphere).
 const GLOWING_PROPS := {
@@ -590,6 +599,7 @@ func _add_foreground(parent: Node2D) -> void:
 	if has_corridor:
 		_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
 	_add_middle_rim(parent)
+	_add_silhouettes(parent)
 	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
 	for border in borders:
 		var texture := _texture(BIOME + border[0])
@@ -861,6 +871,33 @@ func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_re
 		_layers.append([layer, FOREGROUND_SCALE, base])
 		if strip == "foreground-bottom":
 			_add_skirt(layer, texture, image_scale, copies * period)
+
+
+## The black silhouette foliage (see SILHOUETTES) as one repeating A-B-C layer.
+func _add_silhouettes(parent: Node2D) -> void:
+	if SILHOUETTES.is_empty():
+		return
+	var image_scale := VIEW_SIZE.y / 1080.0
+	var layer := Node2D.new()
+	layer.z_index = SILHOUETTE_Z
+	parent.add_child(layer)
+	var needed := VIEW_SIZE.x + (_room_size.x - VIEW_SIZE.x) * FOREGROUND_SCALE.x
+	var x := 0.0
+	var i := 0
+	while x < needed:
+		var texture := _texture(SILHOUETTES + "%s.png" % SILHOUETTE_PIECES[i % SILHOUETTE_PIECES.size()])
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * image_scale
+		sprite.position = Vector2(x, SILHOUETTE_TOP * image_scale)
+		layer.add_child(sprite)
+		x += texture.get_width() * image_scale
+		i += 1
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var base := FOREGROUND_SCALE * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5
+	_layers.append([layer, FOREGROUND_SCALE, base])
 
 
 ## A strip of the bottom loop's own bottom-row colour hanging under it, one screen tall:
