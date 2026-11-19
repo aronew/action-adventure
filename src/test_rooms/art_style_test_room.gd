@@ -255,7 +255,13 @@ const MIDDLE_PIECES := {
 ## vertically, so this only matters for rooms taller than a screen.
 const CAMERA_DRAG_TOP := 0.5
 const CAMERA_DRAG_BOTTOM := 0.3
-const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
+const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack  V mood on/off"
+## Props that carry lava light get a soft warm glow from the mood pass, [prop: radius in
+## world px] (see RoomAtmosphere).
+const GLOWING_PROPS := {
+	"rocks-small": 22.0, "rocks-large": 34.0, "decoration-low": 26.0,
+	"decoration-tall": 34.0, "wall-right": 40.0, "hanging-decoration": 22.0,
+}
 
 ## The room's layout. These start as the constants above; a longer test room
 ## (art_style_long_room.gd) swaps in its own in _init, before _ready builds the room.
@@ -282,6 +288,8 @@ var _room_size := Vector2.ZERO
 ## camera_centre * (1 - scroll scale) + base, so on screen it moves by scroll scale times
 ## the camera's motion. (Parallax2D placed the layers wrongly under the 4x zoom here.)
 var _layers: Array = []
+var _mood: RoomAtmosphere
+var _lit_props: Array[Sprite2D] = []
 
 
 func _ready() -> void:
@@ -339,7 +347,17 @@ func _ready() -> void:
 	player.add_child(camera)
 	camera.setup(player)
 
+	_mood = RoomAtmosphere.new()
+	add_child(_mood)
+	_mood.setup(world, camera, player, VIEW_SIZE)
+	for sprite in _lit_props:
+		var bounds: Array = PROP_BOUNDS[sprite.get_meta(&"prop")]
+		var centre := Vector2(bounds[0] + bounds[2], bounds[1] + bounds[3]) * 0.5
+		_mood.add_glow(world, sprite.position + centre * sprite.scale,
+				GLOWING_PROPS[sprite.get_meta(&"prop")])
+
 	var hud := CanvasLayer.new()
+	hud.layer = 2
 	var help := Label.new()
 	help.position = Vector2(16, 12)
 	help.add_theme_font_size_override(&"font_size", 22)
@@ -366,6 +384,14 @@ func _place_layers() -> void:
 		var layer: Node2D = entry[0]
 		var factor: Vector2 = entry[1]
 		layer.position = center * (Vector2.ONE - factor) + entry[2]
+	if _mood != null:
+		_mood.follow(center)
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key != null and key.pressed and not key.echo and key.keycode == KEY_V and _mood != null:
+		_mood.set_enabled(not _mood.is_enabled())
 
 
 ## World px per source px for props (native-size art).
@@ -386,7 +412,10 @@ func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 	sprite.texture = _texture(BIOME + "assets/%s.png" % prop)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * _prop_scale()
+	sprite.set_meta(&"prop", prop)
 	parent.add_child(sprite)
+	if GLOWING_PROPS.has(prop):
+		_lit_props.append(sprite)
 	return sprite
 
 
