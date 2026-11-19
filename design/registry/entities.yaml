@@ -130,6 +130,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - run_jump_distance
       - dash_jump_distance
@@ -148,6 +149,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - jump_apex
       - double_jump_total_low
@@ -167,6 +169,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - double_jump_total
       - ledge_nudge
@@ -186,6 +189,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - ledge_min
     output_range: [72, null]
@@ -199,6 +203,7 @@ formulas:
     referenced_by:
       - design/gdd/ability-gating.md
       - design/gdd/level-design.md
+      - design/gdd/terrain-pipeline.md
     variables:
       - dash_speed
       - sim_hz
@@ -260,6 +265,63 @@ formulas:
     notes: "F9. Width needed beyond the span, px, for plain walls to the ceiling at 270 px room height: about 606 (F2 ledge), 758 (F3a ledge), 852 (F3b gap). Exempt where every plain face in reach is no_cling. Level design rule 26 reads it."
     added: 2026-11-18
     revised: ""
+  - name: on_grid
+    status: active
+    source: design/gdd/terrain-pipeline.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    variables:
+      - collision_tile
+      - lo
+      - hi
+    output_range: [0, null]
+    expression: "on_grid(lo, hi) = { k x collision_tile : ceil(lo / collision_tile) <= k <= floor(hi / collision_tile), k >= 0 }"
+    notes: "T1. The gate figures the 6 px grid allows inside a window owned by ability gating or level design, with lo and hi computed from the owner's formula at the current player_config (never rounded figures): dash gap 150, 156 (gap_max 161.4 from the sim's dash_jump_distance 164.4; 162 enters only if a measured value reaches 165); F2 ledge 72-102 step 6; F3a slab underside 144+; F3b plain far face 0, 6 or 12; pane 12. An open-ended window takes hi = room size. An empty set fails the layout check as gate type unbuildable."
+    added: 2026-11-19
+    revised: 2026-11-19
+  - name: band_on_grid
+    status: deprecated
+    source: design/gdd/terrain-pipeline.md
+    referenced_by: []
+    variables:
+      - band
+      - collision_tile
+    output_range: [0, null]
+    expression: "band_on_grid = collision_tile x ceil(band / collision_tile)"
+    notes: "Withdrawn 2026-11-19 (terrain-pipeline.md first design review, owner): a distance between on-grid edges is whole tiles, so the raw band and the rounded band give the same answer, and for off-grid hit-area edges (pogo_far_ext) rounding would tighten a band level design owns. Level design's bands (250, 320, 14) are used as written."
+    added: 2026-11-19
+    revised: 2026-11-19
+  - name: transition_time
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+    variables:
+      - fade_out_time
+      - load_left
+      - build_time
+      - fade_in_time
+    output_range: [0.2, null]
+    expression: "transition_time = fade_out_time + max(0, load_left) + build_time + fade_in_time"
+    notes: "R3. s; 0.45 s for a preloaded neighbour at fade_out_time 0.15, build_time budget 0.10 and fade_in_time 0.2 (fade ranges 0.1-0.4 each). The world freezes at the crossing frame and resumes as the fade-in begins (0.25 s frozen); every opening of the live room is shut until the fade-in ends (R2). build_time is a budget: the container measured about 0.33 s to rebuild a same-biome room (software Vulkan, level design Open Question 22), unmeasured on the target machine. A loading mark shows after load_wait_notice 0.5 s of dark. Revised 2026-11-19 (first design review: build_time added, freeze at the crossing, owner)."
+    added: 2026-11-19
+    revised: 2026-11-19
+  - name: preload_deadline
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+    variables:
+      - dx
+      - dy
+      - dash_speed
+      - fast_fall_speed
+      - load_time
+    output_range: [0, null]
+    expression: "t_reach(exit) = min over arrival points a of max(dx(a, exit) / dash_speed, dy(a, exit) / fast_fall_speed); exit listed when t_reach < load_time(target)"
+    notes: "R5. Advisory room check, lists exits for level design, never refuses a room. dash_speed (370) and fast_fall_speed (640) read from player_config.tres; each term is a lower bound on the time, so the check never lists too few. load_time is a per-biome data value, 1.07 s for every biome (worst of the 0.75-1.07 s first loads measured in the container, level design Open Question 22) until measured on the owner's machine; 0 when the target shares the arrival room's biome. Revised 2026-11-19 (first design review: the dash_speed-only bound missed fall exits)."
+    added: 2026-11-19
+    revised: 2026-11-19
 
 # Example:
 #
@@ -298,6 +360,7 @@ constants:
     source: design/gdd/level-design.md
     referenced_by:
       - design/gdd/ability-gating.md
+      - design/gdd/terrain-pipeline.md
     value: 84
     unit: px
     notes: "F7. Least height of both dash-pit lips above a hazard floor: hazard_pogo_reach (about 76) + gap_margin (8). Spikes can be pogoed (rule 24); a grapple gap never has a hazard floor."
@@ -307,6 +370,7 @@ constants:
     source: design/gdd/level-design.md
     referenced_by:
       - design/gdd/ability-gating.md
+      - design/gdd/terrain-pipeline.md
     value: 14
     unit: px
     notes: "F7. How far past a gap lip a pogo target is still hit from over the gap: down-attack forward reach 27 (attack_data.tres) - centre shortfall 18 at gap_min = 9 (11 for a grapple gap at 420), kept at 14 at both lips as a 5 px safety band (ninth review corrected the derivation; value unchanged). Measured to the target's hit-area edge."
@@ -314,16 +378,18 @@ constants:
   - name: pogo_clearance_px
     status: active
     source: design/gdd/level-design.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
     value: 250   # was 140 (start-kit run-speed carry); level-design.md ninth design review
     unit: px
-    notes: "F7. F2 and F6a column gates, whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
+    notes: "F7. F2, F6a and F6b column gates (fifteenth review added F6b, the climb wall), whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
     added: 2026-11-19
     revised: 2026-11-19
   - name: pogo_clearance_f3a_px
     status: active
     source: design/gdd/level-design.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
     value: 320
     unit: px
     notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
@@ -334,7 +400,7 @@ constants:
     referenced_by: []
     value: 48   # range 24-96, Rec; level-design.md tenth design review
     unit: px
-    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash + knockback_travel), grown by body half-width: grunt 119, skitter 144, brute 63 px. Not in code (enemy_base.gd chases to lose_range). Registered here until the Enemies GDD exists; that GDD must adopt it."
+    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash), grown by body half-width, a vertical strip for a ground enemy (fourteenth review: the hurt state has no floor-edge check, so a knockback off a ledge could land the enemy in a gate volume below; the placement check compares x-ranges at any height), a hard clamp on every source of horizontal motion (twelfth review: take_hit restarts the push on every hit, so pushes stack; thirteenth review: _state_attack lunges, skitter about 126 px with its slide-out): grunt 103, skitter 118, brute 59 px. Fifteenth review: a stranded enemy walks toward its spawn x, else patrols in place (the clamp anchors to the original spawn x), and an enemy knocked out of its room reappears at its spawn point. Not in code (enemy_base.gd chases to lose_range, re-homes where a chase stopped, sets unlimited knockback per hit and lunges unclamped). Registered here until the Enemies GDD exists; that GDD must adopt it."
     added: 2026-11-19
   - name: save_spacing_max
     status: deprecated
@@ -343,6 +409,34 @@ constants:
     value: 7
     unit: screens
     notes: "Withdrawn 2026-11-19 (level-design.md eleventh review, owner): saves are placed by role (near bosses and mini-bosses, hubs, rewards) and spacing is judged in playtest; no distance rule, F4 removed. Was: F4, new ground counted by screen position, 7 screens, range 7-10."
+    added: 2026-11-19
+  - name: collision_tile
+    status: active
+    source: design/gdd/terrain-pipeline.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    value: 6
+    unit: px
+    notes: "Rule 2. Side of a black collision tile, anchored at the room top-left; a 480 x 270 screen is 80 x 45 tiles. Must divide 30 and the art cell (36 px in the art-style test room); every collision, room and gate edge lies on the grid. Owner decision 2026-11-19 (Hollow Knight-style block-out)."
+    added: 2026-11-19
+  - name: trim_overhang_max
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    value: 4
+    unit: px
+    notes: "Level design rule 25 (range 2-6, Rec). How far painted trim or dressing may cover the collision edge at a gate or no_cling face, at game scale; measured by terrain pipeline T3 (alpha_solid 0.5). Registered 2026-11-19 by the terrain pipeline GDD."
+    added: 2026-11-19
+  - name: enemy_return_delay
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+      - design/gdd/level-design.md
+    value: 2
+    unit: s
+    notes: "Rooms and transitions Edge Cases (range 0.5-5, Rec). An enemy knocked out of its room through an open bottom edge or a pit is removed at the room's bounds and reappears at its spawn point after this delay; level design Edge Cases asked for it. The Enemies GDD must adopt it."
     added: 2026-11-19
 
 # Example:

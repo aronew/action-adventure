@@ -29,8 +29,8 @@ Notes by area (balanced density):
 |---|-------------|----------|----------|--------|------------|------------|
 | 1 | Player controller and input | Core | MVP | Implemented (no GDD) | — (brief) | — |
 | 2 | Camera | Core | MVP | Implemented (follow, look-ahead, shake); room framing not started | — (brief) | Player controller |
-| 3 | Rooms and transitions (inferred) | Core | MVP | Not Started | — | Player controller, Camera, Terrain pipeline |
-| 4 | Terrain pipeline (inferred) | Core | MVP | Not Started | — | — |
+| 3 | Rooms and transitions (inferred) | Core | MVP | In Review (first design review 2026-11-19, lean: NEEDS REVISION, 4 blockers revised (owner: freeze the world at the crossing frame, arrive `exit_rearm` px inside, openings shut until the fade-in ends; `build_time` in R3, budget 0.10 s, 0.45 s total; authored object ids, unique per room; R5 bounds falls by `fast_fall_speed` 640); 8 recommended revisions open (residency cancel path and free-before-load, arrival safety, graph edge attributes, camera zones and shake, death-state crossing, weak ACs, fade-sum cap and Tuning Knobs, stale line on World state); awaiting re-review in a fresh session) | `design/gdd/rooms-and-transitions.md` | Player controller, Camera, Terrain pipeline, World state (soft) |
+| 4 | Terrain pipeline (inferred) | Core | MVP | In Review (sixth design review 2026-11-19, full: MAJOR REVISION NEEDED, 6 blockers (T3 failed at concave corners; T5 "mass" undefined so attached ledges never moved; a one-tile move flagged props and stranded records; `dressed` deadlocked on the stored flag; T3 units undefined; spawn points fingerprinted but not in rule 13), all revised the same day by restructuring: guarantees stay in the GDD, mechanics moved to `docs/architecture/terrain-tools-spec.md`. GDD frozen until the prototype room runs its fixtures; re-review after that) | design/gdd/terrain-pipeline.md | — |
 | 5 | Combat | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller, Health/damage/death |
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (eleventh design review 2026-11-19: 1 blocker revised (save spacing could not be counted in large rooms); owner decisions: saves placed by role with no distance rule (F4 withdrawn, `save_spacing_max` deprecated), room sizes unnumbered, key distance judged in playtest, fall exits never skip a gate (rule 27); awaiting re-review. Tenth design review 2026-11-19: 1 blocker revised (chasing enemies leashed to their spawn point; rule 24 and F7 measure each enemy by its leash bound, `chase_leash` 48 px); owner decision: leash the chase; Tuning Knobs and Player Fantasy added; awaiting re-review. Ninth design review 2026-11-19: 1 blocker revised (F7 column clearance per earlier kit, since a pogo refreshes the air dash and air jump: `pogo_clearance_px` 250, `pogo_clearance_f3a_px` 320); owner decision: widen per kit, keep the refresh; awaiting re-review. Eighth design review 2026-11-19: 1 blocker revised (F7 pogo reach from the down attack's hitbox and the target's hit area; `pogo_clearance_px` 140, `pogo_far_ext` 14); owner decisions: alcove return in the gate room, `save_spacing_max` 7-10 with saves in optional branches, Passed has a pass-line trigger; Open Question 20 resolved; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | Approved (sixteenth design review 2026-11-19, lean: 0 blockers, 6 recommended revisions open (knob safe ranges below derived minimums, pogoable wall/ceiling hazards undefined, stranded-enemy patrol range, respawn-delay AC, near-side shortcut AC, compound ACs); the fifteenth review's revisions held. Fifteenth design review 2026-11-19, lean: 1 blocker revised (climb walls, F6b, had no pogo gate volume; now a column gate at pogo_clearance_px); owner: strict vertical strip kept, a stranded enemy walks toward its spawn x else patrols in place, an enemy knocked out of its room reappears at its spawn point; awaiting re-review. Fourteenth design review 2026-11-19, lean: 1 blocker revised (the leash bound had no vertical extent: the hurt state has no floor-edge check, so a knockback off a ledge could drop a ground enemy into a gate volume; owner decision: a ground enemy's bound is a vertical strip and the F7 check rejects any x-overlap with a gate volume at any height); rule 24 and F7 say the hit area is held inside the bound, rule 9's "visible" defined, dash-gate knob starts at 420 s; awaiting re-review. Thirteenth design review 2026-11-19, lean: 1 blocker revised (an attack's lunge, about 126 px for the skitter with its slide-out, could carry an enemy past its leash bound; owner decision: the hard clamp covers every source of horizontal motion, lunge included); dash-gate knob capped at rule 8's 10 minutes, rule 24 volume height wording and Open Question 18 tidied; awaiting re-review. Twelfth design review 2026-11-19, lean: 1 blocker revised (chained hits could push an enemy past its leash bound; the bound is now a hard clamp, knockback included, `knockback_travel` out of it: grunt ±103, skitter ±118, brute ±59 px); ability gating status and rule 27 wording aligned; awaiting re-review. Eleventh design review 2026-11-19: 1 blocker revised (save spacing could not be counted in large rooms); owner decisions: saves placed by role with no distance rule (F4 withdrawn, `save_spacing_max` deprecated), room sizes unnumbered, key distance judged in playtest, fall exits never skip a gate (rule 27); awaiting re-review. Tenth design review 2026-11-19: 1 blocker revised (chasing enemies leashed to their spawn point; rule 24 and F7 measure each enemy by its leash bound, `chase_leash` 48 px); owner decision: leash the chase; Tuning Knobs and Player Fantasy added; awaiting re-review. Ninth design review 2026-11-19: 1 blocker revised (F7 column clearance per earlier kit, since a pogo refreshes the air dash and air jump: `pogo_clearance_px` 250, `pogo_clearance_f3a_px` 320); owner decision: widen per kit, keep the refresh; awaiting re-review. Eighth design review 2026-11-19: 1 blocker revised (F7 pogo reach from the down attack's hitbox and the target's hit area; `pogo_clearance_px` 140, `pogo_far_ext` 14); owner decisions: alcove return in the gate room, `save_spacing_max` 7-10 with saves in optional branches, Passed has a pass-line trigger; Open Question 20 resolved; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
@@ -99,7 +99,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 1. Camera: depends on Player controller.
 2. Health, damage and death: depends on Player controller.
 3. World state: depends on Player controller (owns the ability flags today).
-4. Rooms and transitions: depends on Player controller, Camera, Terrain pipeline.
+4. Rooms and transitions: depends on Player controller, Camera, Terrain pipeline; World state (soft: saved object states applied when a room is rebuilt).
 
 ### Feature Layer (depends on core)
 
@@ -182,11 +182,11 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 2 (level design, ability gating) |
-| Design docs reviewed | 0 |
-| Design docs approved | 0 |
+| Design docs started | 4 (level design, ability gating, terrain pipeline, rooms and transitions) |
+| Design docs reviewed | 3 (level design, ability gating, terrain pipeline) |
+| Design docs approved | 2 (level design, ability gating) |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
-| MVP systems designed | 0/16 |
+| MVP systems designed | 4/16 (rooms and transitions designed; terrain pipeline in review; ability gating and level design approved) |
 | Vertical Slice systems designed | 0/4 |
 
 ---
