@@ -51,19 +51,28 @@ const TILE_INSETS := {
 	14: [0, 62, 76, 0], 15: [0, 64, 0, 0], 16: [0, 69, 0, 102],
 }
 ## The room in cells ('#' solid). Cells outside the grid count as solid, so the room's
-## own border shows no rock face.
+## own border shows no rock face. Columns 0-39 are the open cave; from column 40 a tight
+## corridor runs on from the high ledge: a low ceiling (82 px of headroom), a hanging
+## dip at columns 52-56, a step up at column 60 and a rock wall closing it at column 66.
 const GRID := [
-	"########################################",
-	"........................................",
-	"........................................",
-	"........................................",
-	"...............................#########",
-	"...............................#########",
-	"...............................#########",
-	"......................##################",
-	"################......##################",
-	"########################################",
+	"######################################################################",
+	"........................................##############################",
+	"....................................................#####.........####",
+	"............................................................##########",
+	"...............................#######################################",
+	"...............................#######################################",
+	"...............................#######################################",
+	"......................################################################",
+	"################......################################################",
+	"######################################################################",
 ]
+## Where the corridor begins (its first column) and how wide, in world px, the soft
+## blend between the open cave's layers and the corridor's is at its mouth.
+const CORRIDOR_START_COL := 40
+const LAYER_BLEND := 72.0
+## The corridor's close rear wall (corridor/layers.json "close-wall"): a loop that sits
+## just behind the play layer instead of the distant background.
+const CORRIDOR_WALL_SCALE := 0.85
 
 ## Solid bounds of each prop (alpha over half), in source px: left, top, right, bottom.
 const PROP_BOUNDS := {
@@ -99,6 +108,15 @@ const HANGING_PROPS := [
 	["ceiling-overhang", 860.0],
 	["hanging-decoration", 1240.0],
 ]
+## Corridor props: prop, left x, the surface they stand on (world y), or for hanging
+## props the ceiling line they hang from. No collision.
+const CORRIDOR_GROUND_PROPS := [
+	["rocks-small", 1640.0, 149.5],
+	["decoration-low", 2010.0, 149.5],
+]
+const CORRIDOR_HANGING_PROPS := [
+	["hanging-decoration", 1780.0],
+]
 ## Background layers: file, scroll scale (how fast it moves on screen against the
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
@@ -109,8 +127,14 @@ const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 const FOREGROUND_SCALE := Vector2(1.2, 1.1)
 ## Each loop is a full screen-height canvas (3840x1080) that repeats every 3840 px.
 const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
-## Optional room-end pieces from the same pack, placed at this test room's dead ends.
-const BORDERS := ["border-left", "border-right"]
+## Room-end pieces: file, at the room's left (else its right), scaled to the room's full
+## height (else to one screen, top-aligned, for a corridor that is less than a screen
+## tall). The open cave's left border at the room's left end; the corridor's right border
+## over the rock wall that closes the corridor.
+const BORDERS := [
+	["parallax/border-left.png", true, true],
+	["corridor/brighter/border-right.png", false, false],
+]
 ## Camera dead zone in this room (fractions of half the screen): a jump stays inside it,
 ## so the view only scrolls up near the top and follows real falls. The bottom margin
 ## (0.3 = 40 px) is a little larger than the camera's fall lead (36 px), so a normal
@@ -118,7 +142,7 @@ const BORDERS := ["border-left", "border-right"]
 ## vertically, so this only matters for rooms taller than a screen.
 const CAMERA_DRAG_TOP := 0.5
 const CAMERA_DRAG_BOTTOM := 0.3
-const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
+const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x. Corridor: right, past the high ledge.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
 ## The room's layout. These start as the constants above; a longer test room
 ## (art_style_long_room.gd) swaps in its own in _init, before _ready builds the room.
@@ -152,6 +176,7 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
+	_add_corridor_wall(world)
 	_add_terrain(world)
 	for island in islands:
 		_add_island(world, island)
@@ -165,6 +190,15 @@ func _ready() -> void:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
+	for entry in CORRIDOR_GROUND_PROPS:
+		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var sprite := _prop_sprite(world, entry[0])
+		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
+	var corridor_ceiling := 2.0 * CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
+	for entry in CORRIDOR_HANGING_PROPS:
+		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var sprite := _prop_sprite(world, entry[0])
+		sprite.position = Vector2(entry[1], corridor_ceiling - bounds[1] * s - PROP_SINK)
 	_add_foreground(world)
 
 	var player: Player = PLAYER_SCENE.instantiate()
@@ -257,17 +291,22 @@ func _edge_tile(col: int, row: int) -> int:
 	return -1
 
 
-## For an interior cell at an inside corner (solid above and beside it, empty
-## diagonally above), the wall face above it continues down to the floor beside it:
-## TILE_L or TILE_R. Otherwise -1.
-func _inside_corner_tile(col: int, row: int) -> int:
-	if not _solid(col, row - 1):
-		return -1
-	if not _solid(col - 1, row - 1) and _solid(col - 1, row):
-		return TILE_L
-	if not _solid(col + 1, row - 1) and _solid(col + 1, row):
-		return TILE_R
-	return -1
+## For an interior cell at an inside corner, the two tiles that paint it: the surface
+## running on under it, then the wall face continuing into it. Floor corners (solid
+## above and beside, empty diagonally above): [TILE_T, face]. Ceiling corners (solid
+## below and beside, empty diagonally below): [TILE_B, face]. Otherwise [].
+func _inside_corner_tiles(col: int, row: int) -> Array:
+	if _solid(col, row - 1):
+		if not _solid(col - 1, row - 1) and _solid(col - 1, row):
+			return [TILE_T, TILE_L]
+		if not _solid(col + 1, row - 1) and _solid(col + 1, row):
+			return [TILE_T, TILE_R]
+	if _solid(col, row + 1):
+		if not _solid(col - 1, row + 1) and _solid(col - 1, row):
+			return [TILE_B, TILE_L]
+		if not _solid(col + 1, row + 1) and _solid(col + 1, row):
+			return [TILE_B, TILE_R]
+	return []
 
 
 ## Paints every solid cell and builds the collision: one shape per run of cells in a row
@@ -283,11 +322,13 @@ func _add_terrain(parent: Node2D) -> void:
 		for col in grid[0].length() + 1:
 			var solid: bool = col < grid[0].length() and _solid(col, row)
 			var tile := _edge_tile(col, row) if solid else -1
-			var corner := _inside_corner_tile(col, row) if solid and tile < 0 else -1
+			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
 			var insets: Array = TILE_INSETS[tile] if tile >= 0 else [0, 0, 0, 0]
-			if corner >= 0:
-				# The floor beside it runs on under the wall face at its surface height.
-				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0]
+			if not corner.is_empty():
+				# The floor (or ceiling) beside it runs on under the wall face at its
+				# surface height.
+				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0] if corner[0] == TILE_T \
+						else [0, TILE_INSETS[TILE_B][1], 0, 0]
 			var same: bool = solid and run_start >= 0 and insets[0] == run_insets[0] \
 					and insets[1] == run_insets[1]
 			if run_start >= 0 and not same:
@@ -305,10 +346,10 @@ func _add_terrain(parent: Node2D) -> void:
 				continue
 			if tile >= 0:
 				_add_tile(parent, tile, col, row)
-			elif corner >= 0:
-				# Inside corner: the floor's top runs on under the wall face above.
-				_add_tile(parent, TILE_T, col, row)
-				_add_tile(parent, corner, col, row)
+			elif not corner.is_empty():
+				# Inside corner: the surface runs on under the wall face.
+				_add_tile(parent, corner[0], col, row)
+				_add_tile(parent, corner[1], col, row)
 			else:
 				var fill := Polygon2D.new()
 				var p := Vector2(col * CELL, row * CELL)
@@ -374,43 +415,108 @@ func _add_back_layers(parent: Node2D) -> void:
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## Foreground: the top and bottom loops, both in the world, both repeating sideways.
-## Each canvas is a screen tall with its art at the top or bottom, so the top loop's
-## canvas meets the screen's top when the camera is at the room's top, and the bottom
-## loop's canvas meets it when the camera is at the room's floor. Then the room-end
-## borders at the room's left and right edges.
+## Foreground: the open cave's loops (parallax/) over the open cave and the corridor's
+## loops (corridor/brighter/) over the corridor, each set masked to its own part of the
+## room with a soft blend at the corridor's mouth. Both sets live in the world and repeat
+## sideways. Then the room-end borders.
 func _add_foreground(parent: Node2D) -> void:
-	var camera_travel := _room_size - VIEW_SIZE
+	var mouth := CORRIDOR_START_COL * CELL
+	var open_mask := _blend_mask(parent, 0.0, mouth + LAYER_BLEND * 0.5, false, 10)
+	var corridor_mask := _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x, true, 10)
 	var center_min := VIEW_SIZE * 0.5
 	var center_max := _room_size - VIEW_SIZE * 0.5
-	var z := 10
+	# Open cave: the top loop meets the screen's top with the camera at the room's top,
+	# the bottom loop with the camera at the room's floor. Corridor: the camera stays at
+	# the room's top there, so both loops are set for that height.
+	_add_foreground_set(open_mask, "parallax/", center_min.y, center_max.y)
+	_add_foreground_set(corridor_mask, "corridor/brighter/", center_min.y, center_min.y)
+	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
+	for border in BORDERS:
+		var texture := _texture(BIOME + border[0])
+		var height := _room_size.y if border[2] else VIEW_SIZE.y
+		var image_scale := height / texture.get_height()
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * image_scale
+		sprite.z_index = 12
+		var width := texture.get_width() * image_scale
+		sprite.position = Vector2(0.0 if border[1] else _room_size.x - width, 0.0)
+		parent.add_child(sprite)
+
+
+## One set of top and bottom foreground loops from [param folder], under [param mask].
+## [param top_ref] and [param bottom_ref] are the camera heights at which each loop's
+## canvas meets the screen's top.
+func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_ref: float) -> void:
+	var camera_travel := _room_size - VIEW_SIZE
+	var center_min := VIEW_SIZE * 0.5
 	for strip in FOREGROUND_STRIPS:
-		var texture := _texture(BIOME + "parallax/%s.png" % strip)
+		var texture := _texture(BIOME + folder + "%s.png" % strip)
 		var image_scale := VIEW_SIZE.y / texture.get_height()
 		var period := texture.get_width() * image_scale
 		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * FOREGROUND_SCALE.x) / period)) + 1
-		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
-				image_scale, copies, z, false)
-		z += 1
-		var reference_y := center_min.y if strip == "foreground-top" else center_max.y
+		var layer := _strip_layer(mask, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, copies, 0, false)
+		var reference_y := top_ref if strip == "foreground-top" else bottom_ref
 		# On screen: top-left = base - scale * centre + VIEW_SIZE / 2. Solve for the base
 		# that puts the canvas top at the screen's top at the reference height, and its
 		# left edge at the screen's left at the room's left.
 		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
 		_layers.append([layer, FOREGROUND_SCALE, base])
-	# Borders are fixed in the world at the room's edges, scaled to the room's full
-	# height so their canvas's top and bottom edges never show.
-	for border in BORDERS:
-		var texture := _texture(BIOME + "parallax/%s.png" % border)
-		var image_scale := _room_size.y / texture.get_height()
-		var sprite := Sprite2D.new()
-		sprite.texture = texture
-		sprite.centered = false
-		sprite.scale = Vector2.ONE * image_scale
-		sprite.z_index = z
-		var width := texture.get_width() * image_scale
-		sprite.position = Vector2(0.0 if border == "border-left" else _room_size.x - width, 0.0)
-		parent.add_child(sprite)
+
+
+## The corridor's close rear wall: a loop just behind the play layer (scroll scale 0.85),
+## masked to the corridor so the open cave keeps its distant background.
+func _add_corridor_wall(parent: Node2D) -> void:
+	var mouth := CORRIDOR_START_COL * CELL
+	var mask := _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x, true, -10)
+	var texture := _texture(BIOME + "corridor/background-loop.png")
+	var image_scale := VIEW_SIZE.y / texture.get_height()
+	var period := texture.get_width() * image_scale
+	var factor := Vector2(CORRIDOR_WALL_SCALE, CORRIDOR_WALL_SCALE)
+	var center_min := VIEW_SIZE * 0.5
+	# Long enough to cover the corridor's whole width plus the screen at both ends.
+	var needed := (_room_size.x - mouth) + VIEW_SIZE.x * 2.0
+	var copies := int(ceil(needed / period)) + 1
+	var layer := _strip_layer(mask, texture, Rect2(Vector2.ZERO, texture.get_size()),
+			image_scale, copies, 0, false)
+	# Its left edge sits a screen left of the mouth when the camera is at the mouth, and
+	# its top meets the screen's top with the camera at the room's top.
+	var mouth_center := mouth
+	var base := Vector2(mouth - VIEW_SIZE.x - mouth_center * (1.0 - factor.x),
+			factor.y * center_min.y - VIEW_SIZE.y * 0.5)
+	_layers.append([layer, factor, base])
+
+
+## A world-space mask from [param x0] to [param x1] over the room's full height whose
+## children draw only inside it, fading over [constant LAYER_BLEND] at the corridor's
+## mouth: in from the left when [param fade_in_left], else out to the right.
+func _blend_mask(parent: Node2D, x0: float, x1: float, fade_in_left: bool, z: int) -> Node2D:
+	var mask := Polygon2D.new()
+	mask.clip_children = CanvasItem.CLIP_CHILDREN_ONLY
+	mask.z_index = z
+	var h := _room_size.y
+	var points := PackedVector2Array()
+	var colors := PackedColorArray()
+	var clear := Color(1, 1, 1, 0)
+	var solid := Color(1, 1, 1, 1)
+	if fade_in_left:
+		var xb := x0 + LAYER_BLEND
+		points = PackedVector2Array([Vector2(x0, 0), Vector2(xb, 0), Vector2(x1, 0),
+				Vector2(x1, h), Vector2(xb, h), Vector2(x0, h)])
+		colors = PackedColorArray([clear, solid, solid, solid, solid, clear])
+	else:
+		var xb := x1 - LAYER_BLEND
+		points = PackedVector2Array([Vector2(x0, 0), Vector2(xb, 0), Vector2(x1, 0),
+				Vector2(x1, h), Vector2(xb, h), Vector2(x0, h)])
+		colors = PackedColorArray([solid, solid, clear, clear, solid, solid])
+	mask.polygon = points
+	mask.vertex_colors = colors
+	# Two quads, so the fade interpolates across the blend band only.
+	mask.polygons = [PackedInt32Array([0, 1, 4, 5]), PackedInt32Array([1, 2, 3, 4])]
+	parent.add_child(mask)
+	return mask
 
 
 ## A layer of [param copies] side-by-side copies of one region of a texture. With
