@@ -156,24 +156,25 @@ const MIDDLE_PIECE_SCALE := 1.0
 ## draws each edge cell's own terrain tile ID from it (inside corners too, base then
 ## face, as the terrain does), so it traces the outline with the terrain's exact shapes.
 ## When empty, the rim uses the older corner kit below.
-const MIDDLE_TILESET := "modular-foreground/textured/tiles/"
-## The owner's wall fill (modular-foreground/fill-large/, which carries the first pack's
-## sixteen variants unchanged plus twelve new ones): opaque rock tiles that join any
-## other on all four sides. Every interior cell of the rim layer (solid on all sides, not
-## an inside corner) gets one, picked by a fixed hash of the cell so the room looks the
-## same every run. Empty: interior cells stay the terrain's plain black.
+## rim-loop/ holds its straight edges made to repeat seamlessly along a run (their ends
+## cross-faded with the corner tiles', tools/asset-pipeline/loop_rim_edges.py), so a long
+## floor or wall no longer breaks every cell. rim-cut/ is rim-loop/ with the black core
+## cut out to a soft contact shadow (tools/asset-pipeline/cut_rim_core.py), so the wall
+## fill drawn under every solid cell shows through: one continuous fill, no seam between
+## an edge tile's core and the fill beside it. MIDDLE_MASKS (the uncut set) masks the
+## fill to the solid.
+const MIDDLE_TILESET := "modular-foreground/rim-cut/"
+const MIDDLE_MASKS := "modular-foreground/rim-loop/"
 ## Inside corners of the rim, in source px of the 512 px tile, [opaque, clear]: the wall
 ## face fades out across the floor's lip band (or up across the ceiling's), and the lip
-## fades out sideways behind the wall face. Fill covers the corner below the floor's
-## surface (above the ceiling's) from fill_from px.
+## fades out sideways behind the wall face. Fill covers the corner's solid part.
 const MIDDLE_CORNER_FADES := {
 	"face_floor": [130.0, 240.0], "face_ceiling": [382.0, 272.0],
 	"lip_left_wall": [120.0, 280.0], "lip_right_wall": [392.0, 232.0],
-	"fill_from": 210.0,
 }
 ## The terrain's own inside corners, the same way: the wall face fades out across the
 ## floor's lip band (up across the ceiling's), [opaque, clear] in source px.
-const TERRAIN_CORNER_FADES := {"floor": [100.0, 180.0], "ceiling": [412.0, 332.0]}
+const TERRAIN_CORNER_FADES := {"floor": [64.0, 112.0], "ceiling": [448.0, 400.0]}
 const FADE_SHADER := """
 shader_type canvas_item;
 // x: 1 fades along UV.x, 0 along UV.y; y: UV where opaque; z: UV where clear.
@@ -184,6 +185,51 @@ void fragment() {
 	COLOR.a *= clamp((t - fade.z) / (fade.y - fade.z), 0.0, 1.0);
 }
 """
+## Fill masked to an edge cell's solid part: the uncut rim tile's alpha (a second one
+## for inside corners), each sampled where its tile sits after the rim's inset.
+const MASK_SHADER := """
+shader_type canvas_item;
+uniform sampler2D mask_a : filter_linear_mipmap;
+uniform sampler2D mask_b : filter_linear_mipmap;
+uniform vec2 shift_a = vec2(0.0);
+uniform vec2 shift_b = vec2(0.0);
+uniform float use_b = 0.0;
+float cover(sampler2D mask, vec2 uv) {
+	if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) {
+		return 0.0;
+	}
+	return texture(mask, uv).a;
+}
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	float a = cover(mask_a, UV - shift_a);
+	if (use_b > 0.5) {
+		a = max(a, cover(mask_b, UV - shift_b));
+	}
+	COLOR.a *= a;
+}
+"""
+## The fill tiles all share the same rocks along their edges (that is what lets any two
+## join), so a wall of them shows a grid. Round patches of fill, each a fill tile's middle
+## faded out to a soft circle, are laid over every grid line's corners and midpoints
+## inside the solid to hide it. MIDDLE_PATCH_SOLID / MIDDLE_PATCH_CLEAR: the patch's
+## radius (fraction of its half-width) where it is opaque and where it is clear.
+const MIDDLE_PATCHES := true
+const MIDDLE_PATCH_SOLID := 0.55
+const MIDDLE_PATCH_CLEAR := 1.0
+const PATCH_SHADER := """
+shader_type canvas_item;
+uniform vec2 radii = vec2(0.55, 1.0);
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	COLOR.a *= 1.0 - smoothstep(radii.x, radii.y, length(UV - vec2(0.5)) * 2.0);
+}
+"""
+## The owner's wall fill (modular-foreground/fill-large/, which carries the first pack's
+## sixteen variants unchanged plus twelve new ones): opaque rock tiles that join any
+## other on all four sides. Every solid cell of the rim layer gets one (edge cells masked
+## to their solid part), picked by a fixed hash of the cell so the room looks the same
+## every run. Empty: no fill; the rim tiles' cores then show the terrain's black.
 const MIDDLE_FILL := "modular-foreground/fill-large/tiles/"
 const MIDDLE_FILL_VARIANTS := 28
 ## The pack's three large 2x2 rock features, whose outside edges match every fill tile.
@@ -228,6 +274,8 @@ var borders: Array = BORDERS
 
 var _textures := {}
 var _fade_shader: Shader
+var _mask_shader: Shader
+var _patch_shader: Shader
 var _camera: Camera2D
 var _room_size := Vector2.ZERO
 ## Manual parallax: [layer node, scroll scale, base]. Each frame a layer is placed at
@@ -541,9 +589,8 @@ func _add_middle_rim(parent: Node2D) -> void:
 			var tile := _edge_tile(col, row)
 			if not MIDDLE_TILESET.is_empty():
 				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
-				if tiles.is_empty() and not MIDDLE_FILL.is_empty() \
-						and not featured.has(Vector2i(col, row)):
-					_add_middle_fill(parent, col, row)
+				if not MIDDLE_FILL.is_empty() and not featured.has(Vector2i(col, row)):
+					_add_middle_fill(parent, col, row, tiles)
 				if tile < 0 and not tiles.is_empty():
 					_add_middle_corner(parent, tiles[0], tiles[1], col, row)
 					continue
@@ -572,6 +619,8 @@ func _add_middle_rim(parent: Node2D) -> void:
 			sprite.scale = Vector2.ONE * size / 512.0
 			layer.add_child(sprite)
 			layer.position = spot
+	if not MIDDLE_TILESET.is_empty() and not MIDDLE_FILL.is_empty() and MIDDLE_PATCHES:
+		_add_middle_patches(parent, featured)
 
 
 ## One tile of the modular foreground tileset at a terrain cell, moved MIDDLE_INSET px
@@ -579,18 +628,10 @@ func _add_middle_rim(parent: Node2D) -> void:
 ## each move by their own side), fixed in the world like the terrain.
 ## An inside corner of the rim. The terrain paints these as the whole floor (or ceiling)
 ## tile plus the whole wall face, which ran the wall a full cell past the floor's lip.
-## Here fill goes under the solid part, the lip fades out sideways behind the wall, and
+## Here (fill already under the solid part) the lip fades out sideways behind the wall, and
 ## the wall face fades out at the lip (see MIDDLE_CORNER_FADES).
 func _add_middle_corner(parent: Node2D, base: int, face: int, col: int, row: int) -> void:
 	var floor_corner := base == TILE_T
-	if not MIDDLE_FILL.is_empty():
-		var fill := _add_middle_fill(parent, col, row)
-		var lip: float = MIDDLE_CORNER_FADES["fill_from"]
-		fill.region_enabled = true
-		fill.region_rect = Rect2(0.0, lip, TILE_SOURCE, TILE_SOURCE - lip) if floor_corner \
-				else Rect2(0.0, 0.0, TILE_SOURCE, TILE_SOURCE - lip)
-		if floor_corner:
-			fill.position.y += lip * CELL / TILE_SOURCE
 	var sideways: Array = MIDDLE_CORNER_FADES["lip_left_wall" if face == TILE_L else "lip_right_wall"]
 	var lip_tile := _add_middle_tile(parent, base, col, row)
 	_fade(lip_tile, true, sideways[0], sideways[1])
@@ -614,15 +655,7 @@ func _fade(sprite: Sprite2D, along_x: bool, solid: float, clear: float) -> void:
 
 
 func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D:
-	var inset := Vector2.ZERO
-	if tile in [TILE_TL, TILE_T, TILE_TR]:
-		inset.y += MIDDLE_INSET
-	if tile in [TILE_BL, TILE_B, TILE_BR]:
-		inset.y -= MIDDLE_INSET
-	if tile in [TILE_TL, TILE_L, TILE_BL]:
-		inset.x += MIDDLE_INSET
-	if tile in [TILE_TR, TILE_R, TILE_BR]:
-		inset.x -= MIDDLE_INSET
+	var inset := _middle_inset(tile)
 	var sprite := Sprite2D.new()
 	sprite.texture = _texture(BIOME + MIDDLE_TILESET + "tile-%02d.png" % tile)
 	sprite.centered = false
@@ -637,7 +670,78 @@ func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D
 	return sprite
 
 
-## True for a cell the wall fill covers: solid, not an edge, not an inside corner.
+## How far a rim tile moves into the solid: MIDDLE_INSET px away from each side it faces.
+func _middle_inset(tile: int) -> Vector2:
+	var inset := Vector2.ZERO
+	if tile in [TILE_TL, TILE_T, TILE_TR]:
+		inset.y += MIDDLE_INSET
+	if tile in [TILE_BL, TILE_B, TILE_BR]:
+		inset.y -= MIDDLE_INSET
+	if tile in [TILE_TL, TILE_L, TILE_BL]:
+		inset.x += MIDDLE_INSET
+	if tile in [TILE_TR, TILE_R, TILE_BR]:
+		inset.x -= MIDDLE_INSET
+	return inset
+
+
+## Round fill patches over the fill's grid lines (see MIDDLE_PATCHES): one on every grid
+## corner and every edge midpoint whose one-cell square stays in the solid, clear of each
+## touched cell's open sides (the rim band and inset cover that depth) and of the large
+## features. Drawn over the fill, under the rim.
+func _add_middle_patches(parent: Node2D, featured: Dictionary) -> void:
+	if _patch_shader == null:
+		_patch_shader = Shader.new()
+		_patch_shader.code = PATCH_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = _patch_shader
+	material.set_shader_parameter("radii", Vector2(MIDDLE_PATCH_SOLID, MIDDLE_PATCH_CLEAR))
+	var clear_depth := 0.32 * CELL
+	for row2 in grid.size() * 2 + 1:
+		for col2 in grid[0].length() * 2 + 1:
+			if col2 % 2 == 1 and row2 % 2 == 1:
+				continue  # a cell's centre: no grid line there
+			var center := Vector2(col2, row2) * CELL * 0.5
+			var square := Rect2(center - Vector2.ONE * CELL * 0.5, Vector2.ONE * CELL)
+			if not _patch_fits(square, featured, clear_depth):
+				continue
+			var variant := posmod(hash(Vector2i(col2 * 3 + 1, row2 * 5 + 2)), MIDDLE_FILL_VARIANTS)
+			var sprite := Sprite2D.new()
+			sprite.texture = _texture(BIOME + MIDDLE_FILL + "fill-%02d.png" % variant)
+			sprite.centered = false
+			sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
+			sprite.position = square.position
+			sprite.z_index = MIDDLE_Z - 1
+			sprite.material = material
+			parent.add_child(sprite)
+
+
+## True when a patch's [param square] lies on solid cells only, none featured or an inside
+## corner, and within [param clear_depth] of no touched cell's open side.
+func _patch_fits(square: Rect2, featured: Dictionary, clear_depth: float) -> bool:
+	var first := Vector2i((square.position / CELL).floor())
+	var last := Vector2i(((square.end - Vector2.ONE * 0.01) / CELL).floor())
+	for row in range(first.y, last.y + 1):
+		for col in range(first.x, last.x + 1):
+			if col < 0 or row < 0 or col >= grid[0].length() or row >= grid.size():
+				return false
+			if not _solid(col, row) or featured.has(Vector2i(col, row)):
+				return false
+			if _edge_tile(col, row) < 0 and not _inside_corner_tiles(col, row).is_empty():
+				return false
+			var cell := Rect2(Vector2(col, row) * CELL, Vector2.ONE * CELL)
+			if not _solid(col, row - 1) and square.position.y < cell.position.y + clear_depth:
+				return false
+			if not _solid(col, row + 1) and square.end.y > cell.end.y - clear_depth:
+				return false
+			if not _solid(col - 1, row) and square.position.x < cell.position.x + clear_depth:
+				return false
+			if not _solid(col + 1, row) and square.end.x > cell.end.x - clear_depth:
+				return false
+	return true
+
+
+## True for an interior cell (solid, not an edge, not an inside corner): where the large
+## features may go.
 func _fill_cell(col: int, row: int) -> bool:
 	return _solid(col, row) and col >= 0 and row >= 0 and col < grid[0].length() \
 			and row < grid.size() and _edge_tile(col, row) < 0 \
@@ -678,9 +782,10 @@ func _add_middle_features(parent: Node2D) -> Dictionary:
 	return covered
 
 
-## One wall-fill tile over an interior cell, under the rim's edge tiles (their textured
-## cores overlap it by MIDDLE_INSET where they move into the solid).
-func _add_middle_fill(parent: Node2D, col: int, row: int) -> Sprite2D:
+## One wall-fill tile over a solid cell, under the rim's edge tiles. [param masks]: the
+## cell's rim tiles (one for an edge, base and face for an inside corner); the fill is
+## then cut to their solid part, so it never shows in the open air beside an edge.
+func _add_middle_fill(parent: Node2D, col: int, row: int, masks: Array = []) -> Sprite2D:
 	var variant := posmod(hash(Vector2i(col, row)), MIDDLE_FILL_VARIANTS)
 	var sprite := Sprite2D.new()
 	sprite.texture = _texture(BIOME + MIDDLE_FILL + "fill-%02d.png" % variant)
@@ -688,6 +793,20 @@ func _add_middle_fill(parent: Node2D, col: int, row: int) -> Sprite2D:
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL)
 	sprite.z_index = MIDDLE_Z - 1
+	if not masks.is_empty():
+		if _mask_shader == null:
+			_mask_shader = Shader.new()
+			_mask_shader.code = MASK_SHADER
+		var material := ShaderMaterial.new()
+		material.shader = _mask_shader
+		var keys := ["a", "b"]
+		for i in mini(masks.size(), 2):
+			var tile: int = masks[i]
+			material.set_shader_parameter("mask_" + keys[i],
+					_texture(BIOME + MIDDLE_MASKS + "tile-%02d.png" % tile))
+			material.set_shader_parameter("shift_" + keys[i], _middle_inset(tile) / CELL)
+		material.set_shader_parameter("use_b", 1.0 if masks.size() > 1 else 0.0)
+		sprite.material = material
 	parent.add_child(sprite)
 	return sprite
 
@@ -711,6 +830,30 @@ func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_re
 		# left edge at the screen's left at the room's left.
 		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
 		_layers.append([layer, FOREGROUND_SCALE, base])
+		if strip == "foreground-bottom":
+			_add_skirt(layer, texture, image_scale, copies * period)
+
+
+## A strip of the bottom loop's own bottom-row colour hanging under it, one screen tall:
+## when the camera sits lower than the loop's reference height, the loop rises (it
+## scrolls faster than the room) and this keeps the wall fill from showing under it.
+func _add_skirt(layer: Node2D, texture: Texture2D, image_scale: float, width: float) -> void:
+	var image := texture.get_image()
+	if image.is_compressed():
+		image.decompress()
+	var total := Color(0, 0, 0, 0)
+	var y := image.get_height() - 1
+	var samples := 64
+	for i in samples:
+		total += image.get_pixel(int((i + 0.5) * image.get_width() / samples), y)
+	var colour := total / samples
+	colour.a = 1.0
+	var top := texture.get_height() * image_scale - 1.0
+	var skirt := Polygon2D.new()
+	skirt.polygon = PackedVector2Array([Vector2(0, top), Vector2(width, top),
+			Vector2(width, top + VIEW_SIZE.y), Vector2(0, top + VIEW_SIZE.y)])
+	skirt.color = colour
+	layer.add_child(skirt)
 
 
 ## The corridor's close rear wall: a loop just behind the play layer (scroll scale 0.85),
