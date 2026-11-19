@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: "2026-11-18"
+last_updated: "2026-11-19"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -291,7 +291,40 @@ formulas:
 #
 # Required fields: name, status, source, referenced_by, value, unit, added
 
-constants: []
+constants:
+  - name: hazard_pit_depth_min
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by:
+      - design/gdd/ability-gating.md
+    value: 84
+    unit: px
+    notes: "F7. Least height of both dash-pit lips above a hazard floor: hazard_pogo_reach (about 76) + gap_margin (8). Spikes can be pogoed (rule 24); a grapple gap never has a hazard floor."
+    added: 2026-11-19
+  - name: pogo_far_ext
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by: []
+    value: 14
+    unit: px
+    notes: "F7. How far past a gap lip a pogo target is still hit from over the gap: down-attack forward reach 27 (attack_data.tres) - (hitbox_width/2 + gap_margin) = 14 at gap_min. Measured to the target's hit-area edge."
+    added: 2026-11-19
+  - name: pogo_clearance_px
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by: []
+    value: 140
+    unit: px
+    notes: "F7. Column gates: pogo_carry 105 + hitbox_width 10 + down-attack back reach 21 = 136, rounded up. Was 120 before the eighth review (body width only)."
+    added: 2026-11-19
+  - name: save_spacing_max
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by: []
+    value: 7
+    unit: screens
+    notes: "F4. New ground only, counted by screen position; range 7-10; optional branches held to the same limit."
+    added: 2026-11-19
 
 # Example:
 #

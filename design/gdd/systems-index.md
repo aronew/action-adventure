@@ -41,7 +41,7 @@ Notes by area (balanced density):
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (seventh design review 2026-11-18: 2 blockers revised (key 3 window 72-106; gate state Seen + Passed, Passable derived); owner decisions: save spacing counts new ground only, spikes can be pogoed (ability gating to follow, Open Question 20); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (eighth design review 2026-11-19: 1 blocker revised (F7 pogo reach from the down attack's hitbox and the target's hit area; `pogo_clearance_px` 140, `pogo_far_ext` 14); owner decisions: alcove return in the gate room, `save_spacing_max` 7-10 with saves in optional branches, Passed has a pass-line trigger; Open Question 20 resolved; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |

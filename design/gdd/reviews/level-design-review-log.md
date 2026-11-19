@@ -176,3 +176,32 @@ Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da1666
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 7
+Summary: The seventh review's fixes held, and every registry value the GDD restates agrees (145-162, 72-106, the F9 widths). One blocker: F7's gap-gate volume ended `hitbox_width` (10 px) past each lip and the column clearance was body-based. But the down attack's hitbox in `attack_data.tres` reaches 27 px ahead of the centre and 21 px behind it and hits the target's whole Area2D, so a hittable just past a far lip could be pogoed from over the gap. Everything was revised in the same session, with three owner decisions: alcoves get a one-way return in their room, `save_spacing_max` becomes 7-10 with saves in optional branches, and Passed gets a pass-line trigger. The GDD and registry hashes below are of the versions as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (both seventh-review blockers fixed)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24): gap volume and `pogo_clearance_px` ignored the down attack's reach (27 forward, 21 back) and the target's hit area (fixed: `pogo_far_ext` 14, `pogo_clearance_px` 140, examples and criterion re-derived)
+- [RECOMMENDED] Core Rules (rule 24) / Open Question 20: stale after ability gating's second review, which made grapple gaps kill plane only at any depth (fixed: resolved)
+- [RECOMMENDED] Core Rules (rule 2): "no door" vs "a door that opens only from inside"; a drop cannot cross a grapple gap (fixed: one-way return in the gate room, owner)
+- [RECOMMENDED] Formulas (F4): range 5-10 vs the region 1 leg of 7; optional branches unruled (fixed: 7-10, branches held to the limit, owner)
+- [RECOMMENDED] States and Transitions (Gate): Passed had no trigger (fixed: pass line per gate type, leak logged, new criterion, owner)
+- [RECOMMENDED] Acceptance Criteria: rule 8 and rule 13 playtests had no threshold; the 20-minute pass had no pass condition; the F5 timing was [Play] (fixed: 4 of 5 testers, 0 crossings, scripted sim run)
+- [RECOMMENDED] Registry: level-design-owned values were unregistered (fixed: hazard_pit_depth_min, pogo_far_ext, pogo_clearance_px, save_spacing_max added as constants)
+- [RECOMMENDED] Core Rules (rule 11): workshop size only in the criterion (fixed)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); 8 hard upstream GDDs still missing
+- [NICE-TO-HAVE] Ability gating's F11 flight envelope ("no hittable in it") should adopt `pogo_far_ext` at the lips at its re-review
+Reviewed-Content-Hash: design/gdd/level-design.md b6de19ba4d19ad38d37c20fe016ce2a9050d379c
+Reviewed-Content-Hash: design/registry/entities.yaml 557c2b7bbfc9f6faa61ee000cf547fe82f5b0a2f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 02339fc256489a49753b3cbde2cf03d3974c5b21
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
