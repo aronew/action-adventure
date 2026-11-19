@@ -304,18 +304,28 @@ constants:
   - name: pogo_far_ext
     status: active
     source: design/gdd/level-design.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/ability-gating.md
     value: 14
     unit: px
-    notes: "F7. How far past a gap lip a pogo target is still hit from over the gap: down-attack forward reach 27 (attack_data.tres) - (hitbox_width/2 + gap_margin) = 14 at gap_min. Measured to the target's hit-area edge."
+    notes: "F7. How far past a gap lip a pogo target is still hit from over the gap: down-attack forward reach 27 (attack_data.tres) - centre shortfall 18 at gap_min = 9 (11 for a grapple gap at 420), kept at 14 at both lips as a 5 px safety band (ninth review corrected the derivation; value unchanged). Measured to the target's hit-area edge."
     added: 2026-11-19
   - name: pogo_clearance_px
     status: active
     source: design/gdd/level-design.md
     referenced_by: []
-    value: 140
+    value: 250   # was 140 (start-kit run-speed carry); level-design.md ninth design review
     unit: px
-    notes: "F7. Column gates: pogo_carry 105 + hitbox_width 10 + down-attack back reach 21 = 136, rounded up. Was 120 before the eighth review (body width only)."
+    notes: "F7. F2 and F6a column gates, whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
+    added: 2026-11-19
+    revised: 2026-11-19
+  - name: pogo_clearance_f3a_px
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by: []
+    value: 320
+    unit: px
+    notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
     added: 2026-11-19
   - name: save_spacing_max
     status: active

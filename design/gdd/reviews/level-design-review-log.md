@@ -205,3 +205,31 @@ Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b6262
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 6
+Summary: The eighth review's fixes held and every registry value the GDD restates agrees. One blocker: F7's column clearance (140) used the start kit's run-speed pogo carry, but every column gate's earlier kit owns the dash, and a pogo refreshes the air dash (and the air jump once the double jump is owned); a 60 Hz sim puts the carry at about 211 px with the dash and 287 with the F3a kit. Owner chose to widen the clearance per kit and keep the Hollow Knight-style refresh: `pogo_clearance_px` 250, new `pogo_clearance_f3a_px` 320; the sweep criterion now uses each gate's earlier kit with the pogo, and ability gating's sweep includes it. All items revised in the same session; the hashes below are of the versions as reviewed (git HEAD before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (the eighth review's F7 down-attack reach blocker is fixed)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24): column clearance ignored the air dash and air jump a pogo refreshes for the dash-owning earlier kits (fixed: per-kit `pogo_clearance_px` 250 and `pogo_clearance_f3a_px` 320 from a sim; sweep criterion per earlier kit; owner)
+- [RECOMMENDED] Interactions (World state): interface omitted gate Seen/Passed, alcove Found, room Visited, region Entered (fixed; Player controller row added)
+- [RECOMMENDED] Formulas (F4): Output Range "at most 7" stale against range 7-10 (fixed)
+- [RECOMMENDED] Acceptance Criteria (rule 11): "at the gap_min end" not measurable (fixed: at most gap_min + 4 px)
+- [RECOMMENDED] Acceptance Criteria (rule 22): no criterion for "at least two old rooms per key" (fixed)
+- [RECOMMENDED] Formulas (F7): `pogo_far_ext` derivation took the leading edge's shortfall for the centre's; derives to 9 (fixed: 14 kept as a stated safety band)
+- [RECOMMENDED] Core Rules (rule 2): grapple-gap alcove return by a drop cannot cross the chasm (fixed: lever door into a passage beneath the kill plane)
+- [NICE-TO-HAVE] Volume lower bound, Quick reference deps, Elemental palettes row, gaps note, F11 citing `pogo_far_ext` (all fixed); ability gating lists Combat as Soft where level design says Hard (open)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md ba453f960fbe41443b5d8d52a7958b54c9896514
+Reviewed-Content-Hash: design/registry/entities.yaml 9f695b61183a384e292e23f81e231f0dc8341fde
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 02339fc256489a49753b3cbde2cf03d3974c5b21
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
