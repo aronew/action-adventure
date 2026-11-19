@@ -26,7 +26,7 @@ const GROUND_FOG_Z := 7
 const EMBER_Z := 8
 
 ## Blur radius in screen px: the far city a little, the midground less.
-const FAR_BLUR := 3.8
+const FAR_BLUR := 5.0
 const MID_BLUR := 2.0
 
 ## Fog: [colour, density, noise scale (per world px), drift speed, parallax factor,
