@@ -334,7 +334,7 @@ constants:
     referenced_by: []
     value: 48   # range 24-96, Rec; level-design.md tenth design review
     unit: px
-    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash), grown by body half-width, a hard clamp that knockback cannot cross either (twelfth review: take_hit restarts the push on every hit, so pushes stack): grunt 103, skitter 118, brute 59 px. Not in code (enemy_base.gd chases to lose_range, re-homes where a chase stopped and sets unlimited knockback per hit). Registered here until the Enemies GDD exists; that GDD must adopt it."
+    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash), grown by body half-width, a vertical strip for a ground enemy (fourteenth review: the hurt state has no floor-edge check, so a knockback off a ledge could land the enemy in a gate volume below; the placement check compares x-ranges at any height), a hard clamp on every source of horizontal motion (twelfth review: take_hit restarts the push on every hit, so pushes stack; thirteenth review: _state_attack lunges, skitter about 126 px with its slide-out): grunt 103, skitter 118, brute 59 px. Not in code (enemy_base.gd chases to lose_range, re-homes where a chase stopped, sets unlimited knockback per hit and lunges unclamped). Registered here until the Enemies GDD exists; that GDD must adopt it."
     added: 2026-11-19
   - name: save_spacing_max
     status: deprecated

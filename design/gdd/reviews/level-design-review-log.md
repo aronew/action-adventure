@@ -317,3 +317,66 @@ Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The twelfth review's knockback clamp holds and every registry value the GDD restates agrees (52 name lines and the numeric keys checked; leash bounds, knockback_travel, pogo_rise and the clearances re-derived from the enemy .tres files and player_config.tres). One blocker: the hard clamp listed patrol, chase and knockback but not attack lunge. enemy_base.gd's _state_attack sets the lunge speed for the live window and then slides to a stop at hurt_deceleration, so the skitter (280 px/s, 0.25 s) travels about 126 px past the edge of its 118 px bound; a skitter lured to a gate's far side could end inside a gate volume. Owner chose to clamp every source of horizontal motion (lunge stops at the edge); bounds unchanged (grunt 103, skitter 118, brute 59 px) and lunge_travel added as a test-sizing variable. Revised in the same session; the GDD and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 twelfth review: stacked knockback, now a hard clamp)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: attack lunge and its slide-out could carry an enemy past its leash bound (fixed: clamp covers all horizontal motion, lunge_travel variable, lunge edge case, lunge case in the leash unit test and the sweep, registry note, Open Question 21; not in code, an Enemies story; owner)
+- [RECOMMENDED] Tuning Knobs / Acceptance Criteria (rule 8): "Dash gate first seen by" ranged to 900 s against rule 8's 10 minutes, and the criterion hardcoded 600 s (fixed: range 300-600, criterion reads the knob; owner)
+- [RECOMMENDED] Core Rules (rule 24) / F7: volume height worded two ways (fixed: the greater of reach plus pogo_rise and the gate's own height)
+- [RECOMMENDED] Open Questions (18): still carried the withdrawn F4 leg arithmetic (fixed)
+- [ADVISORY] GDD is 77 KB; upstream GDDs other than ability gating still missing; knockback_travel, leash_bound and the pogo_carry figures not registered
+Reviewed-Content-Hash: design/gdd/level-design.md 21ee4ce4ffdef871dcea34745be7c8450049674b
+Reviewed-Content-Hash: design/registry/entities.yaml 575df9498d99081f2c1085b2d72fc7606d79991c
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The thirteenth review's lunge clamp holds and every registry value the GDD restates agrees (about 52 lines checked; leash bounds, knockback_travel, lunge_travel, pogo_rise, the clearances and F5's example re-derived from the enemy .tres files, player_config.tres and attack_data.tres; the enemy hurtbox is body_size, so the half-width growth is right). One blocker: the leash bound was only an x-interval with no vertical extent, and enemy_base.gd's hurt state has no floor-edge check (_floor_ahead guards patrol, chase and lunge only) while take_hit adds hurt_knockback_lift, so a hit near a ledge inside the bound could drop a ground enemy onto a lower floor inside a gate volume with no way back to its spawn point. Owner chose a vertical strip: a ground enemy's bound covers every height and the F7 check rejects any x-overlap with a gate volume's x-range; a floor-edge stop on knockback was offered and not chosen. Revised in the same session; the GDD and registry stamps below are their working-tree versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 thirteenth review: attack lunge, now clamped)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: a knockback off a ledge could land a ground enemy in a gate volume the bound's x-interval did not reach in height (fixed: ground bound is a vertical strip, x-overlap rejected at any height, shelf example, new Edge Case, registry note, Open Question 21; owner)
+- [RECOMMENDED] Core Rules (rule 24) / F7: "position is held inside" the grown bound, while the criterion says hit area (fixed: hit area held inside; centre within patrol_distance + chase_leash of the spawn point)
+- [RECOMMENDED] Acceptance Criteria (rule 9): "not visible from the gate" was [Auto] with no definition (fixed: no unobstructed line to any standing spot within one screen of the gate, through open edges, on collision data)
+- [RECOMMENDED] Tuning Knobs / Acceptance Criteria (rule 8): "Dash gate first seen by" started at its 600 s ceiling (fixed: starts at 420 s)
+- [ADVISORY] GDD is about 80 KB (rule 24 and F7 could move to their own GDD); knockback_travel, lunge_travel, leash_bound and the pogo carries not registered; kiln-city-level-integration.md line 49 still says saves within 7 screens (Open Question 18); the sweep and leash criteria are compound; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md 9d8721ba5cfdd0969485ab20e9e19a2148a01cb7
+Reviewed-Content-Hash: design/registry/entities.yaml 04f1413cfe2d1cc68982153d24c14291e3e47d4e
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: src/enemies/enemy.tscn f72794131df1e34b9aa5a3efaf9e5fa9305cee4f
