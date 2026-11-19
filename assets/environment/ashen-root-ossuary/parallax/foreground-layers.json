@@ -1,0 +1,79 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "layers": [
+    {
+      "name": "foreground-bottom",
+      "file": "foreground-bottom.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "camera_motion_factor": 1.2,
+      "z_order": 10,
+      "repeat_x": true,
+      "repeat_y": false,
+      "repeat_period_x": 3840,
+      "anchor": "full 1080px screen-height canvas; keep top at y=0",
+      "optional_half_pieces": [
+        "segments/foreground-bottom-A.png",
+        "segments/foreground-bottom-B.png"
+      ],
+      "half_piece_canvas": [
+        1920,
+        1080
+      ],
+      "half_piece_sequence": "A then B; place 1920px apart; repeat pair every 3840px"
+    },
+    {
+      "name": "foreground-top",
+      "file": "foreground-top.png",
+      "canvas": [
+        3840,
+        1080
+      ],
+      "camera_motion_factor": 1.2,
+      "z_order": 11,
+      "repeat_x": true,
+      "repeat_y": false,
+      "repeat_period_x": 3840,
+      "anchor": "full 1080px screen-height canvas; keep top at y=0",
+      "optional_half_pieces": [
+        "segments/foreground-top-A.png",
+        "segments/foreground-top-B.png"
+      ],
+      "half_piece_canvas": [
+        1920,
+        1080
+      ],
+      "half_piece_sequence": "A then B; place 1920px apart; repeat pair every 3840px"
+    },
+    {
+      "name": "border-left",
+      "file": "border-left.png",
+      "canvas": [
+        512,
+        1080
+      ],
+      "z_order": 12,
+      "repeat_x": false,
+      "optional": true,
+      "anchor": "room left boundary"
+    },
+    {
+      "name": "border-right",
+      "file": "border-right.png",
+      "canvas": [
+        512,
+        1080
+      ],
+      "z_order": 12,
+      "repeat_x": false,
+      "optional": true,
+      "anchor": "room right boundary"
+    }
+  ],
+  "notes": "Top and bottom loop independently. Their full 1080px canvases align at y=0; do not additionally shift the bottom image downward. Artwork is confined to the top or bottom 435px, as requested in v5. Only these two foreground strips repeat; background, midground and side borders remain finite. Borders are separate optional room pieces. Use straight-alpha blending; foregrounds are decoration, not collision geometry. Brighter variant: RGB multiplied by 2.8; alpha and shapes preserved exactly."
+}

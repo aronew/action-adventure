@@ -1,0 +1,51 @@
+{
+  "canvas": [
+    1920,
+    1080
+  ],
+  "layer_order": "background, midground, gameplay, foreground",
+  "camera_formula": "screen_position = world_anchor - camera_delta * camera_motion_factor",
+  "gameplay_factor": 1,
+  "layers": [
+    {
+      "file": "background.png",
+      "name": "background",
+      "camera_motion_factor": 0.15,
+      "z_order": -30,
+      "opacity": 1,
+      "repeat_x": false,
+      "repeat_y": false,
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "file": "midground.png",
+      "name": "midground",
+      "camera_motion_factor": 0.5,
+      "z_order": -20,
+      "opacity": 1,
+      "repeat_x": false,
+      "repeat_y": false,
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "file": "foreground.png",
+      "name": "foreground",
+      "camera_motion_factor": 1.2,
+      "z_order": 10,
+      "opacity": 1,
+      "repeat_x": false,
+      "repeat_y": false,
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  ],
+  "notes": "Finite room layers; NOT seamless/repeating textures. Values are tuning defaults, not engine-specific scroll-scale fields. Full-size alpha PNGs use straight alpha. Generated art was normalized to the common canvas; see validation.json for native sizes."
+}

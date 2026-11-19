@@ -1,0 +1,346 @@
+{
+  "source_image": "AssetSheet.png",
+  "source_size": [
+    1254,
+    1254
+  ],
+  "notes": "Freeform props use native artwork sizes and bounds, not 512px terrain grid. Source rectangles allow exact extraction; exports add 8px transparent padding. Pivots are suggestions, not authored collision data.",
+  "sprites": [
+    {
+      "id": 0,
+      "name": "platform-short",
+      "file": "platform-short.png",
+      "source_rect": {
+        "x": 0,
+        "y": 7,
+        "width": 260,
+        "height": 283
+      },
+      "export_padding": 8,
+      "export_size": [
+        276,
+        299
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 1,
+      "name": "platform-medium",
+      "file": "platform-medium.png",
+      "source_rect": {
+        "x": 260,
+        "y": 0,
+        "width": 311,
+        "height": 290
+      },
+      "export_padding": 8,
+      "export_size": [
+        327,
+        306
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 2,
+      "name": "platform-long",
+      "file": "platform-long.png",
+      "source_rect": {
+        "x": 571,
+        "y": 9,
+        "width": 396,
+        "height": 281
+      },
+      "export_padding": 8,
+      "export_size": [
+        412,
+        297
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 3,
+      "name": "terrain-block",
+      "file": "terrain-block.png",
+      "source_rect": {
+        "x": 967,
+        "y": 15,
+        "width": 286,
+        "height": 275
+      },
+      "export_padding": 8,
+      "export_size": [
+        302,
+        291
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 4,
+      "name": "wall-left",
+      "file": "wall-left.png",
+      "source_rect": {
+        "x": 0,
+        "y": 290,
+        "width": 313,
+        "height": 339
+      },
+      "export_padding": 8,
+      "export_size": [
+        329,
+        355
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 5,
+      "name": "wall-right",
+      "file": "wall-right.png",
+      "source_rect": {
+        "x": 313,
+        "y": 290,
+        "width": 264,
+        "height": 339
+      },
+      "export_padding": 8,
+      "export_size": [
+        280,
+        355
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 6,
+      "name": "terrain-corner",
+      "file": "terrain-corner.png",
+      "source_rect": {
+        "x": 577,
+        "y": 290,
+        "width": 340,
+        "height": 339
+      },
+      "export_padding": 8,
+      "export_size": [
+        356,
+        355
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 7,
+      "name": "ceiling-overhang",
+      "file": "ceiling-overhang.png",
+      "source_rect": {
+        "x": 917,
+        "y": 290,
+        "width": 336,
+        "height": 339
+      },
+      "export_padding": 8,
+      "export_size": [
+        352,
+        355
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 8,
+      "name": "rocks-small",
+      "file": "rocks-small.png",
+      "source_rect": {
+        "x": 0,
+        "y": 629,
+        "width": 257,
+        "height": 311
+      },
+      "export_padding": 8,
+      "export_size": [
+        273,
+        327
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 9,
+      "name": "rocks-large",
+      "file": "rocks-large.png",
+      "source_rect": {
+        "x": 257,
+        "y": 629,
+        "width": 369,
+        "height": 311
+      },
+      "export_padding": 8,
+      "export_size": [
+        385,
+        327
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 10,
+      "name": "decoration-low",
+      "file": "decoration-low.png",
+      "source_rect": {
+        "x": 626,
+        "y": 629,
+        "width": 314,
+        "height": 311
+      },
+      "export_padding": 8,
+      "export_size": [
+        330,
+        327
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 11,
+      "name": "decoration-tall",
+      "file": "decoration-tall.png",
+      "source_rect": {
+        "x": 940,
+        "y": 629,
+        "width": 314,
+        "height": 311
+      },
+      "export_padding": 8,
+      "export_size": [
+        330,
+        327
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 12,
+      "name": "hanging-decoration",
+      "file": "hanging-decoration.png",
+      "source_rect": {
+        "x": 0,
+        "y": 940,
+        "width": 251,
+        "height": 314
+      },
+      "export_padding": 8,
+      "export_size": [
+        267,
+        330
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 13,
+      "name": "ruin-prop",
+      "file": "ruin-prop.png",
+      "source_rect": {
+        "x": 251,
+        "y": 940,
+        "width": 340,
+        "height": 314
+      },
+      "export_padding": 8,
+      "export_size": [
+        356,
+        330
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 14,
+      "name": "hazard-straight",
+      "file": "hazard-straight.png",
+      "source_rect": {
+        "x": 591,
+        "y": 940,
+        "width": 334,
+        "height": 314
+      },
+      "export_padding": 8,
+      "export_size": [
+        350,
+        330
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 15,
+      "name": "hazard-curved",
+      "file": "hazard-curved.png",
+      "source_rect": {
+        "x": 925,
+        "y": 940,
+        "width": 328,
+        "height": 314
+      },
+      "export_padding": 8,
+      "export_size": [
+        344,
+        330
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    }
+  ]
+}
