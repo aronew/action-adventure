@@ -327,6 +327,14 @@ constants:
     unit: px
     notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
     added: 2026-11-19
+  - name: chase_leash
+    status: active
+    source: design/gdd/level-design.md
+    referenced_by: []
+    value: 48   # range 24-96, Rec; level-design.md tenth design review
+    unit: px
+    notes: "F7, rule 24. How far past its patrol range a chasing enemy may follow the Seeker; it walks back to its spawn point when it loses the Seeker (no re-homing where a chase stopped). Leash bound = spawn_x +/- (patrol_distance + chase_leash + knockback_travel), grown by body half-width: grunt 119, skitter 144, brute 63 px. Not in code (enemy_base.gd chases to lose_range). Registered here until the Enemies GDD exists; that GDD must adopt it."
+    added: 2026-11-19
   - name: save_spacing_max
     status: active
     source: design/gdd/level-design.md

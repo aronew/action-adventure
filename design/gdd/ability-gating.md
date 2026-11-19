@@ -375,7 +375,7 @@ The first review's example chain (anchors at 147 and 293 px) is **rejected**. `f
 |--------|-------------|------------------------|------------|
 | Player controller and input | Hard | The movement figures every formula reads (`player_config.tres`); the dash state (F10); and the controller changes this system requires: dash and wall cling gating, the `no_cling` skip, gate anchor spend, no-refresh and ordered targeting | No (code exists) |
 | World state | Hard | Storage of keys owned and panes broken, written at the moment of change and restored on load | No (provisional) |
-| Combat | Soft | The `hittable` group, so panes stay out of it and the pogo cannot use them | No (code exists) |
+| Combat | Hard | The `hittable` group, so panes stay out of it and the pogo cannot use them; the pogo itself (`pogo_speed`, the down attack's hitbox, the air moves it refreshes), which F1's hazard-pit rule, F3b's kill-plane rule and the movement sweep all read, so a change to it changes which gates leak (matches level design, 2026-11-19) | No (code exists) |
 
 **Downstream (these need this system):**
 

@@ -233,3 +233,32 @@ Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b6262
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/player_combat.gd 789723518f859e962cba6f8e183d8fcf7212243d
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 5
+Summary: The ninth review's per-kit F7 clearance holds and re-derives from attack_data.tres and player_config.tres; every registry value the GDD restates agrees. One blocker: rule 24 and F7 bounded enemies by spawn and patrol bounds, but enemy_base.gd chases the Seeker out to lose_range (240-280 px), stops only at floor edges and re-homes where a lost chase stops, so an enemy placed outside a gate volume can be lured into it (a skitter to a dash gap's far lip; any chaser under a ledge column). Owner chose to leash the chase to the spawn point: enemies are measured by their leash bound, spawn +/- (patrol_distance + chase_leash 48 + knockback_travel), grown by half-width. All items revised in the same session; the hashes below are of the revised files' versions as reviewed (git HEAD before the revisions), so the next review runs in full.
+Prior verdict resolved: Yes (the ninth review's F7 per-kit clearance blocker is fixed)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: chasing enemies leave their patrol bounds and can be lured into gate volumes (fixed: leash bound, `chase_leash` 48 px registered, boundary criterion, sweep lures each enemy to its leash edges, leash unit test, Open Question 21; leash not in code, an Enemies story; owner)
+- [RECOMMENDED] Dependencies: ability gating listed Combat as Soft where level design says Hard (fixed in ability-gating.md: Hard)
+- [RECOMMENDED] Status / rule 24 / F4 / F7: review history woven into rules (fixed: moved out; decision tags kept)
+- [RECOMMENDED] Tuning Knobs: absent (advisory at standard) (fixed: 11-knob table, new ranges marked Rec)
+- [RECOMMENDED] Player Fantasy: absent (advisory at standard) (fixed)
+- [RECOMMENDED] Acceptance Criteria (rule 13): funnel "first 5-10 rooms" had no defined bound (fixed: funnel length k per region)
+- [ADVISORY] Upstream GDDs other than ability gating still missing; GDD is 74 KB
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/gdd/level-design.md 933369ab033e08191d5245f88b4adb68ac8c5ecc
+Reviewed-Content-Hash: design/registry/entities.yaml f8bf7a3e1c6f3551b787f63e74ad0cf1287dc018
+Reviewed-Content-Hash: design/gdd/ability-gating.md 8755589bf5ec7f0e76e6544671c5e912ed13d98b
