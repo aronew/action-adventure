@@ -121,6 +121,34 @@ const CORRIDOR_HANGING_PROPS := [
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
+## Middle foreground (the owner's kit in middle-foreground/): hand-placed rock pieces
+## between the playable terrain and the dark strips, moving at the kit's own 1.06
+## (layer-settings.json), drawn over the player. Each piece: file in pieces/, the left
+## and top of its solid shape in the world, its size (world px per 512 px cell, scaled
+## evenly) and optionally the x it lines up for: pieces that must join (the two arch
+## halves) share one, so they drift together as one shape. Kept to the room's edges, the pit's inside corners, the black mass
+## under the high ledge and an arch over the corridor's mouth, clear of the main paths.
+const MIDDLE_SCALE := Vector2(1.06, 1.06)
+const MIDDLE_Z := 5
+const MIDDLE_PIECES := [
+	["07-hanging-overhang", -4.0, 20.0, 120.0],
+	["03-curved-column", -70.0, 160.0, 150.0],
+	["11-rounded-mound", -40.0, 280.0, 130.0],
+	["12-concave-left", 548.0, 277.0, 90.0],
+	["13-concave-right", 736.0, 277.0, 90.0],
+	["11-rounded-mound", 1170.0, 268.0, 170.0],
+	["03-curved-column", 1340.0, 175.0, 180.0],
+	["14-arch-left", 1345.0, 40.0, 120.0, 1448.0],
+	["15-arch-right", 1440.0, 44.0, 120.0, 1448.0],
+]
+## Solid bounds of each middle-foreground piece (alpha over half), in its 512 px cell:
+## left, top, right, bottom.
+const MIDDLE_BOUNDS := {
+	"03-curved-column": [36, 18, 475, 495], "07-hanging-overhang": [18, 57, 495, 457],
+	"11-rounded-mound": [16, 82, 496, 429], "12-concave-left": [18, 19, 495, 493],
+	"13-concave-right": [18, 19, 495, 492], "14-arch-left": [19, 16, 493, 495],
+	"15-arch-right": [18, 35, 496, 478],
+}
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -191,6 +219,7 @@ func _ready() -> void:
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], corridor_ceiling - bounds[1] * s - PROP_SINK)
 	_add_foreground(world)
+	_add_middle_foreground(world)
 
 	var player: Player = PLAYER_SCENE.instantiate()
 	player.position = SPAWN_POINT
@@ -508,6 +537,33 @@ func _blend_mask(parent: Node2D, x0: float, x1: float, fade_in_left: bool, z: in
 	mask.polygons = [PackedInt32Array([0, 1, 4, 5]), PackedInt32Array([1, 2, 3, 4])]
 	parent.add_child(mask)
 	return mask
+
+
+## The middle-foreground pieces, each on its own layer at the kit's scroll scale. A
+## piece sits on its world spot when the camera looks straight at it (its centre, kept
+## inside the camera's limits) and drifts slightly with the camera elsewhere.
+func _add_middle_foreground(parent: Node2D) -> void:
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	for piece in MIDDLE_PIECES:
+		var bounds: Array = MIDDLE_BOUNDS[piece[0]]
+		var k: float = piece[3] / 512.0
+		var layer := Node2D.new()
+		layer.z_index = MIDDLE_Z
+		parent.add_child(layer)
+		var sprite := Sprite2D.new()
+		sprite.texture = _texture(BIOME + "middle-foreground/pieces/%s.png" % piece[0])
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * k
+		var spot := Vector2(piece[1] - bounds[0] * k, piece[2] - bounds[1] * k)
+		layer.add_child(sprite)
+		var piece_center: Vector2 = spot + Vector2(256.0, 256.0) * k
+		if piece.size() > 4:
+			piece_center.x = piece[4]
+		var look := piece_center.clamp(center_min, center_max)
+		# position = centre * (1 - scale) + base, equal to the world spot at `look`.
+		_layers.append([layer, MIDDLE_SCALE, spot - look * (Vector2.ONE - MIDDLE_SCALE)])
+		sprite.position = Vector2.ZERO
 
 
 ## A layer of [param copies] side-by-side copies of one region of a texture. With

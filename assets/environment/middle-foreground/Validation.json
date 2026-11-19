@@ -1,0 +1,146 @@
+[
+  {
+    "biome": "Drowned-Bell-Sanctum",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1135588,
+    "partial": 113500,
+    "opaqueBlack": 906741,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  },
+  {
+    "biome": "Amber-Hive-Catacombs",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1068196,
+    "partial": 97172,
+    "opaqueBlack": 1010890,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  },
+  {
+    "biome": "Ashen-Root-Ossuary",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1042824,
+    "partial": 110858,
+    "opaqueBlack": 987730,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  },
+  {
+    "biome": "Cinderheart-Caldera",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1059130,
+    "partial": 126180,
+    "opaqueBlack": 1159586,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  },
+  {
+    "biome": "Marrow-Vault",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1185822,
+    "partial": 118309,
+    "opaqueBlack": 1085161,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  },
+  {
+    "biome": "Amethyst-Echo-Grotto",
+    "pieces": 16,
+    "atlas": [
+      2048,
+      2048
+    ],
+    "cell": [
+      512,
+      512
+    ],
+    "alphaZero": 1179775,
+    "partial": 129045,
+    "opaqueBlack": 1024882,
+    "coreAdjacencyPixelChecks": 6144,
+    "atlasCropsMatchPieces": true,
+    "sourceResolution": [
+      1254,
+      1254
+    ],
+    "rimGradeRelativeToGeneratedSource": 0.78,
+    "extraSeams": "Free placement, not Wang autotiles",
+    "runtimeEngineTested": false
+  }
+]
