@@ -51,7 +51,12 @@ func _process(delta: float) -> void:
 	if _shake_left > 0.0:
 		shake_offset = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) \
 				* _shake_size * (_shake_left / _shake_duration)
-	offset = _lead + Vector2(0.0, _dip) + shake_offset
+	# Look-ahead, fall lead and landing dip move the camera's position, so the room's
+	# limits (and any drag margins) still apply: a Camera2D offset may go past its limits,
+	# which showed the void below a room's floor on landing. Only the brief shake stays an
+	# offset, so it still reads inside a drag window.
+	position = _lead + Vector2(0.0, _dip)
+	offset = shake_offset
 
 
 func _on_player_landed(impact_speed: float) -> void:
