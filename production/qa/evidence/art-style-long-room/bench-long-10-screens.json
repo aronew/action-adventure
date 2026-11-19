@@ -1,0 +1,70 @@
+{
+  "cold_build_ms": 459.541,
+  "cold_first_frame_ms": 751.217,
+  "label": "long",
+  "memory_after_reload": {
+    "buffer_mem_mb": 5.8576774597168,
+    "nodes": 524.0,
+    "objects": 2532.0,
+    "static_mem_mb": 48.0166606903076,
+    "texture_mem_mb": 99.201416015625,
+    "video_mem_mb": 142.063949584961
+  },
+  "memory_after_sweep": {
+    "buffer_mem_mb": 5.8576774597168,
+    "nodes": 524.0,
+    "objects": 2534.0,
+    "static_mem_mb": 48.4084644317627,
+    "texture_mem_mb": 99.201416015625,
+    "video_mem_mb": 142.063949584961
+  },
+  "memory_settled": {
+    "buffer_mem_mb": 5.8576774597168,
+    "nodes": 524.0,
+    "objects": 2532.0,
+    "static_mem_mb": 47.9574432373047,
+    "texture_mem_mb": 99.201416015625,
+    "video_mem_mb": 142.063949584961
+  },
+  "room": "res://src/test_rooms/art_style_long_room.tscn",
+  "room_size_px": "(2412.0, 540.0)",
+  "sweep": {
+    "draw_calls": {
+      "max": 77.0,
+      "mean": 35.4285714285714,
+      "median": 34.0,
+      "p95": 72.0
+    },
+    "frames": 600,
+    "objects_drawn": {
+      "max": 203.0,
+      "mean": 160.21512605042,
+      "median": 159.0,
+      "p95": 200.0
+    },
+    "render_cpu_ms": {
+      "max": 0.426999986171722,
+      "mean": 0.186942857278495,
+      "median": 0.175999999046326,
+      "p95": 0.263999998569489
+    },
+    "render_gpu_ms": {
+      "max": 141.686996459961,
+      "mean": 96.7718840014033,
+      "median": 95.177001953125,
+      "p95": 114.161003112793
+    },
+    "wall_ms": {
+      "max": 603.687,
+      "mean": 124.513574789916,
+      "median": 120.571,
+      "p95": 143.471
+    }
+  },
+  "warm_build_ms": 325.17,
+  "warm_first_frame_ms": 476.964,
+  "window_size": [
+    1920,
+    1080
+  ]
+}

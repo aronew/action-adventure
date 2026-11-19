@@ -2,7 +2,7 @@
 
 > **Status**: Draft (approved by the project owner 2026-11-18; director gates skipped, review mode lean)
 > **Created**: 2026-11-18
-> **Last Updated**: 2026-11-18
+> **Last Updated**: 2026-11-19
 > **Source Concept**: design/game-brief.md (no game-concept.md; the brief is the design record up to this point)
 > **Research**: design/research/metroidvania-world-design.md and research_notes/Metroidvania world design research/
 
@@ -35,13 +35,13 @@ Notes by area (balanced density):
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
 | 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
-| 9 | Ability gating | Progression | MVP | In Review (first design review 2026-11-18: NEEDS REVISION, 3 blockers revised (F11 gate-anchor spend rule and last-flight bound, pane breaks on band entry); F2 window now 72-106; awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft) |
+| 9 | Ability gating | Progression | MVP | In Review (second design review 2026-11-19: NEEDS REVISION, 3 blockers revised (pogoable spikes: F1 hazard floor at hazard_pit_depth_min 84, F3b kill plane only; climb restores air moves, no climbable in a grapple gate's flight envelope; F11 reaches by anchor height, old example chain rejected); awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat (soft); supplies Terrain pipeline its `no_cling` and pane materials |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 12 | Spell casts | Gameplay | Alpha | Not Started | — | Player controller, Combat |
 | 13 | Elemental palette power-ups | Gameplay | Alpha | Not Started | — | Spell casts, Ability gating, Level design |
 | 14 | Dream Seeker empowered state | Gameplay | Full Vision | Not Started | — | Elemental palette power-ups |
-| 15 | Level design and world layout | World | MVP | In Review (seventh design review 2026-11-18: 2 blockers revised (key 3 window 72-106; gate state Seen + Passed, Passable derived); owner decisions: save spacing counts new ground only, spikes can be pogoed (ability gating to follow, Open Question 20); awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
+| 15 | Level design and world layout | World | MVP | In Review (tenth design review 2026-11-19: 1 blocker revised (chasing enemies leashed to their spawn point; rule 24 and F7 measure each enemy by its leash bound, `chase_leash` 48 px); owner decision: leash the chase; Tuning Knobs and Player Fantasy added; awaiting re-review. Ninth design review 2026-11-19: 1 blocker revised (F7 column clearance per earlier kit, since a pogo refreshes the air dash and air jump: `pogo_clearance_px` 250, `pogo_clearance_f3a_px` 320); owner decision: widen per kit, keep the refresh; awaiting re-review. Eighth design review 2026-11-19: 1 blocker revised (F7 pogo reach from the down attack's hitbox and the target's hit area; `pogo_clearance_px` 140, `pogo_far_ext` 14); owner decisions: alcove return in the gate room, `save_spacing_max` 7-10 with saves in optional branches, Passed has a pass-line trigger; Open Question 20 resolved; awaiting re-review) | design/gdd/level-design.md | Player controller, Combat, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state |
 | 16 | Fast travel (inferred) | World | Full Vision | Not Started | — | Rooms and transitions, World state, Level design |
 | 17 | World state (inferred) | Persistence | MVP | Not Started | — | Player controller |
 | 18 | Save points and save/load | Persistence | MVP | Not Started | — | World state, Rooms and transitions, Level design |
@@ -107,7 +107,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 2. Guard-break: Combat.
 3. Enemies: Combat, Health/damage/death.
 4. Bosses: Guard-break, Enemies.
-5. Ability gating: Player controller, World state.
+5. Ability gating: Player controller, World state, Combat (soft). Terrain pipeline builds the `no_cling` and bisque pane materials it defines (a contract, not a design-order dependency: the pipeline stays Foundation).
 6. Level design and world layout: Player controller, Rooms and transitions, Terrain pipeline, Ability gating, Bosses, Enemies, World state.
 7. Save points and save/load: World state, Rooms and transitions.
 8. Collectible upgrades: World state, Level design.
