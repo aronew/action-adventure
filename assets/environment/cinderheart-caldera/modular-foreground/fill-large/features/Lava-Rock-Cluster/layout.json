@@ -1,0 +1,22 @@
+{
+  "canvas": [
+    1024,
+    1024
+  ],
+  "cell": [
+    512,
+    512
+  ],
+  "parts": [
+    [
+      "tiles/part-0.png",
+      "tiles/part-1.png"
+    ],
+    [
+      "tiles/part-2.png",
+      "tiles/part-3.png"
+    ]
+  ],
+  "outer_edges_match_all_upright_fill_variants": true,
+  "notes": "Place the whole 2×2 feature together. Its four parts are not freely interchangeable fill variants."
+}

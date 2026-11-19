@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset version="1.10" tiledversion="1.10.2" name="Cinderheart-Textured-Foreground" tilewidth="512" tileheight="512" tilecount="49" columns="7"><properties><property name="decorative" type="bool" value="true"/><property name="camera_motion_factor" type="float" value="1.2"/></properties><image source="ForegroundTileSet-Textured.png" width="3584" height="3584"/></tileset>

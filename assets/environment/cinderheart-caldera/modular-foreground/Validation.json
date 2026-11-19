@@ -1,0 +1,28 @@
+{
+  "atlas": [
+    3584,
+    3584
+  ],
+  "grid": [
+    7,
+    7
+  ],
+  "tile_size": [
+    512,
+    512
+  ],
+  "tile_count": 49,
+  "tile_crops_match": true,
+  "main_section_count": 8,
+  "sections_overlap_pixels": 0,
+  "transparent_pixels": 2727092,
+  "opaque_black_pixels": 5101523,
+  "partial_alpha_pixels": 265472,
+  "grade_RGB_scale": 0.55,
+  "source_canvas": [
+    1254,
+    1254
+  ],
+  "matching": "same grid, tile IDs, section bounds; redrawn edge contours differ",
+  "engine_tested": false
+}
