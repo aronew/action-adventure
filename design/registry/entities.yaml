@@ -291,6 +291,34 @@ formulas:
     notes: "Withdrawn 2026-11-19 (terrain-pipeline.md first design review, owner): a distance between on-grid edges is whole tiles, so the raw band and the rounded band give the same answer, and for off-grid hit-area edges (pogo_far_ext) rounding would tighten a band level design owns. Level design's bands (250, 320, 14) are used as written."
     added: 2026-11-19
     revised: 2026-11-19
+  - name: transition_time
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+    variables:
+      - fade_out_time
+      - load_left
+      - fade_in_time
+    output_range: [0.2, null]
+    expression: "transition_time = fade_out_time + max(0, load_left) + fade_in_time"
+    notes: "R3. s; 0.35 s for a preloaded neighbour at fade_out_time 0.15 and fade_in_time 0.2 (ranges 0.1-0.4 each); the world is paused only while dark; a loading mark shows after load_wait_notice 0.5 s of dark."
+    added: 2026-11-19
+    revised: ""
+  - name: preload_deadline
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+    variables:
+      - d_min
+      - dash_speed
+      - load_time
+    output_range: [0, null]
+    expression: "t_reach(exit) = d_min(exit) / dash_speed; exit listed when t_reach < load_time(target)"
+    notes: "R5. Advisory room check, lists exits for level design, never refuses a room. dash_speed read from player_config.tres (370); biome first load 0.75-1.07 s measured in the container (level design Open Question 22)."
+    added: 2026-11-19
+    revised: ""
 
 # Example:
 #
@@ -396,6 +424,16 @@ constants:
     value: 4
     unit: px
     notes: "Level design rule 25 (range 2-6, Rec). How far painted trim or dressing may cover the collision edge at a gate or no_cling face, at game scale; measured by terrain pipeline T3 (alpha_solid 0.5). Registered 2026-11-19 by the terrain pipeline GDD."
+    added: 2026-11-19
+  - name: enemy_return_delay
+    status: active
+    source: design/gdd/rooms-and-transitions.md
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md
+      - design/gdd/level-design.md
+    value: 2
+    unit: s
+    notes: "Rooms and transitions Edge Cases (range 0.5-5, Rec). An enemy knocked out of its room through an open bottom edge or a pit is removed at the room's bounds and reappears at its spawn point after this delay; level design Edge Cases asked for it. The Enemies GDD must adopt it."
     added: 2026-11-19
 
 # Example:

@@ -29,7 +29,7 @@ Notes by area (balanced density):
 |---|-------------|----------|----------|--------|------------|------------|
 | 1 | Player controller and input | Core | MVP | Implemented (no GDD) | — (brief) | — |
 | 2 | Camera | Core | MVP | Implemented (follow, look-ahead, shake); room framing not started | — (brief) | Player controller |
-| 3 | Rooms and transitions (inferred) | Core | MVP | Not Started | — | Player controller, Camera, Terrain pipeline |
+| 3 | Rooms and transitions (inferred) | Core | MVP | Designed (2026-11-19, lean, standard; pending `/design-review` in a fresh session) | `design/gdd/rooms-and-transitions.md` | Player controller, Camera, Terrain pipeline, World state (soft) |
 | 4 | Terrain pipeline (inferred) | Core | MVP | In Review (sixth design review 2026-11-19, full: MAJOR REVISION NEEDED, 6 blockers (T3 failed at concave corners; T5 "mass" undefined so attached ledges never moved; a one-tile move flagged props and stranded records; `dressed` deadlocked on the stored flag; T3 units undefined; spawn points fingerprinted but not in rule 13), all revised the same day by restructuring: guarantees stay in the GDD, mechanics moved to `docs/architecture/terrain-tools-spec.md`. GDD frozen until the prototype room runs its fixtures; re-review after that) | design/gdd/terrain-pipeline.md | — |
 | 5 | Combat | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller, Health/damage/death |
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
@@ -99,7 +99,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 1. Camera: depends on Player controller.
 2. Health, damage and death: depends on Player controller.
 3. World state: depends on Player controller (owns the ability flags today).
-4. Rooms and transitions: depends on Player controller, Camera, Terrain pipeline.
+4. Rooms and transitions: depends on Player controller, Camera, Terrain pipeline; World state (soft: saved object states applied when a room is rebuilt).
 
 ### Feature Layer (depends on core)
 
@@ -182,11 +182,11 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 3 (level design, ability gating, terrain pipeline) |
-| Design docs reviewed | 2 (level design, ability gating) |
+| Design docs started | 4 (level design, ability gating, terrain pipeline, rooms and transitions) |
+| Design docs reviewed | 3 (level design, ability gating, terrain pipeline) |
 | Design docs approved | 2 (level design, ability gating) |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
-| MVP systems designed | 3/16 (terrain pipeline designed; ability gating and level design approved) |
+| MVP systems designed | 4/16 (rooms and transitions designed; terrain pipeline in review; ability gating and level design approved) |
 | Vertical Slice systems designed | 0/4 |
 
 ---
