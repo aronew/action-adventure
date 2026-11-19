@@ -1,0 +1,3 @@
+Newly drawn biome-material terrain, based on the approved mock-up. This replaces the earlier geometry-preserving Mossy recolor.
+The exported atlas is 3584 x 3584 with the same 7 x 7 / 512px slicing grid and tile file names. The new silhouettes, painted edges and holes differ from the original; old collision outlines and autotile behavior are not automatically valid.
+Native generated artwork: (1254, 1254). The larger atlas is a normalized export, not a claim of newly painted 3584px detail. TerrainArtwork-Native.png is included.

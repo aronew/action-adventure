@@ -49,6 +49,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 
 ## Look and references
 - Look: 2D pixel side view using the itch.io character pack, in the Bone palette. Sword FX on their own layer, sparks and glow on hits. The other palettes (Void, Ember, Frost) and the Dream Seeker are for power-ups later.
+- World art (you chose, 2026-11-18): painted, high-resolution environments (the six-biome pack; Cinderheart Caldera first, in `assets/environment/`) with the pixel-art Seeker and enemies drawn at a whole-number scale (4x) with crisp filtering. The game moves from a 480x270 base to 1920x1080 for the world; a test room is built to judge the mix before any other change.
 - References: Nine Sols (level design, per your words).
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
