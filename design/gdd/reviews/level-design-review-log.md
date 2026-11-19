@@ -86,3 +86,93 @@ Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 3 | Recommended: 10
+Summary: The fourth review's fixes held: the F1-F3 figures and every boundary criterion re-derive, the config and pogo values match, and the controller is unchanged. This first read of the real region 1 layout (Kiln City lore merged) found three gaps the rules never closed: no minimum room size for double-jump and grapple gates (Saggar Rows and Ropewalk Stair are 480 px wide and fail F8 and F3b), a rule 15 shortcut clause the layout fails, and an F4 count that dropped both save rooms and understated the walk by up to 4 screens. All 3 blockers and recommendations 1, 4-8 and the dependency and signature items were revised in the same session after the owner's decisions (widen rooms; save near, loop returns; count by screen position; dash workshop at the low end of the F1 window). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (all 3 prior blockers fixed; prior open recommendations on rule 1 screen multiples, no-backward states and lore status addressed or superseded)
+Findings:
+- [BLOCKING] Formulas (F3b, F8) / Core Rules 1-2: no minimum room footprint; Saggar Rows (1x2) double-jump gate and Ropewalk Stair (1x3) grapple gap cannot meet F8 or F3b in 480 px (fixed: rule 26, F9; rooms to be widened in the layout, Open Question 18)
+- [BLOCKING] Detailed Design (rule 15) / Acceptance Criteria: "arena within one room of a shortcut back to that save" is ambiguous and the draft layout fails the literal reading (S1 returns to N2, S3 to N4) (fixed: save near, loop returns)
+- [BLOCKING] Formulas (F4): excluding both save rooms counts a multi-screen save room as 0; N2 to N3 is counted 2 but walks up to about 8 (fixed: count by screen position)
+- [RECOMMENDED] Detailed Design (rule 9): "3 rooms" counted in rooms or steps (fixed: graph edges)
+- [RECOMMENDED] Dependencies: Combat (pogo, `hittable`) missing; Enemies soft but F7 needs spawn and patrol bounds (fixed; systems index updated)
+- [RECOMMENDED] Acceptance Criteria: "by any means in the kit" and "never crosses" are [Play] absence claims; "one objective" undefined (fixed: scripted replay, defined criterion)
+- [RECOMMENDED] Detailed Design (rule 11): "smaller instance" meaningless for the dash (17 px window) (fixed: per-key definition)
+- [RECOMMENDED] Detailed Design (rule 10): says boss (a Keeper) but key 1 comes from a mini-boss Keeper (fixed)
+- [RECOMMENDED] Core Rules / Visual-Audio: no_cling candidate (thorn vines, green) collides with the reserved copper-green hue and the Mossy Cavern look (fixed: candidates revised; art bible decides)
+- [RECOMMENDED] Formulas (F6a) / rule 7: which walls carry the wall-cling signature (open: Open Question 19)
+- [RECOMMENDED] Integration doc: Cinder moths in room 5 vs rule 24; check list lacks rules 24-26 (open: Open Question 18, narrative side owns the file)
+- [RECOMMENDED] Systems index: stale "lore not yet provided" (fixed)
+- [RECOMMENDED] Carried over: no consolidated Tuning Knobs or Player Fantasy (advisory); Game Feel targets not acceptance criteria; enemy respawns deferred to the Enemies GDD (open)
+Reviewed-Content-Hash: design/gdd/level-design.md 96e520f7831cb8d5a7032a202e3e6218126009dc
+Reviewed-Content-Hash: design/registry/entities.yaml dfeacb02917f751cb1dfd88cf490c7ec3d8d2d0f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 8
+Summary: The fifth review's fixes landed (rule 15 and F4 counting agree with the criteria; F1-F3, F8 and F9 figures re-derive against `player_config.tres`), but two gaps followed from them: widening Saggar Rows for rule 26 pushed N2 to N3 to 8 screens, and F1 constrained only the gap's width, so a shallow pit let the start kit walk through the first gate. Both blockers and recommendations 1-7 were revised in the same session after the owner's decisions (a new save N2b in Saggar Rows; sealed alcoves are nooks in the gate room). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (all 3 fifth-review blockers fixed in the text; the widening's effect on F4 is a new finding)
+Findings:
+- [BLOCKING] Formulas (F4) / Open Question 18: region 1 spacing "6, 2, 7, all valid" assumed a 1x2 Saggar Rows; at 2x2 (rule 26) N2 to N3 is 8 (fixed: save N2b, legs re-derived)
+- [BLOCKING] Formulas (F1): no pit depth, lip height or mid-gap rule; a shallow safe floor lets the start kit cross (fixed: pit block, `pit_depth_min`, criteria)
+- [RECOMMENDED] Core Rules (rule 26) / F8 / F9: "ceiling lower than target_top - launch_rise" exemption can never apply (fixed: removed)
+- [RECOMMENDED] Formulas (F4): example counted 7 where the rule gives 6 (fixed)
+- [RECOMMENDED] Formulas (F4): main route revisits rooms; adjacency along the walk undefined (fixed; post-dash legs wait on the draft, Open Question 18)
+- [RECOMMENDED] Edge Cases: case 1's examples contradicted F1 and the criteria (fixed)
+- [RECOMMENDED] Acceptance Criteria: "30 attempts" meaningless on a deterministic sim; stray [Play] tag (fixed: input sweep)
+- [RECOMMENDED] Core Rules (rule 2) / States / criteria: sealed alcove room-or-not undefined (fixed: in the gate room, owner)
+- [RECOMMENDED] Formulas (F9): assumes a free-standing gate (fixed: stated)
+- [RECOMMENDED] Carried over: Open Questions 18-19; Game Feel targets not criteria; no Tuning Knobs or Player Fantasy (advisory); 8 hard upstream GDDs missing (open)
+Reviewed-Content-Hash: design/gdd/level-design.md c271e3ebc71804f6a2fd45e80e82e0c43454b84e
+Reviewed-Content-Hash: design/registry/entities.yaml dfeacb02917f751cb1dfd88cf490c7ec3d8d2d0f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+
+## Review — 2026-11-18 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 6
+Summary: The sixth review's fixes held (F1 pit rule registered; region 1 legs 3, 3, 4, 2, 7, 3 re-derive with N2b), and the rest of the registry values agree. Two blockers: the key table still gave the double-jump window as 72-108 against the registry's 72-106, and the gate states had no path for a leak or a key owned before its gate was seen. Both were revised in the same session, with two owner decisions: save spacing counts new ground only (backtracking and the walk back out of a dead end count 0), and spikes can be pogoed (rule 24 and F7 widened; a spiked dash pit needs hazard_pit_depth_min, about 84 px; grapple gaps use a kill plane until ability gating sets a depth, Open Question 20). The GDD hash below is of the version as reviewed, before those revisions, so the next review runs in full.
+Prior verdict resolved: Yes (both sixth-review blockers fixed)
+Findings:
+- [BLOCKING] Detailed Design (rule 5 key table, line 42): double-jump ledges 72-108 vs registry double_jump_ledge_window [72, 106] (fixed)
+- [BLOCKING] States and Transitions (Gate): no transition for a leak (Seen to Passed without the key) or a key owned before the gate is seen (fixed: Seen and Passed stored, Passable derived from "owned")
+- [RECOMMENDED] Formulas (F4): a dead-end shrine detour walked back out of counts 8 (fixed by owner decision: new ground only; post-dash legs now at most 5 and 2)
+- [RECOMMENDED] Game Feel: targets carried three reviews without criteria (fixed: relabelled as design targets)
+- [RECOMMENDED] Formulas (F7): pogo_carry assumes a contact level with the lips (fixed: re-measure a gap reached by a drop)
+- [RECOMMENDED] Detailed Design (rule 24): hazards "not pogo targets in the current code" (superseded by owner decision: spikes can be pogoed; hazard_pogo_reach and hazard_pit_depth_min added; Combat story; ability gating F1 and F3b and the registry's pit note to follow, Open Question 20)
+- [RECOMMENDED] Open Questions 13 and 15: spend rule missing; "now measured" wording (fixed)
+- [RECOMMENDED] Formulas (F4): save_spacing_max range 5-10, but the region 1 layout needs 7 or more (open, not approved for this pass)
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard)
+- [NICE-TO-HAVE] Dash signature colour bisque vs reserved orange (open: art bible); integration draft still holds the bisque pane back (narrative side, ability gating Open Question 5)
+Reviewed-Content-Hash: design/gdd/level-design.md 53d80590e3a2ef9e9a364372611dca6cb5906355
+Reviewed-Content-Hash: design/registry/entities.yaml de075a01f7a8c2305ada96e1ea74493b65e1791f
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 69d70bda7bc48dee7538eee52c901fe625813f01
+Reviewed-Content-Hash: design/game-brief.md b1b6b19338ea6ea8ea0a3279a5eb30ab890ba619
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
