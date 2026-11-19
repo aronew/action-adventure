@@ -112,10 +112,12 @@ const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
 ## Optional room-end pieces from the same pack, placed at this test room's dead ends.
 const BORDERS := ["border-left", "border-right"]
 ## Camera dead zone in this room (fractions of half the screen): a jump stays inside it,
-## so the view only scrolls up near the top and follows falls quickly. The old one-screen
-## rooms never scrolled vertically, so this only matters for rooms taller than a screen.
+## so the view only scrolls up near the top and follows real falls. The bottom margin
+## (0.3 = 40 px) is a little larger than the camera's fall lead (36 px), so a normal
+## jump's descent does not pull the view down. The old one-screen rooms never scrolled
+## vertically, so this only matters for rooms taller than a screen.
 const CAMERA_DRAG_TOP := 0.5
-const CAMERA_DRAG_BOTTOM := 0.2
+const CAMERA_DRAG_BOTTOM := 0.3
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
 var _textures := {}
@@ -133,9 +135,6 @@ func _ready() -> void:
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
-	# Smooth movement between 60 Hz physics steps; at 4x zoom each step is 4 screen px.
-	# Test-room only: the project setting stays off until the pipeline decides.
-	get_tree().physics_interpolation = true
 	_room_size = Vector2(GRID[0].length(), GRID.size()) * CELL
 
 	var world := Node2D.new()
@@ -162,7 +161,6 @@ func _ready() -> void:
 	var player: Player = PLAYER_SCENE.instantiate()
 	player.position = SPAWN_POINT
 	add_child(player)
-	player.reset_physics_interpolation()
 	var camera := PlayerCamera.new()
 	_camera = camera
 	camera.zoom = Vector2(ZOOM, ZOOM)
@@ -193,7 +191,6 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	RenderingServer.frame_pre_draw.disconnect(_place_layers)
-	get_tree().physics_interpolation = false
 
 
 func _place_layers() -> void:
@@ -211,13 +208,11 @@ func _prop_scale() -> float:
 	return CELL / TILE_SOURCE * ATLAS_PER_NATIVE
 
 
-## Loads a PNG with mipmaps so the downscaled painted art does not shimmer.
-## Test-room shortcut: a real pipeline sets mipmaps in the import settings instead.
+## Loads an imported texture. The environment art is imported with mipmaps on
+## (mipmaps/generate in each .import file), so the downscaled painted art does not shimmer.
 func _texture(path: String) -> Texture2D:
 	if not _textures.has(path):
-		var image := Image.load_from_file(path)
-		image.generate_mipmaps()
-		_textures[path] = ImageTexture.create_from_image(image)
+		_textures[path] = load(path) as Texture2D
 	return _textures[path]
 
 
