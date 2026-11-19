@@ -92,7 +92,7 @@ No GDD exists yet for any of these systems except Level design; each interface i
 | World state | Both | Out: keys owned, panes broken (by id). In: both restored on load | World state owns storage; this system owns what is stored |
 | Level design | Both | Out: gate types, formulas F1-F3, F6, F8-F11, signatures, `no_cling`, `gate_anchor`. In: where each gate, pickup and pane sits, and the key order | Level design owns placement and order; this system owns what a gate is |
 | Combat | In | The `hittable` group and the pogo (`pogo_speed`), which gate volumes must keep clear (level design rule 24); panes are kept out of `hittable` | Combat |
-| Terrain pipeline | Out | A `no_cling` material and a bisque pane material that it can build and paint; collision edges at gates | Terrain pipeline owns building them |
+| Terrain pipeline | Both | Out: the `no_cling` face material and the bisque pane's look (the pane is an object with plain faces, rule 15) for it to build and paint; collision edges at gates. In: the `gate` mark on each face segment a formula measures; F1-F11 fail a room whose measured segment lacks its mark (terrain pipeline rule 6) | Terrain pipeline owns building them and the mark data; level design authors the marks |
 | HUD and UI | Out | `abilities_changed` and the first-pickup event, for the debug HUD and the first-pickup note | HUD |
 | Lore delivery and mentor pact | In | The mentor pact calls `grant` | Lore delivery |
 | Save points | Out (via World state) | `PlayerState` is saved with World state | Save points |
@@ -393,7 +393,7 @@ Rejected chains over the same chasm:
 | System | Hard / soft | What it needs from here |
 |--------|-------------|--------------------------|
 | Level design and world layout | Hard | Gate types, F1-F3, F6, F8-F11, signatures, `no_cling`, gate anchors; it places them (`design/gdd/level-design.md`, which lists this GDD) |
-| Terrain pipeline | Hard | A `no_cling` material and a bisque pane material to build and paint |
+| Terrain pipeline | Hard | The `no_cling` face material and the bisque pane's look (an object, not a face material) to build and paint; it supplies the `gate` marks the layout checks read (`design/gdd/terrain-pipeline.md` rule 6, in review) |
 | HUD | Soft | `abilities_changed` and the first-pickup event |
 | Save points and save/load | Hard (via World state) | `PlayerState` saved with World state |
 | Lore delivery and mentor pact | Soft | The `grant` call for the mentor's key |
@@ -441,7 +441,7 @@ Targets are checked in a playtest; movement feel itself belongs to the player co
 | The `hittable` group, pogo (rule 16) | Combat | In code; no GDD |
 | Sealed alcove, gate room footprint use (F9), pit return path (F1), "seen twice" (rule 11), workshop (Game Feel) | Level design | `design/gdd/level-design.md` rules 2, 8, 11, 26 |
 | Key storage and pane records | World state | Not designed |
-| Signatures, `no_cling` and pane materials | Art bible, Terrain pipeline | Not written |
+| Signatures, the `no_cling` material and the pane's look | Art bible, Terrain pipeline | Art bible not written; `design/gdd/terrain-pipeline.md` in review |
 
 ## Acceptance Criteria
 

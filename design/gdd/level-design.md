@@ -114,7 +114,7 @@ None of the upstream systems has a GDD yet; the interfaces below are the contrac
 | System | Direction | Data flowing | Owner of the interface |
 |--------|-----------|--------------|------------------------|
 | Rooms and transitions | In | Room units, open-edge exits with a short fade, real doors where a place has one, per-room camera limits, room graph; large rooms (rule 1) | Rooms and transitions |
-| Terrain pipeline | In | Collision and tile rules a room is built from; the grey-box to painted path | Terrain pipeline |
+| Terrain pipeline | Both | In: collision and tile rules a room is built from (the 6 px grid, face segments and their materials); the grey-box to painted path. Out: a `gate` mark on every face segment this system's gate formulas measure, authored in the room data (terrain pipeline rule 6) | Terrain pipeline owns the data model; this system authors the marks |
 | Ability gating | Both | In: gate types, formulas F1-F3, F6, F8-F11, visual signatures, `no_cling`, gate anchors. Out: which gate sits where and what key it needs | Gating owns what a gate is (GDD: `design/gdd/ability-gating.md`, Approved); this system owns placement and order |
 | Bosses | In | Boss rooms, defeat flag, what the boss grants | Bosses |
 | Enemies | In | Enemy types and rosters placed in rooms, with spawn points, `patrol_distance`, a chase leashed to the spawn point (`chase_leash`) and a position clamp to that bound that neither hit knockback nor attack lunge can cross: together the leash bound the pogo clearance check reads (rule 24, F7) | Enemies |
@@ -246,7 +246,7 @@ Every value is read from a data file, never a constant in code. Ranges marked **
 | System | Hard / soft | What this system needs | GDD exists |
 |--------|-------------|------------------------|------------|
 | Rooms and transitions | Hard | Room units, exits, doors, per-room camera limits, the room graph | No (provisional) |
-| Terrain pipeline | Hard | The collision and tile rules every room is built from; the grey-box path; black collision masses with painted trim and the `trim_overhang_max` rule (rule 25); a `no_cling` material | No (provisional) |
+| Terrain pipeline | Hard | The collision and tile rules every room is built from (the 6 px grid); the grey-box path; black collision masses with painted trim and the `trim_overhang_max` rule (rule 25); `plain` and `no_cling` face segments. This system authors a `gate` mark on every segment its gate formulas measure, and a gate check fails a room whose measured segment lacks its mark (terrain pipeline rule 6) | Yes, in review (`design/gdd/terrain-pipeline.md`) |
 | Ability gating | Hard | Gate types, dimensions and visual signatures; the "owned" read; the `no_cling` surface's signature | Yes, Approved (`design/gdd/ability-gating.md`); code exists: `PlayerState`, `AbilityGate`, `AbilityPickup` |
 | World state | Hard | Records of keys, boss defeats, shortcuts and secrets | No (provisional) |
 | Bosses | Hard | Boss rooms, the defeat flag, the reward source | No (code exists: `Boss`, `boss_arena`) |
@@ -309,7 +309,7 @@ None of the other GDDs exists yet; these are the values and rules this GDD relie
 | run_jump_distance, dash_jump_distance, double_jump_total, jump_apex, max_non_grapple_crossing, landing_slack, kick_rise, kick_cycle, launch_rise, wall_reach, far_face_extra, pogo_carry (F1-F3, F6-F8) | Player controller / movement | Calculated from `player_config.tres`; to be registered |
 | hitbox_width, hitbox_height, ledge_nudge (F1, F2, F3a) | Player controller / movement | In `player_config.tres` (`hitbox_size` 10x22, `ledge_nudge` 5) |
 | The `no_cling` surface: no wall slide or wall jump on it | Ability gating (rule 14); Player controller (the check) | Defined in `design/gdd/ability-gating.md`; not in code |
-| Collision masses with painted trim, `trim_overhang_max` (rule 25) | Terrain pipeline | Not designed; look chosen by the owner 2026-11-18 |
+| Collision masses with painted trim, `trim_overhang_max` (rule 25), gate marks on face segments | Terrain pipeline | `design/gdd/terrain-pipeline.md`, in review (rules 6, 11); look chosen by the owner 2026-11-18 |
 | pogo_speed, the down attack's hitbox, the `hittable` group, pogoable hazards (rule 24, F7) | Combat | In `attack_data.tres` (260 px/s; down hitbox reaches 32 px below the feet, 27 px ahead of the centre and 21 px behind it); hazards not yet pogoable in code; no GDD |
 | grapple_range (F3) | Player controller / movement | In `player_config.tres` (200 px) |
 | `patrol_distance`, `body_size`, `chase_leash` and the clamp to the leash bound (rule 24, F7) | Enemies | In the enemy `.tres` files except `chase_leash`, which is registered here until the Enemies GDD adopts it; no GDD |

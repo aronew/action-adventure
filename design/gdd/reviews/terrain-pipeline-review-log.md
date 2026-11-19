@@ -32,3 +32,34 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 6
+Summary: All three first-review blockers are resolved. Rule 13, the States table and the Edge Cases now agree, the fingerprint covers gate marks and objects, and level design rule 11 and its criterion say 150 px. Every registry value, T1-T4 output and code claim reproduces. Two process gaps remained: the Dressed state had no deliberate entry (a baked room with no dressing counted as Dressed and could ship), and the gate-mark and segment duties rule 6 gives level design and ability gating were absent from both Approved GDDs. Both were revised the same day (owner: a `dressed` artist sign-off that survives a flag-free re-bake; the bake runs on every editor save and at every build), along with 4 of the 6 recommendations; the GDD awaits re-review in a fresh session.
+Prior verdict resolved: Yes (all 3 prior blockers)
+Findings:
+- [BLOCKING] States / rules 12-13 / AC: Dressed entered when "the dressing pass finishes", which nothing marks; an undressed baked room is Dressed and ships; bake trigger undefined
+- [BLOCKING] Dependencies / rule 6: level design (authors gate marks) and ability gating (F1-F11 fail on a missing mark) not told; level design row said "No (provisional)", ability gating said "bisque pane material"
+- [RECOMMENDED] Rule 10 / Edge Cases: config hash names three file types; the gate-margin and band "data file" does not exist
+- [RECOMMENDED] States: "build" vs editor play undefined; a new room cannot be play-reviewed if every build refuses Block-out
+- [RECOMMENDED] Rules 6-7: only cling_wall + no_cling rejected; climb_wall and climbable on no_cling unchecked
+- [RECOMMENDED] T3 / rule 5: trim undershoot unbounded (Seeker could stand on air); open, Open Question 11
+- [RECOMMENDED] AC (node count): compares two particular rooms and depends on the ADR; open, Open Question 11
+- [RECOMMENDED] Rule 10: fingerprint omits room bounds and exits; enemy spawn points not in rule 4's object list
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at standard); T4 met by one shape per edge tile; systems index Core vs Foundation; only two legal dash widths (150, 156); route minimum covers the Seeker only; a tuning change can demote every Dressed room at once
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md e2c56f00842b47ecfd78f6458e6ba471780410ad
+Reviewed-Content-Hash: design/registry/entities.yaml 81257fdc2577f75fec1f661554d6561892157fff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 1256d45ea24e8db16c22e17785aa6e2a51343676
+Reviewed-Content-Hash: design/gdd/level-design.md 6475e5be03118c5c5201575f2aad1dffe58fba03
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
