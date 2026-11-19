@@ -111,6 +111,11 @@ const FOREGROUND_SCALE := Vector2(1.2, 1.1)
 const FOREGROUND_STRIPS := ["foreground-top", "foreground-bottom"]
 ## Optional room-end pieces from the same pack, placed at this test room's dead ends.
 const BORDERS := ["border-left", "border-right"]
+## Camera dead zone in this room (fractions of half the screen): a jump stays inside it,
+## so the view only scrolls up near the top and follows falls quickly. The old one-screen
+## rooms never scrolled vertically, so this only matters for rooms taller than a screen.
+const CAMERA_DRAG_TOP := 0.5
+const CAMERA_DRAG_BOTTOM := 0.2
 const HELP_TEXT := "Art-style test: Cinderheart Caldera painted art at 1920x1080, Seeker at 4x.\nArrows/WASD move  Space/Z jump x2  Shift/C dash  E grapple  X attack"
 
 var _textures := {}
@@ -128,6 +133,9 @@ func _ready() -> void:
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
+	# Smooth movement between 60 Hz physics steps; at 4x zoom each step is 4 screen px.
+	# Test-room only: the project setting stays off until the pipeline decides.
+	get_tree().physics_interpolation = true
 	_room_size = Vector2(GRID[0].length(), GRID.size()) * CELL
 
 	var world := Node2D.new()
@@ -154,6 +162,7 @@ func _ready() -> void:
 	var player: Player = PLAYER_SCENE.instantiate()
 	player.position = SPAWN_POINT
 	add_child(player)
+	player.reset_physics_interpolation()
 	var camera := PlayerCamera.new()
 	_camera = camera
 	camera.zoom = Vector2(ZOOM, ZOOM)
@@ -161,6 +170,9 @@ func _ready() -> void:
 	camera.limit_top = 0
 	camera.limit_right = int(_room_size.x)
 	camera.limit_bottom = int(_room_size.y)
+	camera.drag_vertical_enabled = true
+	camera.drag_top_margin = CAMERA_DRAG_TOP
+	camera.drag_bottom_margin = CAMERA_DRAG_BOTTOM
 	player.add_child(camera)
 	camera.setup(player)
 
@@ -173,8 +185,19 @@ func _ready() -> void:
 	add_child(hud)
 
 
-func _process(_delta: float) -> void:
-	if _camera == null:
+func _enter_tree() -> void:
+	# Place the parallax layers after the camera has moved this frame, right before
+	# drawing, so they never trail it by a frame.
+	RenderingServer.frame_pre_draw.connect(_place_layers)
+
+
+func _exit_tree() -> void:
+	RenderingServer.frame_pre_draw.disconnect(_place_layers)
+	get_tree().physics_interpolation = false
+
+
+func _place_layers() -> void:
+	if _camera == null or not _camera.is_inside_tree():
 		return
 	var center := _camera.get_screen_center_position()
 	for entry in _layers:
@@ -371,17 +394,19 @@ func _add_foreground(parent: Node2D) -> void:
 		# left edge at the screen's left at the room's left.
 		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
 		_layers.append([layer, FOREGROUND_SCALE, base])
-	# Borders are screen-tall too: fixed to the room's edge sideways (scroll scale 1) and
-	# pinned to the screen's top and bottom (scroll scale 0), so a room taller than one
-	# screen never shows the canvas's cut top or bottom edge.
+	# Borders are fixed in the world at the room's edges, scaled to the room's full
+	# height so their canvas's top and bottom edges never show.
 	for border in BORDERS:
 		var texture := _texture(BIOME + "parallax/%s.png" % border)
-		var image_scale := VIEW_SIZE.y / texture.get_height()
-		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
-				image_scale, 1, z, false)
+		var image_scale := _room_size.y / texture.get_height()
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = false
+		sprite.scale = Vector2.ONE * image_scale
+		sprite.z_index = z
 		var width := texture.get_width() * image_scale
-		var x := 0.0 if border == "border-left" else _room_size.x - width
-		_layers.append([layer, Vector2(1.0, 0.0), Vector2(x, -VIEW_SIZE.y * 0.5)])
+		sprite.position = Vector2(0.0 if border == "border-left" else _room_size.x - width, 0.0)
+		parent.add_child(sprite)
 
 
 ## A layer of [param copies] side-by-side copies of one region of a texture. With
