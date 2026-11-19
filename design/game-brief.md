@@ -49,6 +49,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 
 ## Look and references
 - Look: 2D pixel side view using the itch.io character pack, in the Bone palette. Sword FX on their own layer, sparks and glow on hits. The other palettes (Void, Ember, Frost) and the Dream Seeker are for power-ups later.
+- Rooms (you chose, 2026-11-19): large, Hollow Knight / Silksong-style rooms you leave by running or falling through an open edge; doors only where the place has one.
 - References: Nine Sols (level design, per your words).
 - View: 2D · Camera: side-on, follows the player, locks per room. *(guessed)*
 
