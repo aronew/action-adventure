@@ -1,6 +1,6 @@
 # Ability gating
 
-> **Status**: In Design
+> **Status**: Approved (fourth design review 2026-11-19; recommended revisions open, see the review log)
 > **Author**: project owner + Claude
 > **Last Updated**: 2026-11-19
 > **Last Verified**: 2026-11-19

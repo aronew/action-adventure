@@ -292,3 +292,28 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-19 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 1 | Recommended: 3
+Summary: The eleventh review's save-spacing blocker is resolved (saves by role, F4 withdrawn, rule 27 added), and every registry value the GDD restates agrees (38 lines checked; leash bounds re-derived from the enemy .tres files). One blocker: F7 counted one hit's knockback in the leash bound, but enemy_base.gd sets a fresh knockback on every hit and a hit during HURT restarts it, so chained hits stack and can push an enemy into a gate volume. Owner chose a hard clamp: the bound holds the enemy's position under knockback too, and knockback_travel leaves the bound (grunt 103, skitter 118, brute 59 px). Revised in the same session; the GDD, registry and ability-gating stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 eleventh review: save spacing in large rooms)
+Findings:
+- [BLOCKING] Core Rules (rule 24) / Formulas (F7) / Edge Cases / Acceptance Criteria: stacked knockback from chained hits could carry an enemy past its leash bound into a gate volume (fixed: hard clamp, knockback_travel out of the bound, chained-hit cases in the sweep and the leash unit test, new Edge Case, registry note, Open Question 21; combo hit spacing unmeasured; owner)
+- [RECOMMENDED] Interactions / Dependencies / Cross-References: ability gating called "In Design" though Approved in the index and its log (fixed here and in ability-gating.md's header)
+- [RECOMMENDED] Core Rules (rule 27) / Edge Cases: rule said "the kit the player had when they fell", its criterion "only the keys before the gate's key" (fixed: rule and Edge Case use the criterion's wording)
+- [RECOMMENDED] Core Rules (rule 24): "never leaves its leash bound" stated as fact while not in code (fixed: "held inside it", with the clamp in the not-in-code note)
+- [ADVISORY] Acceptance Criteria: boss-save check duplicated (fixed); Open Question 18 still carries withdrawn F4 arithmetic; GDD is 75 KB; upstream GDDs other than ability gating still missing
+Reviewed-Content-Hash: design/gdd/level-design.md bab1f6ecac79e45a7a9a163e70c773ce4bb79820
+Reviewed-Content-Hash: design/registry/entities.yaml ba2b69414dae8d61e5e8d6964033204ba23034a2
+Reviewed-Content-Hash: design/gdd/ability-gating.md 13f0d21644ef2ae8bb423478a9f74c87a1bf0555
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798889cbbabd20
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
