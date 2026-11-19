@@ -1,0 +1,90 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "pieces": [
+    {
+      "id": "A",
+      "file": "Foreground-Bottom-A.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 0,
+      "y": 568
+    },
+    {
+      "id": "B",
+      "file": "Foreground-Bottom-B.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 2048,
+      "y": 568
+    },
+    {
+      "id": "C",
+      "file": "Foreground-Bottom-C.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 4096,
+      "y": 568
+    },
+    {
+      "id": "D",
+      "file": "Foreground-Bottom-D.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 6144,
+      "y": 568
+    },
+    {
+      "id": "E",
+      "file": "Foreground-Bottom-E.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 8192,
+      "y": 568
+    },
+    {
+      "id": "F",
+      "file": "Foreground-Bottom-F.png",
+      "canvas": [
+        2048,
+        512
+      ],
+      "loop_x": 10240,
+      "y": 568
+    }
+  ],
+  "repeat_order": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "repeat_period_x": 12288,
+  "tall_only_order": [
+    "D",
+    "E",
+    "F"
+  ],
+  "tall_only_period_x": 6144,
+  "all_piece_orders_compatible": true,
+  "alpha": "straight",
+  "colour": "#000000",
+  "z_order": 20,
+  "camera_motion_factor": 1.2,
+  "collision": false,
+  "notes": "Bottom align all pieces. Use individual strips or a joined loop as alternatives. Taller variants occupy more of the play view; use them as spaced accents between lower strips."
+}
