@@ -280,18 +280,17 @@ formulas:
     added: 2026-11-19
     revised: ""
   - name: band_on_grid
-    status: active
+    status: deprecated
     source: design/gdd/terrain-pipeline.md
-    referenced_by:
-      - design/gdd/terrain-pipeline.md
+    referenced_by: []
     variables:
       - band
       - collision_tile
     output_range: [0, null]
     expression: "band_on_grid = collision_tile x ceil(band / collision_tile)"
-    notes: "T2. How a level design F7 clearance acts once edges lie on the grid: pogo_clearance_px 250 acts as 252, pogo_clearance_f3a_px 320 as 324, pogo_far_ext 14 as 18. Consequence of the grid, not a new value; rounding only widens a band."
+    notes: "Withdrawn 2026-11-19 (terrain-pipeline.md first design review, owner): a distance between on-grid edges is whole tiles, so the raw band and the rounded band give the same answer, and for off-grid hit-area edges (pogo_far_ext) rounding would tighten a band level design owns. Level design's bands (250, 320, 14) are used as written."
     added: 2026-11-19
-    revised: ""
+    revised: 2026-11-19
 
 # Example:
 #

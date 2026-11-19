@@ -30,7 +30,7 @@ Notes by area (balanced density):
 | 1 | Player controller and input | Core | MVP | Implemented (no GDD) | — (brief) | — |
 | 2 | Camera | Core | MVP | Implemented (follow, look-ahead, shake); room framing not started | — (brief) | Player controller |
 | 3 | Rooms and transitions (inferred) | Core | MVP | Not Started | — | Player controller, Camera, Terrain pipeline |
-| 4 | Terrain pipeline (inferred) | Core | MVP | Designed (2026-11-19, `/design-system`, lean, standard; pending `/design-review` in a fresh session): 6 px black collision tiles in game px (Hollow Knight-style block-out), trim baked from collision plus hand dressing, materials per face segment; collision build is an ADR | design/gdd/terrain-pipeline.md | — |
+| 4 | Terrain pipeline (inferred) | Core | MVP | Needs Revision (first design review 2026-11-19, lean: NEEDS REVISION, 3 blockers (state machine vs rule 13, approval fingerprint scope and gate marks, level design workshop AC unmeetable on the grid), 7 recommended, all revised the same day (owner: edits re-approve automatically, fingerprint covers gate marks and objects, T2 dropped, release builds ship Dressed only); awaiting re-review in a fresh session. Designed 2026-11-19 by `/design-system`, lean, standard): 6 px black collision tiles in game px (Hollow Knight-style block-out), trim baked from collision plus hand dressing, materials per face segment; collision build is an ADR | design/gdd/terrain-pipeline.md | — |
 | 5 | Combat | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller, Health/damage/death |
 | 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
 | 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
