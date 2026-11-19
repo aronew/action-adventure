@@ -370,8 +370,8 @@ func _add_back_layers(parent: Node2D) -> void:
 ## Foreground: the top and bottom loops, both in the world, both repeating sideways.
 ## Each canvas is a screen tall with its art at the top or bottom, so the top loop's
 ## canvas meets the screen's top when the camera is at the room's top, and the bottom
-## loop's canvas meets it when the camera is at the room's floor. Then the room-end
-## borders at the room's left and right edges.
+## loop's canvas meets it when the camera is at the room's floor. Then the corner
+## borders, which travel with the strips.
 func _add_foreground(parent: Node2D) -> void:
 	var camera_travel := _room_size - VIEW_SIZE
 	var center_min := VIEW_SIZE * 0.5
@@ -391,19 +391,30 @@ func _add_foreground(parent: Node2D) -> void:
 		# left edge at the screen's left at the room's left.
 		var base := FOREGROUND_SCALE * Vector2(center_min.x, reference_y) - VIEW_SIZE * 0.5
 		_layers.append([layer, FOREGROUND_SCALE, base])
-	# Borders are fixed in the world at the room's edges, scaled to the room's full
-	# height so their canvas's top and bottom edges never show.
+	# Corner borders travel with the foreground strips: one layer with the strips' scroll
+	# scale, so they move together. Each border meets its room edge when the camera is at
+	# that end of the room, and slides away with the strips as the camera moves off.
+	# Scaled to the room's height (locked to the world vertically, like the strips) so
+	# the canvas's top and bottom edges never show.
+	var corners := Node2D.new()
+	corners.z_index = z
+	parent.add_child(corners)
+	var corner_base := Vector2(FOREGROUND_SCALE.x * center_min.x - VIEW_SIZE.x * 0.5, 0.0)
+	_layers.append([corners, FOREGROUND_SCALE, corner_base])
 	for border in BORDERS:
 		var texture := _texture(BIOME + "parallax/%s.png" % border)
 		var image_scale := _room_size.y / texture.get_height()
+		var width := texture.get_width() * image_scale
 		var sprite := Sprite2D.new()
 		sprite.texture = texture
 		sprite.centered = false
 		sprite.scale = Vector2.ONE * image_scale
-		sprite.z_index = z
-		var width := texture.get_width() * image_scale
-		sprite.position = Vector2(0.0 if border == "border-left" else _room_size.x - width, 0.0)
-		parent.add_child(sprite)
+		# The layer's x when the camera is at this end of the room: centre * (1 - scale) + base.
+		var camera_x := center_min.x if border == "border-left" else center_max.x
+		var layer_x := camera_x * (1.0 - FOREGROUND_SCALE.x) + corner_base.x
+		var room_x := 0.0 if border == "border-left" else _room_size.x - width
+		sprite.position = Vector2(room_x - layer_x, 0.0)
+		corners.add_child(sprite)
 
 
 ## A layer of [param copies] side-by-side copies of one region of a texture. With
