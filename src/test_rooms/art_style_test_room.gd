@@ -124,11 +124,11 @@ const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 ## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
 ## slabs, pieces A, B, C repeating, between the far layers and the playable terrain. It
 ## scrolls at CLOSE_ROCKS_SCALE (the pack suggests 0.75) and is drawn after the midground
-## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. With
-## the camera at the room's bottom, the band's bottom sits CLOSE_ROCKS_SINK world px below
-## the room's lowest floor line, so the rocks rise from just behind the floors (and a
-## little higher behind higher floors as the camera climbs, since the band scrolls
-## slower). The corridor's own rear wall is drawn in front of it. Empty folder: no band.
+## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. It
+## follows the terrain (CloseRockBand): every slice of it sits CLOSE_ROCKS_SINK world px
+## below the floor on screen in front of it, so the rocks rise from behind low floors and
+## tall sections alike. The corridor's own rear wall is drawn in front of it. Empty
+## folder: no band.
 const CLOSE_ROCKS := "close-rocks/"
 const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
 const CLOSE_ROCKS_SCALE := 0.75
@@ -314,6 +314,7 @@ var _room_size := Vector2.ZERO
 ## the camera's motion. (Parallax2D placed the layers wrongly under the 4x zoom here.)
 var _layers: Array = []
 var _mood: RoomAtmosphere
+var _close_band: CloseRockBand
 var _lit_props: Array[Sprite2D] = []
 
 
@@ -410,6 +411,8 @@ func _place_layers() -> void:
 		var layer: Node2D = entry[0]
 		var factor: Vector2 = entry[1]
 		layer.position = center * (Vector2.ONE - factor) + entry[2]
+	if _close_band != null:
+		_close_band.place(center)
 	if _mood != null:
 		_mood.follow(center)
 
@@ -597,46 +600,46 @@ func _add_back_layers(parent: Node2D) -> void:
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## The close rock band (see CLOSE_ROCKS) as one repeating A-B-C layer.
+## The close rock band (see CLOSE_ROCKS), laid behind the floors by a CloseRockBand.
 func _add_close_rocks(parent: Node2D) -> void:
 	if CLOSE_ROCKS.is_empty():
 		return
-	var image_scale := VIEW_SIZE.y / 1080.0
-	var layer := Node2D.new()
-	layer.z_index = CLOSE_ROCKS_Z
-	parent.add_child(layer)
-	var needed := VIEW_SIZE.x + (_room_size.x - VIEW_SIZE.x) * CLOSE_ROCKS_SCALE
-	var x := 0.0
-	var i := 0
-	var height := 0.0
-	while x < needed:
-		var piece: String = CLOSE_ROCK_PIECES[i % CLOSE_ROCK_PIECES.size()]
-		var texture := _texture(BIOME + CLOSE_ROCKS + "%s.png" % piece)
-		var sprite := Sprite2D.new()
-		sprite.texture = texture
-		sprite.centered = false
-		sprite.scale = Vector2.ONE * image_scale
-		sprite.position = Vector2(x, 0.0)
-		layer.add_child(sprite)
-		x += texture.get_width() * image_scale
-		height = texture.get_height() * image_scale
-		i += 1
-	# The lowest floor line: the lowest open cell standing on solid ground.
-	var floor_y := 0.0
-	for row in grid.size() - 1:
-		for col in grid[0].length():
-			if not _solid(col, row) and _solid(col, row + 1):
-				floor_y = maxf(floor_y, (row + 1) * CELL)
-	# On screen: top-left = base - factor * centre + VIEW_SIZE / 2. The band's left edge
-	# meets the screen's left at the room's left; with the camera at the room's bottom,
-	# its bottom sits CLOSE_ROCKS_SINK below the lowest floor.
-	var factor := Vector2.ONE * CLOSE_ROCKS_SCALE
-	var center_min := VIEW_SIZE * 0.5
-	var center_max := _room_size - VIEW_SIZE * 0.5
-	var bottom_on_screen := floor_y - center_max.y + VIEW_SIZE.y * 0.5 + CLOSE_ROCKS_SINK
-	var base := factor * Vector2(center_min.x, center_max.y) - VIEW_SIZE * 0.5 \
-			+ Vector2(0.0, bottom_on_screen - height)
-	_layers.append([layer, factor, base])
+	var pieces: Array[Texture2D] = []
+	for piece in CLOSE_ROCK_PIECES:
+		pieces.append(_texture(BIOME + CLOSE_ROCKS + "%s.png" % piece))
+	_close_band = CloseRockBand.new()
+	_close_band.z_index = CLOSE_ROCKS_Z
+	parent.add_child(_close_band)
+	_close_band.setup(pieces, VIEW_SIZE.y / 1080.0, CLOSE_ROCKS_SCALE, CLOSE_ROCKS_SINK,
+			VIEW_SIZE, _floor_under)
+
+
+## The lowest floor line (top of a solid cell under an open one) among the columns under
+## [param x_from]..[param x_to], taking in each column the first floor from the top of
+## the view down; INF when a column is open all the way down the view (a pit), so rock
+## is never laid over open air. Columns solid all the way down do not count.
+func _floor_under(x_from: float, x_to: float, view_top: float, view_bottom: float) -> float:
+	var lowest := -INF
+	var row_top := maxi(int(floor(view_top / CELL)) - 1, 0)
+	var row_bottom := mini(int(ceil(view_bottom / CELL)) + 1, grid.size() - 1)
+	for col in range(int(floor(x_from / CELL)), int(floor((x_to - 0.01) / CELL)) + 1):
+		if col < 0 or col >= grid[0].length():
+			continue
+		var found := INF
+		var any_open := false
+		for row in range(row_top, row_bottom):
+			if _solid(col, row):
+				continue
+			any_open = true
+			if _solid(col, row + 1):
+				found = (row + 1) * CELL
+				break
+		if not any_open:
+			continue
+		if is_inf(found):
+			return INF
+		lowest = maxf(lowest, found)
+	return INF if lowest == -INF else lowest
 
 
 ## Foreground: the open cave's loops (parallax/) over the open cave and the corridor's
