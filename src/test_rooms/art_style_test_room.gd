@@ -133,11 +133,14 @@ const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 ## unblurred, in front of the corridor's rear wall, behind the terrain. Empty: none.
 const CLOSE_ROCKS := "close-rocks/"
 const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
-const CLOSE_ROCKS_SCALE := 0.88
+const CLOSE_ROCKS_SCALE := 0.85
 const CLOSE_ROCKS_Z := -9
 ## How far below the floor line each stretch's bottom sits, world px at full size.
 const CLOSE_ROCKS_SINK := 12.0
-const CLOSE_ROCKS_EDGE_INSET := 18.0
+const CLOSE_ROCKS_EDGE_INSET := 54.0
+## How far a stretch may drift towards a drop (it always stays a full cell from the edge,
+## where the ledge's rounded corner would show the rock's flat bottom).
+const CLOSE_ROCKS_DROP_DRIFT := 18.0
 const CLOSE_ROCKS_HEADROOM := 0.55
 ## The tallest rock in the pieces, source px above the canvas bottom (for headroom).
 const CLOSE_ROCKS_TALLEST := 440.0
@@ -147,12 +150,12 @@ const CLOSE_ROCKS_MIN_RUN := 3.0 * 36.0
 const CLOSE_ROCKS_IN_CAVES := true
 ## The owner's close plants (close-plants/): wiry ember-tip stalks, curling fronds and
 ## tendrils (pieces A, B, C), laid out per floor run the same way as the close rocks but
-## behind them: drawn first and scrolling a little slower (CLOSE_PLANTS_SCALE). They are
-## taller than the rocks, so their tops show above them; CLOSE_PLANTS_RISE lifts them
-## further (world px; past the sink, their bases would show above the floor). Empty: none.
+## in front of them, nearest the play layer: drawn after them and scrolling a little
+## faster (CLOSE_PLANTS_SCALE). CLOSE_PLANTS_RISE lifts them (world px; past the sink,
+## their bases would show above the floor). Empty: none.
 const CLOSE_PLANTS := "close-plants/"
 const CLOSE_PLANT_PIECES := ["Close-Plants-A", "Close-Plants-B", "Close-Plants-C"]
-const CLOSE_PLANTS_SCALE := 0.8
+const CLOSE_PLANTS_SCALE := 0.92
 const CLOSE_PLANTS_RISE := 0.0
 const CLOSE_PLANTS_TALLEST := 480.0
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
@@ -352,10 +355,10 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
-	_add_close_band(world, CLOSE_PLANTS, CLOSE_PLANT_PIECES, CLOSE_PLANTS_SCALE,
-			CLOSE_ROCKS_SINK - CLOSE_PLANTS_RISE, CLOSE_PLANTS_TALLEST, 1)
 	_add_close_band(world, CLOSE_ROCKS, CLOSE_ROCK_PIECES, CLOSE_ROCKS_SCALE,
 			CLOSE_ROCKS_SINK, CLOSE_ROCKS_TALLEST, 0)
+	_add_close_band(world, CLOSE_PLANTS, CLOSE_PLANT_PIECES, CLOSE_PLANTS_SCALE,
+			CLOSE_ROCKS_SINK - CLOSE_PLANTS_RISE, CLOSE_PLANTS_TALLEST, 1)
 	_add_corridor_wall(world)
 	_add_terrain(world)
 	for island in islands:
@@ -656,8 +659,8 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			x0 += CLOSE_ROCKS_EDGE_INSET
 		if drop_right:
 			x1 -= CLOSE_ROCKS_EDGE_INSET
-		var drift_left := CLOSE_ROCKS_EDGE_INSET if drop_left else CELL
-		var drift_right := CLOSE_ROCKS_EDGE_INSET if drop_right else CELL
+		var drift_left := CLOSE_ROCKS_DROP_DRIFT if drop_left else CELL
+		var drift_right := CLOSE_ROCKS_DROP_DRIFT if drop_right else CELL
 		var width := x1 - x0
 		if width < CLOSE_ROCKS_MIN_RUN:
 			continue
