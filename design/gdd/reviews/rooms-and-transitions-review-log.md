@@ -145,3 +145,40 @@ Reviewed-Content-Hash: src/player/player_camera.gd 0b5b78d296c438adc2773993b9a79
 Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+
+## Review — 2026-11-19 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 0 | Recommended: 13
+Summary: The fourth review's blocker is resolved: the exit lip (12 px side, 24 px fall or rise) holds one physics frame of the fastest move beyond the box's half extent, so the crossing frame touches no solid (checked against player.gd: dash ends on is_on_wall, _land refreshes air moves); apron, lip, R1 in all four directions, R3, R5 and the 2.07 s door trip (EnterDoor frame ms sum 1620) all reproduce, and registry values match. No new blocker; the open items sit at the controller and registry seams. Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (exit-lip blocker resolved; 9 recommended items from entry 4 still open)
+Findings:
+- [RECOMMENDED] Rule 5 / R1 / R2: the GDD speaks of the box centre but the controller's origin is the feet (centre 11 px up standing, 7 crouched); a trigger or placement on global_position breaks the rise-exit lip and the (x, 12) arrival. State the conversion; add crouch to the re-derive list
+- [RECOMMENDED] Edge Cases / AC 374: the corner tie is unreachable (the quadrant beyond both lips is solid, so the box hits solid before the centre passes both lines); drop it or reject corner-meeting openings
+- [RECOMMENDED] Rule 7 / Dependencies: door input is the `interact` action (W, Up, D-pad up, B); invulnerability and input lock during ENTER_DOOR are a new controller requirement (take_hit now cancels it into HURT); the x snap to the door is unstated
+- [RECOMMENDED] Rule 6: resting on the shut line is a real landing (landed, air jump and dash refreshed, 0.1 s coyote past the opening): a free jump at every rise exit; intend it or suppress it
+- [RECOMMENDED] Rule 3 / Edge Cases: retired-id record per room and globally
+- [RECOMMENDED] Rule 11 / R6 / AC 355: "neighbours span three biomes" misses own biome plus two others; no Loading-to-Unloaded cancel; no free-before-load order
+- [RECOMMENDED] Edge Cases: arrival safety (48 px vs enemy reach, hazards and kill planes within the fade-in's fall, invulnerability_time 1.0 s, death-state crossing, door area size)
+- [RECOMMENDED] Rule 15: graph edges carry no kind, side or one-way flag
+- [RECOMMENDED] Rules 13, 14 / R5: overlapping zones, arrival snap in a zone, shake and dip vs bounds untested; R5 omits save-point and default arrival points
+- [RECOMMENDED] Registry: collision_tile referenced_by lacks this GDD; exit_rearm, apron_depth, lip_depth and fade times unregistered; terrain and level design do not name the apron or lip
+- [RECOMMENDED] Tuning Knobs absent (advisory); fade sum plus build_time 0.68 s at the measured rebuild
+- [RECOMMENDED] ACs 326, 330, 333-335, 342, 345 compound; split
+- [RECOMMENDED] Player Fantasy absent (advisory)
+Receipt note: the systems index is stamped before this session's status edit.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/systems-index.md 67636b3566845ee72743c3c2633ae55c531c697a
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
+Reviewed-Content-Hash: src/player/player_input_bindings.gd dbdc4b68adbe1235169478df7f825fa12030d7df
+Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
