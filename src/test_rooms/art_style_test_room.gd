@@ -141,6 +141,24 @@ const CLOSE_ROCKS_EDGE_INSET := 54.0
 ## How far a stretch may drift towards a drop (it always stays a full cell from the edge,
 ## where the ledge's rounded corner would show the rock's flat bottom).
 const CLOSE_ROCKS_DROP_DRIFT := 18.0
+## How far (world px) each stretch's ends fade out, so the pieces' low end rubble trails
+## off instead of stopping square.
+const CLOSE_ROCKS_END_FADE := 40.0
+const END_FADE_SHADER := """
+shader_type canvas_item;
+uniform vec2 ends = vec2(0.0);
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	float a = 1.0;
+	if (ends.x > 0.0) {
+		a *= smoothstep(0.0, ends.x, UV.x);
+	}
+	if (ends.y > 0.0) {
+		a *= smoothstep(0.0, ends.y, 1.0 - UV.x);
+	}
+	COLOR.a *= a;
+}
+"""
 const CLOSE_ROCKS_HEADROOM := 0.55
 ## The tallest rock in the pieces, source px above the canvas bottom (for headroom).
 const CLOSE_ROCKS_TALLEST := 440.0
@@ -305,6 +323,13 @@ const SILHOUETTE_PIECES := ["Foreground-Bottom-A", "Foreground-Bottom-D", "Foreg
 ## Where the 512 px strips sit on the pack's 1920x1080 reference screen, and their z.
 const SILHOUETTE_TOP := 568.0
 const SILHOUETTE_Z := 20
+## The band stays on the screen's bottom, but when the camera moves up or down it first
+## drifts the way near-camera foliage would (SILHOUETTE_SWAY times the camera's move),
+## then eases back to the bottom over about SILHOUETTE_LAG seconds. The drift is capped
+## at SILHOUETTE_MAX_DRIFT world px; a black base under the band covers any gap.
+const SILHOUETTE_SWAY := 1.2
+const SILHOUETTE_LAG := 0.45
+const SILHOUETTE_MAX_DRIFT := 40.0
 ## Props that carry lava light get a soft warm glow from the mood pass, [prop: radius in
 ## world px] (see RoomAtmosphere).
 const GLOWING_PROPS := {
@@ -330,6 +355,10 @@ var borders: Array = BORDERS
 var _textures := {}
 var _fade_shader: Shader
 var _mask_shader: Shader
+var _end_fade_shader: Shader
+var _silhouette_layer: Node2D
+var _silhouette_lag_y := NAN
+var _silhouette_ticks := 0
 var _patch_shader: Shader
 var _camera: Camera2D
 var _room_size := Vector2.ZERO
@@ -441,6 +470,7 @@ func _place_layers() -> void:
 			# A clamped layer: its x may only drift within [min, max].
 			var limits: Vector2 = entry[3]
 			layer.position.x = clampf(layer.position.x, limits.x, limits.y)
+	_sway_silhouettes(center)
 	if _mood != null:
 		_mood.follow(center)
 
@@ -681,37 +711,59 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			sprite.position = Vector2(i * piece_size.x * stretch, 0.0)
 			layer.add_child(sprite)
 			next_piece += 1
+			# The stretch's ends: the pieces end in a low block of rubble; fade its last
+			# CLOSE_ROCKS_END_FADE px so it trails off instead of stopping square.
+			var fade_uv := CLOSE_ROCKS_END_FADE / (piece_size.x * stretch)
+			var ends := Vector2(fade_uv if i == 0 else 0.0, fade_uv if i == count - 1 else 0.0)
+			if ends != Vector2.ZERO:
+				_end_fade(sprite, ends)
 		# Where the stretch sits with the camera centred on it; it scrolls sideways at
 		# [param scroll] around that, never drifting past its ends' limits, and stays on
 		# its floor up and down.
-		var spot := Vector2(x0, (row + 1) * CELL + (sink - piece_size.y) * size)
+		# The sink is not scaled with small (cave) rocks: the art's flat bottom must
+		# always sit under the floor's lip.
+		var spot := Vector2(x0, (row + 1) * CELL + sink - piece_size.y * size)
 		var reference := clampf((x0 + x1) * 0.5, center_min.x, center_max.x)
 		var factor := Vector2(scroll, 1.0)
 		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - scroll), 0.0),
 				Vector2(spot.x - drift_left, spot.x + drift_right)])
 
 
+## Fades [param sprite] in over its left [param ends].x and out over its right
+## [param ends].y (fractions of its width).
+func _end_fade(sprite: Sprite2D, ends: Vector2) -> void:
+	if _end_fade_shader == null:
+		_end_fade_shader = Shader.new()
+		_end_fade_shader.code = END_FADE_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = _end_fade_shader
+	material.set_shader_parameter("ends", ends)
+	sprite.material = material
+
+
 ## The room's floor runs: [row of the open cells, first column, last column, headroom in
-## cells (open cells above the run, the least along it)]. A run is a row of open cells
-## standing on solid ones, broken where either changes.
+## cells (open cells above each cell, the least along it)]. A run is a row of open cells
+## standing on solid ones, broken where either changes or where the ceiling above
+## changes height (so an open ledge and the low corridor it leads into are separate
+## runs, each with rock sized to its own headroom).
 func _floor_runs() -> Array:
 	var runs := []
 	for row in grid.size() - 1:
 		var start := -1
+		var start_room := -1
 		for col in grid[0].length() + 1:
 			var floor_cell: bool = col < grid[0].length() and not _solid(col, row) \
 					and _solid(col, row + 1)
+			var room := 0
+			if floor_cell:
+				while row - room >= 0 and not _solid(col, row - room):
+					room += 1
+			if start >= 0 and (not floor_cell or room != start_room):
+				runs.append([row, start, col - 1, start_room])
+				start = -1
 			if floor_cell and start < 0:
 				start = col
-			if not floor_cell and start >= 0:
-				var headroom := grid.size()
-				for c in range(start, col):
-					var open := 0
-					while row - open >= 0 and not _solid(c, row - open):
-						open += 1
-					headroom = mini(headroom, open)
-				runs.append([row, start, col - 1, headroom])
-				start = -1
+				start_room = room
 	return runs
 
 
@@ -1008,6 +1060,22 @@ func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_re
 			_add_skirt(layer, texture, image_scale, copies * period)
 
 
+## Moves the silhouette band by its lagging sway (see SILHOUETTE_SWAY) for the camera
+## centred on [param center]; call after the band has been placed for this frame.
+func _sway_silhouettes(center: Vector2) -> void:
+	if _silhouette_layer == null:
+		return
+	var now := Time.get_ticks_usec()
+	var delta := (now - _silhouette_ticks) / 1000000.0 if _silhouette_ticks > 0 else 0.0
+	_silhouette_ticks = now
+	if is_nan(_silhouette_lag_y):
+		_silhouette_lag_y = center.y
+	_silhouette_lag_y = lerpf(_silhouette_lag_y, center.y, 1.0 - exp(-delta / SILHOUETTE_LAG))
+	var drift := clampf((_silhouette_lag_y - center.y) * SILHOUETTE_SWAY,
+			-SILHOUETTE_MAX_DRIFT, SILHOUETTE_MAX_DRIFT)
+	_silhouette_layer.position.y += drift
+
+
 ## The black silhouette foliage (see SILHOUETTES) as one repeating A-B-C layer.
 func _add_silhouettes(parent: Node2D) -> void:
 	if SILHOUETTES.is_empty():
@@ -1034,6 +1102,13 @@ func _add_silhouettes(parent: Node2D) -> void:
 	var factor := Vector2(FOREGROUND_SCALE.x, 0.0)
 	var base := Vector2(FOREGROUND_SCALE.x * VIEW_SIZE.x * 0.5, 0.0) - VIEW_SIZE * 0.5
 	_layers.append([layer, factor, base])
+	_silhouette_layer = layer
+	var black := Polygon2D.new()
+	var top := VIEW_SIZE.y - 1.0
+	black.polygon = PackedVector2Array([Vector2(0, top), Vector2(x, top),
+			Vector2(x, top + SILHOUETTE_MAX_DRIFT + 8.0), Vector2(0, top + SILHOUETTE_MAX_DRIFT + 8.0)])
+	black.color = Color.BLACK
+	layer.add_child(black)
 
 
 ## A strip of the bottom loop's own bottom-row colour hanging under it, one screen tall:
