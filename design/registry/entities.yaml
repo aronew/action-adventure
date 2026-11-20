@@ -440,6 +440,14 @@ constants:
     unit: s
     notes: "Rooms and transitions Edge Cases (range 0.5-5, Rec). An enemy knocked out of its room through an open bottom edge or a pit is removed at the room's bounds and reappears at its spawn point after this delay; level design Edge Cases asked for it. The Enemies GDD must adopt it."
     added: 2026-11-19
+  - name: rest_area_max_width
+    status: active
+    source: design/gdd/save-points-and-save-load.md
+    referenced_by: []
+    value: 3
+    unit: tiles
+    notes: "Save points Tuning Knobs (range 1-4, Owner, second review 2026-11-20). Widest rest area, in 6 px tiles, the room check accepts; the snap to the seat is at most this plus half the hitbox width (5 px). Rooms and transitions (room check) and level design (placement) must read it and add themselves to referenced_by when they adopt Save points Open Questions 1 and 2; empty until then. Lives in src/save/save_point_config.tres."
+    added: 2026-11-20
 
 # Example:
 #
