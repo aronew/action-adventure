@@ -64,3 +64,39 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 12
+Summary: The two second-review blockers hold (P7 example re-derived: shift 18, 0, -36; sections example re-derived: A 738 and 1662, T 996, scale 1.32, edge 1479.0); P1-P3, P5 and P6 check out and registry shows 0 conflicts. One new hole, found by reading the reference scene: the GDD applied `close_min_run` (108 px) to the floor run before the 54 px drop pull-in, but the reference tests the stretch after it, so a 108 px platform between two drops got a 0 px stretch and P7 went degenerate. Revised in the same session along with three cheap items; 10 recommended items were not applied.
+Prior verdict resolved: Yes (both second-review blockers verified)
+Findings:
+- [BLOCKING] Detailed Design rule 6; Edge Cases; Acceptance Criteria; P7: `close_min_run` tested on the run, not the stretch after the pull-in; a run needs 216 px with two drops, 162 with one, 108 between walls. Revised: minimum applies to the stretch (as the reference does), P7 `x0`/`x1` range, AC with boundary runs 100/108/161/162/215/216 px
+- [RECOMMENDED] Detailed Design rule 8: the room's own set's travel range with sections mid-room was unstated. Revised: hull of the uncovered area widened by `layer_blend / 2`
+- [RECOMMENDED] Acceptance Criteria (setting): Reduced "every band's position equals Full" contradicted the silhouette band at rest. Revised: silhouette band excluded
+- [RECOMMENDED] Acceptance Criteria (readability): P4 "masked" read as excluding the lip and Seeker pixels it reads. Revised: "identified by mask"
+- [RECOMMENDED] Detailed Design rule 7; Formulas P6: the 0.53 cap is at rest only; a fall lifts the band's top to about 103 px (carried)
+- [RECOMMENDED] Formulas P6; Acceptance Criteria: update order of `lag_y` vs drift unstated; lag-first gives 34.7 px at 60 fps, not 36 (carried)
+- [RECOMMENDED] Acceptance Criteria (motion): "close band 85" has no preconditions; plants move 92 and the slide is clamped (120 px from ref at a drop, 240 at a wall, for rocks), so "rocks slide past" holds only near ref (carried, extended)
+- [RECOMMENDED] Formulas P5: `ground_fog_alpha_max` lives in the preset it caps; move to a project-wide config (carried)
+- [RECOMMENDED] Detailed Design rule 1; Open Question 1: "baked trim" vs the lip as the terrain's trim (carried)
+- [RECOMMENDED] Detailed Design rule 16: reference fog drifts on shader `TIME`; say how it moves to the world clock (carried)
+- [RECOMMENDED] Detailed Design rule 14; Acceptance Criteria: P4 never run in Reduced (carried)
+- [RECOMMENDED] Edge Cases (preset check): most preset fields have no range (carried)
+- [RECOMMENDED] Edge Cases (photosensitivity): flicker "3 per second" has no unit (carried)
+- [RECOMMENDED] Detailed Design rule 8: "section" clashes with level design rule 18 and grid-map secret sections (carried)
+- [RECOMMENDED] Detailed Design rule 15: band build and particle pre-warm vs `build_time` (R3) (carried)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: P4 corridor example omits the Seeker; frame-time AC has no pass line; compound close band AC; leading playtest wording; grid map does not list this system; fog factors not registered.
+Receipt note: the GDD hash below is the reviewed version (HEAD 1bbb59f, before this revision), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 8b30ebd6f0d6b91cf9929f4217e3e6b7d9b8b8d5
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
