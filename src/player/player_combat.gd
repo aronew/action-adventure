@@ -186,7 +186,8 @@ func _make_layer(frames: SpriteFrames) -> AnimatedSprite2D:
 	var layer := AnimatedSprite2D.new()
 	layer.sprite_frames = frames
 	layer.centered = false
-	layer.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	layer.texture_filter = _player.art_filter()
+	layer.scale = Vector2.ONE * _player.art_scale()
 	layer.visible = false
 	return layer
 
@@ -219,7 +220,7 @@ func _start_heavy() -> void:
 	_body.speed_scale = _config.windup_speed_scale
 	_fx.speed_scale = _config.windup_speed_scale
 	_glow.visible = true
-	_glow.scale.x = float(_player.facing)
+	_glow.scale = Vector2(float(_player.facing), 1.0) * _player.art_scale()
 	_glow_index = -1
 	_glow_timer = 0.0
 
@@ -242,7 +243,7 @@ func _play_layers(id: String) -> void:
 	_fx.visible = true
 	_fx.speed_scale = 1.0
 	_fx.offset = -_fx_pivots[StringName(id)]
-	_fx.scale.x = float(_player.facing)
+	_fx.scale = Vector2(float(_player.facing), 1.0) * _player.art_scale()
 	_fx.play(id)
 	_fx.frame = 0
 	_fx_finished = false
@@ -352,9 +353,9 @@ func _detach_fx() -> void:
 	var copy := AnimatedSprite2D.new()
 	copy.sprite_frames = _fx.sprite_frames
 	copy.centered = false
-	copy.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	copy.texture_filter = _fx.texture_filter
 	copy.offset = _fx.offset
-	copy.scale.x = _fx.scale.x
+	copy.scale = _fx.scale
 	copy.animation_finished.connect(copy.queue_free)
 	_player.get_parent().add_child(copy)
 	copy.global_position = _fx.global_position

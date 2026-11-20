@@ -1,0 +1,389 @@
+{
+  "coverage": {
+    "sheets": 23,
+    "frames": 148
+  },
+  "checks": [
+    {
+      "id": "AirJump_Ring",
+      "frame_count": 7,
+      "frame_size": [
+        256,
+        128
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Dust_Dash",
+      "frame_count": 7,
+      "frame_size": [
+        320,
+        160
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Dust_Jump",
+      "frame_count": 6,
+      "frame_size": [
+        256,
+        144
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Dust_Land",
+      "frame_count": 7,
+      "frame_size": [
+        352,
+        128
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Aura_Loop",
+      "frame_count": 16,
+      "frame_size": [
+        320,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Charge_Gather",
+      "frame_count": 10,
+      "frame_size": [
+        384,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Charge_Loop",
+      "frame_count": 8,
+      "frame_size": [
+        384,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Charge_Loop_Big",
+      "frame_count": 8,
+      "frame_size": [
+        384,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Charge_Release",
+      "frame_count": 6,
+      "frame_size": [
+        384,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Charge_Release_Big",
+      "frame_count": 6,
+      "frame_size": [
+        384,
+        384
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Power_Burst",
+      "frame_count": 10,
+      "frame_size": [
+        512,
+        512
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Arrow_Impact",
+      "frame_count": 4,
+      "frame_size": [
+        192,
+        192
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Arrow_Projectile",
+      "frame_count": 3,
+      "frame_size": [
+        224,
+        64
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Arrow_Release",
+      "frame_count": 3,
+      "frame_size": [
+        128,
+        128
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Basic_Impact",
+      "frame_count": 7,
+      "frame_size": [
+        256,
+        256
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Basic_Muzzle",
+      "frame_count": 4,
+      "frame_size": [
+        192,
+        192
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Basic_Projectile",
+      "frame_count": 4,
+      "frame_size": [
+        192,
+        96
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Big_Impact",
+      "frame_count": 8,
+      "frame_size": [
+        448,
+        448
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Big_Muzzle",
+      "frame_count": 6,
+      "frame_size": [
+        320,
+        320
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Big_Projectile",
+      "frame_count": 6,
+      "frame_size": [
+        320,
+        192
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Rapid_Impact",
+      "frame_count": 5,
+      "frame_size": [
+        128,
+        128
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Rapid_Muzzle",
+      "frame_count": 3,
+      "frame_size": [
+        192,
+        128
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": false,
+      "background_edge_flags": [],
+      "missing_frames": []
+    },
+    {
+      "id": "Shot_Rapid_Projectile",
+      "frame_count": 4,
+      "frame_size": [
+        160,
+        64
+      ],
+      "sheet_crop_equals_frames": true,
+      "source_peak_opacity_matches": true,
+      "canvas_and_anchor_scale": 8,
+      "durations_ms_match": true,
+      "loop_flag": true,
+      "background_edge_flags": [],
+      "missing_frames": []
+    }
+  ],
+  "source_sheet_bytes_preserved": true,
+  "limitations": [
+    "Generated internal shapes and particle paths approximate the source artwork.",
+    "Not tested inside the user game engine.",
+    "Existing character-only PRO cast variants are not supplied by Bone.zip and were not added."
+  ],
+  "additional_checks": {
+    "source_repeated_frames_identical": 0,
+    "source_blank_fx_frames_empty": 0,
+    "preview_layer_selections": 23,
+    "preview_frame_steps": 148,
+    "preview_draw_calls": 988,
+    "preview_image_load_failures": [],
+    "preview_test_method": "Node VM with DOM/canvas stub; all real local PNG dimensions checked. Not a browser rendering or game-engine test."
+  },
+  "registration_and_integration_checks": {
+    "existing_character_asset_files_verified_unchanged": 291,
+    "character_animations": 22,
+    "character_frames": 252,
+    "split_sheets": 17,
+    "standalone_effect_sheets": 23,
+    "standalone_effect_frames": 148,
+    "effect_registration_rectangles_checked": 148,
+    "source_metadata_matches_PRO_guided_assets": 23,
+    "source_FX_copies_byte_identical": true,
+    "bow_cast_event_references_valid": true
+  },
+  "additional_FX_pass": {
+    "animations_checked": 23,
+    "frames_checked": 148,
+    "loop_sequences_checked": 7,
+    "corrected_frames": 37,
+    "corrected_animations": 14,
+    "all_alpha_masks_and_positions_preserved": true,
+    "source_colour_fades_checked": true
+  }
+}

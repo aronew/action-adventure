@@ -1,0 +1,526 @@
+HOODED SEEKER - ANIMATION GUIDE  (PRO)
+Primitive Pixels
+
+This is a quick doc rundown that you can reference if you ever get stuck
+trying to figure out how to rig up the animations or lining up VFX to frames.
+
+----------------------------------------------------------------
+TWO THINGS TO KNOW FIRST
+----------------------------------------------------------------
+1. THE FEET POINT (PIVOT)
+   The frames are different sizes, because a sword swing needs more
+   room than standing still. Every animation has a "feet" point: the
+   spot on the ground between his feet, counted in pixels from the
+   top-left corner of a frame. Set that as the sprite's origin and
+   every animation lines up, whatever its size.
+
+2. READING A SHEET
+   Every sheet is one row of frames, left to right. The frame size and
+   the number of frames are in the file name: Seeker_Void_Run_30x30_10f.png
+   means each frame is 30 x 30 and there are 10 frames.
+   <Palette> in a file name below means Void, Ember, Frost, Bone
+   or Dream.
+
+----------------------------------------------------------------
+THE ANIMATIONS
+----------------------------------------------------------------
+
+IDLE
+  File      Seeker_<Palette>_Idle_30x30_24f.png
+  Frames    24, each 30 x 30, loops
+  Speed     every frame 100 ms (10 fps)
+  Feet      15, 28  (the pivot, see the top of this file)
+
+  Loop it whenever he is standing still.
+
+RUN
+  File      Seeker_<Palette>_Run_30x30_10f.png
+  Frames    10, each 30 x 30, loops
+  Speed     every frame 70 ms (14 fps)
+  Feet      17, 28  (the pivot, see the top of this file)
+
+  Loop it while he moves. The timing suits a run speed of about
+  140 pixels a second at 1x. Speed the frames up or down with your
+  run speed and the feet won't slide.
+
+JUMPFALL
+  File      Seeker_<Palette>_JumpFall_30x30_28f.png
+  Frames    28, each 30 x 30, plays once
+  Speed     frame by frame: 40, 30, 30, 30, 30, 30, 30, 30, 30,
+            30, 30, 30, 30, 60, 60, 40, 40, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 60, 80 ms
+  Feet      16, 28  (the pivot, see the top of this file)
+
+  One sheet for the whole jump. Pick the frame from his vertical
+  speed rather than from time:
+    frame 0       takeoff
+    frames 1-12   going up
+    frames 13-14  the top of the jump
+    frames 15-25  falling (loop these for a long fall)
+    frames 26-27  landing
+  Spawn Dust_Jump at his feet on takeoff and Dust_Land on landing.
+
+DOUBLEJUMP
+  File      Seeker_<Palette>_DoubleJump_55x80_14f.png
+  Frames    14, each 55 x 80, plays once
+  Speed     frame by frame: 40, 40, 40, 40, 40, 40, 40, 30, 30,
+            30, 30, 40, 60, 80 ms
+  Feet      26, 51  (the pivot, see the top of this file)
+
+  Play it once when the second jump starts (it's a flip), then go
+  back to the JumpFall falling frames 15-25.
+  Spawn AirJump_Ring at his feet as it starts.
+
+DASH
+  File      Seeker_<Palette>_Dash_30x30_5f.png
+  Frames    5, each 30 x 30, loops
+  Speed     every frame 40 ms (25 fps)
+  Feet      18, 26  (the pivot, see the top of this file)
+
+  Loop it for as long as the dash lasts. It reads well at around
+  0.2 to 0.3 seconds.
+  Spawn Dust_Dash at his feet when a ground dash starts.
+
+WALLSLIDE
+  File      Seeker_<Palette>_WallSlide_40x40_5f.png
+  Frames    5, each 40 x 40, loops
+  Speed     every frame 100 ms (10 fps)
+  Feet      18, 36  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Loop it while he slides down a wall. It's drawn with his back to
+  the wall, so when he faces right the wall is on his left.
+  The PRO sheet has dust scraping off the wall baked in: puffs
+  trail up the wall from his heel as he slides, with grit and a
+  fleck of magic. It sits on a 40 x 40 canvas so the dust fits (his
+  pose and feet point are the same, just moved 4 right and 8 down).
+  FX Split/ has the plain pose (Body) and the dust on its own (FX).
+
+CLIMB
+  File      Seeker_<Palette>_Climb_30x30_9f.png
+  Frames    9, each 30 x 30, loops
+  Speed     every frame 80 ms (12 fps)
+  Feet      15, 28  (the pivot, see the top of this file)
+
+  Loop it while he moves on a ladder or vine. When he stops, show
+  frame 0 (his still pose) so he doesn't climb on the spot.
+
+CROUCH
+  File      Seeker_<Palette>_Crouch_30x30_5f.png
+  Frames    5, each 30 x 30, plays once
+  Speed     frame by frame: 40, 40, 60, 60, 100 ms
+  Feet      15, 27  (the pivot, see the top of this file)
+
+  Frames 0-3 take him down, hold frame 3 while he stays crouched,
+  and frame 4 stands him back up.
+
+ENTERDOOR
+  File      Seeker_<Palette>_EnterDoor_30x30_15f.png
+  Frames    15, each 30 x 30, plays once
+  Speed     frame by frame: 120, 100, 80, 80, 80, 80, 80, 80,
+            80, 80, 90, 90, 90, 90, 400 ms
+  Feet      13, 28  (the pivot, see the top of this file)
+
+  Play it once, then fade out or change rooms. The last frame
+  holds a little longer on purpose.
+
+GRAPPLE
+  File      Seeker_<Palette>_Grapple_40x40_8f.png
+  Frames    8, each 40 x 40, plays once
+  Speed     frame by frame: 80, 40, 80, 80, 80, 80, 80, 80 ms
+  Feet      20, 33  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  For a grapple, hookshot or swing.
+    frame 0      wind up
+    frames 1-2   the throw
+    frames 3-6   being pulled along (loop these)
+    frame 7      letting go
+  The throwing arm points about 45 degrees up. Rotate the sprite
+  toward the grapple point while he is pulled. The rope is not
+  included, draw a line from his hand to the point.
+
+ATTACK1
+  File      Seeker_<Palette>_Attack1_90x50_8f.png
+  Frames    8, each 90 x 50, plays once
+  Speed     frame by frame: 40, 40, 60, 40, 60, 40, 60, 80 ms
+  Feet      16, 38  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  The first swing of the 3-hit combo. The hit lands on frames 3-4.
+  To chain into Attack2, let the player cancel from frame 5 on.
+  When you cancel, let the rest of its FX sheet (FX Split folder)
+  play out where the swing was, so the slash always finishes.
+
+ATTACK2
+  File      Seeker_<Palette>_Attack2_90x50_5f.png
+  Frames    5, each 90 x 50, plays once
+  Speed     frame by frame: 60, 40, 60, 40, 80 ms
+  Feet      18, 43  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  The second swing. The hit lands on frames 1-2.
+  To chain into Attack3, let the player cancel from frame 4 on.
+  Let the rest of its FX sheet play out the same way.
+
+ATTACK3
+  File      Seeker_<Palette>_Attack3_200x50_10f.png
+  Frames    10, each 200 x 50, plays once
+  Speed     frame by frame: 40, 40, 60, 60, 40, 40, 60, 60, 80,
+            100 ms
+  Feet      102, 43  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  The finisher. The hit lands on frames 5-6. Give it a little
+  screen shake and it feels great.
+
+JUMPATTACK
+  File      Seeker_<Palette>_JumpAttack_90x50_9f.png
+  Frames    9, each 90 x 50, plays once
+  Speed     frame by frame: 40, 40, 60, 40, 60, 60, 80, 60,
+            100 ms
+  Feet      19, 44  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  A swing in the air. The hit lands on frames 3-4. Keep his air
+  movement going while it plays.
+
+UPATTACK
+  File      Seeker_<Palette>_UpAttack_55x80_8f.png
+  Frames    8, each 55 x 80, plays once
+  Speed     frame by frame: 40, 40, 60, 40, 60, 60, 80, 80 ms
+  Feet      23, 78  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Swing upward. The hit lands on frames 3-4.
+
+DOWNATTACK
+  File      Seeker_<Palette>_DownAttack_55x80_7f.png
+  Frames    7, each 55 x 80, plays once
+  Speed     frame by frame: 40, 40, 60, 40, 60, 60, 100 ms
+  Feet      21, 42  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Swing downward in the air. The hit lands on frames 3-4.
+  Great for a pogo bounce: if it hits, launch him back up.
+
+HEAVYATTACK
+  File      Seeker_<Palette>_HeavyAttack_117x80_11f.png
+  Frames    11, each 117 x 80, plays once
+  Speed     frame by frame: 80, 80, 80, 80, 140, 40, 40, 60, 80,
+            80, 120 ms
+  Feet      33, 72  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Frames 0-4 are the wind up (hold frame 4 if you want a charged
+  attack), and the hit lands on frames 5-6.
+  The playable test does it this way: hold the attack button and he
+  winds up and holds frame 4 while it charges, let go and frames
+  5-10 play as the strike.
+  For the charge glow, FX Split/ has HeavyAttack_BladeGlow: four
+  states of his blade swallowed in light, drawn over frame 4. Cycle
+  them while he charges (3, 1, 3, 1, 0, 1), speeding up as it fills,
+  then flicker 0 and 2 fast once it's ready.
+
+BOW
+  File      Seeker_<Palette>_Bow_55x80_22f.png
+  Frames    22, each 55 x 80, plays once
+  Speed     frame by frame: 100, 100, 60, 60, 60, 60, 60, 60,
+            100, 20, 40, 60, 40, 60, 80, 20, 40, 60,
+            40, 60, 80, 20 ms
+  Feet      25, 53  (the pivot, see the top of this file)
+
+  Play frames 0-21 once, then loop frames 16-21 for every extra
+  shot while the button is held.
+  An arrow leaves on frames 9, 15 and 21. Spawn it 8 pixels in front
+  of the feet point and 13 up (flip the 8 when he faces left).
+  On those frames spawn Shot_Arrow_Release and Shot_Arrow_Projectile.
+
+CAST
+  File      Seeker_<Palette>_Cast_40x40_11f.png
+  Frames    11, each 40 x 40, plays once
+  Speed     frame by frame: 60, 60, 60, 60, 60, 60, 80, 40, 40,
+            100, 120 ms
+  Feet      19, 33  (the pivot, see the top of this file)
+
+  The plain cast, with no magic drawn in. Spawn your own spell on
+  frame 8, 15 pixels in front of the feet point and 12 up.
+  CastBasic below is the same move with the spell effects built in.
+
+HURT
+  File      Seeker_<Palette>_Hurt_55x80_9f.png
+  Frames    9, each 55 x 80, plays once
+  Speed     frame by frame: 40, 60, 50, 50, 50, 60, 60, 80,
+            100 ms
+  Feet      26, 52  (the pivot, see the top of this file)
+
+  Getting hit, staying in place.
+
+HURTKNOCKBACK
+  File      Seeker_<Palette>_HurtKnockback_55x80_9f.png
+  Frames    9, each 55 x 80, plays once
+  Speed     frame by frame: 40, 60, 50, 50, 50, 60, 60, 80,
+            100 ms
+  Feet      40, 52  (the pivot, see the top of this file)
+
+  Getting hit and knocked back. The step back is drawn into the
+  frames, so you don't need to move him.
+
+DEATH
+  File      Seeker_<Palette>_Death_40x50_20f.png
+  Frames    20, each 40 x 50, plays once
+  Speed     frame by frame: 100, 80, 80, 80, 100, 80, 70, 70,
+            70, 70, 70, 80, 80, 80, 80, 80, 80, 80,
+            80, 900 ms
+  Feet      20, 48  (the pivot, see the top of this file)
+
+  Play it once and stay on the last frame.
+
+----------------------------------------------------------------
+THE SPELL CASTS (PRO)
+----------------------------------------------------------------
+Each cast comes two ways on the same 64 x 48 canvas:
+  - the full sheet, with the magic already drawn in, or
+  - a Body sheet plus an FX sheet (in FX Split/), drawn on top of
+    each other, same frame number. Use these to recolour, glow or
+    hide the magic.
+The flying projectile is never drawn into the cast, because it has
+to move in your game. Spawn it on the frame listed below.
+
+CASTBASIC
+  File      Seeker_<Palette>_CastBasic_64x48_14f.png
+  Frames    14, each 64 x 48, plays once
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  A single magic bolt with the gather and the flash drawn in.
+  Play it once. On frame 7 spawn Shot_Basic_Projectile 16 pixels
+  in front of the feet point and 12 up (the end of his sleeve).
+
+CASTRAPID_START
+  File      Seeker_<Palette>_CastRapid_Start_64x48_6f.png
+  Frames    6, each 64 x 48, plays once
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Rapid fire, part 1. Play it once, then go to CastRapid_Loop.
+  The last frame fires the first bolt.
+
+CASTRAPID_LOOP
+  File      Seeker_<Palette>_CastRapid_Loop_64x48_8f.png
+  Frames    8, each 64 x 48, loops
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Rapid fire, part 2. Loop it while fire is held. His arm stays out
+  and a small magic circle spins at his hand. Spawn a
+  Shot_Rapid_Projectile on frames 0, 2, 4 and 6 (ten a second),
+  16 pixels in front of the feet point and 12 up.
+
+CASTRAPID_END
+  File      Seeker_<Palette>_CastRapid_End_64x48_4f.png
+  Frames    4, each 64 x 48, plays once
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Rapid fire, part 3. Play it once when fire is let go.
+
+CASTBIG_START
+  File      Seeker_<Palette>_CastBig_Start_64x48_6f.png
+  Frames    6, each 64 x 48, plays once
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Charged shot, part 1. Play it once, then go to CastBig_Loop.
+  The charge gathers in front of his chest.
+
+CASTBIG_LOOP
+  File      Seeker_<Palette>_CastBig_Loop_64x48_8f.png
+  Frames    8, each 64 x 48, loops
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Charged shot, part 2. Loop it for as long as the charge is held.
+
+CASTBIG_END
+  File      Seeker_<Palette>_CastBig_End_64x48_8f.png
+  Frames    8, each 64 x 48, plays once
+  Speed     every frame 50 ms (20 fps)
+  Feet      25, 41  (the pivot, see the top of this file)
+  Layers    also comes as separate Body and FX sheets in FX Split/
+
+  Charged shot, part 3. Play it once on release. On frame 1 spawn
+  Shot_Big_Projectile 16 pixels in front of the feet point and 12 up.
+
+----------------------------------------------------------------
+THE VFX
+----------------------------------------------------------------
+Every effect is one row of frames and plays at 20 fps (50 ms a frame).
+
+To use one:
+1. Pick the point in your world where it happens (his hand, the
+   impact, his feet).
+2. Put the effect's anchor pixel on that point. The anchor is listed
+   below, counted from the top-left of a frame, and drawn in pink in
+   VFX/Seeker_VFX_Guide.png.
+3. Play it once, or keep looping it if it says loops, then remove it.
+
+Shots, muzzle flashes and Dust_Dash are drawn facing right. Flip them
+to face left, around the anchor.
+
+Tip: they look great as they are. For extra glow, draw a second copy
+with additive blending on top at about half opacity.
+
+
+-- MAGIC --
+
+Charge_Gather
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Charge_Gather_48x48_10f.png
+  Frames    10, each 48 x 48, plays once
+  Anchor    24, 24
+  Goes on   his hand, or wherever the energy gathers
+
+Charge_Loop
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Charge_Loop_48x48_8f.png
+  Frames    8, each 48 x 48, loops
+  Anchor    24, 24
+  Goes on   the same spot as Charge_Gather. Loop it while charging
+
+Charge_Release
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Charge_Release_48x48_6f.png
+  Frames    6, each 48 x 48, plays once
+  Anchor    24, 24
+  Goes on   the same spot, when a small charge lets go
+
+Charge_Loop_Big
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Charge_Loop_Big_48x48_8f.png
+  Frames    8, each 48 x 48, loops
+  Anchor    24, 24
+  Goes on   the same spot, for a bigger charge
+
+Charge_Release_Big
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Charge_Release_Big_48x48_6f.png
+  Frames    6, each 48 x 48, plays once
+  Anchor    24, 24
+  Goes on   the same spot, when a big charge lets go
+
+Aura_Loop
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Aura_Loop_40x48_16f.png
+  Frames    16, each 40 x 48, loops
+  Anchor    20, 44
+  Goes on   his feet. Motes of light rising off him, for standing still or powering up
+
+Power_Burst
+  File      VFX/<Palette>/Magic/Seeker_VFX_<Palette>_Power_Burst_64x64_10f.png
+  Frames    10, each 64 x 64, plays once
+  Anchor    32, 58
+  Goes on   his feet. For a power up, level up or palette swap
+
+-- SHOTS --
+
+Shot_Basic_Muzzle
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Basic_Muzzle_24x24_4f.png
+  Frames    4, each 24 x 24, plays once
+  Anchor    5, 12
+  Goes on   his hand as the bolt leaves
+
+Shot_Basic_Projectile
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Basic_Projectile_24x12_4f.png
+  Frames    4, each 24 x 12, loops
+  Anchor    15, 6
+  Goes on   the bolt's position (the anchor is its head)
+
+Shot_Basic_Impact
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Basic_Impact_32x32_7f.png
+  Frames    7, each 32 x 32, plays once
+  Anchor    16, 16
+  Goes on   the point the bolt hits
+
+Shot_Rapid_Muzzle
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Rapid_Muzzle_24x16_3f.png
+  Frames    3, each 24 x 16, plays once
+  Anchor    3, 8
+  Goes on   his hand on each rapid shot
+
+Shot_Rapid_Projectile
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Rapid_Projectile_20x8_4f.png
+  Frames    4, each 20 x 8, loops
+  Anchor    15, 4
+  Goes on   the bolt's position (the anchor is its head)
+
+Shot_Rapid_Impact
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Rapid_Impact_16x16_5f.png
+  Frames    5, each 16 x 16, plays once
+  Anchor    8, 8
+  Goes on   the point the bolt hits
+
+Shot_Big_Muzzle
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Big_Muzzle_40x40_6f.png
+  Frames    6, each 40 x 40, plays once
+  Anchor    8, 20
+  Goes on   his hand as the charged shot leaves
+
+Shot_Big_Projectile
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Big_Projectile_40x24_6f.png
+  Frames    6, each 40 x 24, loops
+  Anchor    27, 12
+  Goes on   the orb's position (the anchor is its head)
+
+Shot_Big_Impact
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Big_Impact_56x56_8f.png
+  Frames    8, each 56 x 56, plays once
+  Anchor    28, 28
+  Goes on   the point the orb hits
+
+Shot_Arrow_Release
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Arrow_Release_16x16_3f.png
+  Frames    3, each 16 x 16, plays once
+  Anchor    4, 8
+  Goes on   the arrow's spawn point as it leaves the bow
+
+Shot_Arrow_Projectile
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Arrow_Projectile_28x8_3f.png
+  Frames    3, each 28 x 8, loops
+  Anchor    24, 4
+  Goes on   the arrow's position (the anchor is its tip)
+
+Shot_Arrow_Impact
+  File      VFX/<Palette>/Shots/Seeker_VFX_<Palette>_Shot_Arrow_Impact_24x24_4f.png
+  Frames    4, each 24 x 24, plays once
+  Anchor    12, 12
+  Goes on   the point the arrow hits
+
+-- DUST --
+
+Dust_Jump
+  File      VFX/<Palette>/Dust/Seeker_VFX_<Palette>_Dust_Jump_32x18_6f.png
+  Frames    6, each 32 x 18, plays once
+  Anchor    16, 16
+  Goes on   his feet on takeoff
+
+Dust_Land
+  File      VFX/<Palette>/Dust/Seeker_VFX_<Palette>_Dust_Land_44x16_7f.png
+  Frames    7, each 44 x 16, plays once
+  Anchor    22, 14
+  Goes on   his feet when he lands
+
+Dust_Dash
+  File      VFX/<Palette>/Dust/Seeker_VFX_<Palette>_Dust_Dash_40x20_7f.png
+  Frames    7, each 40 x 20, plays once
+  Anchor    30, 18
+  Goes on   his feet when a dash starts
+
+AirJump_Ring
+  File      VFX/<Palette>/Dust/Seeker_VFX_<Palette>_AirJump_Ring_32x16_7f.png
+  Frames    7, each 32 x 16, plays once
+  Anchor    16, 6
+  Goes on   his feet at the start of a double jump
+
+----------------------------------------------------------------
+Questions or requests: primitive.pixels.games@gmail.com
