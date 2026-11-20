@@ -238,3 +238,40 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 15
+Summary: The seventh-review blocker held: rules 1, 5, 13, the AC and the Edge Cases agree on the room-end inset cap (38 px, slide 62 for the reference border), and P1, P2, P6 and P7 re-derive; registry shows 0 conflicts over 12 lines. One blocker: the foreground strips draw at 10+ in front of the Seeker and rule 13 says everything in front has "its limit", but the strips had only "stay near the screen's top and bottom", with no number, no preset check and no AC. Measured over all 36 shipped strip files: top strips reach 0.402-0.403 of the screen height (about 109 px), bottom strips 0.33-0.40. Revised in the same session: owner chose a cap; `foreground_reach_max` set at 0.41 (the owner picked 0.40, but the shipped top strips measure 0.403 and would fail it by about 0.8 px).
+Prior verdict resolved: Yes (seventh-review blocker verified)
+Findings:
+- [BLOCKING] Detailed Design rules 1, 5, 13; Formulas P3; Edge Cases; Acceptance Criteria: foreground strips in front of the Seeker with no limit on their art's reach. Revised: `foreground_reach_max` 0.41 (data file, range 0.2-0.45), measured at alpha 0.5 from the screen's edge; preset check rejects strip art past it; new AC over the 36 shipped files plus fixtures; new Edge Case
+- [RECOMMENDED] Detailed Design rule 12; Edge Cases: the grade has almost no numbers in the GDD (`bloom_area`, contrast, split tone, saturation, ambient gradient; vignette 0.5 only in Edge Cases); the reference scene is the source and the AC checks only the HUD and the P4 margin (new)
+- [RECOMMENDED] Detailed Design rule 8: the blend curve's shape (linear or smoothstep) is unspecified; the AC samples only 0, 0.5 and 1 (carried)
+- [RECOMMENDED] Detailed Design rules 7, 13; Game Feel; Acceptance Criteria (playtest): cap binds at 74 px/s camera speed; a plain full jump lifts the foliage ~23 px; "fast" undefined (carried)
+- [RECOMMENDED] Formulas P1, P2 tables: room's own set A and T vs rule 8's hull (carried)
+- [RECOMMENDED] Dependencies: Pause and menus and Grid map missing from the upstream table (carried)
+- [RECOMMENDED] Detailed Design rule 8: section fog scale blend (carried)
+- [RECOMMENDED] Acceptance Criteria: rule 17 and rule 16 (transition freeze, map) untested (carried)
+- [RECOMMENDED] Formulas P5: `ground_fog_alpha_max` lives in the preset it caps (carried)
+- [RECOMMENDED] Detailed Design rule 1: "baked trim" vs the lip (carried)
+- [RECOMMENDED] Detailed Design rule 16: reference fog drifts on shader TIME (carried)
+- [RECOMMENDED] Detailed Design rule 14; Acceptance Criteria: P4 never run in Reduced (carried)
+- [RECOMMENDED] Edge Cases (preset check): most preset fields have no range (carried)
+- [RECOMMENDED] Edge Cases (photosensitivity): flicker "3 per second" has no unit (carried)
+- [RECOMMENDED] Detailed Design rule 8: "section" naming clash (carried)
+- [RECOMMENDED] Detailed Design rule 15 and rules 1, 8: `build_time`; which banks show in a near-wall section (carried, merged)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: the bottom strip (reach at most 0.40) sits mostly behind the silhouette band at rest (its top 0.53), so the top strip is the one the cap matters for; a room-end piece's own top and bottom edge can show in a 3 px shake at a room corner (rule 4); UI string "no particles or glow blur"; a room's own set with an empty range is rejected though never visible; room-end piece "in a section less than a screen tall" unclear with stacked sections. Dependencies with no GDD: Camera, Player controller, Pause and menus, Combat, Enemies, art bible.
+Receipt note: the GDD hash below is the reviewed version (HEAD blob, before this revision), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 90693f587319e1cd251e62f631811395f216b4c4
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
