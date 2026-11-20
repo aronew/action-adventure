@@ -75,7 +75,7 @@ A tougher guarded enemy, region 1's mini-boss (Keeper Tavik, the Hot-Carrier), m
 - [x] Guard-break: bosses and mini-bosses have a guard meter (normal enemies do not); the charged heavy shatters it and opens a finisher
 - [x] 2–3 enemy types with readable, telegraphed attacks
 - [x] One boss fight
-- [x] Dash and wall cling found in region 1 (dash from the mini-boss, wall cling from a shrine behind a dash gate), each opening routes and new attack angles; double-jump and grapple gates are seen in region 1 and their keys come from later regions (level design GDD, confirmed 2026-11-18)
+- [x] Dash found in region 1 (from the mini-boss), opening routes and new attack angles; wall-cling, double-jump and grapple gates are seen in region 1 and their keys come from later regions: double jump region 2, wall cling region 3, grapple region 4 (owner, 2026-11-20; was dash and wall cling in region 1, level design GDD, 2026-11-18)
 - [ ] Rooms with doors, save points and a grid map that fills in
 
 ## Your systems

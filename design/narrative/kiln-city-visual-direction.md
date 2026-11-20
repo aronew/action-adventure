@@ -6,7 +6,7 @@ Status: Approved by the project owner 2026-11-18 (drafts and history in `product
 
 - Ground: soot-umber and ash-aubergine, low value, low saturation. Light comes from below: dim amber from kiln windows and fireboxes, dithered, never brighter than mid value.
 - The Seeker (bone-pale) is the lightest matte value on screen; play-layer collision edges are the brightest values in a room. Background and foreground framing stay darker than both.
-- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple). Region 1 opens orange and copper-green; yellow and violet appear as unreachable gates.
+- Reserved hues, one per key, used for nothing else: orange (dash), copper-green (wall cling), chalk-yellow (double jump), violet (grapple). Region 1 opens orange only (owner, 2026-11-20: the dash is region 1's one key); copper-green, yellow and violet appear as unreachable gates.
 
 ## Glazed vs unglazed
 
