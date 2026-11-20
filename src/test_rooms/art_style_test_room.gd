@@ -115,6 +115,9 @@ const ISLANDS := [
 	["platform-long", 990.0, 192.0, 103.0],
 ]
 ## Ground props: prop, left x, the surface they stand on (world y). No collision.
+## Whether the ground props (the ruin arch, rock piles, plants, the doorway walls) stand
+## on the floors. Off: the owner found they did not sit right on the painted terrain.
+const SHOW_GROUND_PROPS := false
 const GROUND_PROPS := [
 	["wall-left", 4.0, 293.5],
 	["rocks-small", 150.0, 293.5],
@@ -143,6 +146,9 @@ const CORRIDOR_HANGING_PROPS := [
 ## Background layers: file, scroll scale (how fast it moves on screen against the
 ## camera; 1 = the play layer), whether it repeats (mirrored, so the seams meet) instead
 ## of stretching to cover the room.
+## The far city and the midground ruins are darkened by this (the lava haze is the
+## light, not the buildings).
+const BACK_TINT := Color(0.74, 0.66, 0.66)
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 ## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
 ## slabs (pieces A, B, C) as scenery just behind the floors. Every straight run of floor
@@ -161,6 +167,9 @@ const CLOSE_ROCKS_Z := -9
 ## How far below the floor line each stretch's bottom sits, world px at full size.
 const CLOSE_ROCKS_SINK := 12.0
 const CLOSE_ROCKS_EDGE_INSET := 54.0
+## The close rocks and plants are darkened by this (they sit back from the play layer);
+## the mood pass also blurs them slightly (RoomAtmosphere.CLOSE_BLUR).
+const CLOSE_BAND_TINT := Color(0.72, 0.68, 0.7)
 ## How far a stretch may drift towards a drop (it always stays a full cell from the edge,
 ## where the ledge's rounded corner would show the rock's flat bottom).
 const CLOSE_ROCKS_DROP_DRIFT := 18.0
@@ -417,7 +426,7 @@ func _ready() -> void:
 	for island in islands:
 		_add_island(world, island)
 	var s := _prop_scale()
-	for entry in ground_props:
+	for entry in ground_props if SHOW_GROUND_PROPS else []:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
@@ -426,7 +435,7 @@ func _ready() -> void:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
-	for entry in corridor_ground_props:
+	for entry in corridor_ground_props if SHOW_GROUND_PROPS else []:
 		var bounds: Array = PROP_BOUNDS[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
@@ -684,6 +693,7 @@ func _add_back_layers(parent: Node2D) -> void:
 		var copies := int(ceil(needed.x / tile.x)) if repeats else 1
 		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
 				image_scale, copies, index)
+		layer.modulate = BACK_TINT
 		index += 10
 		var size := Vector2(tile.x * copies, tile.y)
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
@@ -722,6 +732,12 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			x1 -= CLOSE_ROCKS_EDGE_INSET
 		var drift_left := CLOSE_ROCKS_DROP_DRIFT if drop_left else CELL
 		var drift_right := CLOSE_ROCKS_DROP_DRIFT if drop_right else CELL
+		# At a wall the band runs on behind it (one cell plus its drift), so it meets the
+		# wall at full height instead of tapering; it only tapers and fades at a drop.
+		if not drop_left:
+			x0 -= CELL * 2.0
+		if not drop_right:
+			x1 += CELL * 2.0
 		var width := x1 - x0
 		if width < CLOSE_ROCKS_MIN_RUN:
 			continue
@@ -733,6 +749,7 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 		var stretch := width / (count * piece_size.x)
 		var layer := Node2D.new()
 		layer.z_index = CLOSE_ROCKS_Z
+		layer.modulate = CLOSE_BAND_TINT
 		parent.add_child(layer)
 		for i in count:
 			var sprite := Sprite2D.new()
@@ -745,7 +762,8 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			# The stretch's ends: the pieces end in a low block of rubble; fade its last
 			# CLOSE_ROCKS_END_FADE px so it trails off instead of stopping square.
 			var fade_uv := CLOSE_ROCKS_END_FADE / (piece_size.x * stretch)
-			var ends := Vector2(fade_uv if i == 0 else 0.0, fade_uv if i == count - 1 else 0.0)
+			var ends := Vector2(fade_uv if i == 0 and drop_left else 0.0,
+					fade_uv if i == count - 1 and drop_right else 0.0)
 			if ends != Vector2.ZERO:
 				_end_fade(sprite, ends)
 		# Where the stretch sits with the camera centred on it; it scrolls sideways at
