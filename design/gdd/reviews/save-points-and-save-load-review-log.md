@@ -56,3 +56,30 @@ Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a
 Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
 Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
 Reviewed-Content-Hash: design/gdd/grid-map.md 8ec5995785450e3ade07c3c1de9c2cd3882a6f21
+
+## Review — 2026-11-20 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; systems-designer, qa-lead and game-designer lenses applied in session)
+Blocking items: 0 | Recommended: 5
+Summary: The fourth review's seat blocker holds: the seat is a clear box inside a rest area at least as wide as the hitbox, a rest sets x and y, a press is refused beyond a tile from the seat's floor, and the snap bound agrees across rule 3, Edge Cases, the knob and the criteria. Checked against `src/` (`interact` bindings, `_state_ground` order, `take_hit`, the 2410 ms death clip, `hitbox_size`, `max_health`, `RELOAD_DELAY`); F1 and F2 arithmetic is right. Remaining items are wording and criteria; the owed edits to rooms and transitions and level design stay tracked in Open Questions 1-2.
+Prior verdict resolved: Yes (fourth review's seat blocker)
+Findings:
+- [RECOMMENDED] Open Questions: two items are numbered 7 (delete the second; Grid map cites the first)
+- [RECOMMENDED] Acceptance Criteria (rule 6): dead-body trigger criterion omits exit, door, arena-lock and shortcut triggers
+- [RECOMMENDED] Acceptance Criteria (rule 2): no criterion for a step exactly one tile below the seat (moves up) or more than one tile below (refused)
+- [RECOMMENDED] Rule 3: name the state guard for rest and arrival protection; `PlayerHealth.reset()` clears the invulnerability window, so the health window cannot be the mechanism
+- [RECOMMENDED] Rule 2 / Edge Cases: dash and grapple are checked before `interact` in `_state_ground`; state the precedence and make the same-frame hit ordering testable
+Registry values: 22 entry names searched; hits on `transition_time` (0.2 or more), `collision_tile` (6) and `rest_area_max_width` (3), 0 conflicts; `save_spacing_max` is deprecated and agrees with "no spacing rule".
+Advisory (not counted): Player Fantasy absent (advisory at standard). Nice-to-have: the hazard-during-rest criterion needs a fixture that breaks rule 3(b); a rest heals health only, so a future bow or cast resource needs a refill decision.
+Receipt note: the GDD was not edited after this review, so a re-review reads UNCHANGED until it is.
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 5843420ba1907718429ed03bf872b0b76b0ec10a
+Reviewed-Content-Hash: design/registry/entities.yaml 6a3f98fe4960723cd35c2ad75c1335b4050e63ff
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8

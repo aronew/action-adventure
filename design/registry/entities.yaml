@@ -417,6 +417,7 @@ constants:
     referenced_by:
       - design/gdd/terrain-pipeline.md
       - design/gdd/rooms-and-transitions.md
+      - design/gdd/parallax-lighting-and-atmosphere.md
     value: 6
     unit: px
     notes: "Rule 2. Side of a black collision tile, anchored at the room top-left; a 480 x 270 screen is 80 x 45 tiles. Must divide 30 and the art cell (36 px in the art-style test room); every collision, room and gate edge lies on the grid. Owner decision 2026-11-19 (Hollow Knight-style block-out)."
@@ -447,6 +448,24 @@ constants:
     value: 3
     unit: tiles
     notes: "Save points Tuning Knobs (range 2-4, Owner, second review 2026-11-20; floor of 2 at the fourth review: a rest area must be as wide as the 10 px hitbox). Widest rest area, in 6 px tiles, the room check accepts; the sideways snap to the seat is at most this plus half the hitbox width (5 px), and the vertical snap one tile. Rooms and transitions (room check) and level design (placement) must read it and add themselves to referenced_by when they adopt Save points Open Questions 1 and 2; empty until then. Lives in src/save/save_point_config.tres."
+    added: 2026-11-20
+  - name: parallax_band_factors
+    status: active
+    source: design/gdd/parallax-lighting-and-atmosphere.md
+    referenced_by:
+      - design/gdd/terrain-pipeline.md
+    value: {far: 0.15, mid: 0.5, close_rocks: 0.85, close_plants: 0.92, play: 1.0, foreground_x: 1.2, foreground_y: 1.1}  # was: close 0.85 (plants missing) before 2026-11-20, /consistency-check
+    unit: camera-motion factor
+    notes: "Parallax rule 1 and P1 (range 0-2 per axis): how far each band moves on screen per px of camera move; 1 is the play layer. Starting values of the Cinderheart preset, from the biome packs' layers.json and the reference scene; each biome preset may tune them. Terrain pipeline Visual/Audio restates the pack's 0.15, 0.50, 1.00 and 1.20."
+    added: 2026-11-20
+    revised: 2026-11-20
+  - name: ember_size_max
+    status: active
+    source: design/gdd/parallax-lighting-and-atmosphere.md
+    referenced_by: []
+    value: 2.8
+    unit: px
+    notes: "Parallax rule 10 and Edge Cases: the largest ember, world px. Requirement on Combat and Enemies: every projectile is at least twice this (6 px or more) and never ember-coloured without an outline or a trail; they add themselves to referenced_by when their GDDs adopt it."
     added: 2026-11-20
 
 # Example:
