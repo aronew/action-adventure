@@ -108,6 +108,24 @@ extends Resource
 ## this many pixels onto it.
 @export var ledge_nudge: int
 
+@export_group("Ledge grab")
+## Whether the Seeker catches ledges (hang, then pull up). Off by default: it extends his
+## reach, and the ability-gating figures assume it is absent. A room or a pickup turns it
+## on (the art-style test rooms do, as the all-abilities arena).
+@export var ledge_grab_enabled: bool
+## Where the feet hang below the ledge corner while hanging, world px (from the painted
+## hang pose: the grip is on the corner, the feet 17.75 px below it).
+@export var ledge_hang_drop: float
+## How far from the corner, past the wall, the feet stand after the pull-up, world px
+## (the pull-up's last frame is the idle pose this far onto the ledge).
+@export var ledge_stand_offset: float
+## The catch window: the corner may be this far above (up) or below (down) the hands'
+## hang height when the Seeker reaches it while falling into the wall, world px.
+@export var ledge_grab_window_up: float
+@export var ledge_grab_window_down: float
+## After dropping off a ledge, how long before a ledge can be caught again.
+@export var ledge_regrab_lockout: float
+
 @export_group("Climb")
 ## Vertical speed on a ladder or vine.
 @export var climb_speed: float

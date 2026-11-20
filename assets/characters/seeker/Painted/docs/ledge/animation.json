@@ -1,0 +1,461 @@
+{
+  "frame_size": [
+    480,
+    480
+  ],
+  "coordinates": "top-left pixel origin; y downward",
+  "right_facing_ledge_corner": [
+    330,
+    240
+  ],
+  "left_facing_ledge_corner": [
+    149,
+    240
+  ],
+  "source_wallslide_frame_size": [
+    240,
+    240
+  ],
+  "new_drawings_uniform_scale": 0.9,
+  "revision": "v2 compact source proportions",
+  "clips": {
+    "LedgeGrab_Right": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgeGrab_Right_480x480_4f.png",
+      "frame_count": 4,
+      "loop": false,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "catch"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "catch"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "catch"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "catch"
+        }
+      ]
+    },
+    "LedgeHang_Right": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgeHang_Right_480x480_4f.png",
+      "frame_count": 4,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        }
+      ]
+    },
+    "LedgePullUp_Right": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgePullUp_Right_480x480_10f.png",
+      "frame_count": 10,
+      "loop": false,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 80,
+          "phase": "second_hand_reach"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "two_hand_grip"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "chin_above_ledge"
+        },
+        {
+          "index": 4,
+          "rect": [
+            1920,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "press_up"
+        },
+        {
+          "index": 5,
+          "rect": [
+            2400,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "knee_lift"
+        },
+        {
+          "index": 6,
+          "rect": [
+            2880,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "knee_over_ledge"
+        },
+        {
+          "index": 7,
+          "rect": [
+            3360,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "kneel_on_platform"
+        },
+        {
+          "index": 8,
+          "rect": [
+            3840,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "crouch_on_platform"
+        },
+        {
+          "index": 9,
+          "rect": [
+            4320,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "original_idle"
+        }
+      ]
+    },
+    "LedgeGrab_Left": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgeGrab_Left_480x480_4f.png",
+      "frame_count": 4,
+      "loop": false,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "catch"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "catch"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "catch"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "catch"
+        }
+      ]
+    },
+    "LedgeHang_Left": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgeHang_Left_480x480_4f.png",
+      "frame_count": 4,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "one_hand_hang"
+        }
+      ]
+    },
+    "LedgePullUp_Left": {
+      "sheet": "Spritesheets/Seeker_Bone_LedgePullUp_Left_480x480_10f.png",
+      "frame_count": 10,
+      "loop": false,
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 70,
+          "phase": "one_hand_hang"
+        },
+        {
+          "index": 1,
+          "rect": [
+            480,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 80,
+          "phase": "second_hand_reach"
+        },
+        {
+          "index": 2,
+          "rect": [
+            960,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "two_hand_grip"
+        },
+        {
+          "index": 3,
+          "rect": [
+            1440,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "chin_above_ledge"
+        },
+        {
+          "index": 4,
+          "rect": [
+            1920,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "press_up"
+        },
+        {
+          "index": 5,
+          "rect": [
+            2400,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 90,
+          "phase": "knee_lift"
+        },
+        {
+          "index": 6,
+          "rect": [
+            2880,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "knee_over_ledge"
+        },
+        {
+          "index": 7,
+          "rect": [
+            3360,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "kneel_on_platform"
+        },
+        {
+          "index": 8,
+          "rect": [
+            3840,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 100,
+          "phase": "crouch_on_platform"
+        },
+        {
+          "index": 9,
+          "rect": [
+            4320,
+            0,
+            480,
+            480
+          ],
+          "duration_ms": 140,
+          "phase": "original_idle"
+        }
+      ]
+    }
+  }
+}

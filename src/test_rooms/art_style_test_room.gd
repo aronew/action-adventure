@@ -418,6 +418,10 @@ func _ready() -> void:
 
 	var player: Player = PLAYER_SCENE.instantiate()
 	player.position = spawn_point
+	# This room is the all-abilities arena: the ledge grab is on here (it is off by
+	# default; see PlayerConfig.ledge_grab_enabled). A copy, so other rooms keep theirs.
+	player.config = player.config.duplicate()
+	player.config.ledge_grab_enabled = true
 	add_child(player)
 	var camera := PlayerCamera.new()
 	_camera = camera
