@@ -28,11 +28,11 @@ const LONG_GRID := [
 ]
 ## Floating islands: prop, centre x, surface y (world), surface y in the source image.
 const LONG_ISLANDS := [
-	["platform-short", 420.0, 380.0, 67.0],
-	["platform-medium", 690.0, 400.0, 78.0],
-	["platform-medium", 1900.0, 405.0, 78.0],
-	["platform-short", 2000.0, 330.0, 67.0],
-	["platform-long", 2080.0, 250.0, 96.0],
+	["platform-short", 420.0, 380.0, 83.0],
+	["platform-medium", 690.0, 400.0, 100.0],
+	["platform-medium", 1900.0, 405.0, 100.0],
+	["platform-short", 2000.0, 330.0, 83.0],
+	["platform-long", 2080.0, 250.0, 103.0],
 ]
 ## Ground props: prop, left x, the surface they stand on (world y).
 ## Surface of a floor whose top cell is row r: r * 36 + 5.5 (the top tile's inset).

@@ -86,10 +86,13 @@ const PROP_BOUNDS := {
 ## How far a ground prop sinks into the surface it stands on, in world px.
 const PROP_SINK := 2.0
 ## Floating islands: prop, centre x, surface y (world), surface y in the source image.
+## Floating platforms: [prop, centre x, walkable surface y, the surface's height in the
+## prop's own art px (measured: just inside the stone slab's top outline, under the
+## plants and rocks that sit on it: short 83, medium 100, long 103)].
 const ISLANDS := [
-	["platform-short", 420.0, 232.0, 67.0],
-	["platform-medium", 690.0, 266.0, 78.0],
-	["platform-long", 990.0, 192.0, 96.0],
+	["platform-short", 420.0, 232.0, 83.0],
+	["platform-medium", 690.0, 266.0, 100.0],
+	["platform-long", 990.0, 192.0, 103.0],
 ]
 ## Ground props: prop, left x, the surface they stand on (world y). No collision.
 const GROUND_PROPS := [
