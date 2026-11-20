@@ -47,7 +47,7 @@ Notes by area (balanced density):
 | 18 | Save points and save/load | Persistence | MVP | In Review (first design review 2026-11-20, lean: NEEDS REVISION, 2 blockers revised the same session: seat and rest-area geometry undefined (owner: snap to the seat, the arrival point inside the rest area); rooms and transitions and level design owe changes, set out as wording in the GDD's Open Questions 1-2 (owner: revise each in its own session); owner: no enemy spawn or hazard on a rest area's screens, the Carrier's Kiln niche is scenery; 9 recommended applied; awaiting re-review in a fresh session. Designed 2026-11-20, `/design-system`, lean, standard; owner: press up to sit, a rest sets the respawn point and heals to full, safe while seated, no "saved" text; death costs only the walk back, seated arrival (needs rooms and transitions rule 8 revised); new game respawn at the Waking Niche) | `design/gdd/save-points-and-save-load.md` | World state, Rooms and transitions, Level design, Player controller, Health, damage and death |
 | 19 | Collectible upgrades (inferred) | Progression | Vertical Slice | Not Started | — | World state, Level design |
 | 20 | HUD (inferred) | UI | MVP | Implemented (debug HUD only) | — | Health/damage/death, Ability gating |
-| 21 | Grid map | UI | MVP | Not Started | — | Rooms and transitions, World state, Level design |
+| 21 | Grid map | UI | MVP | Designed (2026-11-20, `/design-system`, lean, standard; pending `/design-review` in a fresh session. Owner: Ori-style fill-in, screen by screen, a found region map (never sold) outlines the rest; its own button, full screen, freezes play; the Seeker's room and position shown; save niches marked once seen, respawn niche highlighted (answers Save points OQ7); secrets and hidden exits nothing until found; 16 x 9 cells. Owes: World state revealed-cells field, Rooms hidden exit mark, Level design region map per region + map colours + secret job in data; story 007 conflict. UX flag: `/ux-design` map screen before epics) | `design/gdd/grid-map.md` | Rooms and transitions, World state, Level design, Camera, Save points, Player controller |
 | 22 | Pause and menus, incl. control remapping (inferred) | UI | Vertical Slice | Not Started | — | Player controller (input), Save points |
 | 23 | Parallax, lighting and atmosphere (inferred) | Presentation | Vertical Slice | Not Started | — | Terrain pipeline, Camera, Rooms and transitions |
 | 24 | Hit feedback and effects (inferred) | Presentation | MVP | Implemented (no GDD) | — (brief) | Combat, Camera |
@@ -182,11 +182,11 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 26 |
-| Design docs started | 6 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points) |
-| Design docs reviewed | 5 (level design, ability gating, terrain pipeline, rooms and transitions, world state) |
+| Design docs started | 7 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map) |
+| Design docs reviewed | 6 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points) |
 | Design docs approved | 4 (level design, ability gating, rooms and transitions, world state) |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
-| MVP systems designed | 6/16 (save points designed; terrain pipeline in review; ability gating, level design, rooms and transitions, world state approved) |
+| MVP systems designed | 7/16 (grid map designed; save points and terrain pipeline in review; ability gating, level design, rooms and transitions, world state approved) |
 | Vertical Slice systems designed | 0/4 |
 
 ---
