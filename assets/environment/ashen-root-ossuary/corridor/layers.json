@@ -1,0 +1,95 @@
+{
+  "screen": [
+    1920,
+    1080
+  ],
+  "alpha_mode": "straight",
+  "layers": [
+    {
+      "name": "close-wall",
+      "file": "background-loop.png",
+      "size": [
+        3840,
+        1080
+      ],
+      "repeat_x": true,
+      "repeat_period": 3840,
+      "camera_factor": 0.85,
+      "z": -10
+    },
+    {
+      "name": "terrain",
+      "file": "../terrain/TileSet.png",
+      "tile_size": 512,
+      "camera_factor": 1,
+      "z": 0
+    },
+    {
+      "name": "foreground-bottom",
+      "file": "foreground-bottom.png",
+      "brighter_file": "brighter/foreground-bottom.png",
+      "size": [
+        3840,
+        1080
+      ],
+      "repeat_x": true,
+      "repeat_period": 3840,
+      "camera_factor": 1.2,
+      "camera_factor_y": 0,
+      "y": 0,
+      "z": 10,
+      "half_pieces": [
+        "segments/foreground-bottom-A.png",
+        "segments/foreground-bottom-B.png"
+      ],
+      "visible_height": 435
+    },
+    {
+      "name": "foreground-top",
+      "file": "foreground-top.png",
+      "brighter_file": "brighter/foreground-top.png",
+      "size": [
+        3840,
+        1080
+      ],
+      "repeat_x": true,
+      "repeat_period": 3840,
+      "camera_factor": 1.2,
+      "camera_factor_y": 0,
+      "y": 0,
+      "z": 11,
+      "half_pieces": [
+        "segments/foreground-top-A.png",
+        "segments/foreground-top-B.png"
+      ],
+      "visible_height": 435
+    },
+    {
+      "name": "border-left",
+      "file": "border-left.png",
+      "brighter_file": "brighter/border-left.png",
+      "size": [
+        512,
+        1080
+      ],
+      "optional": true,
+      "repeat_x": false,
+      "anchor": "room left",
+      "z": 12
+    },
+    {
+      "name": "border-right",
+      "file": "border-right.png",
+      "brighter_file": "brighter/border-right.png",
+      "size": [
+        512,
+        1080
+      ],
+      "optional": true,
+      "repeat_x": false,
+      "anchor": "room right",
+      "z": 12
+    }
+  ],
+  "notes": "Close rear wall replaces distant background. background.png is a finite 1920x1080 alternative. Only background-loop.png and full foreground strips repeat; halves repeat as A+B pairs. Both foreground canvases align at y=0. No foreground collision. Set vertical camera motion independently for room height."
+}

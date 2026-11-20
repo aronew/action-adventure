@@ -1,0 +1,13 @@
+{
+  "z_order": 5,
+  "camera_motion_factor": 1.06,
+  "repeat_x": false,
+  "collision": false,
+  "draw_after": "playable-terrain",
+  "draw_before": "nearest-foreground",
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "notes": "Room-space modular decoration. Keep central play space clear. Existing 435px strips are a separate nearer layer. Positive camera factor means relative screen X = world X - cameraX * factor."
+}

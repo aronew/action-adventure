@@ -1,0 +1,25 @@
+{
+  "fill_tiles": 16,
+  "fill_atlas": [
+    2048,
+    2048
+  ],
+  "fill_cell": [
+    512,
+    512
+  ],
+  "all_256_ordered_pairs_match_horizontal_and_vertical": true,
+  "RGBA_boundary_pixel_comparisons": 262144,
+  "fill_alpha": 255,
+  "textured_atlas": [
+    3584,
+    3584
+  ],
+  "textured_atlas_alpha_exactly_matches_previous": true,
+  "black_core_regions_textured": 6,
+  "interior_pixels_processed": 4899060,
+  "RGB_grade": 0.42,
+  "blend_method": "Shared periodic rock perimeter; minimum-cost patch seams with 8px blending. No black edge borders.",
+  "previous_assets_overwritten": false,
+  "engine_tested": false
+}

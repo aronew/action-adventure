@@ -1,0 +1,64 @@
+{
+  "pieces": [
+    {
+      "piece": "A",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 339,
+      "transparent_pixels": 877494,
+      "opaque_black_pixels": 156388,
+      "all_RGB_zero": true,
+      "bottom_edge_fully_opaque": true
+    },
+    {
+      "piece": "B",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 320,
+      "transparent_pixels": 879729,
+      "opaque_black_pixels": 153353,
+      "all_RGB_zero": true,
+      "bottom_edge_fully_opaque": true
+    },
+    {
+      "piece": "C",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 311,
+      "transparent_pixels": 888387,
+      "opaque_black_pixels": 147654,
+      "all_RGB_zero": true,
+      "bottom_edge_fully_opaque": true
+    }
+  ],
+  "all_nine_ordered_pair_joins_exact": true,
+  "join_pixel_comparisons": 4608,
+  "loop_canvas": [
+    6144,
+    512
+  ],
+  "pair_canvas": [
+    4096,
+    512
+  ],
+  "method": "Generated silhouettes; uniform width normalization, bottom-aligned crop, pure-black RGB and matched geometric base endpoints.",
+  "engine_tested": false
+}

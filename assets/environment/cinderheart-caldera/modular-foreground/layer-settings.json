@@ -1,0 +1,14 @@
+{
+  "z_order": 10,
+  "camera_motion_factor": 1.2,
+  "collision": false,
+  "repeat_x": false,
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "draw_after": "playable-terrain",
+  "placement": "Use the same 512px grid and tile IDs as the uploaded terrain. Room-space modular decoration, not a repeating strip. Section PNGs provide a free-placement alternative.",
+  "camera_formula": "screenX = worldX - cameraX * camera_motion_factor",
+  "notes": "The atlas matches grid positions and main section bounds, not exact old pixel silhouettes. Existing collision/Wang rules are not supplied or validated."
+}

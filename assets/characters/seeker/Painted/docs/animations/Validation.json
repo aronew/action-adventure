@@ -1,0 +1,444 @@
+{
+  "coverage": {
+    "animations": 22,
+    "frames": 252,
+    "split_sheets": 17,
+    "generated_jobs": 31
+  },
+  "checks": [
+    {
+      "animation": "Attack1",
+      "frames": 8,
+      "sheet_dimensions": [
+        5760,
+        400
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Attack2",
+      "frames": 5,
+      "sheet_dimensions": [
+        3600,
+        400
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Attack3",
+      "frames": 10,
+      "sheet_dimensions": [
+        16000,
+        400
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Bow",
+      "frames": 22,
+      "sheet_dimensions": [
+        9680,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Cast",
+      "frames": 11,
+      "sheet_dimensions": [
+        3520,
+        320
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Climb",
+      "frames": 9,
+      "sheet_dimensions": [
+        2160,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Crouch",
+      "frames": 5,
+      "sheet_dimensions": [
+        1200,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Dash",
+      "frames": 5,
+      "sheet_dimensions": [
+        1200,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Death",
+      "frames": 20,
+      "sheet_dimensions": [
+        6400,
+        400
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "DoubleJump",
+      "frames": 14,
+      "sheet_dimensions": [
+        6160,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "DownAttack",
+      "frames": 7,
+      "sheet_dimensions": [
+        3080,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "EnterDoor",
+      "frames": 15,
+      "sheet_dimensions": [
+        3600,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Grapple",
+      "frames": 8,
+      "sheet_dimensions": [
+        2560,
+        320
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "HeavyAttack",
+      "frames": 11,
+      "sheet_dimensions": [
+        10296,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "HurtKnockback",
+      "frames": 9,
+      "sheet_dimensions": [
+        3960,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Hurt",
+      "frames": 9,
+      "sheet_dimensions": [
+        3960,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Idle",
+      "frames": 24,
+      "sheet_dimensions": [
+        5760,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "JumpAttack",
+      "frames": 9,
+      "sheet_dimensions": [
+        6480,
+        400
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "JumpFall",
+      "frames": 28,
+      "sheet_dimensions": [
+        6720,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "Run",
+      "frames": 10,
+      "sheet_dimensions": [
+        2400,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "UpAttack",
+      "frames": 8,
+      "sheet_dimensions": [
+        3520,
+        640
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    },
+    {
+      "animation": "WallSlide",
+      "frames": 5,
+      "sheet_dimensions": [
+        1200,
+        240
+      ],
+      "alpha": true,
+      "frame_crop_matches": true,
+      "source_durations_match": true,
+      "source_pivot_scale_matches": true
+    }
+  ],
+  "missing_generated_cells": [],
+  "verified": [
+    "RGBA PNG dimensions",
+    "Every individual frame matches its exported sheet cell",
+    "All source frame counts and order restored",
+    "Source duplicate frames reuse the same painted cell",
+    "Original duration arrays retained",
+    "Pivots scaled uniformly by 8",
+    "Transparent source FX frames remain empty"
+  ],
+  "not_verified": [
+    "Pixel-exact internal poses or weapon paths",
+    "Smoothness and consistency in the game engine",
+    "Source-pixel-level silhouette matching"
+  ],
+  "visual_review_notes": [
+    "Cleanup v2 corrected costume buttons, missing eyes/half-blinks, FX haze and double-applied death fade.",
+    "Identical cropped source poses reuse identical painted artwork across animations.",
+    "Source canvas, frame count/order, timing, pivot coordinates, blank FX slots and composite consistency passed.",
+    "Internal silhouettes, hands, sword tips and eye positions remain approximate; see Alignment-Audit.json and source ghost overlay.",
+    "Three original main-sheet frames do not exactly reconstruct from their original split pair: Attack1:3, HeavyAttack:4 and HeavyAttack:5 (zero-based).",
+    "Third pass: four grapple FX opacity corrections and six doorway fade-curve corrections. All body alpha silhouettes unchanged."
+  ],
+  "additional_checks": {
+    "source_repeated_frames_identical": 44,
+    "source_blank_fx_frames_empty": 29,
+    "preview_layer_selections": 39,
+    "preview_frame_steps": 388,
+    "preview_draw_calls": 2871,
+    "preview_image_load_failures": [],
+    "preview_test_method": "Node VM with DOM/canvas stub; all real local PNG dimensions checked. Not a browser rendering or game-engine test.",
+    "wallslide_source_pivot_validation": "All five 30x30 source frames exactly match PRO Body crops at (4,8); PRO pivot (18,36) maps to (14,28)."
+  },
+  "split_sheet_checks": {
+    "sheets": 17,
+    "frame_crops_verified": 136,
+    "body_fx_compositions_verified": 66,
+    "body_over_fx_frames": 7,
+    "split_pivots_scaled_correctly": true,
+    "death_frame_peak_alpha_matches_source": true
+  },
+  "third_pass": {
+    "changed_layer_frames": [
+      "EnterDoor:8",
+      "EnterDoor:9",
+      "EnterDoor:10",
+      "EnterDoor:11",
+      "EnterDoor:12",
+      "EnterDoor:13",
+      "Grapple-FX:3",
+      "Grapple-FX:4",
+      "Grapple-FX:5",
+      "Grapple-FX:6"
+    ],
+    "unchanged_layer_frames": 312,
+    "body_alpha_and_placement_frames_verified": 252,
+    "fx_timing": [
+      {
+        "job": "Attack1-FX",
+        "source_and_export_active_frames": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "frame_count": 8
+      },
+      {
+        "job": "Attack2-FX",
+        "source_and_export_active_frames": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frame_count": 5
+      },
+      {
+        "job": "Attack3-FX",
+        "source_and_export_active_frames": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "frame_count": 10
+      },
+      {
+        "job": "DownAttack-FX",
+        "source_and_export_active_frames": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "frame_count": 7
+      },
+      {
+        "job": "Grapple-FX",
+        "source_and_export_active_frames": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "frame_count": 8
+      },
+      {
+        "job": "HeavyAttack-FX",
+        "source_and_export_active_frames": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "frame_count": 11
+      },
+      {
+        "job": "JumpAttack-FX",
+        "source_and_export_active_frames": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "frame_count": 9
+      },
+      {
+        "job": "UpAttack-FX",
+        "source_and_export_active_frames": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "frame_count": 8
+      },
+      {
+        "job": "HeavyAttack-BladeGlow",
+        "source_and_export_active_frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "frame_count": 4
+      }
+    ],
+    "door_fade_ratio_tolerance_mean_rgb": 0.3,
+    "grapple_source_opacity_matched": true,
+    "scope": "Opacity/fade export fixes only. No new pose artwork or coordinate transforms.",
+    "limits": "Internal poses remain approximate; the three original split-layer reconstruction exceptions remain documented."
+  },
+  "complete_pack_summary": {
+    "existing_character_asset_files_verified_unchanged": 291,
+    "character_animations": 22,
+    "character_frames": 252,
+    "split_sheets": 17,
+    "standalone_effect_sheets": 23,
+    "standalone_effect_frames": 148,
+    "effect_registration_rectangles_checked": 148,
+    "source_metadata_matches_PRO_guided_assets": 23,
+    "source_FX_copies_byte_identical": true,
+    "bow_cast_event_references_valid": true
+  }
+}

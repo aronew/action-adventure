@@ -1,0 +1,5573 @@
+{
+  "title": "Bone — painted animation redraws",
+  "version": 5,
+  "export_scale": 8,
+  "alpha": "Straight RGBA PNG; transparent canvas",
+  "status": "Visual cleanup pass completed; source canvas, timing and pivot metadata checked; internal pose accuracy remains approximate",
+  "animation_count": 22,
+  "character_frame_count": 252,
+  "split_sheet_count": 17,
+  "animations": [
+    {
+      "name": "Attack1",
+      "sheet": "Spritesheets/Seeker_Bone_Attack1_720x400_8f.png",
+      "source_sheet": "Seeker_Bone_Attack1_90x50_8f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "source_frame_size": [
+        90,
+        50
+      ],
+      "frame_count": 8,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        40,
+        60,
+        80
+      ],
+      "pivot": [
+        128,
+        304
+      ],
+      "source_pivot": [
+        16,
+        38
+      ],
+      "normalized_pivot": [
+        0.17777777777777778,
+        0.76
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "body_over_fx",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Attack1_720x400_8f.png",
+          "original": "review/original/Seeker_Bone_Attack1_90x50_8f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack1_Body_720x400_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack1_Body_90x50_8f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack1_FX_720x400_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack1_FX_90x50_8f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_01.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_02.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_03.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_04.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_05.png",
+          "rect": {
+            "x": 3600,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_06.png",
+          "rect": {
+            "x": 4320,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            304
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Attack1/Seeker_Bone_Attack1_07.png",
+          "rect": {
+            "x": 5040,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            128,
+            304
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attack2",
+      "sheet": "Spritesheets/Seeker_Bone_Attack2_720x400_5f.png",
+      "source_sheet": "Seeker_Bone_Attack2_90x50_5f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "source_frame_size": [
+        90,
+        50
+      ],
+      "frame_count": 5,
+      "durations_ms": [
+        60,
+        40,
+        60,
+        40,
+        80
+      ],
+      "pivot": [
+        144,
+        344
+      ],
+      "source_pivot": [
+        18,
+        43
+      ],
+      "normalized_pivot": [
+        0.2,
+        0.86
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "body_over_fx",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Attack2_720x400_5f.png",
+          "original": "review/original/Seeker_Bone_Attack2_90x50_5f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack2_Body_720x400_5f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack2_Body_90x50_5f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack2_FX_720x400_5f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack2_FX_90x50_5f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Attack2/Seeker_Bone_Attack2_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            144,
+            344
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Attack2/Seeker_Bone_Attack2_01.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            344
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Attack2/Seeker_Bone_Attack2_02.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            144,
+            344
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Attack2/Seeker_Bone_Attack2_03.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            344
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Attack2/Seeker_Bone_Attack2_04.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            144,
+            344
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attack3",
+      "sheet": "Spritesheets/Seeker_Bone_Attack3_1600x400_10f.png",
+      "source_sheet": "Seeker_Bone_Attack3_200x50_10f.png",
+      "frame_size": [
+        1600,
+        400
+      ],
+      "source_frame_size": [
+        200,
+        50
+      ],
+      "frame_count": 10,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        60,
+        40,
+        40,
+        60,
+        60,
+        80,
+        100
+      ],
+      "pivot": [
+        816,
+        344
+      ],
+      "source_pivot": [
+        102,
+        43
+      ],
+      "normalized_pivot": [
+        0.51,
+        0.86
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Attack3_1600x400_10f.png",
+          "original": "review/original/Seeker_Bone_Attack3_200x50_10f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack3_Body_1600x400_10f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack3_Body_200x50_10f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Attack3_FX_1600x400_10f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Attack3_FX_200x50_10f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_01.png",
+          "rect": {
+            "x": 1600,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_02.png",
+          "rect": {
+            "x": 3200,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_03.png",
+          "rect": {
+            "x": 4800,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_04.png",
+          "rect": {
+            "x": 6400,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_05.png",
+          "rect": {
+            "x": 8000,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_06.png",
+          "rect": {
+            "x": 9600,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_07.png",
+          "rect": {
+            "x": 11200,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_08.png",
+          "rect": {
+            "x": 12800,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            816,
+            344
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Attack3/Seeker_Bone_Attack3_09.png",
+          "rect": {
+            "x": 14400,
+            "y": 0,
+            "w": 1600,
+            "h": 400
+          },
+          "duration_ms": 100,
+          "pivot": [
+            816,
+            344
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bow",
+      "sheet": "Spritesheets/Seeker_Bone_Bow_440x640_22f.png",
+      "source_sheet": "Seeker_Bone_Bow_55x80_22f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 22,
+      "durations_ms": [
+        100,
+        100,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        100,
+        20,
+        40,
+        60,
+        40,
+        60,
+        80,
+        20,
+        40,
+        60,
+        40,
+        60,
+        80,
+        20
+      ],
+      "pivot": [
+        200,
+        424
+      ],
+      "source_pivot": [
+        25,
+        53
+      ],
+      "normalized_pivot": [
+        0.45454545454545453,
+        0.6625
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Bow_440x640_22f.png",
+          "original": "review/original/Seeker_Bone_Bow_55x80_22f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Bow/Seeker_Bone_Bow_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Bow/Seeker_Bone_Bow_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Bow/Seeker_Bone_Bow_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Bow/Seeker_Bone_Bow_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Bow/Seeker_Bone_Bow_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Bow/Seeker_Bone_Bow_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Bow/Seeker_Bone_Bow_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Bow/Seeker_Bone_Bow_07.png",
+          "rect": {
+            "x": 3080,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Bow/Seeker_Bone_Bow_08.png",
+          "rect": {
+            "x": 3520,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Bow/Seeker_Bone_Bow_09.png",
+          "rect": {
+            "x": 3960,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 20,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/Bow/Seeker_Bone_Bow_10.png",
+          "rect": {
+            "x": 4400,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/Bow/Seeker_Bone_Bow_11.png",
+          "rect": {
+            "x": 4840,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/Bow/Seeker_Bone_Bow_12.png",
+          "rect": {
+            "x": 5280,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/Bow/Seeker_Bone_Bow_13.png",
+          "rect": {
+            "x": 5720,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 14,
+          "file": "Frames/Bow/Seeker_Bone_Bow_14.png",
+          "rect": {
+            "x": 6160,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 15,
+          "file": "Frames/Bow/Seeker_Bone_Bow_15.png",
+          "rect": {
+            "x": 6600,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 20,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 16,
+          "file": "Frames/Bow/Seeker_Bone_Bow_16.png",
+          "rect": {
+            "x": 7040,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 17,
+          "file": "Frames/Bow/Seeker_Bone_Bow_17.png",
+          "rect": {
+            "x": 7480,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 18,
+          "file": "Frames/Bow/Seeker_Bone_Bow_18.png",
+          "rect": {
+            "x": 7920,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 19,
+          "file": "Frames/Bow/Seeker_Bone_Bow_19.png",
+          "rect": {
+            "x": 8360,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 20,
+          "file": "Frames/Bow/Seeker_Bone_Bow_20.png",
+          "rect": {
+            "x": 8800,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            200,
+            424
+          ]
+        },
+        {
+          "index": 21,
+          "file": "Frames/Bow/Seeker_Bone_Bow_21.png",
+          "rect": {
+            "x": 9240,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 20,
+          "pivot": [
+            200,
+            424
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cast",
+      "sheet": "Spritesheets/Seeker_Bone_Cast_320x320_11f.png",
+      "source_sheet": "Seeker_Bone_Cast_40x40_11f.png",
+      "frame_size": [
+        320,
+        320
+      ],
+      "source_frame_size": [
+        40,
+        40
+      ],
+      "frame_count": 11,
+      "durations_ms": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        80,
+        40,
+        40,
+        100,
+        120
+      ],
+      "pivot": [
+        152,
+        264
+      ],
+      "source_pivot": [
+        19,
+        33
+      ],
+      "normalized_pivot": [
+        0.475,
+        0.825
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Cast_320x320_11f.png",
+          "original": "review/original/Seeker_Bone_Cast_40x40_11f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Cast/Seeker_Bone_Cast_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Cast/Seeker_Bone_Cast_01.png",
+          "rect": {
+            "x": 320,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Cast/Seeker_Bone_Cast_02.png",
+          "rect": {
+            "x": 640,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Cast/Seeker_Bone_Cast_03.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Cast/Seeker_Bone_Cast_04.png",
+          "rect": {
+            "x": 1280,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Cast/Seeker_Bone_Cast_05.png",
+          "rect": {
+            "x": 1600,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Cast/Seeker_Bone_Cast_06.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Cast/Seeker_Bone_Cast_07.png",
+          "rect": {
+            "x": 2240,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 40,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Cast/Seeker_Bone_Cast_08.png",
+          "rect": {
+            "x": 2560,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 40,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Cast/Seeker_Bone_Cast_09.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 100,
+          "pivot": [
+            152,
+            264
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/Cast/Seeker_Bone_Cast_10.png",
+          "rect": {
+            "x": 3200,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 120,
+          "pivot": [
+            152,
+            264
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Climb",
+      "sheet": "Spritesheets/Seeker_Bone_Climb_240x240_9f.png",
+      "source_sheet": "Seeker_Bone_Climb_30x30_9f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 9,
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "pivot": [
+        120,
+        224
+      ],
+      "source_pivot": [
+        15,
+        28
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.9333333333333333
+      ],
+      "loops": true,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Climb_240x240_9f.png",
+          "original": "review/original/Seeker_Bone_Climb_30x30_9f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Climb/Seeker_Bone_Climb_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Climb/Seeker_Bone_Climb_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Climb/Seeker_Bone_Climb_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Climb/Seeker_Bone_Climb_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Climb/Seeker_Bone_Climb_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Climb/Seeker_Bone_Climb_05.png",
+          "rect": {
+            "x": 1200,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Climb/Seeker_Bone_Climb_06.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Climb/Seeker_Bone_Climb_07.png",
+          "rect": {
+            "x": 1680,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Climb/Seeker_Bone_Climb_08.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            120,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crouch",
+      "sheet": "Spritesheets/Seeker_Bone_Crouch_240x240_5f.png",
+      "source_sheet": "Seeker_Bone_Crouch_30x30_5f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 5,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        60,
+        100
+      ],
+      "pivot": [
+        120,
+        216
+      ],
+      "source_pivot": [
+        15,
+        27
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.9
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Crouch_240x240_5f.png",
+          "original": "review/original/Seeker_Bone_Crouch_30x30_5f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Crouch/Seeker_Bone_Crouch_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            120,
+            216
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Crouch/Seeker_Bone_Crouch_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            120,
+            216
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Crouch/Seeker_Bone_Crouch_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 60,
+          "pivot": [
+            120,
+            216
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Crouch/Seeker_Bone_Crouch_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 60,
+          "pivot": [
+            120,
+            216
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Crouch/Seeker_Bone_Crouch_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            216
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dash",
+      "sheet": "Spritesheets/Seeker_Bone_Dash_240x240_5f.png",
+      "source_sheet": "Seeker_Bone_Dash_30x30_5f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 5,
+      "durations_ms": [
+        40,
+        40,
+        40,
+        40,
+        40
+      ],
+      "pivot": [
+        144,
+        208
+      ],
+      "source_pivot": [
+        18,
+        26
+      ],
+      "normalized_pivot": [
+        0.6,
+        0.8666666666666667
+      ],
+      "loops": true,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Dash_240x240_5f.png",
+          "original": "review/original/Seeker_Bone_Dash_30x30_5f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Dash/Seeker_Bone_Dash_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            208
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Dash/Seeker_Bone_Dash_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            208
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Dash/Seeker_Bone_Dash_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            208
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Dash/Seeker_Bone_Dash_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            208
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Dash/Seeker_Bone_Dash_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            144,
+            208
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Death",
+      "sheet": "Spritesheets/Seeker_Bone_Death_320x400_20f.png",
+      "source_sheet": "Seeker_Bone_Death_40x50_20f.png",
+      "frame_size": [
+        320,
+        400
+      ],
+      "source_frame_size": [
+        40,
+        50
+      ],
+      "frame_count": 20,
+      "durations_ms": [
+        100,
+        80,
+        80,
+        80,
+        100,
+        80,
+        70,
+        70,
+        70,
+        70,
+        70,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        900
+      ],
+      "pivot": [
+        160,
+        384
+      ],
+      "source_pivot": [
+        20,
+        48
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.96
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Death_320x400_20f.png",
+          "original": "review/original/Seeker_Bone_Death_40x50_20f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Death/Seeker_Bone_Death_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 100,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Death/Seeker_Bone_Death_01.png",
+          "rect": {
+            "x": 320,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Death/Seeker_Bone_Death_02.png",
+          "rect": {
+            "x": 640,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Death/Seeker_Bone_Death_03.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Death/Seeker_Bone_Death_04.png",
+          "rect": {
+            "x": 1280,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 100,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Death/Seeker_Bone_Death_05.png",
+          "rect": {
+            "x": 1600,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Death/Seeker_Bone_Death_06.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 70,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Death/Seeker_Bone_Death_07.png",
+          "rect": {
+            "x": 2240,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 70,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Death/Seeker_Bone_Death_08.png",
+          "rect": {
+            "x": 2560,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 70,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Death/Seeker_Bone_Death_09.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 70,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/Death/Seeker_Bone_Death_10.png",
+          "rect": {
+            "x": 3200,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 70,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/Death/Seeker_Bone_Death_11.png",
+          "rect": {
+            "x": 3520,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/Death/Seeker_Bone_Death_12.png",
+          "rect": {
+            "x": 3840,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/Death/Seeker_Bone_Death_13.png",
+          "rect": {
+            "x": 4160,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 14,
+          "file": "Frames/Death/Seeker_Bone_Death_14.png",
+          "rect": {
+            "x": 4480,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 15,
+          "file": "Frames/Death/Seeker_Bone_Death_15.png",
+          "rect": {
+            "x": 4800,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 16,
+          "file": "Frames/Death/Seeker_Bone_Death_16.png",
+          "rect": {
+            "x": 5120,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 17,
+          "file": "Frames/Death/Seeker_Bone_Death_17.png",
+          "rect": {
+            "x": 5440,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 18,
+          "file": "Frames/Death/Seeker_Bone_Death_18.png",
+          "rect": {
+            "x": 5760,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            384
+          ]
+        },
+        {
+          "index": 19,
+          "file": "Frames/Death/Seeker_Bone_Death_19.png",
+          "rect": {
+            "x": 6080,
+            "y": 0,
+            "w": 320,
+            "h": 400
+          },
+          "duration_ms": 900,
+          "pivot": [
+            160,
+            384
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DoubleJump",
+      "sheet": "Spritesheets/Seeker_Bone_DoubleJump_440x640_14f.png",
+      "source_sheet": "Seeker_Bone_DoubleJump_55x80_14f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 14,
+      "durations_ms": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        30,
+        30,
+        30,
+        30,
+        40,
+        60,
+        80
+      ],
+      "pivot": [
+        208,
+        408
+      ],
+      "source_pivot": [
+        26,
+        51
+      ],
+      "normalized_pivot": [
+        0.4727272727272727,
+        0.6375
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_DoubleJump_440x640_14f.png",
+          "original": "review/original/Seeker_Bone_DoubleJump_55x80_14f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_07.png",
+          "rect": {
+            "x": 3080,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 30,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_08.png",
+          "rect": {
+            "x": 3520,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 30,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_09.png",
+          "rect": {
+            "x": 3960,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 30,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_10.png",
+          "rect": {
+            "x": 4400,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 30,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_11.png",
+          "rect": {
+            "x": 4840,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_12.png",
+          "rect": {
+            "x": 5280,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            208,
+            408
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/DoubleJump/Seeker_Bone_DoubleJump_13.png",
+          "rect": {
+            "x": 5720,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            208,
+            408
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DownAttack",
+      "sheet": "Spritesheets/Seeker_Bone_DownAttack_440x640_7f.png",
+      "source_sheet": "Seeker_Bone_DownAttack_55x80_7f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 7,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        100
+      ],
+      "pivot": [
+        168,
+        336
+      ],
+      "source_pivot": [
+        21,
+        42
+      ],
+      "normalized_pivot": [
+        0.38181818181818183,
+        0.525
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "body_over_fx",
+        "body_over_fx",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_DownAttack_440x640_7f.png",
+          "original": "review/original/Seeker_Bone_DownAttack_55x80_7f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_DownAttack_Body_440x640_7f.png",
+          "original": "review/original/FX Split/Seeker_Bone_DownAttack_Body_55x80_7f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_DownAttack_FX_440x640_7f.png",
+          "original": "review/original/FX Split/Seeker_Bone_DownAttack_FX_55x80_7f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            168,
+            336
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/DownAttack/Seeker_Bone_DownAttack_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            168,
+            336
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EnterDoor",
+      "sheet": "Spritesheets/Seeker_Bone_EnterDoor_240x240_15f.png",
+      "source_sheet": "Seeker_Bone_EnterDoor_30x30_15f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 15,
+      "durations_ms": [
+        120,
+        100,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        90,
+        90,
+        90,
+        90,
+        400
+      ],
+      "pivot": [
+        104,
+        224
+      ],
+      "source_pivot": [
+        13,
+        28
+      ],
+      "normalized_pivot": [
+        0.43333333333333335,
+        0.9333333333333333
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_EnterDoor_240x240_15f.png",
+          "original": "review/original/Seeker_Bone_EnterDoor_30x30_15f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 120,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_05.png",
+          "rect": {
+            "x": 1200,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_06.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_07.png",
+          "rect": {
+            "x": 1680,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_08.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_09.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_10.png",
+          "rect": {
+            "x": 2400,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 90,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_11.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 90,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_12.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 90,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_13.png",
+          "rect": {
+            "x": 3120,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 90,
+          "pivot": [
+            104,
+            224
+          ]
+        },
+        {
+          "index": 14,
+          "file": "Frames/EnterDoor/Seeker_Bone_EnterDoor_14.png",
+          "rect": {
+            "x": 3360,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 400,
+          "pivot": [
+            104,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Grapple",
+      "sheet": "Spritesheets/Seeker_Bone_Grapple_320x320_8f.png",
+      "source_sheet": "Seeker_Bone_Grapple_40x40_8f.png",
+      "frame_size": [
+        320,
+        320
+      ],
+      "source_frame_size": [
+        40,
+        40
+      ],
+      "frame_count": 8,
+      "durations_ms": [
+        80,
+        40,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "pivot": [
+        160,
+        264
+      ],
+      "source_pivot": [
+        20,
+        33
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.825
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Grapple_320x320_8f.png",
+          "original": "review/original/Seeker_Bone_Grapple_40x40_8f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Grapple_Body_320x320_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Grapple_Body_40x40_8f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_Grapple_FX_320x320_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_Grapple_FX_40x40_8f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_01.png",
+          "rect": {
+            "x": 320,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 40,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_02.png",
+          "rect": {
+            "x": 640,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_03.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_04.png",
+          "rect": {
+            "x": 1280,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_05.png",
+          "rect": {
+            "x": 1600,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_06.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Grapple/Seeker_Bone_Grapple_07.png",
+          "rect": {
+            "x": 2240,
+            "y": 0,
+            "w": 320,
+            "h": 320
+          },
+          "duration_ms": 80,
+          "pivot": [
+            160,
+            264
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HeavyAttack",
+      "sheet": "Spritesheets/Seeker_Bone_HeavyAttack_936x640_11f.png",
+      "source_sheet": "Seeker_Bone_HeavyAttack_117x80_11f.png",
+      "frame_size": [
+        936,
+        640
+      ],
+      "source_frame_size": [
+        117,
+        80
+      ],
+      "frame_count": 11,
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        140,
+        40,
+        40,
+        60,
+        80,
+        80,
+        120
+      ],
+      "pivot": [
+        264,
+        576
+      ],
+      "source_pivot": [
+        33,
+        72
+      ],
+      "normalized_pivot": [
+        0.28205128205128205,
+        0.9
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "body_over_fx",
+        "body_over_fx",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_HeavyAttack_936x640_11f.png",
+          "original": "review/original/Seeker_Bone_HeavyAttack_117x80_11f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_HeavyAttack_Body_936x640_11f.png",
+          "original": "review/original/FX Split/Seeker_Bone_HeavyAttack_Body_117x80_11f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_HeavyAttack_FX_936x640_11f.png",
+          "original": "review/original/FX Split/Seeker_Bone_HeavyAttack_FX_117x80_11f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_01.png",
+          "rect": {
+            "x": 936,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_02.png",
+          "rect": {
+            "x": 1872,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_03.png",
+          "rect": {
+            "x": 2808,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_04.png",
+          "rect": {
+            "x": 3744,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 140,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_05.png",
+          "rect": {
+            "x": 4680,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_06.png",
+          "rect": {
+            "x": 5616,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_07.png",
+          "rect": {
+            "x": 6552,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_08.png",
+          "rect": {
+            "x": 7488,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_09.png",
+          "rect": {
+            "x": 8424,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            264,
+            576
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/HeavyAttack/Seeker_Bone_HeavyAttack_10.png",
+          "rect": {
+            "x": 9360,
+            "y": 0,
+            "w": 936,
+            "h": 640
+          },
+          "duration_ms": 120,
+          "pivot": [
+            264,
+            576
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HurtKnockback",
+      "sheet": "Spritesheets/Seeker_Bone_HurtKnockback_440x640_9f.png",
+      "source_sheet": "Seeker_Bone_HurtKnockback_55x80_9f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 9,
+      "durations_ms": [
+        40,
+        60,
+        50,
+        50,
+        50,
+        60,
+        60,
+        80,
+        100
+      ],
+      "pivot": [
+        320,
+        416
+      ],
+      "source_pivot": [
+        40,
+        52
+      ],
+      "normalized_pivot": [
+        0.7272727272727273,
+        0.65
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_HurtKnockback_440x640_9f.png",
+          "original": "review/original/Seeker_Bone_HurtKnockback_55x80_9f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_07.png",
+          "rect": {
+            "x": 3080,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            320,
+            416
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/HurtKnockback/Seeker_Bone_HurtKnockback_08.png",
+          "rect": {
+            "x": 3520,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            320,
+            416
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hurt",
+      "sheet": "Spritesheets/Seeker_Bone_Hurt_440x640_9f.png",
+      "source_sheet": "Seeker_Bone_Hurt_55x80_9f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 9,
+      "durations_ms": [
+        40,
+        60,
+        50,
+        50,
+        50,
+        60,
+        60,
+        80,
+        100
+      ],
+      "pivot": [
+        208,
+        416
+      ],
+      "source_pivot": [
+        26,
+        52
+      ],
+      "normalized_pivot": [
+        0.4727272727272727,
+        0.65
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Hurt_440x640_9f.png",
+          "original": "review/original/Seeker_Bone_Hurt_55x80_9f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 50,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_07.png",
+          "rect": {
+            "x": 3080,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            208,
+            416
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Hurt/Seeker_Bone_Hurt_08.png",
+          "rect": {
+            "x": 3520,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 100,
+          "pivot": [
+            208,
+            416
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Idle",
+      "sheet": "Spritesheets/Seeker_Bone_Idle_240x240_24f.png",
+      "source_sheet": "Seeker_Bone_Idle_30x30_24f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 24,
+      "durations_ms": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "pivot": [
+        120,
+        224
+      ],
+      "source_pivot": [
+        15,
+        28
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.9333333333333333
+      ],
+      "loops": true,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Idle_240x240_24f.png",
+          "original": "review/original/Seeker_Bone_Idle_30x30_24f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Idle/Seeker_Bone_Idle_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Idle/Seeker_Bone_Idle_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Idle/Seeker_Bone_Idle_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Idle/Seeker_Bone_Idle_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Idle/Seeker_Bone_Idle_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Idle/Seeker_Bone_Idle_05.png",
+          "rect": {
+            "x": 1200,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Idle/Seeker_Bone_Idle_06.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Idle/Seeker_Bone_Idle_07.png",
+          "rect": {
+            "x": 1680,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Idle/Seeker_Bone_Idle_08.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Idle/Seeker_Bone_Idle_09.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/Idle/Seeker_Bone_Idle_10.png",
+          "rect": {
+            "x": 2400,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/Idle/Seeker_Bone_Idle_11.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/Idle/Seeker_Bone_Idle_12.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/Idle/Seeker_Bone_Idle_13.png",
+          "rect": {
+            "x": 3120,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 14,
+          "file": "Frames/Idle/Seeker_Bone_Idle_14.png",
+          "rect": {
+            "x": 3360,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 15,
+          "file": "Frames/Idle/Seeker_Bone_Idle_15.png",
+          "rect": {
+            "x": 3600,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 16,
+          "file": "Frames/Idle/Seeker_Bone_Idle_16.png",
+          "rect": {
+            "x": 3840,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 17,
+          "file": "Frames/Idle/Seeker_Bone_Idle_17.png",
+          "rect": {
+            "x": 4080,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 18,
+          "file": "Frames/Idle/Seeker_Bone_Idle_18.png",
+          "rect": {
+            "x": 4320,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 19,
+          "file": "Frames/Idle/Seeker_Bone_Idle_19.png",
+          "rect": {
+            "x": 4560,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 20,
+          "file": "Frames/Idle/Seeker_Bone_Idle_20.png",
+          "rect": {
+            "x": 4800,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 21,
+          "file": "Frames/Idle/Seeker_Bone_Idle_21.png",
+          "rect": {
+            "x": 5040,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 22,
+          "file": "Frames/Idle/Seeker_Bone_Idle_22.png",
+          "rect": {
+            "x": 5280,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        },
+        {
+          "index": 23,
+          "file": "Frames/Idle/Seeker_Bone_Idle_23.png",
+          "rect": {
+            "x": 5520,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            120,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "name": "JumpAttack",
+      "sheet": "Spritesheets/Seeker_Bone_JumpAttack_720x400_9f.png",
+      "source_sheet": "Seeker_Bone_JumpAttack_90x50_9f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "source_frame_size": [
+        90,
+        50
+      ],
+      "frame_count": 9,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        60,
+        100
+      ],
+      "pivot": [
+        152,
+        352
+      ],
+      "source_pivot": [
+        19,
+        44
+      ],
+      "normalized_pivot": [
+        0.2111111111111111,
+        0.88
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "body_over_fx",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_JumpAttack_720x400_9f.png",
+          "original": "review/original/Seeker_Bone_JumpAttack_90x50_9f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_JumpAttack_Body_720x400_9f.png",
+          "original": "review/original/FX Split/Seeker_Bone_JumpAttack_Body_90x50_9f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_JumpAttack_FX_720x400_9f.png",
+          "original": "review/original/FX Split/Seeker_Bone_JumpAttack_FX_90x50_9f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_01.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_02.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_03.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 40,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_04.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_05.png",
+          "rect": {
+            "x": 3600,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_06.png",
+          "rect": {
+            "x": 4320,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 80,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_07.png",
+          "rect": {
+            "x": 5040,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 60,
+          "pivot": [
+            152,
+            352
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/JumpAttack/Seeker_Bone_JumpAttack_08.png",
+          "rect": {
+            "x": 5760,
+            "y": 0,
+            "w": 720,
+            "h": 400
+          },
+          "duration_ms": 100,
+          "pivot": [
+            152,
+            352
+          ]
+        }
+      ]
+    },
+    {
+      "name": "JumpFall",
+      "sheet": "Spritesheets/Seeker_Bone_JumpFall_240x240_28f.png",
+      "source_sheet": "Seeker_Bone_JumpFall_30x30_28f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 28,
+      "durations_ms": [
+        40,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        60,
+        60,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        60,
+        80
+      ],
+      "pivot": [
+        128,
+        224
+      ],
+      "source_pivot": [
+        16,
+        28
+      ],
+      "normalized_pivot": [
+        0.5333333333333333,
+        0.9333333333333333
+      ],
+      "loops": false,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_JumpFall_240x240_28f.png",
+          "original": "review/original/Seeker_Bone_JumpFall_30x30_28f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_05.png",
+          "rect": {
+            "x": 1200,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_06.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_07.png",
+          "rect": {
+            "x": 1680,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_08.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_09.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 10,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_10.png",
+          "rect": {
+            "x": 2400,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 11,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_11.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 12,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_12.png",
+          "rect": {
+            "x": 2880,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 30,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 13,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_13.png",
+          "rect": {
+            "x": 3120,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 14,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_14.png",
+          "rect": {
+            "x": 3360,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 15,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_15.png",
+          "rect": {
+            "x": 3600,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 16,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_16.png",
+          "rect": {
+            "x": 3840,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 17,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_17.png",
+          "rect": {
+            "x": 4080,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 18,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_18.png",
+          "rect": {
+            "x": 4320,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 19,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_19.png",
+          "rect": {
+            "x": 4560,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 20,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_20.png",
+          "rect": {
+            "x": 4800,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 21,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_21.png",
+          "rect": {
+            "x": 5040,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 22,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_22.png",
+          "rect": {
+            "x": 5280,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 23,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_23.png",
+          "rect": {
+            "x": 5520,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 24,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_24.png",
+          "rect": {
+            "x": 5760,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 25,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_25.png",
+          "rect": {
+            "x": 6000,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 40,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 26,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_26.png",
+          "rect": {
+            "x": 6240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 60,
+          "pivot": [
+            128,
+            224
+          ]
+        },
+        {
+          "index": 27,
+          "file": "Frames/JumpFall/Seeker_Bone_JumpFall_27.png",
+          "rect": {
+            "x": 6480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 80,
+          "pivot": [
+            128,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Run",
+      "sheet": "Spritesheets/Seeker_Bone_Run_240x240_10f.png",
+      "source_sheet": "Seeker_Bone_Run_30x30_10f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 10,
+      "durations_ms": [
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70
+      ],
+      "pivot": [
+        136,
+        224
+      ],
+      "source_pivot": [
+        17,
+        28
+      ],
+      "normalized_pivot": [
+        0.5666666666666667,
+        0.9333333333333333
+      ],
+      "loops": true,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_Run_240x240_10f.png",
+          "original": "review/original/Seeker_Bone_Run_30x30_10f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/Run/Seeker_Bone_Run_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/Run/Seeker_Bone_Run_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/Run/Seeker_Bone_Run_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/Run/Seeker_Bone_Run_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/Run/Seeker_Bone_Run_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/Run/Seeker_Bone_Run_05.png",
+          "rect": {
+            "x": 1200,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/Run/Seeker_Bone_Run_06.png",
+          "rect": {
+            "x": 1440,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/Run/Seeker_Bone_Run_07.png",
+          "rect": {
+            "x": 1680,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 8,
+          "file": "Frames/Run/Seeker_Bone_Run_08.png",
+          "rect": {
+            "x": 1920,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        },
+        {
+          "index": 9,
+          "file": "Frames/Run/Seeker_Bone_Run_09.png",
+          "rect": {
+            "x": 2160,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 70,
+          "pivot": [
+            136,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UpAttack",
+      "sheet": "Spritesheets/Seeker_Bone_UpAttack_440x640_8f.png",
+      "source_sheet": "Seeker_Bone_UpAttack_55x80_8f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "source_frame_size": [
+        55,
+        80
+      ],
+      "frame_count": 8,
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        80
+      ],
+      "pivot": [
+        184,
+        624
+      ],
+      "source_pivot": [
+        23,
+        78
+      ],
+      "normalized_pivot": [
+        0.41818181818181815,
+        0.975
+      ],
+      "loops": false,
+      "composite_order_per_frame": [
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body",
+        "fx_over_body"
+      ],
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_UpAttack_440x640_8f.png",
+          "original": "review/original/Seeker_Bone_UpAttack_55x80_8f.png"
+        },
+        "body": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_UpAttack_Body_440x640_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_UpAttack_Body_55x80_8f.png"
+        },
+        "fx": {
+          "painted": "Spritesheets/FX Split/Seeker_Bone_UpAttack_FX_440x640_8f.png",
+          "original": "review/original/FX Split/Seeker_Bone_UpAttack_FX_55x80_8f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_01.png",
+          "rect": {
+            "x": 440,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_02.png",
+          "rect": {
+            "x": 880,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_03.png",
+          "rect": {
+            "x": 1320,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 40,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_04.png",
+          "rect": {
+            "x": 1760,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 5,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_05.png",
+          "rect": {
+            "x": 2200,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 60,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 6,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_06.png",
+          "rect": {
+            "x": 2640,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            184,
+            624
+          ]
+        },
+        {
+          "index": 7,
+          "file": "Frames/UpAttack/Seeker_Bone_UpAttack_07.png",
+          "rect": {
+            "x": 3080,
+            "y": 0,
+            "w": 440,
+            "h": 640
+          },
+          "duration_ms": 80,
+          "pivot": [
+            184,
+            624
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WallSlide",
+      "sheet": "Spritesheets/Seeker_Bone_WallSlide_240x240_5f.png",
+      "source_sheet": "Seeker_Bone_WallSlide_30x30_5f.png",
+      "frame_size": [
+        240,
+        240
+      ],
+      "source_frame_size": [
+        30,
+        30
+      ],
+      "frame_count": 5,
+      "durations_ms": [
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "pivot": [
+        112,
+        224
+      ],
+      "source_pivot": [
+        14,
+        28
+      ],
+      "normalized_pivot": [
+        0.4666666666666667,
+        0.9333333333333333
+      ],
+      "loops": true,
+      "composite_order_per_frame": null,
+      "layers": {
+        "composite": {
+          "painted": "Spritesheets/Seeker_Bone_WallSlide_240x240_5f.png",
+          "original": "review/original/Seeker_Bone_WallSlide_30x30_5f.png"
+        }
+      },
+      "frames": [
+        {
+          "index": 0,
+          "file": "Frames/WallSlide/Seeker_Bone_WallSlide_00.png",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            112,
+            224
+          ]
+        },
+        {
+          "index": 1,
+          "file": "Frames/WallSlide/Seeker_Bone_WallSlide_01.png",
+          "rect": {
+            "x": 240,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            112,
+            224
+          ]
+        },
+        {
+          "index": 2,
+          "file": "Frames/WallSlide/Seeker_Bone_WallSlide_02.png",
+          "rect": {
+            "x": 480,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            112,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "file": "Frames/WallSlide/Seeker_Bone_WallSlide_03.png",
+          "rect": {
+            "x": 720,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            112,
+            224
+          ]
+        },
+        {
+          "index": 4,
+          "file": "Frames/WallSlide/Seeker_Bone_WallSlide_04.png",
+          "rect": {
+            "x": 960,
+            "y": 0,
+            "w": 240,
+            "h": 240
+          },
+          "duration_ms": 100,
+          "pivot": [
+            112,
+            224
+          ]
+        }
+      ]
+    }
+  ],
+  "split_sheets": [
+    {
+      "animation": "Attack1",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack1_Body_720x400_8f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 8,
+      "pivot": [
+        128,
+        304
+      ],
+      "source_pivot": [
+        16,
+        38
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        40,
+        60,
+        80
+      ],
+      "normalized_pivot": [
+        0.17777777777777778,
+        0.76
+      ]
+    },
+    {
+      "animation": "Attack1",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack1_FX_720x400_8f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 8,
+      "pivot": [
+        128,
+        304
+      ],
+      "source_pivot": [
+        16,
+        38
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        40,
+        60,
+        80
+      ],
+      "normalized_pivot": [
+        0.17777777777777778,
+        0.76
+      ]
+    },
+    {
+      "animation": "Attack2",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack2_Body_720x400_5f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 5,
+      "pivot": [
+        144,
+        344
+      ],
+      "source_pivot": [
+        18,
+        43
+      ],
+      "durations_ms": [
+        60,
+        40,
+        60,
+        40,
+        80
+      ],
+      "normalized_pivot": [
+        0.2,
+        0.86
+      ]
+    },
+    {
+      "animation": "Attack2",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack2_FX_720x400_5f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 5,
+      "pivot": [
+        144,
+        344
+      ],
+      "source_pivot": [
+        18,
+        43
+      ],
+      "durations_ms": [
+        60,
+        40,
+        60,
+        40,
+        80
+      ],
+      "normalized_pivot": [
+        0.2,
+        0.86
+      ]
+    },
+    {
+      "animation": "Attack3",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack3_Body_1600x400_10f.png",
+      "frame_size": [
+        1600,
+        400
+      ],
+      "frame_count": 10,
+      "pivot": [
+        816,
+        344
+      ],
+      "source_pivot": [
+        102,
+        43
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        60,
+        40,
+        40,
+        60,
+        60,
+        80,
+        100
+      ],
+      "normalized_pivot": [
+        0.51,
+        0.86
+      ]
+    },
+    {
+      "animation": "Attack3",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Attack3_FX_1600x400_10f.png",
+      "frame_size": [
+        1600,
+        400
+      ],
+      "frame_count": 10,
+      "pivot": [
+        816,
+        344
+      ],
+      "source_pivot": [
+        102,
+        43
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        60,
+        40,
+        40,
+        60,
+        60,
+        80,
+        100
+      ],
+      "normalized_pivot": [
+        0.51,
+        0.86
+      ]
+    },
+    {
+      "animation": "DownAttack",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_DownAttack_Body_440x640_7f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "frame_count": 7,
+      "pivot": [
+        168,
+        336
+      ],
+      "source_pivot": [
+        21,
+        42
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        100
+      ],
+      "normalized_pivot": [
+        0.38181818181818183,
+        0.525
+      ]
+    },
+    {
+      "animation": "DownAttack",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_DownAttack_FX_440x640_7f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "frame_count": 7,
+      "pivot": [
+        168,
+        336
+      ],
+      "source_pivot": [
+        21,
+        42
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        100
+      ],
+      "normalized_pivot": [
+        0.38181818181818183,
+        0.525
+      ]
+    },
+    {
+      "animation": "Grapple",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Grapple_Body_320x320_8f.png",
+      "frame_size": [
+        320,
+        320
+      ],
+      "frame_count": 8,
+      "pivot": [
+        160,
+        264
+      ],
+      "source_pivot": [
+        20,
+        33
+      ],
+      "durations_ms": [
+        80,
+        40,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.825
+      ]
+    },
+    {
+      "animation": "Grapple",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_Grapple_FX_320x320_8f.png",
+      "frame_size": [
+        320,
+        320
+      ],
+      "frame_count": 8,
+      "pivot": [
+        160,
+        264
+      ],
+      "source_pivot": [
+        20,
+        33
+      ],
+      "durations_ms": [
+        80,
+        40,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "normalized_pivot": [
+        0.5,
+        0.825
+      ]
+    },
+    {
+      "animation": "HeavyAttack",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_HeavyAttack_Body_936x640_11f.png",
+      "frame_size": [
+        936,
+        640
+      ],
+      "frame_count": 11,
+      "pivot": [
+        264,
+        576
+      ],
+      "source_pivot": [
+        33,
+        72
+      ],
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        140,
+        40,
+        40,
+        60,
+        80,
+        80,
+        120
+      ],
+      "normalized_pivot": [
+        0.28205128205128205,
+        0.9
+      ]
+    },
+    {
+      "animation": "HeavyAttack",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_HeavyAttack_FX_936x640_11f.png",
+      "frame_size": [
+        936,
+        640
+      ],
+      "frame_count": 11,
+      "pivot": [
+        264,
+        576
+      ],
+      "source_pivot": [
+        33,
+        72
+      ],
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        140,
+        40,
+        40,
+        60,
+        80,
+        80,
+        120
+      ],
+      "normalized_pivot": [
+        0.28205128205128205,
+        0.9
+      ]
+    },
+    {
+      "animation": "JumpAttack",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_JumpAttack_Body_720x400_9f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 9,
+      "pivot": [
+        152,
+        352
+      ],
+      "source_pivot": [
+        19,
+        44
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        60,
+        100
+      ],
+      "normalized_pivot": [
+        0.2111111111111111,
+        0.88
+      ]
+    },
+    {
+      "animation": "JumpAttack",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_JumpAttack_FX_720x400_9f.png",
+      "frame_size": [
+        720,
+        400
+      ],
+      "frame_count": 9,
+      "pivot": [
+        152,
+        352
+      ],
+      "source_pivot": [
+        19,
+        44
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        60,
+        100
+      ],
+      "normalized_pivot": [
+        0.2111111111111111,
+        0.88
+      ]
+    },
+    {
+      "animation": "UpAttack",
+      "layer": "Body",
+      "file": "Spritesheets/FX Split/Seeker_Bone_UpAttack_Body_440x640_8f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "frame_count": 8,
+      "pivot": [
+        184,
+        624
+      ],
+      "source_pivot": [
+        23,
+        78
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        80
+      ],
+      "normalized_pivot": [
+        0.41818181818181815,
+        0.975
+      ]
+    },
+    {
+      "animation": "UpAttack",
+      "layer": "FX",
+      "file": "Spritesheets/FX Split/Seeker_Bone_UpAttack_FX_440x640_8f.png",
+      "frame_size": [
+        440,
+        640
+      ],
+      "frame_count": 8,
+      "pivot": [
+        184,
+        624
+      ],
+      "source_pivot": [
+        23,
+        78
+      ],
+      "durations_ms": [
+        40,
+        40,
+        60,
+        40,
+        60,
+        60,
+        80,
+        80
+      ],
+      "normalized_pivot": [
+        0.41818181818181815,
+        0.975
+      ]
+    },
+    {
+      "animation": "HeavyAttack",
+      "layer": "BladeGlow",
+      "file": "Spritesheets/FX Split/Seeker_Bone_HeavyAttack_BladeGlow_936x640_4f.png",
+      "frame_size": [
+        936,
+        640
+      ],
+      "frame_count": 4,
+      "pivot": [
+        264,
+        576
+      ],
+      "source_pivot": [
+        33,
+        72
+      ],
+      "timing": "Four source charge states; see Source-Animation-Guide.txt. No fixed duration invented.",
+      "state_count": 4,
+      "preview_interval_ms": 150,
+      "charge_cycle": [
+        3,
+        1,
+        3,
+        1,
+        0,
+        1
+      ],
+      "ready_cycle": [
+        0,
+        2
+      ],
+      "timing_source": "Source-Animation-Guide.txt; actual charge cadence is game-controlled"
+    }
+  ],
+  "standalone_vfx_manifest": "VFX/Effects.json",
+  "standalone_vfx_sheets": 23,
+  "standalone_vfx_frames": 148
+}

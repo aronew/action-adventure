@@ -1,0 +1,46 @@
+{
+  "reference_screen": [
+    1920,
+    1080
+  ],
+  "strip_canvas": [
+    2048,
+    512
+  ],
+  "pieces": [
+    {
+      "file": "Close-Plants-A.png",
+      "x": 0
+    },
+    {
+      "file": "Close-Plants-B.png",
+      "x": 2048
+    },
+    {
+      "file": "Close-Plants-C.png",
+      "x": 4096
+    }
+  ],
+  "repeat_order": [
+    "A",
+    "B",
+    "C"
+  ],
+  "loop_period_x": 6144,
+  "example_y": 380,
+  "bottom_aligned_y": 568,
+  "z_order": -12,
+  "camera_motion_factor": 0.7,
+  "collision": false,
+  "alpha": "straight",
+  "draw_order": [
+    "cave-wall",
+    "close-plants",
+    "close-rocks",
+    "playable-terrain",
+    "black-foreground"
+  ],
+  "all_plant_pair_orders_compatible": true,
+  "plant_endcaps_use_low_plant_rubble": true,
+  "notes": "Use as an additional plant layer behind the terrain. Its three plant strips match each other; rock strips remain a separate layer."
+}
