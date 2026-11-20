@@ -43,9 +43,11 @@ signal died
 ## Controller states.
 ## ATTACK is a ground swing or the heavy charge; air attacks play in AIR. HURT is the
 ## short loss of control after a hit, DEAD lasts until [method revive].
-enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK, HURT, DEAD }
+enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK, HURT, DEAD, LEDGE }
 ## Steps of a grapple: throw (frames 0-2), pull (3-6 looped), release (7).
 enum GrapplePhase { THROW, PULL, RELEASE }
+## The ledge grab: catching the edge, hanging, pulling up.
+enum LedgePhase { GRAB, HANG, PULL }
 
 ## Physics layer bit of level geometry.
 const LAYER_WORLD := 1
@@ -129,6 +131,11 @@ var _grapple_phase := GrapplePhase.THROW
 var _anchor: Node2D
 var _grapple_direction := Vector2.ZERO
 var _door: Area2D
+var _ledge_phase := LedgePhase.GRAB
+## The ledge corner being held (world px) and the side its wall is on (1 right, -1 left).
+var _ledge_corner := Vector2.ZERO
+var _ledge_side := 1
+var _ledge_lockout_timer := 0.0
 var _hurt_timer := 0.0
 var _blink_time := 0.0
 
@@ -229,6 +236,7 @@ func _physics_process(delta: float) -> void:
 	_down_hold_time = _down_hold_time + delta if _vertical > 0.0 else 0.0
 	_wall_jump_lock_timer = maxf(_wall_jump_lock_timer - delta, 0.0)
 	_wall_coyote_timer = maxf(_wall_coyote_timer - delta, 0.0)
+	_ledge_lockout_timer = maxf(_ledge_lockout_timer - delta, 0.0)
 	health.tick(delta)
 
 	match state:
@@ -254,6 +262,8 @@ func _physics_process(delta: float) -> void:
 			_state_hurt(delta)
 		State.DEAD:
 			_state_dead(delta)
+		State.LEDGE:
+			_state_ledge()
 
 	combat.update(delta)
 	_sprite.scale = Vector2(float(facing), 1.0) * art_scale()
@@ -381,6 +391,8 @@ func _state_air(delta: float) -> void:
 		_land(pre_move_vertical)
 	elif pushing_into_wall and pre_move_vertical >= -config.apex_speed and _nudge_onto_ledge():
 		_air_animation()
+	elif pushing_into_wall and velocity.y >= 0.0 and _try_grab_ledge():
+		pass
 	elif pushing_into_wall and velocity.y > 0.0:
 		_set_state(State.WALL_SLIDE)
 		facing = -int(_move_x)
@@ -559,6 +571,8 @@ func _set_state(new_state: State) -> void:
 	if state == State.GRAPPLE and new_state != State.GRAPPLE:
 		_sprite.rotation = 0.0
 		_rope.visible = false
+	if state == State.LEDGE and new_state != State.LEDGE:
+		_sprite.position = Vector2.ZERO
 	_landing = false
 	_flipping = false
 	_standing_up = false
@@ -762,6 +776,13 @@ func _on_animation_finished() -> void:
 		&"death":
 			if state == State.DEAD:
 				died.emit()
+		&"ledge_grab":
+			if state == State.LEDGE and _ledge_phase == LedgePhase.GRAB:
+				_ledge_phase = LedgePhase.HANG
+				_play_loop(&"ledge_hang")
+		&"ledge_pull_up":
+			if state == State.LEDGE:
+				_finish_pull_up()
 
 
 # --- Helpers ---------------------------------------------------------------
@@ -831,6 +852,104 @@ func _correct_corner(rising_speed: float) -> void:
 				global_position += shift
 				velocity.y = rising_speed
 				return
+
+
+## Falling into a wall with a ledge corner at the hands: catch it. The corner is the
+## wall's top just past the body's edge, found within the catch window around the hang
+## height; there must be room to stand on top. Returns true when the Seeker caught it.
+func _try_grab_ledge() -> bool:
+	if not config.ledge_grab_enabled or _ledge_lockout_timer > 0.0 \
+			or not _frames.has_animation(&"ledge_hang"):
+		return false
+	var side := int(-signf(get_wall_normal().x))
+	var face_x := global_position.x + float(side) * config.hitbox_size.x * 0.5
+	var probe_x := face_x + float(side) * 2.0
+	var hands_y := global_position.y - config.ledge_hang_drop
+	var top := INF
+	for dy in range(-int(config.ledge_grab_window_up), int(config.ledge_grab_window_down) + 1):
+		var y := hands_y + float(dy)
+		if not _is_solid(Vector2(probe_x, y - 1.0)) and _is_solid(Vector2(probe_x, y)):
+			# Narrow the wall's top to a fraction of a pixel.
+			var above := y - 1.0
+			var below := y
+			for i in 5:
+				var middle := (above + below) * 0.5
+				if _is_solid(Vector2(probe_x, middle)):
+					below = middle
+				else:
+					above = middle
+			top = below
+			break
+	if is_inf(top):
+		return false
+	var corner := Vector2(face_x, top)
+	var stand := corner + Vector2(float(side) * config.ledge_stand_offset, -1.0)
+	if test_move(Transform2D(0.0, stand), Vector2(0.0, -1.0)):
+		return false
+	_set_state(State.LEDGE)
+	_ledge_corner = corner
+	_ledge_side = side
+	_ledge_phase = LedgePhase.GRAB
+	facing = side
+	velocity = Vector2.ZERO
+	global_position = Vector2(face_x - float(side) * (config.hitbox_size.x * 0.5 + 0.5),
+			corner.y + config.ledge_hang_drop)
+	_start_clip(&"ledge_grab")
+	_place_ledge_sprite()
+	return true
+
+
+## Catching, hanging or pulling up: the body stays put (the climb is drawn in the
+## frames, around the corner) until the pull-up's last frame moves it onto the ledge.
+## While hanging: jump, up or a fresh press toward the wall pulls up; jump away from
+## the wall wall-jumps off; down or away lets go.
+func _state_ledge() -> void:
+	velocity = Vector2.ZERO
+	facing = _ledge_side
+	_place_ledge_sprite()
+	if _ledge_phase != LedgePhase.HANG:
+		return
+	var away := -_ledge_side
+	var jump := _jump_buffer_timer > 0.0
+	# Holding toward the wall is how the ledge was caught, so only a fresh press toward
+	# it pulls up (jump and up always do).
+	var toward_pressed := Input.is_action_just_pressed(
+			&"move_right" if _ledge_side > 0 else &"move_left")
+	if jump and _move_x == float(away):
+		_jump_buffer_timer = 0.0
+		_start_wall_jump(float(away))
+		_ledge_lockout_timer = config.ledge_regrab_lockout
+	elif jump or _vertical < 0.0 or toward_pressed:
+		_jump_buffer_timer = 0.0
+		_ledge_phase = LedgePhase.PULL
+		_start_clip(&"ledge_pull_up")
+	elif _vertical > 0.0 or _move_x == float(away):
+		_ledge_lockout_timer = config.ledge_regrab_lockout
+		_set_state(State.AIR)
+
+
+## Puts the ledge art's corner pixel (its pivot) on the held corner.
+func _place_ledge_sprite() -> void:
+	_sprite.position = _ledge_corner - global_position
+
+
+## The pull-up's last frame is the idle pose standing on the ledge: move the body there
+## and carry on standing.
+func _finish_pull_up() -> void:
+	global_position = _ledge_corner + Vector2(float(_ledge_side) * config.ledge_stand_offset, 0.0)
+	# The corner was measured to a fraction of a pixel; settle onto the floor exactly.
+	velocity = Vector2.ZERO
+	apply_floor_snap()
+	_set_state(State.GROUND)
+	_refresh_air_moves()
+	_play_loop(&"idle")
+
+
+func _is_solid(point: Vector2) -> bool:
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = point
+	query.collision_mask = LAYER_WORLD
+	return not get_world_2d().direct_space_state.intersect_point(query, 1).is_empty()
 
 
 ## The feet just missed a ledge while moving into it: lift up to ledge_nudge pixels
@@ -1008,6 +1127,8 @@ func _build_frames(group: Dictionary, pivots: Dictionary) -> SpriteFrames:
 		var clip_name := StringName(clip_key)
 		var clip: Dictionary = clips[clip_key]
 		var sheet: Dictionary = sheets[clip["sheet"]]
+		if sheet.get("painted_only", false) and not painted:
+			continue
 		if painted:
 			sheet = _painted_sheet(sheet)
 		var texture: Texture2D = load(directory + str(sheet["file"]).replace("{palette}", palette))
@@ -1031,6 +1152,8 @@ func _build_frames(group: Dictionary, pivots: Dictionary) -> SpriteFrames:
 ## same entry with the size in the file name, the frame size and the pivot scaled by
 ## PAINTED_SCALE.
 func _painted_sheet(sheet: Dictionary) -> Dictionary:
+	if sheet.get("painted_only", false):
+		return sheet
 	if sheet.has("painted"):
 		var own: Dictionary = sheet.duplicate()
 		own.merge(sheet["painted"], true)

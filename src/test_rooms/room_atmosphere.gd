@@ -78,8 +78,8 @@ const RADIANCE := Vector2(0.0, 0.2)
 ## a blurred, warm copy of his current frame (a glow that hugs his silhouette and rims
 ## his edges) and a soft round radiance. [silhouette glow strength, blur radius in world
 ## px], radiance [strength, radius in world px], and their colour.
-const BACKLIGHT := Vector2(0.85, 3.5)
-const BACKLIGHT_RADIANCE := Vector2(0.22, 34.0)
+const BACKLIGHT := Vector2(0.4, 3.5)
+const BACKLIGHT_RADIANCE := Vector2(0.14, 34.0)
 const BACKLIGHT_COLOR := Color(1.0, 0.78, 0.62)
 ## Ambient light gradient over the screen: the top a little cooler and darker, the bottom
 ## warmer (the lava is below), multiplied in.

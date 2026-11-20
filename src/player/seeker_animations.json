@@ -21,6 +21,9 @@
       "hurt": {"file": "Seeker_{palette}_Hurt_55x80_9f.png", "frame_size": [55, 80], "frames": 9, "ms": [40, 60, 50, 50, 50, 60, 60, 80, 100], "pivot": [26, 52]},
       "hurt_knockback": {"file": "Seeker_{palette}_HurtKnockback_55x80_9f.png", "frame_size": [55, 80], "frames": 9, "ms": [40, 60, 50, 50, 50, 60, 60, 80, 100], "pivot": [40, 52]},
       "death": {"file": "Seeker_{palette}_Death_40x50_20f.png", "frame_size": [40, 50], "frames": 20, "ms": [100, 80, 80, 80, 100, 80, 70, 70, 70, 70, 70, 80, 80, 80, 80, 80, 80, 80, 80, 900], "pivot": [20, 48]},
+      "ledge_grab": {"file": "Seeker_{palette}_LedgeGrab_Right_480x480_4f.png", "frame_size": [480, 480], "frames": 4, "ms": [70, 70, 90, 90], "pivot": [330, 240], "painted_only": true},
+      "ledge_hang": {"file": "Seeker_{palette}_LedgeHang_Right_480x480_4f.png", "frame_size": [480, 480], "frames": 4, "ms": 140, "pivot": [330, 240], "painted_only": true},
+      "ledge_pull_up": {"file": "Seeker_{palette}_LedgePullUp_Right_480x480_10f.png", "frame_size": [480, 480], "frames": 10, "ms": [70, 80, 90, 90, 90, 90, 100, 100, 100, 140], "pivot": [330, 240], "painted_only": true},
       "heavy": {"file": "FX Split/Seeker_{palette}_HeavyAttack_Body_117x80_11f.png", "frame_size": [117, 80], "frames": 11, "ms": [80, 80, 80, 80, 140, 40, 40, 60, 80, 80, 120], "pivot": [33, 72]}
     },
     "clips": {
@@ -38,6 +41,9 @@
       "crouch_down": {"sheet": "crouch", "from": 0, "to": 3},
       "crouch_stand": {"sheet": "crouch", "from": 4, "to": 4},
       "enter_door": {"sheet": "enter_door"},
+      "ledge_grab": {"sheet": "ledge_grab"},
+      "ledge_hang": {"sheet": "ledge_hang", "loop": true},
+      "ledge_pull_up": {"sheet": "ledge_pull_up"},
       "grapple_throw": {"sheet": "grapple", "from": 0, "to": 2},
       "grapple_pull": {"sheet": "grapple", "from": 3, "to": 6, "loop": true},
       "grapple_release": {"sheet": "grapple", "from": 7, "to": 7},

@@ -45,6 +45,10 @@ const TILE_R := 9
 const TILE_BL := 14
 const TILE_B := 15
 const TILE_BR := 16
+## How far a walkable surface's collision sits below the art's top outline, world px:
+## the feet stand a little into the stone's top face instead of on its outline (which
+## read as floating), for the terrain's floors and ledge tops and the floating platforms.
+const SURFACE_SINK := 2.0
 const TILE_INSETS := {
 	0: [69, 0, 82, 0], 1: [78, 0, 0, 0], 2: [79, 0, 0, 90],
 	7: [0, 0, 73, 0], 9: [0, 0, 0, 90],
@@ -86,10 +90,13 @@ const PROP_BOUNDS := {
 ## How far a ground prop sinks into the surface it stands on, in world px.
 const PROP_SINK := 2.0
 ## Floating islands: prop, centre x, surface y (world), surface y in the source image.
+## Floating platforms: [prop, centre x, walkable surface y, the surface's height in the
+## prop's own art px (measured: just inside the stone slab's top outline, under the
+## plants and rocks that sit on it: short 83, medium 100, long 103)].
 const ISLANDS := [
-	["platform-short", 420.0, 232.0, 67.0],
-	["platform-medium", 690.0, 266.0, 78.0],
-	["platform-long", 990.0, 192.0, 96.0],
+	["platform-short", 420.0, 232.0, 83.0],
+	["platform-medium", 690.0, 266.0, 100.0],
+	["platform-long", 990.0, 192.0, 103.0],
 ]
 ## Ground props: prop, left x, the surface they stand on (world y). No collision.
 const GROUND_PROPS := [
@@ -415,6 +422,10 @@ func _ready() -> void:
 
 	var player: Player = PLAYER_SCENE.instantiate()
 	player.position = spawn_point
+	# This room is the all-abilities arena: the ledge grab is on here (it is off by
+	# default; see PlayerConfig.ledge_grab_enabled). A copy, so other rooms keep theirs.
+	player.config = player.config.duplicate()
+	player.config.ledge_grab_enabled = true
 	add_child(player)
 	var camera := PlayerCamera.new()
 	_camera = camera
@@ -573,8 +584,10 @@ func _add_terrain(parent: Node2D) -> void:
 				var prev_tile := _edge_tile(col - 1, row)
 				var prev_insets: Array = TILE_INSETS[prev_tile] if prev_tile >= 0 else [0, 0, 0, 0]
 				var x1: float = col * CELL - prev_insets[3] * k
-				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k,
-						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k))
+				# A walkable top sits SURFACE_SINK below the stones' top outline.
+				var sink: float = SURFACE_SINK if run_insets[0] > 0 else 0.0
+				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k + sink,
+						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k - sink))
 				run_start = -1
 			if solid and run_start < 0:
 				run_start = col
@@ -624,7 +637,8 @@ func _add_island(parent: Node2D, island: Array) -> void:
 	var bounds: Array = PROP_BOUNDS[island[0]]
 	var s := _prop_scale()
 	var sprite := _prop_sprite(parent, island[0])
-	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s, island[2] - island[3] * s)
+	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s,
+			island[2] - island[3] * s - SURFACE_SINK)
 	var body := StaticBody2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2((bounds[2] - bounds[0]) * s - 8.0, 8.0)
