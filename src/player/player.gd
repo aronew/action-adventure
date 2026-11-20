@@ -59,7 +59,7 @@ const GROUP_GRAPPLE_ANCHOR := &"grapple_anchor"
 const ANIMATION_DATA_PATH := "res://src/player/seeker_animations.json"
 const PAINTED_SCALE := 8.0
 ## The painted idle aura's strength (it is added light; see _ready).
-const PAINTED_AURA_STRENGTH := 0.5
+const PAINTED_AURA_STRENGTH := 0.3
 const PIXEL_ART_ROOT := "res://assets/characters/seeker/"
 const PAINTED_ART_ROOT := "res://assets/characters/seeker/Painted/"
 const ROPE_WIDTH := 1.0
@@ -972,6 +972,12 @@ func _spawn_effect(clip: StringName, offset := Vector2.ZERO) -> void:
 	get_parent().add_child(effect)
 	var point := global_position + Vector2(offset.x * float(facing), offset.y)
 	effect.start(_vfx_frames, clip, _vfx_pivots[clip], point, facing, art_scale(), art_filter())
+
+
+## The body sprite (current animation frame, offset, facing and art scale), for effects
+## that follow the Seeker's silhouette, such as a room's backlight.
+func body_sprite() -> AnimatedSprite2D:
+	return _sprite
 
 
 ## World px per art px: 1 for the pixel art, 1 / PAINTED_SCALE for the painted art.
