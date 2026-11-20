@@ -166,3 +166,39 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 14
+Summary: The fifth-review blocker is resolved: the bounded `lag_y` simulates as written (lag never past 33.3 px, 14.7 px at 0.45 s, about 2 px at 1.35 s, 34.7 px first frame at 60 fps), and P1, P2, P3, P4 and P7 re-derive; registry shows 0 conflicts. One blocker: the fall AC and P6 Example said the drift is −40 for the whole fall, but the lag winds up first (−12.3, −24.2, −35.7, −40 at 60 fps; cap at 0.067 s), so a test written from the AC fails its first frames. Revised in the same session. New recommended: the cap binds at 74 px/s of camera speed, and a simulated plain full jump (player_config values, camera smoothing 7) lifts the foliage about 23 px, so the lift is not only a long-fall effect; the playtest AC covers only falls of two screens.
+Prior verdict resolved: Yes (fifth-review blocker verified)
+Findings:
+- [BLOCKING] Formulas P6 Example; Acceptance Criteria (silhouette fall): "−40 for the whole fall" fails for the first ~0.07 s. Revised: cap reached by 0.1 s, first frame −12.3 px at 60 fps, −40 until the fall stops
+- [RECOMMENDED] Detailed Design rules 7, 13; Game Feel; Acceptance Criteria (playtest): cap binds at 74 px/s camera speed; an ordinary full jump lifts the foliage ~23 px (top ~120 px); add a plain-jump and a one-screen-drop case; the art is 4-14% opaque in its top three quarters, so say the "top" is sparse blade tips (new)
+- [RECOMMENDED] Formulas P1, P2 tables: A and T for the room's own set say room centre and room size; rule 8 says the hull of the uncovered area; no AC for partial coverage (new)
+- [RECOMMENDED] Dependencies: Pause and menus and Grid map are freeze sources (Interactions "In") but missing from the upstream table; Grid map downstream says "Nothing" (new)
+- [RECOMMENDED] Detailed Design rule 8: how a section's fog scales blend with the neighbour's (new)
+- [RECOMMENDED] Acceptance Criteria: rule 17 (same shake offset on every band) and rule 16 for the transition freeze and the map untested (new)
+- [RECOMMENDED] Formulas P5: `ground_fog_alpha_max` lives in the preset it caps (carried)
+- [RECOMMENDED] Detailed Design rule 1: "baked trim" vs the lip as the terrain's trim (carried)
+- [RECOMMENDED] Detailed Design rule 16: reference fog drifts on shader TIME (carried)
+- [RECOMMENDED] Detailed Design rule 14; Acceptance Criteria: P4 never run in Reduced (carried)
+- [RECOMMENDED] Edge Cases (preset check): most preset fields have no range (carried)
+- [RECOMMENDED] Edge Cases (photosensitivity): flicker "3 per second" has no unit (carried)
+- [RECOMMENDED] Detailed Design rule 8: "section" naming clash (carried)
+- [RECOMMENDED] Detailed Design rule 15: band build and pre-warm vs `build_time` (carried)
+- [RECOMMENDED] Detailed Design rules 1, 8: which banks show in a near-wall section (carried)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: UI string "no particles or glow blur" misleads (glows stay; bloom goes); room-end piece "in a section less than a screen tall" unclear with stacked sections; define "fast" in rule 13; plus the carried list from entry 5. Dependencies with no GDD: Camera, Player controller, Pause and menus, Combat, Enemies, art bible.
+Receipt note: the GDD hash below is the reviewed version (HEAD blob, before this revision), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md c3e8bf471bb2244e7004ba64f11ba3ded2de0863
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
