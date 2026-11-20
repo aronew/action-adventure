@@ -145,6 +145,16 @@ const CLOSE_ROCKS_TALLEST := 440.0
 const CLOSE_ROCKS_MIN_RUN := 3.0 * 36.0
 ## Whether the low-ceiling corridor gets rock too.
 const CLOSE_ROCKS_IN_CAVES := true
+## The owner's close plants (close-plants/): wiry ember-tip stalks, curling fronds and
+## tendrils (pieces A, B, C), laid out per floor run the same way as the close rocks but
+## behind them: drawn first and scrolling a little slower (CLOSE_PLANTS_SCALE). They are
+## taller than the rocks, so their tops show above them; CLOSE_PLANTS_RISE lifts them
+## further (world px; past the sink, their bases would show above the floor). Empty: none.
+const CLOSE_PLANTS := "close-plants/"
+const CLOSE_PLANT_PIECES := ["Close-Plants-A", "Close-Plants-B", "Close-Plants-C"]
+const CLOSE_PLANTS_SCALE := 0.8
+const CLOSE_PLANTS_RISE := 0.0
+const CLOSE_PLANTS_TALLEST := 480.0
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -342,7 +352,10 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
-	_add_close_rocks(world)
+	_add_close_band(world, CLOSE_PLANTS, CLOSE_PLANT_PIECES, CLOSE_PLANTS_SCALE,
+			CLOSE_ROCKS_SINK - CLOSE_PLANTS_RISE, CLOSE_PLANTS_TALLEST, 1)
+	_add_close_band(world, CLOSE_ROCKS, CLOSE_ROCK_PIECES, CLOSE_ROCKS_SCALE,
+			CLOSE_ROCKS_SINK, CLOSE_ROCKS_TALLEST, 0)
 	_add_corridor_wall(world)
 	_add_terrain(world)
 	for island in islands:
@@ -608,19 +621,24 @@ func _add_back_layers(parent: Node2D) -> void:
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## The close rock band (see CLOSE_ROCKS): one stretch of rock per run of floor.
-func _add_close_rocks(parent: Node2D) -> void:
-	if CLOSE_ROCKS.is_empty():
+## A close scenery band (the close rocks, the close plants; see CLOSE_ROCKS): one
+## stretch per run of floor, from [param folder]'s [param names] repeating (starting at
+## [param first_piece]), scrolling sideways at [param scroll], its bottom [param sink]
+## world px below the floor at full size. [param tallest]: the art's tallest point in
+## source px above the canvas bottom, for fitting low headroom.
+func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float,
+		sink: float, tallest_px: float, first_piece: int) -> void:
+	if folder.is_empty():
 		return
 	var pieces: Array[Texture2D] = []
-	for piece in CLOSE_ROCK_PIECES:
-		pieces.append(_texture(BIOME + CLOSE_ROCKS + "%s.png" % piece))
+	for piece in names:
+		pieces.append(_texture(BIOME + folder + "%s.png" % piece))
 	var image_scale := VIEW_SIZE.y / 1080.0
 	var piece_size := pieces[0].get_size() * image_scale
-	var tallest := CLOSE_ROCKS_TALLEST * image_scale
+	var tallest := tallest_px * image_scale
 	var center_min := VIEW_SIZE * 0.5
 	var center_max := _room_size - VIEW_SIZE * 0.5
-	var next_piece := 0
+	var next_piece := first_piece
 	for run in _floor_runs():
 		var row: int = run[0]
 		var x0: float = run[1] * CELL
@@ -651,11 +669,11 @@ func _add_close_rocks(parent: Node2D) -> void:
 			layer.add_child(sprite)
 			next_piece += 1
 		# Where the stretch sits with the camera centred on it; it scrolls sideways at
-		# CLOSE_ROCKS_SCALE around that and stays on its floor up and down.
-		var spot := Vector2(x0, (row + 1) * CELL + (CLOSE_ROCKS_SINK - piece_size.y) * size)
+		# [param scroll] around that and stays on its floor up and down.
+		var spot := Vector2(x0, (row + 1) * CELL + (sink - piece_size.y) * size)
 		var reference := clampf((x0 + x1) * 0.5, center_min.x, center_max.x)
-		var factor := Vector2(CLOSE_ROCKS_SCALE, 1.0)
-		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - CLOSE_ROCKS_SCALE), 0.0)])
+		var factor := Vector2(scroll, 1.0)
+		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - scroll), 0.0)])
 
 
 ## The room's floor runs: [row of the open cells, first column, last column, headroom in

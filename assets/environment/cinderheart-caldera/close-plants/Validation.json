@@ -1,0 +1,52 @@
+{
+  "pieces": [
+    {
+      "id": "A",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 460,
+      "RGB_scale": 0.5204222359073996,
+      "p90_luma": 35.9856
+    },
+    {
+      "id": "B",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 480,
+      "RGB_scale": 0.48635635330006294,
+      "p90_luma": 35.9082
+    },
+    {
+      "id": "C",
+      "canvas": [
+        2048,
+        512
+      ],
+      "source_canvas": [
+        2172,
+        724
+      ],
+      "visible_height": 472,
+      "RGB_scale": 0.5248226536782779,
+      "p90_luma": 35.9082
+    }
+  ],
+  "all_nine_plant_joins_exact_RGBA": true,
+  "plant_all_nine_ordered_pairs_checked": true,
+  "join_pixel_comparisons": 4608,
+  "transparent_negative_space": true,
+  "earlier_assets_overwritten": false,
+  "engine_tested": false
+}
