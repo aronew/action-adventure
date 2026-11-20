@@ -60,22 +60,27 @@ const HIGHLIGHT_TINT := Color(1.08, 0.97, 0.88)
 const SPLIT_TONE := 0.7
 ## Light around the player: radius (fraction of screen height), how much the rest of the
 ## screen dims, how much the light lifts.
-const PLAYER_LIGHT := Vector3(0.5, 0.16, 0.1)
+const PLAYER_LIGHT := Vector3(0.5, 0.16, 0.03)
 ## Vignette: where it starts and ends (distance from centre, screen heights) and strength.
 const VIGNETTE := Vector3(0.5, 1.1, 0.5)
 const VIGNETTE_COLOR := Color(0.07, 0.02, 0.05)
-## Bloom on the player: the bright parts of the screen near the player (the Seeker's pale
-## cloak, red eyes and effects) glow softly. [brightness threshold, intensity, blur step
-## in screen px]. The glow only exists inside a soft circle around the player: full
-## within BLOOM_AREA.x, fading out smoothly to nothing at BLOOM_AREA.y (screen heights),
-## so there is no line where it ends.
-const BLOOM := Vector3(0.5, 1.9, 8.0)
+## Screen bloom on the player (bright parts near the player glow): [threshold, intensity,
+## blur step in screen px], inside a soft circle (BLOOM_AREA, screen heights). Off (0):
+## drawn over the Seeker it washed out his painted art; the backlight below glows from
+## behind him instead.
+const BLOOM := Vector3(0.5, 0.0, 8.0)
 const BLOOM_AREA := Vector2(0.06, 0.28)
-## A soft radiance around the player on top of the bloom: an added warm light, strongest
-## at the body and easing to nothing (squared falloff, so no visible rim). [colour,
-## strength, radius in screen heights].
+## Screen radiance around the player (added warm light, squared falloff): [strength,
+## radius in screen heights]. Off for the same reason; see BACKLIGHT.
 const RADIANCE_COLOR := Color(1.0, 0.86, 0.76)
-const RADIANCE := Vector2(0.2, 0.2)
+const RADIANCE := Vector2(0.0, 0.2)
+## The Seeker's backlight, drawn behind his sprite so his painted art stays untouched:
+## a blurred, warm copy of his current frame (a glow that hugs his silhouette and rims
+## his edges) and a soft round radiance. [silhouette glow strength, blur radius in world
+## px], radiance [strength, radius in world px], and their colour.
+const BACKLIGHT := Vector2(0.85, 3.5)
+const BACKLIGHT_RADIANCE := Vector2(0.22, 34.0)
+const BACKLIGHT_COLOR := Color(1.0, 0.78, 0.62)
 ## Ambient light gradient over the screen: the top a little cooler and darker, the bottom
 ## warmer (the lava is below), multiplied in.
 const AMBIENT_TOP := Color(0.84, 0.82, 0.97)
@@ -83,6 +88,28 @@ const AMBIENT_BOTTOM := Color(1.06, 0.95, 0.86)
 ## The player's origin is at its feet; light and bloom centre on its body, this far up
 ## (world px).
 const PLAYER_CENTRE := Vector2(0.0, -13.0)
+
+const BACKLIGHT_SHADER := """
+shader_type canvas_item;
+render_mode blend_add;
+uniform vec4 tint : source_color = vec4(1.0, 0.78, 0.62, 1.0);
+uniform float strength = 0.85;
+uniform float radius_px = 28.0;
+void fragment() {
+	float total = 1.0;
+	float a = texture(TEXTURE, UV).a;
+	for (int ring = 1; ring <= 4; ring++) {
+		float w = 1.0 / float(ring);
+		for (int k = 0; k < 12; k++) {
+			float ang = (float(k) + 0.5 * float(ring)) * 0.523599;
+			vec2 o = vec2(cos(ang), sin(ang)) * radius_px * float(ring) / 4.0;
+			a += texture(TEXTURE, UV + o * TEXTURE_PIXEL_SIZE).a * w;
+			total += w;
+		}
+	}
+	COLOR = vec4(tint.rgb * strength, a / total);
+}
+"""
 
 const BLUR_SHADER := """
 shader_type canvas_item;
@@ -170,7 +197,7 @@ void fragment() {
 	vec3 c = texture(screen_tex, SCREEN_UV).rgb;
 	vec2 to_player = (SCREEN_UV - player_uv) * vec2(aspect, 1.0);
 	float near = 1.0 - smoothstep(bloom_area.x, bloom_area.y, length(to_player));
-	if (near > 0.001) {
+	if (near > 0.001 && (bloom.y > 0.0 || radiance.x > 0.0)) {
 		vec3 glow = bright(SCREEN_UV, bloom.x);
 		float total = 1.0;
 		for (int ring = 1; ring <= 5; ring++) {
@@ -204,6 +231,7 @@ void fragment() {
 
 var _camera: Camera2D
 var _player: Node2D
+var _backlight: Sprite2D
 var _view_size := Vector2.ZERO
 var _followers: Array[CanvasItem] = []
 var _fogs: Array[ShaderMaterial] = []
@@ -231,6 +259,7 @@ func setup(world: Node2D, camera: Camera2D, player: Node2D, view_size: Vector2) 
 	_add_particles(world, DUST_Z, DUST, false)
 	_add_particles(world, EMBER_Z, EMBERS, true)
 	_add_grade()
+	_add_backlight()
 
 
 ## A soft warm glow (additive) at [param spot] in the world, [param radius] world px.
@@ -280,10 +309,57 @@ func follow(center: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	_update_backlight()
 	for i in _glows.size():
 		var glow := _glows[i]
 		var wave := sin(_time * GLOW_FLICKER.y + i * 1.7) * 0.6 + sin(_time * GLOW_FLICKER.y * 2.3 + i) * 0.4
 		glow.modulate.a = GLOW_COLOR.a * (1.0 + wave * GLOW_FLICKER.x)
+
+
+## The Seeker's backlight (see BACKLIGHT): children of the player, one z step below his
+## sprite.
+func _add_backlight() -> void:
+	if _player == null or not _player.has_method(&"body_sprite"):
+		return
+	var shader := Shader.new()
+	shader.code = BACKLIGHT_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("tint", BACKLIGHT_COLOR)
+	material.set_shader_parameter("strength", BACKLIGHT.x)
+	_backlight = Sprite2D.new()
+	_backlight.centered = false
+	_backlight.material = material
+	_backlight.z_index = -1
+	_player.add_child(_backlight)
+	var radiance := Sprite2D.new()
+	radiance.texture = _dot
+	radiance.position = PLAYER_CENTRE
+	radiance.scale = Vector2.ONE * BACKLIGHT_RADIANCE.y * 2.0 / _dot.get_width()
+	radiance.modulate = Color(BACKLIGHT_COLOR, BACKLIGHT_RADIANCE.x)
+	radiance.material = _additive()
+	radiance.z_index = -1
+	_player.add_child(radiance)
+	_world_nodes.append(_backlight)
+	_world_nodes.append(radiance)
+
+
+## Puts the backlight on the Seeker's current frame, offset, facing and scale.
+func _update_backlight() -> void:
+	if _backlight == null:
+		return
+	var body: AnimatedSprite2D = _player.body_sprite()
+	if body.sprite_frames == null:
+		return
+	_backlight.texture = body.sprite_frames.get_frame_texture(body.animation, body.frame)
+	_backlight.offset = body.offset
+	_backlight.scale = body.scale
+	_backlight.rotation = body.rotation
+	_backlight.position = body.position
+	_backlight.texture_filter = body.texture_filter
+	var art_per_world := 1.0 / absf(body.scale.y) if body.scale.y != 0.0 else 1.0
+	(_backlight.material as ShaderMaterial).set_shader_parameter("radius_px",
+			BACKLIGHT.y * art_per_world)
 
 
 func _add_blur(world: Node2D, z: int, radius: float) -> void:
