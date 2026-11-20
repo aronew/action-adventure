@@ -40,7 +40,9 @@
       "Bash(bash .claude/hooks/yaml-helper.sh resolve_setting *)",
       "Bash(bash .claude/hooks/yaml-helper.sh is_locally_overridable *)",
       "Bash(bash .claude/hooks/yaml-helper.sh validate_enum_value *)",
-      "Bash(bash .claude/hooks/yaml-helper.sh validate_yaml_enum *)"
+      "Bash(bash .claude/hooks/yaml-helper.sh validate_yaml_enum *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ],
     "deny": [
       "Bash(rm -rf *)",
