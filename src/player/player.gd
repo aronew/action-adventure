@@ -57,6 +57,11 @@ const GROUP_CLIMBABLE := &"climbable"
 const GROUP_DOOR := &"door"
 const GROUP_GRAPPLE_ANCHOR := &"grapple_anchor"
 const ANIMATION_DATA_PATH := "res://src/player/seeker_animations.json"
+const PAINTED_SCALE := 8.0
+## The painted idle aura's strength (it is added light; see _ready).
+const PAINTED_AURA_STRENGTH := 0.5
+const PIXEL_ART_ROOT := "res://assets/characters/seeker/"
+const PAINTED_ART_ROOT := "res://assets/characters/seeker/Painted/"
 const ROPE_WIDTH := 1.0
 const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 
@@ -67,6 +72,12 @@ const ROPE_COLOR := Color(0.85, 0.75, 0.55)
 ## Palette folder and file-name part of the sheets (Void, Ember, Frost, Bone, Dream).
 ## Read once in _ready.
 @export var palette: StringName = &"Bone"
+## Which art set draws the Seeker: the owner's painted redraw (true) or the original
+## pixel art (false). The painted sheets are the same animations, frame order, timing
+## and pivots at PAINTED_SCALE times the size (assets/characters/seeker/Painted/); they
+## are drawn at 1/PAINTED_SCALE with smooth filtering, so the Seeker keeps his world size
+## and every gameplay value stays as it was.
+@export var painted := true
 ## Abilities owned (double jump, grapple), read live. Set it before adding the player to
 ## the tree to gate them; left empty, the player makes one that owns both (the movement,
 ## enemy and boss rooms rely on this).
@@ -160,7 +171,8 @@ func _ready() -> void:
 	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = _frames
 	_sprite.centered = false
-	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_sprite.texture_filter = art_filter()
+	_sprite.scale = Vector2.ONE * art_scale()
 	_sprite.animation_finished.connect(_on_animation_finished)
 	add_child(_sprite)
 
@@ -168,8 +180,17 @@ func _ready() -> void:
 	_aura.sprite_frames = _vfx_frames
 	_aura.centered = false
 	_aura.offset = -_vfx_pivots[&"aura_loop"]
-	_aura.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_aura.texture_filter = art_filter()
+	_aura.scale = Vector2.ONE * art_scale()
 	_aura.visible = false
+	if painted:
+		# The painted aura is a dense dark-red cloud (the pixel one is sparse specks);
+		# drawn normally it hides the Seeker. Added light, it reads as a faint red glow
+		# with bright sparks.
+		var glow := CanvasItemMaterial.new()
+		glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		_aura.material = glow
+		_aura.self_modulate = Color(1.0, 1.0, 1.0, PAINTED_AURA_STRENGTH)
 	add_child(_aura)
 
 	_trail_material = CanvasItemMaterial.new()
@@ -235,7 +256,7 @@ func _physics_process(delta: float) -> void:
 			_state_dead(delta)
 
 	combat.update(delta)
-	_sprite.scale.x = float(facing)
+	_sprite.scale = Vector2(float(facing), 1.0) * art_scale()
 	_update_effects(delta)
 
 
@@ -854,7 +875,7 @@ func _aim_at_anchor() -> void:
 
 
 func _hand_position() -> Vector2:
-	return _sprite.to_global(config.grapple_hand_offset)
+	return _sprite.to_global(config.grapple_hand_offset / art_scale())
 
 
 func _air_animation() -> void:
@@ -932,8 +953,8 @@ func _spawn_afterimage() -> void:
 	ghost.texture = _sprite.sprite_frames.get_frame_texture(_sprite.animation, _sprite.frame)
 	ghost.centered = false
 	ghost.offset = _sprite.offset
-	ghost.scale.x = _sprite.scale.x
-	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ghost.scale = _sprite.scale
+	ghost.texture_filter = art_filter()
 	ghost.material = _trail_material
 	ghost.modulate = config.dash_trail_color
 	get_parent().add_child(ghost)
@@ -950,7 +971,20 @@ func _spawn_effect(clip: StringName, offset := Vector2.ZERO) -> void:
 	var effect := DustEffect.new()
 	get_parent().add_child(effect)
 	var point := global_position + Vector2(offset.x * float(facing), offset.y)
-	effect.start(_vfx_frames, clip, _vfx_pivots[clip], point, facing)
+	effect.start(_vfx_frames, clip, _vfx_pivots[clip], point, facing, art_scale(), art_filter())
+
+
+## World px per art px: 1 for the pixel art, 1 / PAINTED_SCALE for the painted art.
+## Every Seeker sprite (body, combat FX, effects, afterimages) is drawn at this scale.
+func art_scale() -> float:
+	return 1.0 / PAINTED_SCALE if painted else 1.0
+
+
+## Texture filter for the Seeker's art: crisp for the pixel art, smooth (with mipmaps,
+## since it is drawn well below its painted size) for the painted art.
+func art_filter() -> CanvasItem.TextureFilter:
+	return CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if painted \
+			else CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 ## Builds SpriteFrames from one group of seeker_animations.json: one animation per
@@ -960,12 +994,16 @@ func _build_frames(group: Dictionary, pivots: Dictionary) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")
 	var directory := str(group["dir"]).replace("{palette}", palette)
+	if painted:
+		directory = directory.replace(PIXEL_ART_ROOT, PAINTED_ART_ROOT)
 	var sheets: Dictionary = group["sheets"]
 	var clips: Dictionary = group["clips"]
 	for clip_key in clips:
 		var clip_name := StringName(clip_key)
 		var clip: Dictionary = clips[clip_key]
 		var sheet: Dictionary = sheets[clip["sheet"]]
+		if painted:
+			sheet = _painted_sheet(sheet)
 		var texture: Texture2D = load(directory + str(sheet["file"]).replace("{palette}", palette))
 		var frame_size := Vector2(float(sheet["frame_size"][0]), float(sheet["frame_size"][1]))
 		var ms: Variant = sheet["ms"]
@@ -980,3 +1018,22 @@ func _build_frames(group: Dictionary, pivots: Dictionary) -> SpriteFrames:
 			frames.add_frame(clip_name, atlas, duration_ms / 1000.0)
 		pivots[clip_name] = Vector2(float(sheet["pivot"][0]), float(sheet["pivot"][1]))
 	return frames
+
+
+## The painted version of a sheet entry: its own "painted" block when it has one (the
+## painted wall slide is drawn on the 30x30 frame, not the 40x40 one), otherwise the
+## same entry with the size in the file name, the frame size and the pivot scaled by
+## PAINTED_SCALE.
+func _painted_sheet(sheet: Dictionary) -> Dictionary:
+	if sheet.has("painted"):
+		var own: Dictionary = sheet.duplicate()
+		own.merge(sheet["painted"], true)
+		return own
+	var scaled: Dictionary = sheet.duplicate()
+	var k := int(PAINTED_SCALE)
+	var size := Vector2i(int(sheet["frame_size"][0]), int(sheet["frame_size"][1]))
+	scaled["file"] = str(sheet["file"]).replace("_%dx%d_" % [size.x, size.y],
+			"_%dx%d_" % [size.x * k, size.y * k])
+	scaled["frame_size"] = [size.x * k, size.y * k]
+	scaled["pivot"] = [float(sheet["pivot"][0]) * k, float(sheet["pivot"][1]) * k]
+	return scaled

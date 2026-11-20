@@ -1,0 +1,58 @@
+{
+  "units": "Offsets from the character feet pivot. Source offsets in original pixels; export offsets at 8x. Flip horizontal offsets and sprites when facing left.",
+  "bow": {
+    "character": "Bow",
+    "release_frames_zero_based": [
+      9,
+      15,
+      21
+    ],
+    "source_offset": [
+      8,
+      -13
+    ],
+    "export_offset": [
+      64,
+      -104
+    ],
+    "spawn_together": [
+      "Shot_Arrow_Release",
+      "Shot_Arrow_Projectile"
+    ],
+    "impact": "Shot_Arrow_Impact"
+  },
+  "cast": {
+    "character": "Cast",
+    "release_frame_zero_based": 8,
+    "source_offset": [
+      15,
+      -12
+    ],
+    "export_offset": [
+      120,
+      -96
+    ],
+    "basic_spell": [
+      "Shot_Basic_Muzzle",
+      "Shot_Basic_Projectile"
+    ],
+    "impact": "Shot_Basic_Impact",
+    "note": "Plain Cast contains no baked spell. Spawn independent VFX at this event; their clocks run at 50ms/frame."
+  },
+  "movement": {
+    "Dust_Jump": "Feet at takeoff",
+    "Dust_Land": "Feet at landing",
+    "Dust_Dash": "Feet when dash starts; flip horizontally when facing left",
+    "AirJump_Ring": "Feet when double jump starts"
+  },
+  "magic": {
+    "Charge_Gather": "Hand; play once",
+    "Charge_Loop": "Same hand anchor; loop while charging",
+    "Charge_Loop_Big": "Same hand anchor; big charge loop",
+    "Charge_Release": "Hand; release small charge",
+    "Charge_Release_Big": "Hand; release big charge",
+    "Aura_Loop": "Feet; loop",
+    "Power_Burst": "Feet; play once"
+  },
+  "projectiles": "Position each projectile by its own anchor; flight motion and collision are game-controlled. Spawn impacts at collision points."
+}
