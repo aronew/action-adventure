@@ -133,3 +133,36 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 11
+Summary: The fourth-review blockers are resolved, and P1, P2, P3, P5 and P7 re-derive; registry shows 0 conflicts. One new blocker, found by simulating the reference's silhouette update: the reference clamps the drift but not `lag_y`, so after a 1 s fall at 640 px/s the lag winds up to about 256 px, the foliage stays at its cap about 0.9 s after the fall and takes about 2.3 s to get under 2 px. The fall AC (1.35 s to within 2 px) and rule 13 (0.45 s) were wrong. Revised in the same session; the owner chose to bound `lag_y` to `max_drift / sway` (33.3 px), so the foliage eases back as soon as the camera stops (14.7 px after 0.45 s, about 2 px after 1.35 s).
+Prior verdict resolved: Yes (fourth-review blockers verified)
+Findings:
+- [BLOCKING] Formulas P6; Acceptance Criteria (silhouette fall); rules 7, 13: reference lag unbounded, so the settle time after a long fall was 2.3 s, not 0.45 / 1.35 s. Revised (owner decision: bound the lag): P6 formula, update order, output range, example, rules 7 and 13, fall AC re-derived and simulated at 30, 60 and 144 fps
+- [RECOMMENDED] Acceptance Criteria (close band): boundary fixtures 100, 161 and 215 px are off the 6 px collision grid. Revised: 102, 156 and 210 px
+- [RECOMMENDED] Interactions; Open Question 2: grid map (Approved) states the freeze only and does not say the map draws above the grade or list this system. Revised: obligation added to Open Question 2 and the bidirectional check
+- [RECOMMENDED] Formulas P5: `ground_fog_alpha_max` lives in the preset it caps; move to a project-wide config (carried)
+- [RECOMMENDED] Detailed Design rule 1: "baked trim" vs the lip as the terrain's trim (carried)
+- [RECOMMENDED] Detailed Design rule 16: reference fog drifts on shader TIME; say how it moves to the world clock (carried)
+- [RECOMMENDED] Detailed Design rule 14; Acceptance Criteria: P4 never run in Reduced; blur off makes back bands sharper (carried)
+- [RECOMMENDED] Edge Cases (preset check): most preset fields have no range (carried)
+- [RECOMMENDED] Edge Cases (photosensitivity): flicker "3 per second" has no unit; the reference's speed 2.3 is rad/s (carried)
+- [RECOMMENDED] Detailed Design rule 8: "section" clashes with level design rule 18 and grid-map secret sections (carried)
+- [RECOMMENDED] Detailed Design rule 15: band build and particle pre-warm vs `build_time` (0.10 s budget, 0.33 s measured) (carried)
+- [RECOMMENDED] Detailed Design rules 1, 8: in a near-wall section (order -10) which banks show (carried)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: P2 section scale 1.32 vs exact 1.324 (applied); `close_min_height` is in Edge Cases and the AC but not rule 6; P5 Output Range omits density and setting_scale; P4 corridor example omits the Seeker; frame-time AC has no pass line; fog factors and `layer_blend` not registered. Dependencies with no GDD: Camera, Player controller, Pause and menus, Combat, Enemies, art bible.
+Receipt note: the GDD hash below is the reviewed version (HEAD blob, before this revision), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md df14109489658717d3c4a8b16b127d5bcc00b3e0
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
