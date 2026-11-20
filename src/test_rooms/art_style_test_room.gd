@@ -434,6 +434,10 @@ func _place_layers() -> void:
 		var layer: Node2D = entry[0]
 		var factor: Vector2 = entry[1]
 		layer.position = center * (Vector2.ONE - factor) + entry[2]
+		if entry.size() > 3:
+			# A clamped layer: its x may only drift within [min, max].
+			var limits: Vector2 = entry[3]
+			layer.position.x = clampf(layer.position.x, limits.x, limits.y)
 	if _mood != null:
 		_mood.follow(center)
 
@@ -644,10 +648,16 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 		var x0: float = run[1] * CELL
 		var x1: float = (run[2] + 1) * CELL
 		# A drop at an end (open air beside the floor): pull the rock in from the edge.
-		if not _solid(run[1] - 1, row + 1):
+		# How far the stretch may drift each way: up to that inset towards a drop, one cell
+		# towards a wall (the wall hides it).
+		var drop_left := not _solid(run[1] - 1, row + 1)
+		var drop_right := not _solid(run[2] + 1, row + 1)
+		if drop_left:
 			x0 += CLOSE_ROCKS_EDGE_INSET
-		if not _solid(run[2] + 1, row + 1):
+		if drop_right:
 			x1 -= CLOSE_ROCKS_EDGE_INSET
+		var drift_left := CLOSE_ROCKS_EDGE_INSET if drop_left else CELL
+		var drift_right := CLOSE_ROCKS_EDGE_INSET if drop_right else CELL
 		var width := x1 - x0
 		if width < CLOSE_ROCKS_MIN_RUN:
 			continue
@@ -669,11 +679,13 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			layer.add_child(sprite)
 			next_piece += 1
 		# Where the stretch sits with the camera centred on it; it scrolls sideways at
-		# [param scroll] around that and stays on its floor up and down.
+		# [param scroll] around that, never drifting past its ends' limits, and stays on
+		# its floor up and down.
 		var spot := Vector2(x0, (row + 1) * CELL + (sink - piece_size.y) * size)
 		var reference := clampf((x0 + x1) * 0.5, center_min.x, center_max.x)
 		var factor := Vector2(scroll, 1.0)
-		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - scroll), 0.0)])
+		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - scroll), 0.0),
+				Vector2(spot.x - drift_left, spot.x + drift_right)])
 
 
 ## The room's floor runs: [row of the open cells, first column, last column, headroom in
