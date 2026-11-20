@@ -101,3 +101,34 @@ Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3
 Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d7924560c531b93
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
 Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; systems-designer and qa-lead lenses applied in session)
+Blocking items: 1 | Recommended: 5
+Summary: The third review's blocker held (the crash-loss bound now agrees across the Summary, Overview, rule 6 and Edge Cases), and 5 of its 6 recommended items stayed applied. One new blocker sits at the title-screen boundary: a quit to the title did not order Continue or a new game against an in-flight or pending commit, so Continue could load an older record and the next commit would write it over a newer one, moving `defeated` or a key backward. Revised the same session with the blocker and all 5 recommended items, using four owner decisions; the GDD awaits a re-review. Scope raised from M to L (11 dependencies, a storage ADR required, write path not sourceable).
+Prior verdict resolved: Yes (the third review's blocker)
+Findings:
+- [BLOCKING] Rule 8 / States / Edge Cases: quit to title and Continue or new game not ordered against an in-flight or pending commit (fixed: owner, the title waits, with the loading mark, until the commit chain is idle; Edge Case, Interactions and Dependencies rows, and an AC added)
+- [RECOMMENDED] States: a new game entered Clean while the file still held the old save; a failed first commit was unspecified (applied: owner, a new game enters Dirty and a failed first commit is like any failure; AC)
+- [RECOMMENDED] States file table / Edge Cases: a missing main file, and an unreadable main file with no last good copy, were unspecified (applied: owner, missing counts as unreadable; AC)
+- [RECOMMENDED] Rule 2 / rule 6 / ACs: rule 12 had no `collected` flag on key rewards, but three ACs expected one on key pickups (applied: owner, a key pickup has no flag of its own; ACs rewritten)
+- [RECOMMENDED] Rule 6 / States: "the next commit once it finishes" vs the end-of-frame snapshot was ambiguous (applied: the snapshot is taken at the end of the first frame in which the one before has finished)
+- [RECOMMENDED] Dependencies: hard upstream Player controller has no GDD; the `PlayerState` reset and set-keys interface was unstated (applied: note in the Player controller row)
+- [RECOMMENDED] Cross-GDD: region-id and key-id never-reused rules unstated by Level design and Ability gating; story 007 still conflicts; dependents still say "provisional" (open, not this GDD's to edit; carried over, not counted)
+Advisory (not counted): Player Fantasy absent (advisory at standard). Nits applied: Formulas names `commit_retry_interval` and the 4 ms commit budget; systems index row 17 note updated.
+Receipt note: world-state.md and systems-index.md are stamped at their HEAD blobs (the bytes reviewed), not the revised working tree, so the next check reads CHANGED and runs a full re-review, which is the intent.
+Reviewed-Content-Hash: design/gdd/world-state.md 91ff9ce3b1e99f32ace3e8e9d81d07804c55b20f
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/systems-index.md 4e61e69cb97474d3ee3574374f3a0f02cf986fad
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3aa0eb3e69c
+Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d7924560c531b93
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
