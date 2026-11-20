@@ -296,6 +296,7 @@ formulas:
     source: design/gdd/rooms-and-transitions.md
     referenced_by:
       - design/gdd/rooms-and-transitions.md
+      - design/gdd/save-points-and-save-load.md
     variables:
       - fade_out_time
       - load_left
