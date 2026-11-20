@@ -202,3 +202,39 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 14
+Summary: The sixth-review blocker is resolved: P6 simulates as the AC now says (−12.3, −24.2, −35.7, −40 at 60 fps; lag never past 33.3 px; 14.7 px at 0.45 s and about 2 px at 1.35 s after the fall), and P1, P2 and P7 re-derive; registry shows 0 conflicts. One blocker: room-end pieces draw at 10+ in front of the Seeker but rule 13's closed list and AC 1 omit them, and nothing limits how far in they reach (the 512 x 1080 border art scales with the room's height; the reference slides its 100 px solid left border 62 px past the bound "without covering the spawn point", which the GDD did not say). Revised in the same session: owner chose an inset cap, `room_end_inset_max` 38 px.
+Prior verdict resolved: Yes (sixth-review blocker verified)
+Findings:
+- [BLOCKING] Detailed Design rules 1, 5, 13; Acceptance Criteria (layer stack): room-end pieces in front of the Seeker, missing from rule 13's list, no width limit. Revised: slide past the bound so the opaque reach (alpha 0.5 or more) is at most 38 px; factor 1.0 in rule 1; added to rule 13 and AC 1; new AC and Edge Case. Open from the fix: the cap is from the bound, so an end wall thinner than 38 px leaves a clinging Seeker covered (level design keeps the wall thick enough; not a room-check item yet)
+- [RECOMMENDED] Detailed Design rule 8: the blend curve's shape (linear or smoothstep) is unspecified; the AC samples only 0, 0.5 and 1 (new)
+- [RECOMMENDED] Detailed Design rules 7, 13; Game Feel; Acceptance Criteria (playtest): cap binds at 74 px/s camera speed; a plain full jump lifts the foliage ~23 px (carried)
+- [RECOMMENDED] Formulas P1, P2 tables: room's own set A and T vs rule 8's hull (carried)
+- [RECOMMENDED] Dependencies: Pause and menus and Grid map missing from the upstream table (carried)
+- [RECOMMENDED] Detailed Design rule 8: section fog scale blend (carried)
+- [RECOMMENDED] Acceptance Criteria: rule 17 and rule 16 (transition freeze, map) untested (carried)
+- [RECOMMENDED] Formulas P5: `ground_fog_alpha_max` lives in the preset it caps (carried)
+- [RECOMMENDED] Detailed Design rule 1: "baked trim" vs the lip (carried)
+- [RECOMMENDED] Detailed Design rule 16: reference fog drifts on shader TIME (carried)
+- [RECOMMENDED] Detailed Design rule 14; Acceptance Criteria: P4 never run in Reduced (carried)
+- [RECOMMENDED] Edge Cases (preset check): most preset fields have no range (carried)
+- [RECOMMENDED] Edge Cases (photosensitivity): flicker "3 per second" has no unit (carried)
+- [RECOMMENDED] Detailed Design rule 8: "section" naming clash (carried)
+- [RECOMMENDED] Detailed Design rule 15 and rules 1, 8: `build_time`; which banks show in a near-wall section (carried, merged)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: UI string "no particles or glow blur"; define "fast" in rule 13 (74 px/s); a room's own set with an empty range is rejected though never visible; room-end piece "in a section less than a screen tall" unclear with stacked sections. Dependencies with no GDD: Camera, Player controller, Pause and menus, Combat, Enemies, art bible.
+Receipt note: the GDD hash below is the reviewed version (HEAD blob, before this revision), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 4c8c16bd057edd157fc55c534dfccbf9bd946c64
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
