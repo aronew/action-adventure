@@ -416,6 +416,7 @@ constants:
     source: design/gdd/terrain-pipeline.md
     referenced_by:
       - design/gdd/terrain-pipeline.md
+      - design/gdd/rooms-and-transitions.md
     value: 6
     unit: px
     notes: "Rule 2. Side of a black collision tile, anchored at the room top-left; a 480 x 270 screen is 80 x 45 tiles. Must divide 30 and the art cell (36 px in the art-style test room); every collision, room and gate edge lies on the grid. Owner decision 2026-11-19 (Hollow Knight-style block-out)."
