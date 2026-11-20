@@ -122,18 +122,29 @@ const CORRIDOR_HANGING_PROPS := [
 ## of stretching to cover the room.
 const BACK_LAYERS := [["background", 0.15, false], ["midground", 0.5, true]]
 ## The owner's close rock band (close-rocks/): boulders, lava-rock mounds and obsidian
-## slabs, pieces A, B, C repeating, between the far layers and the playable terrain. It
-## scrolls at CLOSE_ROCKS_SCALE (the pack suggests 0.75) and is drawn after the midground
-## and its fog, unblurred, so it reads as the nearest scenery behind the play layer. It
-## follows the terrain (CloseRockBand): every slice of it sits CLOSE_ROCKS_SINK world px
-## below the floor on screen in front of it, so the rocks rise from behind low floors and
-## tall sections alike. The corridor's own rear wall is drawn in front of it. Empty
-## folder: no band.
+## slabs (pieces A, B, C) as scenery just behind the floors. Every straight run of floor
+## gets its own stretch of rock, fixed to that floor: a whole number of pieces, stretched
+## a little to fit the run. Every piece starts and ends in low rubble, so each stretch
+## tapers down to the floor at its ends on its own, with no fade. Ends at a drop are
+## pulled in CLOSE_ROCKS_EDGE_INSET from the edge. Where the headroom is low (the
+## corridor), the rocks scale down to fill CLOSE_ROCKS_HEADROOM of it. Sideways each
+## stretch scrolls at CLOSE_ROCKS_SCALE around its own centre (slower than the terrain,
+## for depth); up and down it stays on its floor. Drawn after the far layers and fog,
+## unblurred, in front of the corridor's rear wall, behind the terrain. Empty: none.
 const CLOSE_ROCKS := "close-rocks/"
 const CLOSE_ROCK_PIECES := ["Close-Background-A", "Close-Background-B", "Close-Background-C"]
-const CLOSE_ROCKS_SCALE := 0.75
-const CLOSE_ROCKS_Z := -12
+const CLOSE_ROCKS_SCALE := 0.88
+const CLOSE_ROCKS_Z := -9
+## How far below the floor line each stretch's bottom sits, world px at full size.
 const CLOSE_ROCKS_SINK := 12.0
+const CLOSE_ROCKS_EDGE_INSET := 18.0
+const CLOSE_ROCKS_HEADROOM := 0.55
+## The tallest rock in the pieces, source px above the canvas bottom (for headroom).
+const CLOSE_ROCKS_TALLEST := 440.0
+## Floor runs narrower than this (world px) get no rock.
+const CLOSE_ROCKS_MIN_RUN := 3.0 * 36.0
+## Whether the low-ceiling corridor gets rock too.
+const CLOSE_ROCKS_IN_CAVES := true
 ## Foreground strips (the owner's v5 loops): on screen they move faster than the play
 ## layer. Sideways 1.2, the loops' own camera_motion_factor (foreground-layers.json);
 ## up and down 1.1, the GameMaker article's vertical weight of -0.1.
@@ -314,7 +325,6 @@ var _room_size := Vector2.ZERO
 ## the camera's motion. (Parallax2D placed the layers wrongly under the 4x zoom here.)
 var _layers: Array = []
 var _mood: RoomAtmosphere
-var _close_band: CloseRockBand
 var _lit_props: Array[Sprite2D] = []
 
 
@@ -411,8 +421,6 @@ func _place_layers() -> void:
 		var layer: Node2D = entry[0]
 		var factor: Vector2 = entry[1]
 		layer.position = center * (Vector2.ONE - factor) + entry[2]
-	if _close_band != null:
-		_close_band.place(center)
 	if _mood != null:
 		_mood.follow(center)
 
@@ -600,46 +608,78 @@ func _add_back_layers(parent: Node2D) -> void:
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## The close rock band (see CLOSE_ROCKS), laid behind the floors by a CloseRockBand.
+## The close rock band (see CLOSE_ROCKS): one stretch of rock per run of floor.
 func _add_close_rocks(parent: Node2D) -> void:
 	if CLOSE_ROCKS.is_empty():
 		return
 	var pieces: Array[Texture2D] = []
 	for piece in CLOSE_ROCK_PIECES:
 		pieces.append(_texture(BIOME + CLOSE_ROCKS + "%s.png" % piece))
-	_close_band = CloseRockBand.new()
-	_close_band.z_index = CLOSE_ROCKS_Z
-	parent.add_child(_close_band)
-	_close_band.setup(pieces, VIEW_SIZE.y / 1080.0, CLOSE_ROCKS_SCALE, CLOSE_ROCKS_SINK,
-			VIEW_SIZE, _floor_under)
+	var image_scale := VIEW_SIZE.y / 1080.0
+	var piece_size := pieces[0].get_size() * image_scale
+	var tallest := CLOSE_ROCKS_TALLEST * image_scale
+	var center_min := VIEW_SIZE * 0.5
+	var center_max := _room_size - VIEW_SIZE * 0.5
+	var next_piece := 0
+	for run in _floor_runs():
+		var row: int = run[0]
+		var x0: float = run[1] * CELL
+		var x1: float = (run[2] + 1) * CELL
+		# A drop at an end (open air beside the floor): pull the rock in from the edge.
+		if not _solid(run[1] - 1, row + 1):
+			x0 += CLOSE_ROCKS_EDGE_INSET
+		if not _solid(run[2] + 1, row + 1):
+			x1 -= CLOSE_ROCKS_EDGE_INSET
+		var width := x1 - x0
+		if width < CLOSE_ROCKS_MIN_RUN:
+			continue
+		var headroom: float = run[3] * CELL
+		var size := minf(1.0, headroom * CLOSE_ROCKS_HEADROOM / tallest)
+		if size < 1.0 and not CLOSE_ROCKS_IN_CAVES:
+			continue
+		var count := maxi(1, roundi(width / (piece_size.x * size)))
+		var stretch := width / (count * piece_size.x)
+		var layer := Node2D.new()
+		layer.z_index = CLOSE_ROCKS_Z
+		parent.add_child(layer)
+		for i in count:
+			var sprite := Sprite2D.new()
+			sprite.texture = pieces[next_piece % pieces.size()]
+			sprite.centered = false
+			sprite.scale = Vector2(image_scale * stretch, image_scale * size)
+			sprite.position = Vector2(i * piece_size.x * stretch, 0.0)
+			layer.add_child(sprite)
+			next_piece += 1
+		# Where the stretch sits with the camera centred on it; it scrolls sideways at
+		# CLOSE_ROCKS_SCALE around that and stays on its floor up and down.
+		var spot := Vector2(x0, (row + 1) * CELL + (CLOSE_ROCKS_SINK - piece_size.y) * size)
+		var reference := clampf((x0 + x1) * 0.5, center_min.x, center_max.x)
+		var factor := Vector2(CLOSE_ROCKS_SCALE, 1.0)
+		_layers.append([layer, factor, spot - Vector2(reference * (1.0 - CLOSE_ROCKS_SCALE), 0.0)])
 
 
-## The lowest floor line (top of a solid cell under an open one) among the columns under
-## [param x_from]..[param x_to], taking in each column the first floor from the top of
-## the view down; INF when a column is open all the way down the view (a pit), so rock
-## is never laid over open air. Columns solid all the way down do not count.
-func _floor_under(x_from: float, x_to: float, view_top: float, view_bottom: float) -> float:
-	var lowest := -INF
-	var row_top := maxi(int(floor(view_top / CELL)) - 1, 0)
-	var row_bottom := mini(int(ceil(view_bottom / CELL)) + 1, grid.size() - 1)
-	for col in range(int(floor(x_from / CELL)), int(floor((x_to - 0.01) / CELL)) + 1):
-		if col < 0 or col >= grid[0].length():
-			continue
-		var found := INF
-		var any_open := false
-		for row in range(row_top, row_bottom):
-			if _solid(col, row):
-				continue
-			any_open = true
-			if _solid(col, row + 1):
-				found = (row + 1) * CELL
-				break
-		if not any_open:
-			continue
-		if is_inf(found):
-			return INF
-		lowest = maxf(lowest, found)
-	return INF if lowest == -INF else lowest
+## The room's floor runs: [row of the open cells, first column, last column, headroom in
+## cells (open cells above the run, the least along it)]. A run is a row of open cells
+## standing on solid ones, broken where either changes.
+func _floor_runs() -> Array:
+	var runs := []
+	for row in grid.size() - 1:
+		var start := -1
+		for col in grid[0].length() + 1:
+			var floor_cell: bool = col < grid[0].length() and not _solid(col, row) \
+					and _solid(col, row + 1)
+			if floor_cell and start < 0:
+				start = col
+			if not floor_cell and start >= 0:
+				var headroom := grid.size()
+				for c in range(start, col):
+					var open := 0
+					while row - open >= 0 and not _solid(c, row - open):
+						open += 1
+					headroom = mini(headroom, open)
+				runs.append([row, start, col - 1, headroom])
+				start = -1
+	return runs
 
 
 ## Foreground: the open cave's loops (parallax/) over the open cave and the corridor's

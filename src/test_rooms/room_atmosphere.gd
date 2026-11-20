@@ -16,10 +16,13 @@ class_name RoomAtmosphere
 extends Node
 
 ## Draw order inside the room's world (its back layers sit at -30 and -20, the corridor
-## wall at -10, terrain and props at 0, the middle rim at 4-6, the foreground at 10+).
+## wall at -10, the close rocks at -9, terrain and props at 0, the middle rim at 4-6, the
+## foreground at 10+).
 const FAR_BLUR_Z := -25
 const MID_BLUR_Z := -15
+const DEEP_FOG_Z := -22
 const FAR_FOG_Z := -14
+const NEAR_BACK_FOG_Z := -6
 const DUST_Z := -13
 const GLOW_Z := 1
 const GROUND_FOG_Z := 7
@@ -31,7 +34,12 @@ const MID_BLUR := 2.0
 
 ## Fog: [colour, density, noise scale (per world px), drift speed, parallax factor,
 ## screen height where it starts and where it is full (0 top, 1 bottom)].
+## A fog bank between every pair of back layers, as between the foreground layers:
+## deep (far city | midground ruins), far (midground | close rocks), near-back (close
+## rocks | playable terrain, thin so the rocks sit back without hiding them).
+const DEEP_FOG := [Color(0.8, 0.5, 0.48, 0.38), 1.0, 0.008, 0.012, 0.2, 0.0, 0.75]
 const FAR_FOG := [Color(0.78, 0.47, 0.44, 0.5), 1.0, 0.012, 0.018, 0.4, 0.2, 0.9]
+const NEAR_BACK_FOG := [Color(0.7, 0.42, 0.4, 0.22), 1.0, 0.016, 0.022, 0.8, 0.35, 0.95]
 const GROUND_FOG := [Color(0.66, 0.4, 0.4, 0.3), 1.0, 0.02, 0.03, 1.15, 0.55, 1.0]
 
 ## Embers rising from the lava: count, lifetime (s), rise speed range (world px/s), size
@@ -216,7 +224,9 @@ func setup(world: Node2D, camera: Camera2D, player: Node2D, view_size: Vector2) 
 	_dot = _radial_texture(32)
 	_add_blur(world, FAR_BLUR_Z, FAR_BLUR)
 	_add_blur(world, MID_BLUR_Z, MID_BLUR)
+	_add_fog(world, DEEP_FOG_Z, DEEP_FOG)
 	_add_fog(world, FAR_FOG_Z, FAR_FOG)
+	_add_fog(world, NEAR_BACK_FOG_Z, NEAR_BACK_FOG)
 	_add_fog(world, GROUND_FOG_Z, GROUND_FOG)
 	_add_particles(world, DUST_Z, DUST, false)
 	_add_particles(world, EMBER_Z, EMBERS, true)
