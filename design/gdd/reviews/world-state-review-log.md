@@ -132,3 +132,34 @@ Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3
 Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d7924560c531b93
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
 Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
+
+## Review — 2026-11-20 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; systems-designer and qa-lead lenses applied in session)
+Blocking items: 1 | Recommended: 5
+Summary: The fourth review's blocker held (the title-screen ordering agrees across rule 8, Edge Cases, Interactions, Dependencies and an AC), and all 5 of its recommended items stayed applied. One new blocker sits in the version rule: nothing required the version to be readable from a format a build has never seen, so an older build could take a newer main file for a damaged one, fall back to an older-format last good copy, start Dirty and rewrite the newer save with an older record. Revised the same session with the blocker and 4 of the 5 recommended items, using two owner decisions (a first failure during a quit holds the quit for confirmation; 60 fps is the cost target); the index effort is updated in the same session. The GDD awaits a re-review.
+Prior verdict resolved: Yes (the fourth review's blocker)
+Findings:
+- [BLOCKING] Rule 11 / States file table / Edge Cases: a newer save could be overwritten (a main file an older build cannot parse reads as unreadable, and the fallback to the last good copy rewrites it) (fixed: the version is read first, from a place every format keeps; no readable version means unreadable; a newer file is never fallen back from, in either direction; AC added)
+- [RECOMMENDED] Edge Cases / rule 8: a commit that first fails during a quit went unreported (applied: owner, the quit is held for confirmation; desktop confirms or declines, the title shows Try again or Leave it (Rec); Interactions, Dependencies, UI messages and an AC)
+- [RECOMMENDED] States: the Empty state did not say whether raises are refused, and the drop and the PlayerState reset were unordered (applied: Empty refuses raises; the drop and reset are one step after the last commit is handed off; AC)
+- [RECOMMENDED] Acceptance Criteria, Cost: the 4 ms figure was provisional and no frame-rate target was set (applied: owner, 60 fps; the reference machine is named in the test record before the first run)
+- [RECOMMENDED] Acceptance Criteria: no ACs for a gate passed without its key, a second new game replacing the kept copy, or the quit-failure case (applied: ACs added)
+- [RECOMMENDED] Systems index: World state effort S against a scope signal of L (applied: index effort updated to L; producer to verify)
+Carried over, not counted: region-id and key-id never-reused rules unstated by Level design and Ability gating; story 007 conflicts with rules 1, 4 and 6; dependents still say "provisional"; Player controller GDD missing.
+Advisory (not counted): Player Fantasy absent (advisory at standard). Nice-to-have: the old playthrough is the last good copy for one commit after a new game; every exit path (menu, window close, OS shutdown) should take the same quit flow; death before the first save point of a new game has no respawn target (Save points).
+Receipt note: world-state.md and systems-index.md are stamped at their HEAD blobs (the bytes reviewed), not the revised working tree, so the next check reads CHANGED and runs a full re-review, which is the intent.
+Reviewed-Content-Hash: design/gdd/world-state.md d1e407b6926f069bb9f4842c8932c3ae1adf9bf5
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3aa0eb3e69c
+Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d7924560c531b93
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
+Reviewed-Content-Hash: design/gdd/systems-index.md eb715c9ebf0376905fc0f0a43dcd6a2f6ccb1304
