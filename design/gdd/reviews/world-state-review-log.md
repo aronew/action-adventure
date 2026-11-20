@@ -163,3 +163,38 @@ Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
 Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
 Reviewed-Content-Hash: design/gdd/systems-index.md eb715c9ebf0376905fc0f0a43dcd6a2f6ccb1304
+
+## Review — 2026-11-20 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; systems-designer and qa-lead lenses applied in session)
+Blocking items: 0 | Recommended: 7
+Summary: The fifth review's blocker held (rule 11: the version is read first from a place every format keeps, no readable version means unreadable, and a newer file is never fallen back from, in either direction; States, Edge Cases and a dedicated AC agree), and all 4 of its recommended items stayed applied. No new blocker: registry has no entries for this system (0 lines from the whole-document search), and the cross-GDD facts, `player_state.gd` and `boss_arena.gd` match. The one real gap is the quit-to-title failure path, which has no state in the States table; both readings give the same file and player outcome, so it is recommended, not blocking.
+Prior verdict resolved: Yes (the fifth review's blocker)
+Findings:
+- [RECOMMENDED] States / Edge Cases: quit to title with a failing commit has no state; the Empty row drops the record after hand-off, but Try again needs something to write and Leave it drops it; give the flows a table and say what Try again does after it fails
+- [RECOMMENDED] Rule 4 / Edge Cases: death in a new game before the first save point has no respawn target (only Continue is covered)
+- [RECOMMENDED] Rule 6 / Interactions: "a quit loses nothing" names only the menu quit; window close and OS shutdown are not called a quit, and an uninterceptable one cannot confirm
+- [RECOMMENDED] Rule 6: "read back as valid (loaded at start)" does not say a new game without Continue counts the start-up classification as that read-back
+- [RECOMMENDED] Open Questions 1: rule 11's version-placement constraint on every future format is not carried to the storage ADR
+- [RECOMMENDED] Acceptance Criteria: compound bullets (rules 10, 11, unreadable pair) hold 3-4 GIVEN/THEN pairs each; the cost AC is [Play] only
+- [RECOMMENDED] Cost / project.yaml: the 60 fps target is an owner decision not yet in the project's performance settings
+Carried over, not counted: region-id and key-id never-reused rules unstated by Level design and Ability gating; story 007 conflicts with rules 1, 4 and 6; dependents still say "provisional"; Player controller GDD missing.
+Advisory (not counted): Player Fantasy absent (advisory at standard). Nice-to-have: a second confirmed new game replaces the kept copy and the warning does not say so; the old playthrough is the last good copy for one commit after a new game over a newer save; a commit that never finishes holds the title on the loading mark with no timeout; "Leave it (Rec)" label.
+Receipt note: every stamped file is at the bytes reviewed (the index at its post-edit bytes, so the next check reads UNCHANGED throughout).
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/registry/entities.yaml f269a9c7ce2f64828d802bd72e532420c5f80ce3
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b8399421831283377ebf9d927
+Reviewed-Content-Hash: design/gdd/level-design.md 26dcb99b5e4a552ff0208005df4bf7d64733605f
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 51184bd9976cb38294e39ca78ec1be053613ca97
+Reviewed-Content-Hash: design/gdd/systems-index.md cd8b2acd5a15e88e0825219e2b86034653951da3
+Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
+Reviewed-Content-Hash: design/narrative/lore/premise.md e1115841f279e60d13891bef4eeac8e935d74c05
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/dialogue/mentor-pell.md a1e965cb34510db6c8541952eca945ee02680c0f
+Reviewed-Content-Hash: src/player/player_state.gd b90c0adba681d9284f3be946a22ac3aa0eb3e69c
+Reviewed-Content-Hash: src/enemies/boss/boss_arena.gd 8ad04774befe14264ab4951d4d7924560c531b93
+Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
+Reviewed-Content-Hash: project.yaml f6c15c39d7d0b8d5716f5c37f39b8fff77837308
