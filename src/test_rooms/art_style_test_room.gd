@@ -572,7 +572,7 @@ func _add_terrain(parent: Node2D) -> void:
 			var solid: bool = col < grid[0].length() and _solid(col, row)
 			var tile := _edge_tile(col, row) if solid else -1
 			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
-			var insets: Array = TILE_INSETS[tile] if tile >= 0 else [0, 0, 0, 0]
+			var insets: Array = _collision_insets(tile)
 			if not corner.is_empty():
 				# The floor (or ceiling) beside it runs on under the wall face at its
 				# surface height.
@@ -582,7 +582,7 @@ func _add_terrain(parent: Node2D) -> void:
 					and insets[1] == run_insets[1]
 			if run_start >= 0 and not same:
 				var prev_tile := _edge_tile(col - 1, row)
-				var prev_insets: Array = TILE_INSETS[prev_tile] if prev_tile >= 0 else [0, 0, 0, 0]
+				var prev_insets: Array = _collision_insets(prev_tile)
 				var x1: float = col * CELL - prev_insets[3] * k
 				# A walkable top sits SURFACE_SINK below the stones' top outline.
 				var sink: float = SURFACE_SINK if run_insets[0] > 0 else 0.0
@@ -910,18 +910,32 @@ func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D
 	return sprite
 
 
-## How far a rim tile moves into the solid: MIDDLE_INSET px away from each side it faces.
+## How far a rim tile moves into the solid: MIDDLE_INSET px down under a floor's top
+## (up above a ceiling's underside).
+## Only up and down: an outer corner moved sideways as well no longer lined up with the
+## straight tile beside it and showed a seam in the band at every ledge drop.
 func _middle_inset(tile: int) -> Vector2:
 	var inset := Vector2.ZERO
 	if tile in [TILE_TL, TILE_T, TILE_TR]:
 		inset.y += MIDDLE_INSET
 	if tile in [TILE_BL, TILE_B, TILE_BR]:
 		inset.y -= MIDDLE_INSET
-	if tile in [TILE_TL, TILE_L, TILE_BL]:
-		inset.x += MIDDLE_INSET
-	if tile in [TILE_TR, TILE_R, TILE_BR]:
-		inset.x -= MIDDLE_INSET
 	return inset
+
+
+## A tile's collision trim, [top, bottom, left, right] in source px (TILE_INSETS), with
+## the outer corners' top (or bottom) set to the straight tile's: their own art rounds
+## off a little higher, which left a 0.6 px step in the floor at every ledge corner that
+## caught the player. One floor is now one level box.
+func _collision_insets(tile: int) -> Array:
+	if tile < 0:
+		return [0, 0, 0, 0]
+	var insets: Array = TILE_INSETS[tile].duplicate()
+	if tile in [TILE_TL, TILE_TR]:
+		insets[0] = TILE_INSETS[TILE_T][0]
+	if tile in [TILE_BL, TILE_BR]:
+		insets[1] = TILE_INSETS[TILE_B][1]
+	return insets
 
 
 ## Round fill patches over the fill's grid lines (see MIDDLE_PATCHES): one on every grid
