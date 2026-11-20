@@ -45,6 +45,10 @@ const TILE_R := 9
 const TILE_BL := 14
 const TILE_B := 15
 const TILE_BR := 16
+## How far a walkable surface's collision sits below the art's top outline, world px:
+## the feet stand a little into the stone's top face instead of on its outline (which
+## read as floating), for the terrain's floors and ledge tops and the floating platforms.
+const SURFACE_SINK := 2.0
 const TILE_INSETS := {
 	0: [69, 0, 82, 0], 1: [78, 0, 0, 0], 2: [79, 0, 0, 90],
 	7: [0, 0, 73, 0], 9: [0, 0, 0, 90],
@@ -580,8 +584,10 @@ func _add_terrain(parent: Node2D) -> void:
 				var prev_tile := _edge_tile(col - 1, row)
 				var prev_insets: Array = TILE_INSETS[prev_tile] if prev_tile >= 0 else [0, 0, 0, 0]
 				var x1: float = col * CELL - prev_insets[3] * k
-				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k,
-						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k))
+				# A walkable top sits SURFACE_SINK below the stones' top outline.
+				var sink: float = SURFACE_SINK if run_insets[0] > 0 else 0.0
+				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k + sink,
+						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k - sink))
 				run_start = -1
 			if solid and run_start < 0:
 				run_start = col
@@ -631,7 +637,8 @@ func _add_island(parent: Node2D, island: Array) -> void:
 	var bounds: Array = PROP_BOUNDS[island[0]]
 	var s := _prop_scale()
 	var sprite := _prop_sprite(parent, island[0])
-	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s, island[2] - island[3] * s)
+	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s,
+			island[2] - island[3] * s - SURFACE_SINK)
 	var body := StaticBody2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2((bounds[2] - bounds[0]) * s - 8.0, 8.0)
