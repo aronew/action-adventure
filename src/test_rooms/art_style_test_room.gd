@@ -49,6 +49,22 @@ const TILE_BR := 16
 ## the feet stand a little into the stone's top face instead of on its outline (which
 ## read as floating), for the terrain's floors and ledge tops and the floating platforms.
 const SURFACE_SINK := 2.0
+const BEND_SHADER := """
+shader_type canvas_item;
+// How far the art moves down at the top and at the bottom edge (fractions of height).
+uniform vec2 shift = vec2(0.0);
+// Where (fraction of height) the bend runs from the top's shift to the bottom's.
+uniform vec2 ease = vec2(0.0, 1.0);
+void fragment() {
+	float d = mix(shift.x, shift.y, smoothstep(ease.x, ease.y, UV.y));
+	vec2 uv = vec2(UV.x, UV.y - d);
+	if (uv.y < 0.0 || uv.y > 1.0) {
+		COLOR = vec4(0.0);
+	} else {
+		COLOR = texture(TEXTURE, uv);
+	}
+}
+"""
 const TILE_INSETS := {
 	0: [69, 0, 82, 0], 1: [78, 0, 0, 0], 2: [79, 0, 0, 90],
 	7: [0, 0, 73, 0], 9: [0, 0, 0, 90],
@@ -363,6 +379,7 @@ var _textures := {}
 var _fade_shader: Shader
 var _mask_shader: Shader
 var _end_fade_shader: Shader
+var _bend_shader: Shader
 var _silhouette_layer: Node2D
 var _silhouette_lag_y := NAN
 var _silhouette_ticks := 0
@@ -901,13 +918,37 @@ func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL) + inset
-	# An outer corner moves on both axes, so it overlaps its neighbours by MIDDLE_INSET.
-	# Drawn on top, its rim runs on over theirs (a small shift along the band) instead of
-	# being cut off square by them.
 	var outer_corner := tile in [TILE_TL, TILE_TR, TILE_BL, TILE_BR]
+	if outer_corner:
+		# An outer corner meets a floor (or ceiling) band moved MIDDLE_INSET in, and a wall
+		# band that is not moved. Moved whole, its wall part stood MIDDLE_INSET off the
+		# wall below; instead its art bends: shifted the full inset at the band's side,
+		# easing to none at the wall's side.
+		sprite.position = Vector2(col * CELL, row * CELL)
+		var shift := MIDDLE_INSET / CELL
+		# The floor band runs across the corner's top ~55% (the ceiling band its bottom), so
+		# the bend holds the full shift there and eases out only where it is all wall.
+		if tile in [TILE_TL, TILE_TR]:
+			_bend(sprite, Vector2(shift, 0.0), Vector2(0.55, 1.0))
+		else:
+			_bend(sprite, Vector2(0.0, -shift), Vector2(0.0, 0.45))
 	sprite.z_index = MIDDLE_Z + (1 if outer_corner else 0)
 	parent.add_child(sprite)
 	return sprite
+
+
+## Bends [param sprite]'s art up or down: [param shift].x at its top edge and .y at its
+## bottom edge (fractions of its height, + moves the art down), eased between over
+## [param ease] (fractions of the height).
+func _bend(sprite: Sprite2D, shift: Vector2, ease := Vector2(0.0, 1.0)) -> void:
+	if _bend_shader == null:
+		_bend_shader = Shader.new()
+		_bend_shader.code = BEND_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = _bend_shader
+	material.set_shader_parameter("shift", shift)
+	material.set_shader_parameter("ease", ease)
+	sprite.material = material
 
 
 ## How far a rim tile moves into the solid: MIDDLE_INSET px down under a floor's top
@@ -924,7 +965,7 @@ func _middle_inset(tile: int) -> Vector2:
 
 
 ## A tile's collision trim, [top, bottom, left, right] in source px (TILE_INSETS), with
-## the outer corners' top (or bottom) set to the straight tile's: their own art rounds
+## the outer corners' top (or bottom) and side set to the straight tiles': their own art rounds
 ## off a little higher, which left a 0.6 px step in the floor at every ledge corner that
 ## caught the player. One floor is now one level box.
 func _collision_insets(tile: int) -> Array:
@@ -935,6 +976,12 @@ func _collision_insets(tile: int) -> Array:
 		insets[0] = TILE_INSETS[TILE_T][0]
 	if tile in [TILE_BL, TILE_BR]:
 		insets[1] = TILE_INSETS[TILE_B][1]
+	# Their sides likewise take the straight wall's, or the wall face had a small lip
+	# under each corner that the player caught on while sliding down it.
+	if tile in [TILE_TL, TILE_BL]:
+		insets[2] = TILE_INSETS[TILE_L][2]
+	if tile in [TILE_TR, TILE_BR]:
+		insets[3] = TILE_INSETS[TILE_R][3]
 	return insets
 
 
