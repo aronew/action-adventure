@@ -1,9 +1,9 @@
 # Art Bible: Guardbreak *(working title)*
 
-> **Status**: Draft (sections 1-4 in progress, `/art-bible`, lean, standard)
+> **Status**: Draft. Sections 1-4 written 2026-11-20 (`/art-bible`, lean, standard: the required minimum); sections 5-9 not yet authored
 > **Owned By**: art-director
 > **Last Updated**: 2026-11-20
-> **Art Director Sign-Off (AD-ART-BIBLE)**: [Not yet reviewed]
+> **Art Director Sign-Off (AD-ART-BIBLE)**: SKIPPED 2026-11-20 — lean mode
 
 `/art-bible` writes these nine sections in this order and replaces each
 section's `[To be designed]` line as that section is approved. A section still
@@ -26,7 +26,7 @@ Brightness runs, from lightest: the Seeker, then enemies, then the play layer's 
 *Test: when two values compete, keep the one that leaves the room readable in greyscale.*
 
 **Principle 3: Combat owns the light.** *Serves: "hand-animated", "animation-heavy duels".*
-Ambient light comes from below, warm and soft (region 1 visual direction). The sword arcs and the guard-break sparks are the brightest moments on screen; embers and glows stay dimmer and slower (parallax rules 11, 13). The four reserved hues, orange (dash), copper-green (wall cling), chalk-yellow (double jump) and violet (grapple), mark ability gates and nothing else.
+Ambient light comes from below, warm and soft (region 1 visual direction). The sword arcs and the guard-break sparks are the brightest moments on screen; embers and glows stay dimmer and slower (parallax rules 11, 13). The four key colours, orange (dash), chalk-yellow (double jump), copper-green (wall cling) and violet (grapple), mark a key's gates, its pickup, its icon and its map markers; a gate is known first by blocking the way and by its reserved shape (Sections 3, 4).
 *Test: when an ambient effect and a combat effect compete for the eye, the sword arc and the guard break win.*
 
 **Tagline (not a rule):** *the one pale, crisp thing in a warm, painted dark.*
@@ -98,10 +98,57 @@ The middle-foreground layers and the foliage will be built out and reiterated as
 
 ## 4. Color System
 
-[To be designed] — a primary palette of 5–7 colours with their meaning in this
-world, semantic colour usage, per-area colour temperature rules, the UI palette
-and where it diverges, and colourblind safety: which semantic colours need a
-shape, icon or sound backup.
+**The grade delivers the greyscale order, with art that is dark enough.** Raw, the Cinderheart far layer's brightest colour (#AE5E59, luma 0.46) is brighter than the Seeker's body (#796167, 0.41), so the order of Section 1's Principle 2 holds only after fog and the screen grade: on the graded reference frame the back measures about 0.34, the floor edges 0.49-0.70 and the Seeker 0.53-0.61 (parallax, P4; a warning at a margin of 0.10, judged by eye). New art keeps far layers at a raw luma of 0.46 or less and mid layers at 0.41 or less, and is judged on a graded frame, never trusting the grade to rescue a pack that is too bright. The owner's outlined biome sets already meet the order raw: their floor lips reach about 0.45 against backgrounds of 0.08-0.20 (measured 2026-11-20). Luma is 0.299 R + 0.587 G + 0.114 B throughout.
+
+**Primary palette** (region 1, Cinderheart Caldera; authoring targets taken from the measured art):
+
+| Name | Hex (luma) | Role in this world |
+|---|---|---|
+| Void Black | #050001 (0.01) | Collision fill and outlines: solid, unseen |
+| Soot Umber | #31262A (0.16) | Ground and the mid layers |
+| Ash Aubergine | #5E424B (0.30) | Back layers and the cooler top of the ambient gradient |
+| Furnace Burgundy | #885256 (0.39) | The pack's body red |
+| Kiln Amber | #A8703C (0.48) | The light from below; never above mid value (region 1 visual direction) |
+| Bone Pale | #B59D91 (0.64) | The Seeker's lit tone; UI body text |
+| Flash White | #F6EBDD (0.93) | The Seeker's sword arcs and the guard-break spark |
+
+**What colour means.** In a world lit burgundy and amber, red cannot mean danger, so meaning is carried by temperature and brightness:
+
+| Colour | Means | Why |
+|---|---|---|
+| Bone Pale and Flash White, warm | You: the Seeker, your arcs, your rest | The lightest warm thing in the dark is the one thing that is you |
+| Cool ice-white #CFE0F2 (0.87) | An enemy attack you must dodge, not block | A cool, slightly dimmer flash that stands out against every biome; against your warm arc (0.93) it differs in temperature, brightness and shape. Every other enemy telegraph carries no colour: a wind-up pose that changes the silhouette, a short pause and a sound, as in Hollow Knight **[Owner, 2026-11-20]** |
+| Kiln Amber, steady | Safe: the rest pool | Warmth that never flickers |
+| Void Black | Solid | The mass you cannot enter |
+| Peak brightness | Reward: the guard break, the finisher | Reward is an event of maximum light, not a pickup colour |
+
+**Biomes.** Each biome is one dark base colour and at most one accent light (or none: the owner's grey thorn cave is pure greyscale), with the warmth from below added by the grade's ambient gradient (parallax, rule 12). The floor lip stays the brightest painted thing in every biome. Region 1 uses the Cinderheart Caldera pack as it is, the reference room's look **[Owner, 2026-11-20: "it just looks good right now"; subject to change]**; the region 1 lore's Cooling Yards palette (soot-umber, kiln windows) and the owner's kiln concept image stay a possible later direction. Measured accents in the owner's other sets: peach-orange lanterns and orbs (#C57A55) over navy, a teal glow (hue about 195 degrees) over deep blue-teal.
+
+**Key colours and the key order.** The keys come in this order: dash (region 1), double jump (region 2), wall cling (region 3), grapple (region 4) **[Owner, 2026-11-20; was dash and wall cling in region 1]**. Each key has one colour, shared by its gates, the pickup that grants it, its owned-key icon and its gate markers on the map, so lock and key match **[Owner, 2026-11-20]**:
+
+| Key | Colour | On the gate |
+|---|---|---|
+| Dash | Orange #FF7A1A | A pale bisque pane or gap lip with a hard orange seam (ability gating rule 10) |
+| Double jump | Chalk-yellow #B8AC68 | The kiln shelf on stilts |
+| Wall cling | Copper-green #3AA386 | The vertical finger-drag grooves |
+| Grapple | Violet #9B66F2 | The iron ring and cord |
+
+A gate is known first by blocking the way and by its reserved shape (Section 3); its colour reminds the player which ability opens it **[Owner, 2026-11-20: "you know it's a gate because you can't clear it"]**. Biome art may therefore use these hues freely (the lantern ruins' orange orbs, a teal or violet haze): no hue is withheld from the environment.
+
+**UI palette.** The UI draws above the grade, ungraded, so its colours show as authored. Panels are Void Black and body text Bone Pale (about 8:1 contrast); Flash White is kept for the one focused item and the guard-break flash. Selection is a bracket and brightness, not a hue (Section 3). Health and guard colours wait for the HUD design, but neither may use a key colour or rely on red against green.
+
+**Colourblind safety.** Hue alone is never the only cue:
+
+| Pair at risk | Backup |
+|---|---|
+| Dash orange and wall-cling copper-green (red-green) | Shape: a pane or lip against vertical grooves; distinct pickup and map pictograms |
+| Dash orange and double-jump chalk-yellow | Shape: a pane against a stilted shelf (their luma is close) |
+| Grapple violet and blue glaze or haze | The ring and cord shape |
+| Your warm arc and an enemy's cool dodge flash | Brightness (0.93 against 0.87), crescent against wind-up silhouette, timing |
+
+The reference frame is also reviewed through protanopia, deuteranopia and tritanopia filters before a biome's look is signed off.
+
+**Open.** Whether the game's biomes take the six painted packs' look or the owner's outlined sets (grey thorn cave, blue lantern ruins, teal grave garden, all with full tile and terrain sets) is not decided **[Owner, 2026-11-20: subject to change]**. The Seeker plays in the Bone palette, whose low-saturation pinkish greys sit clear of every key colour; the Ember, Frost and Dream Seeker palettes are checked against the key colours when those power-ups are designed.
 
 ## 5. Character Design Direction
 
