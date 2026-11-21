@@ -436,3 +436,29 @@ Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-21 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 13 (7 new, 6 carried)
+Summary: Seventeenth review, the first since the owner's key order change (dash, double jump, wall cling, grapple, 2026-11-20). The key table, mapping, rule 26 and the kit wording in the acceptance criteria were updated cleanly, but two places still reasoned from the old order. Cling and climb walls (F6a, F6b) were judged against a dash-only earlier kit, so a pogo off a hittable with the refreshed air jump (about 153 px reach, `player.gd` `_refresh_air_moves`) could top a 132 px wall while the F7 check passed a target 260 px away. Rule 2's sealed alcoves and their criterion covered only double-jump and grapple gates, although the mapping, the brief and the narrative draft all show cling gates in region 1. Both revised in the same session with the owner's decisions; the GDD, ability gating and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 sixteenth review APPROVED, 6 recommended; the 6 are still open and carried below)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24) / Tuning Knobs / registry: F6a and F6b sized for the dash-only kit (`pogo_clearance_px` 250, `reach_height` `jump_apex`); fixed: they join the F3a band (`pogo_clearance_f3a_px` 320, `double_jump_total`), and ability gating raises `cling_wall_min` from about 127 to about 165 px, 168 on the grid (owner: both); `dj_hop_max` 127 keeps the standing-spot rule
+- [BLOCKING] Core Rules (rule 2) / Acceptance Criteria: the wall cling missing from the core build's sealed alcoves and their return and criterion; fixed: rule 2 and the alcove criterion cover cling and climb walls, return a drop off the wall top's near edge or a lever door
+- [RECOMMENDED] Dependencies / Interactions / Cross-References: rooms, world state, save points and grid map GDDs exist but were listed as not designed; ability gating listed Approved (fixed)
+- [RECOMMENDED] Edge Cases (209, 216): "start kit climbs it in hops" and a double-jump gate in a narrow room leaking, both from the old order (fixed)
+- [RECOMMENDED] Core Rules (rule 24) / Edge Cases (208): "a short delay" with `enemy_return_delay` (2 s) registered (fixed)
+- [RECOMMENDED] Acceptance Criteria (335): "core build: dash and wall cling" (fixed)
+- [RECOMMENDED] Open Questions (18): the narrative draft's cling walls must be at least 168 px, and room 5's moths against the 320 px band across a 480 px room (noted; the narrative side owns the draft)
+- [RECOMMENDED] Interactions: obligations owed by the save points (rest area clear of leash bounds, spawn points and hazards; region start save), grid map (region map, map colours, secret job in data) and parallax (override fields, two room checks) GDDs are not adopted here (open, needs owner decisions)
+- [RECOMMENDED] carried from the sixteenth review, still open: knob safe ranges below derived minimums (220-300 vs 242, 300-380 vs 318); wall- and ceiling-mounted hazards undefined as pogo targets; stranded enemy's patrol interval; shortcut approached from its near side has no criterion; compound criteria (sweep, leash test); respawn-delay criterion
+- [ADVISORY] rule 11 defines a smaller workshop only for the dash and the wall cling (double jump and grapple needed for regions 2 and 4); registry notes for `double_jump_ledge_window` and `wall_launch_reach` still carry the old order; GDD about 88 KB with rule 24 one long paragraph; narrative draft still says 7-screen saves; `cling_wall_min` rests on the 60 Hz sim's 153 px, not measured in the engine
+Reviewed-Content-Hash: design/gdd/level-design.md dd33fb91a7fa28ead26f976e04e0e00a94f4413b
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: design/gdd/ability-gating.md cd549bd941379c0683190e825fbb12f1ec654e0d
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: src/player/player.gd c7140c74e8125510d9d876506bc9a87adaa29c2d

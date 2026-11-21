@@ -191,12 +191,15 @@ formulas:
       - design/gdd/level-design.md
       - design/gdd/terrain-pipeline.md
     variables:
-      - ledge_min
-    output_range: [72, null]
-    expression: "wall_height >= ledge_min, no standing spot on the face"
-    notes: "F6a/F6b. px; a climb wall is climbable-marked."
+      - pogo_dj_reach
+      - ledge_nudge
+      - ledge_margin_low
+      - dj_hop_max
+    output_range: [165, null]
+    expression: "wall_height >= pogo_dj_reach + ledge_nudge + ledge_margin_low (153 + 5 + 7 = 165, 168 on the 6 px grid); no standing spot within dj_hop_max (about 127) of the one below"
+    notes: "F6a/F6b. px; a climb wall is climbable-marked. Was [72, null] while the wall cling came before the double jump, then about 127 (132 on grid) after the 2026-11-20 key order; raised to 165 (168 on grid) 2026-11-21 (level design seventeenth review, owner): a pogo off a hittable with the refreshed air jump reaches about 153 px, so a 132 px wall could be topped by the dash and double jump kit. Level design F7 also keeps the F3a-width pogo band (pogo_clearance_f3a_px) around every cling and climb wall."
     added: 2026-11-18
-    revised: ""
+    revised: 2026-11-21
   - name: bisque_pane_detect
     status: active
     source: design/gdd/ability-gating.md
@@ -383,9 +386,9 @@ constants:
       - design/gdd/terrain-pipeline.md
     value: 250   # was 140 (start-kit run-speed carry); level-design.md ninth design review
     unit: px
-    notes: "F7. F2, F6a and F6b column gates (fifteenth review added F6b, the climb wall), whose earlier kit owns the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
+    notes: "F7. F2 double-jump-ledge column gates only, whose earlier kit is the dash: a pogo refreshes the air dash, so pogo_carry_dash 211 (60 Hz sim) + hitbox_width 10 + down-attack back reach 21 = 242, rounded up. F6a and F6b left this entry on 2026-11-21 (level design seventeenth review): since the 2026-11-20 key order their earlier kit is the dash and the double jump, so they use pogo_clearance_f3a_px. Was 120 before the eighth review (body width only), 140 before the ninth (run-speed carry)."
     added: 2026-11-19
-    revised: 2026-11-19
+    revised: 2026-11-21
   - name: pogo_clearance_f3a_px
     status: active
     source: design/gdd/level-design.md
@@ -393,8 +396,9 @@ constants:
       - design/gdd/terrain-pipeline.md
     value: 320
     unit: px
-    notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
+    notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump) and, since 2026-11-21 (level design seventeenth review, owner), F6a cling-wall and F6b climb-wall column gates (earlier kit: dash, double jump; the wall cling does not change the carry): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
     added: 2026-11-19
+    revised: 2026-11-21
   - name: chase_leash
     status: active
     source: design/gdd/level-design.md
