@@ -122,14 +122,14 @@ The gate windows themselves are ability gating's (F1-F11) and level design's (F7
 |---|---|---|
 | Dash gap width (ability gating F1, margin 8) | 145 to 161.4 (ability gating's prose and the registry say 145 to 162, from the rounded 165) | 150, 156 (162 enters only if a measured `dash_jump_distance` reaches 165, Open Question 3) |
 | Double-jump ledge top (F2) | 72 to 106 | 72, 78, 84, 90, 96, 102 |
-| Plain slab underside under an F2 ledge (`head_clear`) | 88 or more | 90 or more |
+| Plain slab underside under an F2 ledge (`head_clear`; reference only, not a gate condition: F2 has no cling test since the 2026-11-20 key order) | 88 or more | 90 or more |
 | Safe pit floor below the far lip (F1, `pit_depth_min`) | 72 or more | 72 or more |
 | Hazard floor below both lips (level design F7, `hazard_pit_depth_min`) | 84 or more | 84 or more |
 | Grapple ledge top, `no_cling` faces (F3a, margin 6) | 126 or more | 126 or more |
 | Plain slab underside under a grapple ledge (F3a) | 143 or more | 144 or more |
 | Grapple gap width (F3b) | 420 or more | 420 or more |
 | Plain far face below a grapple gap's far lip (F3b, `far_face_max`) | 16 or less | 0, 6 or 12 |
-| Cling or climb wall height (F6) | 72 or more | 72 or more |
+| Cling or climb wall height (F6, `cling_wall_min`) | 165 or more | 168 or more |
 | Bisque pane thickness (F10) | 8 to 16 | 12 |
 
 **Visible gap.** Trim may cover each lip by up to `trim_overhang_max`, so a gap of width W can read as narrow as `W - 2 x trim_overhang_max`: 142 px for a 150 px gap at today's values, still wider than a run-jump's 137 px. At `gap_margin` 4 with `trim_overhang_max` 6 it would read 129 px, below 137, so a gap that needs the dash would look run-jumpable. Keep `2 x trim_overhang_max <= gap_margin`. **[Rec, sixth design review; level design owns both knobs]**

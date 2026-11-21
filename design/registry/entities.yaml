@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: "2026-11-19"
+last_updated: "2026-11-21"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -160,9 +160,9 @@ formulas:
       - cling_margin
     output_range: [72, 106]
     expression: "ledge_min = jump_apex + ledge_nudge + ledge_margin_low; ledge_max = double_jump_total_low - ledge_margin_high; head_clear = jump_apex + hitbox_height + cling_margin"
-    notes: "F2. px ledge top at margins 7/7; head_clear about 88; plus the F8 launch-face test (keys 1-2). Was [72, 108]: ledge_max used 115, the sim figure is 113.5 (ability-gating.md design review)."
+    notes: "F2. px ledge top at margins 7/7, on a slab of any thickness. No cling test since the 2026-11-20 key order (the double jump is owned before the wall cling): no F8 launch-face test, and head_clear (about 88) is kept for reference only, not a gate condition. Was: plus the F8 launch-face test (keys 1-2), before 2026-11-21 (/consistency-check). Was [72, 108]: ledge_max used 115, the sim figure is 113.5 (ability-gating.md design review)."
     added: 2026-11-18
-    revised: 2026-11-18
+    revised: 2026-11-21
   - name: grapple_gate
     status: active
     source: design/gdd/ability-gating.md
@@ -245,11 +245,11 @@ formulas:
       - launch_rise
       - dh
       - wall_reach
-    output_range: [231, 420]
+    output_range: [333, 420]   # was: [231, 420] before 2026-11-21 (keys 1-2 column, reference only since the key order change)
     expression: "a plain face is a launch face for a gate target when it faces the target, face_top >= target_top - launch_rise(kit), and its horizontal distance to the target is <= wall_reach(kit, dh), dh = max(0, face_top - target_top)"
-    notes: "F8. px, 60 Hz sim table: keys 1-2 about 231 (dh 0) to 317 (dh 300); keys 1-3 about 333 to 420. Unmeasured. A gate (F2, F3a, F3b) must have no launch face."
+    notes: "F8. px, 60 Hz sim table, keys 1-3 (dash, double jump, wall cling): about 333 (dh 0) to 420 (dh 300). Unmeasured. A grapple gate (F3a, F3b) must have no launch face; F1, F2 and F6 never need F8, since no kit before them holds the wall cling (key order 2026-11-20). The dash-and-wall-cling column (231-317) is kept in ability gating F8 for reference only. Was: keys 1-2 about 231 to 317 applied to F2, before 2026-11-21 (/consistency-check)."
     added: 2026-11-18
-    revised: ""
+    revised: 2026-11-21
   - name: gate_room_footprint
     status: active
     source: design/gdd/ability-gating.md
@@ -263,11 +263,11 @@ formulas:
       - wall_reach
       - landing_slack
       - room_width
-    output_range: [606, 852]
+    output_range: [758, 852]   # was: [606, 852] before 2026-11-21 (606 was the F2 ledge, exempt since the key order change)
     expression: "room_width >= span + 2 * (wall_reach(kit, dh_wall) + landing_slack)"
-    notes: "F9. Width needed beyond the span, px, for plain walls to the ceiling at 270 px room height: about 606 (F2 ledge), 758 (F3a ledge), 852 (F3b gap). Exempt where every plain face in reach is no_cling. Level design rule 26 reads it."
+    notes: "F9. Width needed beyond the span, px, for plain walls to the ceiling at 270 px room height: about 758 (F3a ledge), 852 (F3b gap). Grapple gate rooms only: F1, F2 and F6 rooms never need F9 (the wall cling is not owned before key 3, key order 2026-11-20). Exempt where every plain face in reach is no_cling. Level design rule 26 reads it. Was: also about 606 for an F2 ledge, before 2026-11-21 (/consistency-check)."
     added: 2026-11-18
-    revised: ""
+    revised: 2026-11-21
   - name: on_grid
     status: active
     source: design/gdd/terrain-pipeline.md
@@ -394,6 +394,7 @@ constants:
     source: design/gdd/level-design.md
     referenced_by:
       - design/gdd/terrain-pipeline.md
+      - design/gdd/ability-gating.md   # F6a, second guard around cling and climb walls
     value: 320
     unit: px
     notes: "F7. F3a grapple-ledge column gates (earlier kit: dash, wall cling, double jump) and, since 2026-11-21 (level design seventeenth review, owner), F6a cling-wall and F6b climb-wall column gates (earlier kit: dash, double jump; the wall cling does not change the carry): a pogo refreshes the air jump and air dash, pogo_carry_f3a 287 (60 Hz sim) + 10 + 21 = 318, rounded up."
@@ -422,6 +423,7 @@ constants:
       - design/gdd/terrain-pipeline.md
       - design/gdd/rooms-and-transitions.md
       - design/gdd/parallax-lighting-and-atmosphere.md
+      - design/gdd/save-points-and-save-load.md   # rules 2-3, the one-tile feet and snap bounds
     value: 6
     unit: px
     notes: "Rule 2. Side of a black collision tile, anchored at the room top-left; a 480 x 270 screen is 80 x 45 tiles. Must divide 30 and the art cell (36 px in the art-style test room); every collision, room and gate edge lies on the grid. Owner decision 2026-11-19 (Hollow Knight-style block-out)."
