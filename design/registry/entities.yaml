@@ -326,6 +326,19 @@ formulas:
     notes: "R5. Advisory room check, lists exits for level design, never refuses a room. dash_speed (370) and fast_fall_speed (640) read from player_config.tres; each term is a lower bound on the time, so the check never lists too few. load_time is a per-biome data value, 1.07 s for every biome (worst of the 0.75-1.07 s first loads measured in the container, level design Open Question 22) until measured on the owner's machine; 0 when the target shares the arrival room's biome. Revised 2026-11-19 (first design review: the dash_speed-only bound missed fall exits)."
     added: 2026-11-19
     revised: 2026-11-19
+  - name: max_health_derived
+    status: active
+    source: design/gdd/collectible-upgrades.md
+    referenced_by:
+      - design/gdd/save-points-and-save-load.md   # rule 4: a rest, a respawn and Continue heal to it
+    variables:
+      - base_max_health
+      - health_steps
+      - health_step
+    output_range: [100, 180]
+    expression: "max_health = base_max_health + steps(health) x health_step"
+    notes: "Collectible upgrades F2. base_max_health 100 (player_config.tres max_health, owned by the player controller), health_step 20 (range 10-30), steps 0-4 (fragment_sets). Current health is set to it when a health step completes. Save points (a rest, a respawn and Continue heal to max health, its rule 4) must read this derived value, not the config's 100, and add itself to referenced_by; empty until then."
+    added: 2026-11-21
 
 # Example:
 #
@@ -473,6 +486,14 @@ constants:
     unit: px
     notes: "Parallax rule 10 and Edge Cases: the largest ember, world px. Requirement on Combat and Enemies: every projectile is at least twice this (6 px or more) and never ember-coloured without an outline or a trail; they add themselves to referenced_by when their GDDs adopt it."
     added: 2026-11-20
+  - name: fragment_sets
+    status: active
+    source: design/gdd/collectible-upgrades.md
+    referenced_by: []
+    value: {health: {step_size: 4, steps_max: 4}, edge: {step_size: 3, steps_max: 3}, guard: {step_size: 3, steps_max: 3}, magic: {step_size: 3, steps_max: 3}}
+    unit: fragments per step / steps
+    notes: "Collectible upgrades rules 7, 8, 12 and F1 (step_size 2-6, at least 2; steps_max 0-6; owner, 2026-11-21). The catalogue holds exactly step_size x steps_max of each kind: health 16, edge 9, guard 9, magic 9 (43). Region 1 holds at most step_size - 1 of each kind (3, 2, 2, 2), so no set completes there. After release step_size may only fall and steps_max only rise. Level design (placement) must adopt rules 8, 12 and 13 and add itself to referenced_by; empty until then."
+    added: 2026-11-21
 
 # Example:
 #
