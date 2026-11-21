@@ -436,3 +436,62 @@ Reviewed-Content-Hash: src/enemies/enemy_config.gd 64ecebffb379b48ab0017e5e51798
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Review — 2026-11-21 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 2 | Recommended: 13 (7 new, 6 carried)
+Summary: Seventeenth review, the first since the owner's key order change (dash, double jump, wall cling, grapple, 2026-11-20). The key table, mapping, rule 26 and the kit wording in the acceptance criteria were updated cleanly, but two places still reasoned from the old order. Cling and climb walls (F6a, F6b) were judged against a dash-only earlier kit, so a pogo off a hittable with the refreshed air jump (about 153 px reach, `player.gd` `_refresh_air_moves`) could top a 132 px wall while the F7 check passed a target 260 px away. Rule 2's sealed alcoves and their criterion covered only double-jump and grapple gates, although the mapping, the brief and the narrative draft all show cling gates in region 1. Both revised in the same session with the owner's decisions; the GDD, ability gating and registry stamps below are their git HEAD versions as reviewed, before the revisions, so the next review runs in full.
+Prior verdict resolved: Yes (2026-11-19 sixteenth review APPROVED, 6 recommended; the 6 are still open and carried below)
+Findings:
+- [BLOCKING] Formulas (F7) / Core Rules (rule 24) / Tuning Knobs / registry: F6a and F6b sized for the dash-only kit (`pogo_clearance_px` 250, `reach_height` `jump_apex`); fixed: they join the F3a band (`pogo_clearance_f3a_px` 320, `double_jump_total`), and ability gating raises `cling_wall_min` from about 127 to about 165 px, 168 on the grid (owner: both); `dj_hop_max` 127 keeps the standing-spot rule
+- [BLOCKING] Core Rules (rule 2) / Acceptance Criteria: the wall cling missing from the core build's sealed alcoves and their return and criterion; fixed: rule 2 and the alcove criterion cover cling and climb walls, return a drop off the wall top's near edge or a lever door
+- [RECOMMENDED] Dependencies / Interactions / Cross-References: rooms, world state, save points and grid map GDDs exist but were listed as not designed; ability gating listed Approved (fixed)
+- [RECOMMENDED] Edge Cases (209, 216): "start kit climbs it in hops" and a double-jump gate in a narrow room leaking, both from the old order (fixed)
+- [RECOMMENDED] Core Rules (rule 24) / Edge Cases (208): "a short delay" with `enemy_return_delay` (2 s) registered (fixed)
+- [RECOMMENDED] Acceptance Criteria (335): "core build: dash and wall cling" (fixed)
+- [RECOMMENDED] Open Questions (18): the narrative draft's cling walls must be at least 168 px, and room 5's moths against the 320 px band across a 480 px room (noted; the narrative side owns the draft)
+- [RECOMMENDED] Interactions: obligations owed by the save points (rest area clear of leash bounds, spawn points and hazards; region start save), grid map (region map, map colours, secret job in data) and parallax (override fields, two room checks) GDDs are not adopted here (open, needs owner decisions)
+- [RECOMMENDED] carried from the sixteenth review, still open: knob safe ranges below derived minimums (220-300 vs 242, 300-380 vs 318); wall- and ceiling-mounted hazards undefined as pogo targets; stranded enemy's patrol interval; shortcut approached from its near side has no criterion; compound criteria (sweep, leash test); respawn-delay criterion
+- [ADVISORY] rule 11 defines a smaller workshop only for the dash and the wall cling (double jump and grapple needed for regions 2 and 4); registry notes for `double_jump_ledge_window` and `wall_launch_reach` still carry the old order; GDD about 88 KB with rule 24 one long paragraph; narrative draft still says 7-screen saves; `cling_wall_min` rests on the 60 Hz sim's 153 px, not measured in the engine
+Reviewed-Content-Hash: design/gdd/level-design.md dd33fb91a7fa28ead26f976e04e0e00a94f4413b
+Reviewed-Content-Hash: design/registry/entities.yaml 6258731ee3fa52f40f199f479fd69279b82d09c1
+Reviewed-Content-Hash: design/gdd/ability-gating.md cd549bd941379c0683190e825fbb12f1ec654e0d
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: src/player/player.gd c7140c74e8125510d9d876506bc9a87adaa29c2d
+
+## Review — 2026-11-21 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 0 | Recommended: 13 (5 new, 8 carried)
+Summary: Eighteenth review, a fresh read of the whole GDD after the seventeenth review's two blocker revisions (cling and climb walls on the dash and double jump kit's band; rule 2's sealed alcoves for cling gates). Both fixes hold under the new key order and no gate leaks as written. The new findings are wording and test-definition gaps: the wall-cling workshop's "shorter than every cling wall" has no valid height band against the F6a floor, `pogo_dj_reach` rests on the grunt's contact height (the brute's 34 px body reaches about 162 px, an estimate), so the F7 band is the real guard and wall height only a second one, and the art bible has since settled what rule 7 and Visual/Audio left open.
+Prior verdict resolved: Yes (2026-11-21 seventeenth review NEEDS REVISION, 2 blockers; both revised and held)
+Findings:
+- [RECOMMENDED] Core Rules (rule 11) / Acceptance Criteria (337): the wall-cling workshop wall must be shorter than every cling wall seen, so under 168 px, which F6a rejects as a gate and under about 120 px is no lock at all; state a band (about 132 to 162 on the grid) and exempt it from the gate checks as a non-gate
+- [RECOMMENDED] Formulas (F7, `pogo_dj_reach`): the 153 px reach assumes a pogo contact of 24-55 px (the grunt); the brute's 34 px body gives about 66 px contact and about 162 px reach (estimate, not simulated), leaving a 168 px wall 6 px; say the 320 px band is the guard and `cling_wall_min` a second one for hittables up to about 23 px tall
+- [RECOMMENDED] Acceptance Criteria (329): sweep steps (1 px, every frame) differ from ability gating's "Input sweep definition" (3 px, every 4 frames, tightened near margins); name one as normative
+- [RECOMMENDED] Core Rules (rule 7) / Visual/Audio / Open Questions (6): still say each key's colour is used by nothing else, thorn vines or glaze for `no_cling`, and the art bible is not written; art bible sections 3-4 reserve shapes, share colours with biome art and set `no_cling` as horizontal glaze bands
+- [RECOMMENDED] Registry: `gate_room_footprint` output range [606, 852] and "606 (F2 ledge)" contradict rule 26 and F9 (a double-jump ledge needs no footprint); `double_jump_ledge_window` note (F8 launch-face test, keys 1-2) and `wall_launch_reach` note on the old order; `pogo_clearance_f3a_px` `referenced_by` lacks ability gating
+- [RECOMMENDED] carried, still open: knob safe ranges below derived minimums (220-300 vs 242, 300-380 vs 318); wall- and ceiling-mounted hazards undefined as pogo targets; stranded enemy's patrol interval; shortcut approached from its near side has no criterion; compound criteria (sweep, leash test); respawn-delay criterion; obligations owed by the save points, grid map and parallax GDDs not adopted; narrative draft needs (Open Question 18)
+- [ADVISORY] `Last Verified` 2026-11-19 stale; systems-index summary counts level design and ability gating as approved while rows said In Review; rule 24 one long paragraph and GDD about 89 KB; `cling_wall_min` rests on the 60 Hz sim, not measured in the engine
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/registry/entities.yaml f3386ab7ba90c0f80e33c20f64c0f5cf8b8437a7
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
+Reviewed-Content-Hash: src/player/player.gd c7140c74e8125510d9d876506bc9a87adaa29c2d
+Reviewed-Content-Hash: src/player/player_combat.gd 71011aeca145f1ce21e721305286e5e067a8fcb8
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
+Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
+Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
+Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950

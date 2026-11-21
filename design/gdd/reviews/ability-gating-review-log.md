@@ -112,3 +112,33 @@ Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da1666
 Reviewed-Content-Hash: src/player/player.gd d8b0b5307f1f80312dde45244c12f2d06d80b2cb
 Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
 Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
+
+## Review — 2026-11-21 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean mode, single-session analysis)
+Blocking items: 0 | Recommended: 11 (5 new, 6 carried)
+Summary: Fifth review, the first since the owner's key order change (dash, double jump, wall cling, grapple) and `cling_wall_min` rising to about 165 px (168 on the grid). The order is carried through F2 (no cling test), F6 (earlier kit dash and double jump) and F8-F9 (grapple only) consistently; the arithmetic recomputes (`dj_hop_max` 127, `cling_wall_min` 165, F9 758/852, pane range 9-17) and no gate leaks as written. New findings: `pogo_dj_reach` rests on the grunt's pogo contact height, so the F7 band is the guard, not wall height; rules 10 and 14, Visual/Audio and criterion 465 predate the art bible (shared key colours, shapes reserved, glaze-band `no_cling`); stale "no GDD exists" dependency statements; F6 boundary criteria and per-kit sweep move caps.
+Prior verdict resolved: Yes (2026-11-19 fourth review APPROVED, 7 recommended; the 7th, bisque vs orange, is settled by the art bible and folded into the new art-bible finding; the other 6 are carried)
+Findings:
+- [RECOMMENDED] Formulas (F6a, `pogo_dj_reach`): the 153 px reach assumes a pogo contact of 24-55 px (the grunt); the brute's 34 px body gives about 66 px contact and about 162 px reach (estimate, not simulated), leaving a 168 px wall 6 px; state that the placement band (level design F7) is the guard and `cling_wall_min` a second one
+- [RECOMMENDED] Core Rules (rules 10, 14) / Visual/Audio / Open Questions (4) / Cross-References / Acceptance Criteria (465): say the art bible is not written, copper-green is reserved, no other surface uses a key's colour, and `no_cling` is thorn vines or glaze; art bible sections 3-4 reserve shapes, share colours with biome art, make dash orange with a bisque pane and `no_cling` horizontal glaze bands
+- [RECOMMENDED] Interactions / Dependencies / Cross-References: "No GDD exists yet for any of these systems except Level design", World state "No (provisional)" and "Not designed", "No other GDD exists to check"; world state, terrain pipeline and parallax GDDs exist and reference this one
+- [RECOMMENDED] Acceptance Criteria (473): F6 boundaries lack 162 px (rejected, the new minimum's neighbour) and `dj_hop_max` (a standing spot 126 px up rejected, 132 px passes)
+- [RECOMMENDED] Acceptance Criteria (sweep bounds): `sweep_max_moves` 4 is justified by the old kit (jump, kick, double jump, air dash); a grapple gate's earlier kit with the pogo's air-move refresh needs more presses; state the cap per kit
+- [RECOMMENDED] carried from the fourth review, still open: F11 skip bound omits `far_face_extra`; F3a arrival pose and swept-box pull check; F1-F3/F6 sweep criterion is one compound item; release-time criterion to state 141 ± 10 px; ordered chain cannot be re-crossed from the far side, say so; `grapple_margin` has no start value
+- [ADVISORY] F6 example says the double jump reaches "about 120", F3a says 118.5; `Last Updated` 2026-11-19 stale; Player Fantasy and Tuning Knobs absent (advisory at standard)
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/registry/entities.yaml f3386ab7ba90c0f80e33c20f64c0f5cf8b8437a7
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/narrative/lore/premise.md e1115841f279e60d13891bef4eeac8e935d74c05
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/narrative/dialogue/mentor-pell.md a1e965cb34510db6c8541952eca945ee02680c0f
+Reviewed-Content-Hash: src/player/player.gd c7140c74e8125510d9d876506bc9a87adaa29c2d
+Reviewed-Content-Hash: src/player/player_config.tres 45f182e75e1df309ceb493b626262c10baf58162
+Reviewed-Content-Hash: src/player/seeker_animations.json c39d66a004b3a5ce06cc6f44face12def8c8e92f
