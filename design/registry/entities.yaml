@@ -494,6 +494,23 @@ constants:
     unit: fragments per step / steps
     notes: "Collectible upgrades rules 7, 8, 12 and F1 (step_size 2-6, at least 2; steps_max 0-6; owner, 2026-11-21). The catalogue holds exactly step_size x steps_max of each kind: health 16, edge 9, guard 9, magic 9 (43). Region 1 holds at most step_size - 1 of each kind (3, 2, 2, 2), so no set completes there. After release step_size may only fall and steps_max only rise. Level design (placement) must adopt rules 8, 12 and 13 and add itself to referenced_by; empty until then."
     added: 2026-11-21
+  - name: flash_limit
+    status: active
+    source: design/gdd/pause-and-menus.md
+    referenced_by: []
+    value: 3
+    unit: flashes per second
+    notes: "Pause and menus rule 14 and F4 (the general flash threshold of WCAG 2.3.1, never above 3; a flash is a rise and a fall of 10% relative luminance or more). With Flash reduction On, no light effect flashes more than this in any one second, counted together for effects on one screen area; menus obey it whatever the setting says. Requirement on Hit feedback and effects and Combat: the charge glow's fastest step (glow_step_time_fast 0.05 s, 10 flashes a second today) must become a steady glow; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    added: 2026-11-21
+  - name: pause_inputs
+    status: active
+    source: design/gdd/pause-and-menus.md
+    referenced_by:
+      - design/gdd/grid-map.md   # Open Question 7: Escape is also cancel and closes the map
+    value: {keyboard: Escape, gamepad: Start}
+    unit: input
+    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack."
+    added: 2026-11-21
 
 # Example:
 #
