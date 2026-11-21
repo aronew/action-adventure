@@ -1,6 +1,6 @@
 # Ability gating
 
-> **Status**: Approved (fourth design review 2026-11-19; recommended revisions open, see the review log)
+> **Status**: In Review: key order changed by the owner 2026-11-20 (dash region 1, double jump region 2, wall cling region 3, grapple region 4; was dash and wall cling in region 1, grapple region 3), revised in the `/art-bible` follow-up; re-review owed. `cling_wall_min` raised from about 127 to about 165 px (168 on the grid) 2026-11-21 (level design seventeenth `/design-review`, owner): a pogo off a hittable with the refreshed air jump reaches about 153 px, so a 132 px wall could be topped by the dash and double jump kit; the standing-spot hop rule keeps its own figure, `dj_hop_max` (about 127). Was: Approved (fourth design review 2026-11-19; recommended revisions open, see the review log)
 > **Author**: project owner + Claude
 > **Last Updated**: 2026-11-19
 > **Last Verified**: 2026-11-19
@@ -39,9 +39,9 @@ Tags: **[Owner]** = the owner's stated rule; **[Code]** = how the code works tod
 |-----|-----------|---------|------------|
 | 1 Dash | Dash gap | F1 | Gap too wide for any run-jump, crossable by the dash-jump |
 | 1 Dash | Bisque pane | F10 | A thin pane breaks when the Seeker touches it while dashing |
-| 2 Wall cling | Cling wall | F6a | A plain face too tall to jump, climbed by wall kicks |
-| 2 Wall cling | Climb wall | F6b | A `climbable` surface with no other way up |
-| 3 Double jump | Double-jump ledge | F2 | A ledge above a plain jump, with no plain face to kick from (F8) |
+| 2 Double jump | Double-jump ledge | F2 | A ledge above a plain jump |
+| 3 Wall cling | Cling wall | F6a | A plain face too tall for the double jump, climbed by wall kicks |
+| 3 Wall cling | Climb wall | F6b | A `climbable` surface too tall for the double jump, with no other way up |
 | 4 Grapple | Grapple ledge | F3a | A ledge above the double jump, reached from an anchor |
 | 4 Grapple | Grapple gap | F3b | A chasm wider than any non-grapple crossing, crossed by a chain of gate anchors (F11) |
 
@@ -125,10 +125,10 @@ Why the slack differs at the two ends. The leak side takes the most favourable c
 - **Below the gap.** One of three floors:
   - a kill plane (with a return ledge, level design Edge Cases);
   - a hazard floor (spikes) with both lips at least `hazard_pit_depth_min` (about 84, level design F7) above its top. The start kit can pogo a hazard again and again (level design rule 24), and its feet reach about 76 px above the hazard's top, so a shallower spike floor is bounced across;
-  - a safe floor at least `pit_depth_min` below the far lip. The far face, from that floor to the lip, has no standing spot on it (as F6a), so the start kit cannot hop out on the far side. The way out of the pit leads back to the near side only and needs no dash.
+  - a safe floor at least `pit_depth_min` below the far lip. The far face, from that floor to the lip, has no standing spot within `ledge_min` of the one below, so the start kit cannot hop out on the far side. The way out of the pit leads back to the near side only and needs no dash.
 - **Inside the span.** No standing spot inside the gap's span other than the pit floor (a pillar or ledge in mid-gap splits it into two run-jumps).
 
-The far face may be plain: the wall cling (key 2) comes after the dash, so a later key climbing out of the pit is an intended leak (level design, Feedback loops).
+The far face may be plain: the wall cling (key 3) comes after the dash, so a later key climbing out of the pit is an intended leak (level design, Feedback loops).
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
@@ -150,9 +150,9 @@ The far face may be plain: the wall cling (key 2) comes after the dash, so a lat
 
 The double_jump_ledge formula is defined as:
 
-`ledge_min = jump_apex + ledge_nudge + ledge_margin_low`; `ledge_max = double_jump_total_low - ledge_margin_high`; `head_clear = jump_apex + hitbox_height + cling_margin`. A ledge whose top is h above the standing floor is valid when `ledge_min <= h <= ledge_max` and it passes the **cling test**: (a) each of the ledge's own faces is `no_cling`, or has its lowest point at or above `head_clear`; and (b) no plain face is a launch face for it (F8, earlier kit: dash and wall cling).
+`ledge_min = jump_apex + ledge_nudge + ledge_margin_low`; `ledge_max = double_jump_total_low - ledge_margin_high`; `head_clear = jump_apex + hitbox_height + cling_margin`. A ledge whose top is h above the standing floor is valid when `ledge_min <= h <= ledge_max`. `head_clear` is kept for reference; F2 no longer uses it.
 
-Why the cling test. The wall cling is owned before the double jump, and one plain wall is a ladder (Core Rules). A slab whose underside is lower than the head at the top of a plain jump (about 81 px) gets touched, kicked off and climbed; a plain wall near the ledge gets climbed and kicked off toward it (F8). The "open air" test of earlier versions (no cling surface within 122 px, measured up to the feet) missed both.
+No cling test. The double jump (key 2) is owned before the wall cling (key 3) **[Owner, 2026-11-20: key order dash, double jump, wall cling, grapple; was dash, wall cling, double jump]**, so the kit a double-jump ledge must hold against (the dash alone) cannot kick off a wall, and a plain face beside or under the ledge cannot leak it. The cling test, which F2 carried while the wall cling came first, now applies only to the grapple (F3a, F3b, F8).
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
@@ -165,16 +165,16 @@ Why the cling test. The wall cling is owned before the double jump, and one plai
 | ledge_margin_high | float (px) | 5-12, starts at 7 | data file | Lets the double jump clear the edge reliably |
 | hitbox_height | float (px) | 22 | player_config (`hitbox_size.y`) | Height of the Seeker's box above the feet |
 | cling_margin | float (px) | 4-10, starts at 6 | data file | Keeps the head clear of a plain underside |
-| head_clear | float (px) | about 88 | calculated | `jump_apex + hitbox_height + cling_margin`: the lowest point any plain face of the ledge may have |
+| head_clear | float (px) | about 88 | calculated | `jump_apex + hitbox_height + cling_margin`; no longer a gate condition (no cling test on F2), kept for reference |
 
-**Output Range:** ledge tops of 72 to 106 px at margins 7 and 7 (`ledge_max` 106.5; the first design review lowered it from 108, see `double_jump_total_low`). A ledge with plain faces needs its underside at 88 px or more, so a plain slab t px thick fits only from `88 + t` to 106 (an 8 px slab: 96 to 106). A ledge with `no_cling` faces (for example a thick moss island) uses the whole 72-106 window. Ledges between `ledge_max` and the F3a minimum fit no gate and are not used as gates; they may appear only where nothing depends on reaching them.
-**Example:** a ledge 100 px up on an 8 px plain slab (underside 92) with no launch face needs the double jump. A ledge 90 px up on a 16 px plain slab (underside 74) is rejected: the head touches it at the top of a plain jump and the kick climbs it. The same 90 px ledge built as a thick moss island with `no_cling` faces passes.
+**Output Range:** ledge tops of 72 to 106 px at margins 7 and 7 (`ledge_max` 106.5; the first design review lowered it from 108, see `double_jump_total_low`), on a slab of any thickness, with plain faces or not. Ledges between `ledge_max` and the F3a minimum fit no gate and are not used as gates; they may appear only where nothing depends on reaching them.
+**Example:** a ledge 100 px up on a plain slab of any thickness needs the double jump. A ledge 110 px up is above `ledge_max` and is rejected as a double-jump gate.
 
 ### F3. Grapple gate
 
 Two gate shapes; both are valid only if no earlier key can cross them.
 
-**F3a. Grapple ledge.** `target_height >= double_jump_total + ledge_nudge + grapple_margin` (the lip-catch lift counts on the leak side, as in F2's `ledge_min`), with an anchor within `grapple_range` of a standing point, and the F2 cling test with the earlier kit of keys 1-3: (a) each of the ledge's own faces is `no_cling`, or has its lowest point at or above `head_clear_dj = double_jump_total + hitbox_height + cling_margin` (about 143 px); and (b) no plain face is a launch face for it (F8, kit 1-3).
+**F3a. Grapple ledge.** `target_height >= double_jump_total + ledge_nudge + grapple_margin` (the lip-catch lift counts on the leak side, as in F2's `ledge_min`), with an anchor within `grapple_range` of a standing point, and the **cling test** with the earlier kit of keys 1-3: (a) each of the ledge's own faces is `no_cling`, or has its lowest point at or above `head_clear_dj = double_jump_total + hitbox_height + cling_margin` (about 143 px); and (b) no plain face is a launch face for it (F8, kit 1-3).
 
 The crossable side: the anchor stands at or above the ledge top (`h_a >= 0`, its height above the ledge top), and the ledge's near edge is at most `exit_reach_min(h_a, theta) + landing_slack - anchor_margin` beyond the anchor horizontally (F11 table; a negative value means the anchor must stand over the ledge). `theta` is the angle of the hop from the standing point. The straight pull from that standing point to the anchor is clear of collision (a pull that touches a wall or ceiling releases early, `_state_grapple`). A steep hop carries almost no forward fling: above about 60° the anchor must stand over the ledge or within a few px of its edge.
 
@@ -205,37 +205,40 @@ The chain proves a crossing exists with the grapple; it does not make every anch
 
 ### F6. Cling wall
 
-Two gate shapes for the wall cling (key 2), valid only if the start kit cannot cross them and the wall cling can. One plain face is enough (Core Rules, one wall is a ladder); only `climbable`-marked surfaces climb.
+Two gate shapes for the wall cling (key 3), valid only if the earlier kit (the dash and the double jump) cannot cross them and the wall cling can. One plain face is enough (Core Rules, one wall is a ladder); only `climbable`-marked surfaces climb.
 
-**F6a. Cling wall.** A plain face with `wall_height >= ledge_min` (F2: `jump_apex + ledge_nudge + ledge_margin_low`) and no standing spot on or beside it within `ledge_min` of the one below it (otherwise the start kit climbs it in hops). A shaft of two facing walls is two cling walls; its width does not matter for the key, which climbs either face alone.
+**F6a. Cling wall.** A plain face with `wall_height >= cling_wall_min`, where `cling_wall_min = pogo_dj_reach + ledge_nudge + ledge_margin_low` (about 165 px; 168 on the grid), and no standing spot on or beside it within `dj_hop_max` (`double_jump_total + ledge_nudge + ledge_margin_low`, about 127 px) of the one below it (otherwise the earlier kit climbs it in double-jump hops). `cling_wall_min` is sized for the earlier kit's best pogo, not the double jump alone: a pogo off a hittable refreshes the air jump, and the feet then reach about `pogo_dj_reach` above the floor (level design F7). Level design's placement band (F7, `pogo_clearance_f3a_px`) is kept as well, a second guard, not a replacement. A shaft of two facing walls is two cling walls; its width does not matter for the key, which climbs either face alone.
 
-**F6b. Climb wall.** A `climbable`-marked surface of height `>= ledge_min` with no other way up. In the code a `climbable` is an `Area2D` the Seeker snaps to and climbs at `climb_speed` (70 px/s). Kicking up a plain face is faster (about 190 px/s), so a climb wall is a slow, safe ascent, not a separate skill test; it is gated with the wall cling (rule 1).
+**F6b. Climb wall.** A `climbable`-marked surface of height `>= cling_wall_min` with no other way up. In the code a `climbable` is an `Area2D` the Seeker snaps to and climbs at `climb_speed` (70 px/s). Kicking up a plain face is faster (about 190 px/s), so a climb wall is a slow, safe ascent, not a separate skill test; it is gated with the wall cling (rule 1).
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| wall_height | float (px) | `ledge_min` (about 72) or more | data file (room data) | Height from the standing floor to the top of the face or the exit. Above `ledge_max` (about 106) a later key's double jump cannot take it either; at or below it the double jump leaks in, which is intended for a later key |
+| wall_height | float (px) | `cling_wall_min` (about 165; 168 on grid) or more | data file (room data) | Height from the standing floor to the top of the face or the exit. The double jump is owned before the wall cling, so the wall must beat it, and beat it with a pogo's help **[Owner, 2026-11-20: key order; 2026-11-21: pogo]** |
+| cling_wall_min | float (px) | about 165 | calculated | `pogo_dj_reach` (153) + `ledge_nudge` (5) + `ledge_margin_low` (7); on the 6 px grid a wall is 168 px (28 tiles) or more. Was about 127 (`double_jump_total` 115 + 5 + 7) before the pogo was counted |
+| pogo_dj_reach | float (px) | about 153 | calculated (level design F7) | Highest the feet get above the floor by a pogo off a hittable (highest contact) and then the refreshed air jump: 151 in the 60 Hz sim, rounded up to the F3 volume top of 153. Re-measure (level design Open Question 15) |
+| dj_hop_max | float (px) | about 127 | calculated | `double_jump_total` (115) + `ledge_nudge` (5) + `ledge_margin_low` (7): the most one double jump climbs from a standing spot, so the largest gap between standing spots on a face that the earlier kit hops. Was `cling_wall_min` before 2026-11-21 |
 | kick_rise | float (px) | about 78 | calculated from player_config | Height gained by one wall kick (`wall_jump_speed` 380, 60 Hz sim 77.6) |
 | kick_cycle | float (s) | about 0.4 | calculated from player_config | Time from one kick to the next off the same wall: 0.1 s of control lock (`wall_jump_control_lock_time`), drift of about 25 px, steer back (60 Hz sim) |
 | shaft_width | float (px) | 24 or more | data file (room data) | Clear width of a shaft between two faces; 24 is a readability floor, not measured. No upper bound |
 
-**Output Range:** a cling wall is any plain face 72 px or more tall with no standing spot on it; a climb wall is 72 px or more tall.
-**Example:** a 200 px plain wall with nothing on its face is valid, alone or as one side of a shaft. A 60 px wall is rejected: a single jump with `ledge_nudge` reaches about 64.
-**Edge:** a wall with a standing spot 50 px up is rejected (it is two 50 px hops). A wall that must stay shut after key 2 is not a cling wall: it meets the ceiling or room bound, or is `no_cling` (Core Rules).
+**Output Range:** a cling wall is any plain face about 165 px (on the grid 168 px) or more tall with no standing spot within `dj_hop_max` of the one below; a climb wall is the same height or more. This was 72 px while the wall cling came before the double jump, and about 127 (132 on the grid) before the pogo was counted.
+**Example:** a 200 px plain wall with nothing on its face is valid, alone or as one side of a shaft. A 132 px wall is rejected: the dash and double jump, with a pogo off a hittable, put the feet about 153 px up. A 110 px wall is rejected too: the double jump with `ledge_nudge` reaches about 120.
+**Edge:** a wall with a standing spot 100 px up is rejected (it is two 100 px double-jump hops, and 100 is within `dj_hop_max`). Region 1's seen-only grooved walls must meet this too, since a player returns to region 1 with the double jump before the wall cling. A wall that must stay shut after key 3 is not a cling wall: it meets the ceiling or room bound, or is `no_cling` (Core Rules).
 
 ### F8. Wall launch reach
 
-Once the wall cling is owned, every plain face can be climbed to its top (Core Rules) and kicked off from any height on it. A plain face is a **launch face** for a gate target (a ledge top or a far lip) when it faces the target, its top is no lower than `target_top - launch_rise(kit)`, and its horizontal distance to the target's nearest edge is at most `wall_reach(kit, dh)`, where `dh = max(0, face_top - target_top)`. A gate (F2, F3a, F3b) is valid only if it has no launch face. Faces that face away from the target count too, at the same reach: a conservative rule, since a kick can be turned in the air.
+Once the wall cling is owned, every plain face can be climbed to its top (Core Rules) and kicked off from any height on it. A plain face is a **launch face** for a gate target (a ledge top or a far lip) when it faces the target, its top is no lower than `target_top - launch_rise(kit)`, and its horizontal distance to the target's nearest edge is at most `wall_reach(kit, dh)`, where `dh = max(0, face_top - target_top)`. A gate (F3a, F3b) is valid only if it has no launch face. Faces that face away from the target count too, at the same reach: a conservative rule, since a kick can be turned in the air.
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| kit | set | keys 1-2 (F2) or keys 1-3 (F3) | key table | The earlier kit the gate must hold against |
-| launch_rise | float (px) | about 78 (keys 1-2), about 132 (keys 1-3) | calculated from player_config | Rise of a kick, or a kick plus the double jump (60 Hz sim 77.6 and 132.4) |
+| kit | set | keys 1-3 (F3) | key table | The earlier kit the gate must hold against: the dash, the double jump and the wall cling |
+| launch_rise | float (px) | about 132 (keys 1-3) | calculated from player_config | Rise of a kick plus the double jump (60 Hz sim 132.4); a kick alone rises about 78 |
 | dh | float (px) | 0 or more | data file (room data) | How far the face's top (or the ceiling, for a face that meets it) is above the target top |
 | wall_reach | float (px) | see table | calculated from player_config | Farthest centre travel from a kick off the face to the target's height, with the kit's air moves at best timing (60 Hz sim). Re-measure |
 
-| dh (px) | wall_reach, keys 1-2 (kick, air dash) | wall_reach, keys 1-3 (kick, double jump, air dash) |
+| dh (px) | wall_reach, dash and wall cling only (kick, air dash; reference, no longer used) | wall_reach, keys 1-3 (kick, double jump, air dash) |
 |---------|--------------------------------------|----------------------------------------------------|
 | 0 | about 231 | about 333 |
 | 50 | about 245 | about 347 |
@@ -243,9 +246,9 @@ Once the wall cling is owned, every plain face can be climbed to its top (Core R
 | 200 | about 289 | about 392 |
 | 300 | about 317 | about 420 |
 
-**Output Range:** with keys 1-2 a plain face rising to a double-jump ledge's height must stand more than about 230 px from it (plus `landing_slack` 15); with keys 1-3 a face rising to a grapple target must stand more than about 335 px away, more for taller faces. Inside that range the face is `no_cling`, or its top is lower than `target_top - launch_rise` (a short wall, or a face under a local low ceiling away from the gate). A room ceiling over the gate is never that low, so it lowers `dh` but never exempts a face.
-**Example:** a 100 px double-jump ledge with a plain cave wall 180 px away that rises to the ceiling is rejected; the same wall with `no_cling` thorn vines, or 260 px away under a ceiling 40 px above the ledge, passes.
-**Edge:** the start kit has no wall cling, so F8 never applies to F1 or F6. A face that cannot be reached at all with the kit is still counted (conservative); the Auto check may drop it only with a reachability test.
+**Output Range:** the dash-and-wall-cling column is kept for reference only: no gate holds against a kit with the wall cling but not the double jump (key order, 2026-11-20). With keys 1-3 a face rising to a grapple target must stand more than about 335 px away, more for taller faces. Inside that range the face is `no_cling`, or its top is lower than `target_top - launch_rise` (a short wall, or a face under a local low ceiling away from the gate). A room ceiling over the gate is never that low, so it lowers `dh` but never exempts a face.
+**Example:** a 160 px grapple ledge with a plain cave wall 300 px away that rises to the ceiling is rejected (`wall_reach` about 364 at `dh` 110); the same wall with `no_cling` glaze bands, or 400 px away, passes.
+**Edge:** the wall cling is key 3, so no kit before the grapple's holds it: F8 never applies to F1, F2 or F6. A face that cannot be reached at all with the kit is still counted (conservative); the Auto check may drop it only with a reachability test.
 
 ### F9. Gate room footprint
 
@@ -256,19 +259,18 @@ The gate_room_width rule (level design rule 26) is defined as:
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| span | float (px) | data file (room data) | the ledge's width (F2, F3a) or the gap's width (F3b) | Width of the gate between its two edges |
+| span | float (px) | data file (room data) | the ledge's width (F3a) or the gap's width (F3b) | Width of the gate between its two edges |
 | room_height | float (px) | 270 or more, whole screens | data file (room data) | Height to the ceiling |
 | dh_wall | float (px) | 0 or more | calculated | `room_height - target_top` for a wall that rises to the ceiling; F3b's target is the far lip at floor level (`target_top` 0) |
-| wall_reach | float (px) | see F8 | calculated from player_config | F8 table value for the kit (keys 1-2 for F2, keys 1-3 for F3) at `dh_wall` |
+| wall_reach | float (px) | see F8 | calculated from player_config | F8 table value for keys 1-3 at `dh_wall` |
 | landing_slack | float (px) | 15 | calculated | From F1 |
 | room_width | float (px) | whole screens | data file (room data) | Width of the room |
 
 **Output Range (plain walls to the ceiling, 1 screen high, 270 px):**
-- F2 double-jump ledge, top 72-106: `dh_wall` 164-198, `wall_reach` about 278-288, so each side needs about 293-303 px: `room_width >= span + about 606`. A room 2 screens wide (960) holds a ledge up to about 350 px wide. In a room 2 screens high (540) `dh_wall` is up to about 470 and each side needs about 375 px: 2 screens wide holds a ledge up to about 210 px wide.
 - F3a grapple ledge, top 160: `dh_wall` 110, `wall_reach` about 364, so each side needs about 379 px: `room_width >= span + about 758`. 2 screens wide holds a ledge up to about 200 px wide; wider or taller rooms need 3.
 - F3b grapple gap, 440 px: `dh_wall` 270, `wall_reach` about 411, so each side needs about 426 px: `room_width >= 440 + about 852`, about 1,290: 3 screens wide (1,440).
-**Example:** Saggar Rows (1x2, 480 px wide) with a double-jump gate and plain saggar columns to the ceiling needs `room_width >= span + about 750`; it is rejected, and at 2x2 (960) it holds a ledge up to about 210 px wide. Ropewalk Stair (1x3, 480 px wide) with a 440 px grapple gap is rejected (needs about 1,290); at 3x3 it passes.
-**Edge:** a room that holds no double-jump or grapple gate is exempt. A room whose near walls are all `no_cling` is exempt for those walls only, not for the others. The wall cling is not owned before key 2, so F1 and F6 gate rooms never need F9.
+**Example:** Saggar Rows (1x2, 480 px wide) with a double-jump gate needs no F9: no kit before the double jump holds the wall cling. Ropewalk Stair (1x3, 480 px wide) with a 440 px grapple gap is rejected (needs about 1,290); at 3x3 it passes.
+**Edge:** a room that holds no grapple gate is exempt. A room whose near walls are all `no_cling` is exempt for those walls only, not for the others. The wall cling is not owned before key 3, so F1, F2 and F6 gate rooms never need F9.
 
 ### F10. Bisque pane
 
@@ -465,11 +467,11 @@ Types: **[Auto]** automated test (unit test on `PlayerState`, the pickup or the 
 
 **Gate fit (F1-F3, F6, F8, F9, rules 12-14)**
 - **GIVEN** a dash gap of edge-to-edge width W, **WHEN** the room data is checked, **THEN** `gap_min <= W <= gap_max` with the reaches computed from `player_config.tres` (at margin 8: 145 to 162); a gap at `gap_min - 1` is rejected, a gap at `gap_max + 1` is rejected, and a 137 px gap (the widest a coyote run-jump can land) is rejected; the lips are at the same collision height; the floor below is a kill plane, a hazard floor at least `hazard_pit_depth_min` (about 84) below both lips, or a safe floor at least `pit_depth_min` (about 72) below the far lip, with no standing spot on the far face; and nothing stands in the span but the pit floor. A safe pit 72 px deep passes and one 71 px deep is rejected. Spikes 80 px below the lips are rejected and 90 px down pass. A gap with a standing spot in mid-gap is rejected. **[Auto]** (F1, boundary)
-- **GIVEN** a double-jump ledge with top height h, **WHEN** checked, **THEN** `ledge_min <= h <= ledge_max`, each of its own faces is `no_cling` or has its lowest point at `head_clear` (about 88) or higher, and no plain face is a launch face (F8, keys 1-2); a 100 px ledge on an 8 px plain slab passes, a 90 px ledge on a 16 px plain slab (underside 74) is rejected, the same ledge with `no_cling` faces passes, and a plain wall rising to the ledge's height 180 px away is rejected. **[Auto]** (F2, F8, boundary)
+- **GIVEN** a double-jump ledge with top height h, **WHEN** checked, **THEN** `ledge_min <= h <= ledge_max`, on a slab of any thickness, with no cling test; a 100 px ledge on a 16 px plain slab passes, a ledge at `ledge_min - 1` and one at `ledge_max + 1` are rejected, and a plain wall rising to the ledge's height 180 px away does not reject it. **[Auto]** (F2, boundary)
 - **GIVEN** a grapple ledge (F3a), **WHEN** checked, **THEN** `target_height >= double_jump_total + ledge_nudge + grapple_margin`, an anchor lies within 200 px of a standing spot with a clear straight pull, the anchor is at or above the ledge top and the ledge's near edge is within `exit_reach_min(h_a, theta) + landing_slack - anchor_margin` of it, its own faces are `no_cling` or have their lowest point at `head_clear_dj` (about 143) or higher, and no plain face is a launch face (F8, keys 1-3). Rejected: a `no_cling` ledge 125 px up (one at 126 passes), a 140 px ledge on a plain slab (underside below 143), a 160 px ledge with a plain wall rising above it 300 px away, and the F3a example ledge with its anchor 30 px short of the edge (5 px short passes). **[Auto]** (F3a, F8, boundary)
 - **GIVEN** a grapple gap (F3b), **WHEN** checked, **THEN** `gap_width >= max_non_grapple_crossing + far_face_extra + landing_slack + grapple_margin`, every grapple hop (take-off to the first anchor, anchor to anchor) is at most `grapple_range` and the last step is a flight within F11's bound, the far face is `no_cling` or plain for at most `far_face_max` (16 px), the gap has a kill plane below with no standing spot, plain face or `climbable` surface in its span, and no plain face is a launch face for the far lip. Rejected: a 414 px gap, a chain with one 210 px hop, a 430 px gap with a 60 px plain far face, a gap with a walkable floor below, and a gap with spikes below at any depth. **[Auto]** (F3b, F8, boundary)
-- **GIVEN** a cling wall (F6a) or climb wall (F6b), **WHEN** checked, **THEN** `wall_height >= ledge_min`, the face has no standing spot on it, and a climb wall is `climbable`-marked; a 60 px wall and a wall with a standing spot 50 px up are each rejected, and a single 200 px plain face passes. **[Auto]** (F6, boundary)
-- **GIVEN** each room that holds a double-jump or grapple gate with plain walls, **WHEN** the room data is checked, **THEN** `room_width >= span + 2 x (wall_reach + landing_slack)` (F9, with `wall_reach` read from the F8 table for the kit and `dh_wall`); a 480 px wide room with a double-jump ledge 100 px wide is rejected, a 960 px wide room 1 screen high with a ledge up to about 350 px wide passes, and a 440 px grapple gap in a room under about 1,290 px wide is rejected. **[Auto]** (F9, level design rule 26, boundary)
+- **GIVEN** a cling wall (F6a) or climb wall (F6b), **WHEN** checked, **THEN** `wall_height >= cling_wall_min` (about 165; 168 on the grid), the face has no standing spot within `dj_hop_max` (about 127) of the one below, and a climb wall is `climbable`-marked; a 110 px wall, a 132 px wall and a wall with a standing spot 100 px up are each rejected, a 168 px wall passes, and a single 200 px plain face passes. **[Auto]** (F6, boundary)
+- **GIVEN** each room that holds a grapple gate with plain walls, **WHEN** the room data is checked, **THEN** `room_width >= span + 2 x (wall_reach + landing_slack)` (F9, with `wall_reach` read from the F8 table for the kit and `dh_wall`); a room with only a double-jump ledge is exempt, a 960 px wide room 1 screen high with a grapple ledge (top 160) up to about 200 px wide passes, and a 440 px grapple gap in a room under about 1,290 px wide is rejected. **[Auto]** (F9, level design rule 26, boundary)
 - **GIVEN** the wall cling owned and a `no_cling` face, **WHEN** the Seeker presses into it and presses jump, **THEN** no wall slide and no wall jump starts; against a plain face both do. **[Auto]** (controller unit test; rule 14; needs the story in Open Question 2)
 - **GIVEN** the movement values in `player_config.tres`, **WHEN** the Seeker attempts F1-F3 and F6 gates in `movement_test_room`, **THEN** a perfect run-jump (centre at the edge, full hitbox overlap, nudge) never crosses a dash gap, a plain jump never touches a double-jump ledge, its plain underside or the top of a cling wall, the double jump never reaches a grapple ledge, dash, double jump and air dash together never cross a grapple gap, and a kick off a plain wall farther than `wall_reach` never reaches its target; and with the wall cling a single plain wall can be climbed by repeated kicks. **[Auto]** as a scripted input sweep in `movement_test_room` (the same sweep as the start-kit criterion, over every move the gate's earlier kit owns; 0 crossings; the sweep is the bounded grid defined below), plus a 20-minute **[Play]** pass for what the sweep does not try (re-measure the [Calc] figures: `landing_slack`, `max_non_grapple_crossing`, `kick_rise`, `wall_reach`, `far_face_extra`, `pogo_carry`)
 

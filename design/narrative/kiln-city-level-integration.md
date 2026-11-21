@@ -1,16 +1,16 @@
 # Region 1 Level Integration: The Cooling Yards
 
-Status: **Draft, awaiting owner approval** (2026-11-18). This re-orders the approved dash-only beat order to the level design GDD's key mapping (owner decision 2026-11-18): region 1 earns the dash from Keeper Tavik, its mid-region mini-boss, and the wall cling from Dorrit's jar, behind a dash gate; Brun, the Stacker, is its boss. The approved version is kept in git history and in `production/narrative/kiln-city/level-integration.md`. Rooms and order only; no coordinates. Screens are 480x270 units. Verify the 7-screen save spacing during grey-box.
-Gates: D = dash, C = wall cling, J = double jump, G = grapple. Region 1 earns D and C. J and G are seen, never opened; each leads to a one-screen sealed alcove with a visible reward (GDD rule 2). Dash-through barriers (the bisque pane) are held back until the Ability gating GDD defines one (GDD Open Question 14), so every D gate here is a gap.
+Status: **Draft, awaiting owner approval** (2026-11-18). This re-orders the approved dash-only beat order to the level design GDD's key mapping (owner decision 2026-11-18): region 1 earns the dash from Keeper Tavik, its mid-region mini-boss, and the wall cling from Dorrit's jar, behind a dash gate; Brun, the Stacker, is its boss. The approved version is kept in git history and in `production/narrative/kiln-city/level-integration.md`. **Revised 2026-11-20 (owner's key order: region 1 earns only the dash; double jump region 2, wall cling region 3, grapple region 4):** Dorrit's Bench and the Sweep Flue are dropped, the way to the boss is a dash route, and both grooved walls are seen-only gates with sealed alcoves. A structural edit made during `/art-bible` follow-up; narrative review still owed. Rooms and order only; no coordinates. Screens are 480x270 units. Verify the 7-screen save spacing during grey-box.
+Gates: D = dash, C = wall cling, J = double jump, G = grapple. Region 1 earns only D. C, J and G are seen, never opened; each leads to a one-screen sealed alcove with a visible reward (GDD rule 2). Dash-through barriers (the bisque pane) are held back until the Ability gating GDD defines one (GDD Open Question 14), so every D gate here is a gap.
 
 ## Funnel (rooms 1-6): one objective, go deeper
 
 1. **Waking Niche** (1x1). Save N1. First move and jump.
 2. **Yard Steps** (3x1). The tutorial foe, the half-glazed Waster: break its guard, land the first finisher; it never returns. Wasters. A far lit window (region 2 lure).
-3. **Yard Gate** (3x1). Seen D gate 1, the first dash gap, within the first 10 minutes; Dorrit's Bench lies across it. Save N2 on the near side. The funnel continues down a ramp past it.
+3. **Yard Gate** (3x1). Seen D gate 1, the first dash gap, within the first 10 minutes; the Saggar Climb lies across it. Save N2 on the near side. The funnel continues down a ramp past it.
 4. **Saggar Rows** (1x2). Brun's chalk "B" tallies. Seen J gate 1: a kiln shelf on three stilts, too high; sealed alcove A1 beyond it.
-5. **Cinder Stair** (1x3). Cinder moths. Seen D gate 2: a second gap over a side ledge, the Tray Store beyond it. Seen C gate 1: a copper-green grooved wall. Save N3 at the top.
-6. **Hot Lane** (3x1). Combat room, unguarded. Seen C gate 2: a second grooved wall, rising toward the Saggar Hall. Lit window again. Save N4 at the end.
+5. **Cinder Stair** (1x3). Cinder moths. Seen D gate 2: a second gap over a side ledge, the Tray Store beyond it. Seen C gate 1: a copper-green grooved wall, sealed alcove A5 beyond it. Save N3 at the top.
+6. **Hot Lane** (3x1). Combat room, unguarded. Seen C gate 2: a second grooved wall, sealed alcove A6 beyond it. Lit window again. Save N4 at the end.
 
 ## Fork (room 7): three directions open without the dash
 
@@ -26,26 +26,20 @@ Gates: D = dash, C = wall cling, J = double jump, G = grapple. Region 1 earns D 
 13. **Warm Flue** (1x1). Dash workshop right after the key: one small dash gap, smaller than rooms 3 and 5; the way back out needs no dash.
 14. **Flue Run** (2x1). Shortcut S1, one-way, opens from the Keeper side, folds back to N2 at the Yard Gate.
 
-## The dash opens old rooms
+## The dash opens old rooms and the way to the boss
 
-15. **Dorrit's Bench** (1x1). The shrine, across the room 3 gap. Dorrit's jar grants the wall cling.
-16. **Tray Store** (2x1). Optional secret across the room 5 gap. A reward room.
-17. **Sweep Flue** (1x2). Wall-cling workshop right after the shrine: one small cling wall, smaller than rooms 5 and 6; the way back out needs no wall cling.
+15. **Tray Store** (2x1). Optional secret across the room 5 gap. A reward room.
+16. **Saggar Climb** (1x3). Across the room 3 gap: a climb by plain jumps, then a second dash gap at the top. Save N7 at the top, before the boss.
+17. **Saggar Hall** (3x1). Boss: Brun, the Stacker. When he falls his column topples into a ramp: shortcut S3, down to N4 at the Hot Lane. No banner. Beating him is the core build's goal.
+18. **Loft Way** (2x1). The region edge toward region 2, past the Saggar Hall, shut in the core build. The steady lamp is near.
 
-## The wall cling opens the way to the boss
-
-18. **Saggar Climb** (1x3). Up the Hot Lane's grooved wall (C gate 2), then a dash gap at the top. Save N7 at the top, before the boss. The Cinder Stair's grooved wall (C gate 1) now climbs to an upper door into the Glaze Gallery, a new loop.
-19. **Saggar Hall** (3x1). Boss: Brun, the Stacker. When he falls his column topples into a ramp: shortcut S3, down to N4 at the Hot Lane. No banner. Beating him is the core build's goal.
-20. **Loft Way** (2x1). The region edge toward region 2, past the Saggar Hall, shut in the core build. The steady lamp is near.
-
-Old rooms changed by the dash: room 3 (the gap to Dorrit's Bench, newly opened) and room 5 (the gap to the Tray Store, a room the player could not finish). By the wall cling: room 6 (the climb to the boss) and room 5 (the loop to the Glaze Gallery).
+Old rooms changed by the dash: room 3 (the gap to the Saggar Climb, newly opened) and room 5 (the gap to the Tray Store, a room the player could not finish).
 
 Check list (against the level design GDD):
 - First D gap seen in room 3, within 10 minutes. D seen twice (rooms 3, 5) before the dash in room 12; shortest path from room 3 to room 12 is more than 3 rooms; room 12 is reached with no D gate.
-- C seen twice (rooms 5, 6) before the wall cling in room 15; shortest path from room 5 to room 15 is 3 rooms (5, 4, 3, 15); room 15 is behind a D gate, not a C gate.
-- J and G each seen twice, none opened; each of the four gates leads to its own sealed alcove (A1-A4).
+- C, J and G each seen twice, none opened; each of the six gates leads to its own sealed alcove (A1-A6).
 - Funnel of 6 rooms, then a fork of 3; the mini-boss is past the fork.
-- The boss is beyond a C gate (room 6) and a D gate (room 18).
+- The boss is beyond two D gates (rooms 3 and 16).
 - Saves N1-N7 each within 7 screens on the main route; a save is in the room before each arena (N5, N7).
 - Shortcuts S1, S2 and S3 fold back to saves; each arena is within one room of its save.
 - Each key changes two old rooms, one of them a room the player could not finish.
