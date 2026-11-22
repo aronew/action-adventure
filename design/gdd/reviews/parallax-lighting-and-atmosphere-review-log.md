@@ -308,3 +308,36 @@ Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf5856399
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+
+## Review — 2026-11-22 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 7
+Summary: Both ninth-review blockers are resolved and the revision is consistent across the document. The backlight replaces screen bloom everywhere (rules 1, 12, 14, Overview, Interactions, Edge Cases, Game Feel, AC), and the close band's wall arithmetic re-derives against the reference (wall to wall always a band, one drop plus one wall 90 px, two drops 216 px, a wall end at least 36 px behind the wall in the camera's travel, only drop ends fade). One new numeric error came in with the revision: the radiance is given as 34 world px wide, but the reference scales the sprite to `2 x 34`, so 34 px is the radius and it is 68 px across. The registry shows 0 conflicts. Bench (long room, Full, 600 frames): draw calls max 287, under the 500 budget.
+Prior verdict resolved: Yes (both ninth-review blockers)
+Findings:
+- [BLOCKING] Detailed Design rule 12; Acceptance Criteria (backlight): the radiance `backlight_radius` is stated as 34 world px wide; the reference (`room_atmosphere.gd`, `_add_backlight`) sizes it `BACKLIGHT_RADIANCE.y x 2`, so 34 px is the radius and it is 68 px across. Built from the GDD it is half the reference's size and the criterion passes the wrong size
+- [RECOMMENDED] Formulas P7: the `x0, x1` range says "inside the floor run" but a wall end lies `close_wall_extend` (72 px) behind the wall
+- [RECOMMENDED] Edge Cases (floor run ends at a wall): mention the 72 px extension
+- [RECOMMENDED] Detailed Design rule 14: Reduced "turns off the blur" while the kept backlight is itself blurred; say the backlight's own blur stays
+- [RECOMMENDED] Acceptance Criteria (P4 mask list): name the backlight among the glows excluded from the back pixels
+- [RECOMMENDED] Preset check: the new knobs (`backlight_*`, `close_wall_extend`, `close_blur`, `close_band_tint`) have no ranges; joins the carried preset-field-ranges item
+- [RECOMMENDED] Detailed Design rule 1 and the layer-stack criterion: the backlight row says "not a band" while the criterion says every band exists
+- [RECOMMENDED] Stale or open: the P4 example (measured before the darker background); the P6 lag bound the reference does not implement; carried from the eighth review: blend curve shape, P1 and P2 vs rule 8's hull, section fog scale blend, rule 16 and 17 untested, P5 cap in the preset it caps, "baked trim" vs the lip, fog drift on shader `TIME`, P4 never run in Reduced, flicker unit, "section" naming clash, `build_time`
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard).
+Receipt note: the GDD hash below is the reviewed version (before the radiance fix), so the revised document reads CHANGED and gets a full re-review.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md aa15fa5ed01dfdb20b56a16da0aafbdbe769a080
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+Reviewed-Content-Hash: src/test_rooms/room_atmosphere.gd 86c710835d7a1d3e968afbcc526724ae69040cbc
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 636770ecb4cbe9e02ace2439486c68c57dc064ad
