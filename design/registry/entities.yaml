@@ -331,6 +331,7 @@ formulas:
     source: design/gdd/collectible-upgrades.md
     referenced_by:
       - design/gdd/save-points-and-save-load.md   # rule 4: a rest, a respawn and Continue heal to it
+      - design/gdd/healing.md   # F2: the heal is a share of this max health
     variables:
       - base_max_health
       - health_steps
@@ -339,6 +340,19 @@ formulas:
     expression: "max_health = base_max_health + steps(health) x health_step"
     notes: "Collectible upgrades F2. base_max_health 100 (player_config.tres max_health, owned by the player controller), health_step 20 (range 10-30), steps 0-4 (fragment_sets). Current health is set to it when a health step completes. Save points (a rest, a respawn and Continue heal to max health, its rule 4) must read this derived value, not the config's 100, and add itself to referenced_by; empty until then."
     added: 2026-11-21
+  - name: heal_amount
+    status: active
+    source: design/gdd/healing.md
+    referenced_by:
+      - design/gdd/collectible-upgrades.md   # F2: the heal is a share of the derived max health
+    variables:
+      - health
+      - max_health
+      - heal_share
+    output_range: [10, 90]
+    expression: "health' = min(health + heal_share x max_health, max_health)"
+    notes: "Healing F2. heal_share 0.30 (range 0.10-0.50) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained. Range is heal_share x max_health at the share's bounds (0.10 x 100 to 0.50 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
+    added: 2026-11-22
 
 # Example:
 #
@@ -497,7 +511,8 @@ constants:
   - name: flash_limit
     status: active
     source: design/gdd/pause-and-menus.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/healing.md   # Visual/Audio: the ready pulse, channel glow and bloom stay within it
     value: 3
     unit: flashes per second
     notes: "Pause and menus rule 14 and F4 (the general flash threshold of WCAG 2.3.1, never above 3; a flash is a rise and a fall of 10% relative luminance or more). With Flash reduction On, no light effect flashes more than this in any one second, counted together for effects on one screen area; menus obey it whatever the setting says. Requirement on Hit feedback and effects and Combat: the charge glow's fastest step (glow_step_time_fast 0.05 s, 10 flashes a second today) must become a steady glow; they add themselves to referenced_by when their GDDs adopt it; empty until then."
@@ -511,6 +526,30 @@ constants:
     unit: input
     notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack."
     added: 2026-11-21
+  - name: meter_capacity
+    status: active
+    source: design/gdd/healing.md
+    referenced_by: []
+    value: 120
+    unit: damage units
+    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so one heal per guard-break cycle is the starting target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    added: 2026-11-22
+  - name: heal_share
+    status: active
+    source: design/gdd/healing.md
+    referenced_by: []
+    value: 0.30
+    unit: share of max health
+    notes: "Healing F2 (range 0.10-0.50; owner, 2026-11-22). The share of the derived max health (max_health_derived) one heal restores. Bosses tune their hit damage against it (slam 40, lunge 25, shockwave 20); they add themselves to referenced_by when their GDD adopts it; empty until then."
+    added: 2026-11-22
+  - name: channel_time
+    status: active
+    source: design/gdd/healing.md
+    referenced_by: []
+    value: 1.0
+    unit: s
+    notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the boss pattern recoveries (1.0-1.3 s) and stagger (4.0 s): a heal fits a recovery only barely and a stagger easily. Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
+    added: 2026-11-22
 
 # Example:
 #

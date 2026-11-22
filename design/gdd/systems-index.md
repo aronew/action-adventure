@@ -53,7 +53,7 @@ Notes by area (balanced density):
 | 24 | Hit feedback and effects (inferred) | Presentation | MVP | Implemented (no GDD) | — (brief) | Combat, Camera |
 | 25 | Audio (inferred) | Audio | Vertical Slice | Not Started (dash and idle SFX reported missing) | — | Player controller, Combat |
 | 26 | Lore delivery and mentor/hub pact (inferred) | Narrative | Alpha | Not Started (lore provided 2026-11-18: The Kiln City, in design/narrative/) | — | Level design, World state, Ability gating |
-| 27 | Healing (hit-fed heal meter) | Gameplay | MVP | Not Started (owner decision 2026-11-22 after the first boss playtest: a meter filled by landing hits, heal when full, as in Hollow Knight; rules undecided) | — | Combat, Player controller; touches Guard-break and Collectible upgrades |
+| 27 | Healing (hit-fed heal meter) | Gameplay | MVP | Designed 2026-11-22 (pending `/design-review` in a fresh session; one bar spent whole, 1.0 s planted channel, a hit cancels and keeps the meter, fill by the hit's base damage, empty after death; values capacity 120, heal 30% of max; owner approved the numbers; not built) | [healing.md](healing.md) | Combat, Player controller, Health (code); touches Guard-break, Collectible upgrades, Enemies; feeds Bosses, HUD, Hit feedback |
 
 ---
 
@@ -199,7 +199,7 @@ Write these from the code with `/reverse-document`, using `/design-system` only 
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 27 |
-| Design docs started | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades, pause and menus) |
+| Design docs started | 11 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades, pause and menus, healing; the reverse-documented built systems are counted separately) |
 | Design docs reviewed | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades, pause and menus) |
 | Design docs approved | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, grid map, save points, collectible upgrades, parallax lighting and atmosphere, pause and menus) |
 | Built systems still without a GDD | 4 (R6-R9 above; R1-R5 Combat, Guard-break, Player controller, Enemies and Bosses reverse-documented 2026-11-22, review owed) |
@@ -215,7 +215,7 @@ Write these from the code with `/reverse-document`, using `/design-system` only 
 - [x] Level design GDD drafted (2026-11-18), awaiting `/design-review` in a fresh session
 - [x] `design/gdd/game-concept.md` written and design-reviewed 2026-11-22 (NEEDS REVISION, 2 blockers revised, re-review owed)
 - [ ] Write GDDs for the built systems R1-R9, combat and guard-break first (`/reverse-document`)
-- [ ] Design the Healing system (#27, a meter filled by landing hits; owner 2026-11-22): `/design-system healing`, in a fresh session. Then build the first boss's three stages (see `design/gdd/bosses.md`)
+- [x] Design the Healing system (#27, a meter filled by landing hits; owner 2026-11-22): `/design-system healing` done 2026-11-22 (`design/gdd/healing.md`), review owed in a fresh session. Next: `/design-review design/gdd/healing.md`, add the Healing rows the Dependencies list names to the other GDDs, then build the first boss's three stages (see `design/gdd/bosses.md`)
 - [ ] Run the concept's MVP pass test (owed to the owner; not a design task)
 - [ ] Design the remaining MVP systems in the order above (`/design-system [name]`)
 - [x] Provide the lore, so level design and the mentor/hub pact can use it (done 2026-11-18: The Kiln City, in design/narrative/)
