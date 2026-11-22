@@ -196,3 +196,37 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 00440efe8619fd71f2a9914de7891dcce312feae
+
+## Review — 2026-11-21 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean)
+Blocking items: 2 | Recommended: 6
+Summary: The sixth review's restructure worked: T3's per-face ownership, T5's block matching, recomputed flags, the layout and encounter split and the units and alpha definitions all hold, and every registry value, T1 on-grid set, T4 and T5 count and code fact reproduces. Two mechanics gaps remain in the move-and-flag machinery: the undressed-ground flag can only be cleared by setting `dressed`, which is refused while it is open, and T5's removed-and-added matching gives the wrong carry shift for any block thicker than its move.
+Prior verdict resolved: Partly (4 of the sixth review's 6 blockers resolved; the flag deadlock stands in its restructured form, and T5's block definition fixed the attached-ledge case but not overlapping moves)
+Findings:
+- [BLOCKING] Rule 12, States, tools spec section 5, rule 13, Acceptance Criteria l.348: `dressed` is refused while any flag is open, but the undressed-new-ground flag is cleared only by setting `dressed` (new baseline); decide that this flag does not block `dressed` and state it in all three places
+- [BLOCKING] Rule 13, T5, tools spec section 6, Acceptance Criteria l.345-347: a block moved by less than its own size appears as strips, so a 6 x 2 ledge moved down one tile matches at shift (0, 2) and props, records and objects are carried by the wrong amount (the tools spec's two-row case shows it); decide how the shift is found (match whole 4-connected blocks, or take it from the move tool and count a repaint as new face) and add thick-block criteria
+- [RECOMMENDED] Rules 5, 11, Open Question 2: no standing-line definition and no rule that edge pieces of one face kind agree to a fraction of a pixel; the art-style room measured a 0.6 px corner step and feet 2 px above the stone
+- [RECOMMENDED] Rule 15, Acceptance Criteria l.361: 524 nodes is stale (the art-style rooms now build 1,681 and 1,493, mostly one sprite per solid cell and fill patches) and the "fixed ceiling the ADR sets" has no number, so the criterion cannot be written
+- [RECOMMENDED] Rule 1, Open Question 9, Interactions: the display base is read by Pause and menus (window size) and Camera, neither listed; the test rooms sidestepped the `Parallax2D` misplacement with manual parallax placement
+- [RECOMMENDED] T3, tools spec: resampling kernel and per-asset profile undefined; flood fill estimated at 1-40 s per 10-screen room against the 2 s bake target (carried)
+- [RECOMMENDED] Rule 11, T1 visible gap: the hard 4 px clip leaves a step where a bounded range ends mid-face; the `2 x trim_overhang_max <= gap_margin` rule has no criterion (carried)
+- [RECOMMENDED] Acceptance Criteria l.334, l.345, l.348: bundled conditions in one criterion; split them (carried)
+- [ADVISORY] Player Fantasy absent (advisory at standard)
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md cc8a514f6192d296c7df733d70c67d328bbd77d8
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+Reviewed-Content-Hash: design/gdd/systems-index.md a82ef06e8589e6e908b03fc6c2fe650d8cc65195
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: docs/architecture/terrain-tools-spec.md 136e046db00c1660446b942a729fe38986b361b7
+Reviewed-Content-Hash: src/player/player.gd 1f9422e7b03bfbf52127055ec5b44dab4ba0c830
+Reviewed-Content-Hash: src/player/player_config.tres 7654ef2ba4121534d4d2e0d1e3ff115d401114f7
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 636770ecb4cbe9e02ace2439486c68c57dc064ad

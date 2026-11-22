@@ -67,3 +67,35 @@ Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 38c89c37c4
 Reviewed-Content-Hash: design/gdd/collectible-upgrades.md f2fdefbae75b634eed2663f9d76f83fe691fb436
 Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-21 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean)
+Blocking items: 0 | Recommended: 9
+Summary: The second review's blocker is resolved by dropping remapping, and the document is internally consistent: rule 17's bindings match `PlayerInputBindings` (with the stated `interact` change and the new `pause` and `map`), the cited rules in Save points, World state, Rooms and transitions, Grid map and Parallax line up, the registry values match and the F1 to F4 examples compute. What remains is detail: F1 predates the 1920 x 1080 display migration, event flashes have no automatable rule against `flash_limit`, and the freeze must also stop shader `TIME`.
+Prior verdict resolved: Yes (second review's one blocker; the first review's three still hold)
+Findings:
+- none
+- [RECOMMENDED] Formulas F1, rule 13: the 480 x 270 base, whole-number scales and 3x default (1440 x 810) against Terrain pipeline's 1920 x 1080 at zoom 4 and its Open Question 9 (carried)
+- [RECOMMENDED] Detailed Design rule 14, F4, Acceptance Criteria: hit, finisher and guard-break flashes are events, not step_time alternations, so only a played capture checks them; rate-limit flash events to 1 / (2 x flash_limit) s so it is automatable (carried)
+- [RECOMMENDED] Open Question 1, Acceptance Criteria: shader `TIME` keeps advancing while the tree is paused (the fog shader uses it), a third thing the freeze must stop besides `Engine.time_scale` and `create_timer`; world-clock shaders need their time fed from the world clock
+- [RECOMMENDED] Detailed Design rule 16: a slider "writes when released" is undefined for keyboard and gamepad steps (carried)
+- [RECOMMENDED] Game Feel, Edge Cases: menu timers (key repeat, loading mark) on real time, since a hit-pause can still be running when the menu opens (carried)
+- [RECOMMENDED] States and Transitions, rule 5: no state for the first arrival after Continue or New game, no Start routing in Options or a Prompt, and no word on pause during the Seeker's door-entry clip (carried, door entry new)
+- [RECOMMENDED] Acceptance Criteria: none for window close or fullscreen refused (carried)
+- [RECOMMENDED] Interactions, Cross-References, rules 14 and 17: stale text (the World state row still says bindings; rule 14's "20 a second" is steps, 10 flashes; rule 17 says one change from the code but also adds `map` and `pause`; Open Question 12's index bullet is done)
+- [RECOMMENDED] Visual/Audio, UI Requirements, Dependencies: freeze audio undecided (Grid map keeps music playing), hint-line device, cursor, drag-resize and physical pixels, a Tuning Knobs table (carried)
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard); the Edge Case "Quit to title with the pause open over … a pause held for a fade-in" cannot happen, as a held pause is not an open menu.
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 192efae4990edb88dff67911cb8ae45a00834c92
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 38c89c37c445fb0a6f50acd627ce31811ebe0568
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md f2fdefbae75b634eed2663f9d76f83fe691fb436
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md cc8a514f6192d296c7df733d70c67d328bbd77d8
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8

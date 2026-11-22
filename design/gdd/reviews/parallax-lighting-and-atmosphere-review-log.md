@@ -275,3 +275,36 @@ Reviewed-Content-Hash: design/gdd/ability-gating.md c7ec3641c20bfb3b839942183128
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
 Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a812f
 Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md 72a7da16666498e90d007f209d917aa84f1c048b
+
+## Review — 2026-11-22 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 2 | Recommended: 8
+Summary: The design intent is sound; both blockers are the reference scene having moved after owner decisions while the GDD did not. The registry shows 0 conflicts and every named GDD exists. Art-room bench (long room, 600 frames, 1920x1080, mood on): draw calls max 287, p95 273, mean 131, under the 500 budget; frame time (about 222 ms) is software GL and only comparable Full against Reduced, which this run did not measure.
+Prior verdict resolved: Partly (eighth-review blocker, `foreground_reach_max`, verified)
+Findings:
+- [BLOCKING] Detailed Design rules 12 and 14; Game Feel; Acceptance Criteria (bloom): describe screen bloom and radiance around the Seeker; the reference draws a backlight behind his sprite instead (owner decision: the bloom washed out the painted art) and its player light lift is 0.03, not 0.1. Rule, Game Feel and AC need the backlight and its numbers, and the AC must test it
+- [BLOCKING] Detailed Design rule 6; Formulas P7; Edge Cases; Acceptance Criteria (close band): every band end fades over 40 px; the owner decided rocks run into walls at full height and fade only at ledge drops. The reference extends 72 px behind a wall and its `close_min_run` test runs after that extension. Rule, P7, Edge Cases and AC need walls extend, only drops fade, and where the min-run check runs
+- [RECOMMENDED] Formulas; Detailed Design rule 12: stale numbers against the reference: blur 5 to 7 and 2 to 3.2, new close blur 1.2, fog alphas, ramps and tints; P4 margins follow
+- [RECOMMENDED] Detailed Design rule 12: the blur passes compound; state the combined blur, not each pass alone
+- [RECOMMENDED] Detailed Design (embers): size is ambiguous (drawn width 5.6 px against a stated 2.8)
+- [RECOMMENDED] Dependencies; Detailed Design rule 12: the art bible exists (Draft, sections 1-4) but the GDD says it does not; the grade state inputs it owes this GDD are missing
+- [RECOMMENDED] Formulas P6: the reference does not implement the lag bound
+- [RECOMMENDED] Dependencies: Terrain pipeline status text is stale (Needs Revision after its seventh review)
+- [RECOMMENDED] Acceptance Criteria (performance): name the mood state measured and the bench output field read; Full against Reduced frame-time cost was not run
+- [RECOMMENDED] Carried from the eighth review (15 items): blend curve shape, P1 and P2 set against rule 8's hull, Pause and Grid map rows in the upstream table, section fog scale, transition freeze and map rules untested, P5 cap lives in the preset it caps, "baked trim" against the lip, fog drift on shader `TIME`, P4 never run in Reduced, preset field ranges, flicker unit, "section" naming clash, `build_time`
+Advisory (not counted): Player Fantasy and Tuning Knobs absent (advisory at standard). Nice-to-have: a short Player Fantasy and a Tuning Knobs index, since the numbers are scattered across rules.
+Receipt note: hashes are of the working-tree files reviewed.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md 38c89c37c445fb0a6f50acd627ce31811ebe0568
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md cc8a514f6192d296c7df733d70c67d328bbd77d8
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
