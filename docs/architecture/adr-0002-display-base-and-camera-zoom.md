@@ -1,7 +1,7 @@
 # ADR-0002: Display base 1920 x 1080 with the camera at zoom 4
 
 ## Status
-Accepted (2026-11-22, by the project owner)
+Accepted
 
 ## Date
 2026-11-22
@@ -174,7 +174,7 @@ func setup(target: Player) -> void:
 - Screenshots of the existing rooms before and after the migration show the same world framing.
 
 ## Open verification items at acceptance
-Accepted after the migration was built and its framing test passed, before these ran:
+Accepted 2026-11-22 by the project owner, after the migration was built and its framing test passed, before these ran:
 - The Seeker (both the painted and the pixel-art variant) and the snap settings in play at 1440 x 810 and a fractional size under `forward_plus`; the probes so far ran under `gl_compatibility`.
 - The art-room bench at 2560 x 1440 against the 500 draw-call budget, with frame time recorded.
 - HiDPI, `window_*_override` and the letterbox colour on the owner's machine.

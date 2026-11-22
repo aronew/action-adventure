@@ -1,7 +1,7 @@
 # ADR-0001: Terrain collision is built from the room grid, one shape per face segment
 
 ## Status
-Accepted (2026-11-22, by the project owner)
+Accepted
 
 ## Date
 2026-11-22
@@ -186,7 +186,7 @@ No terrain code exists yet. The existing test rooms build their own rectangle sh
 - The spikes re-run on every engine upgrade.
 
 ## Open verification items at acceptance
-Accepted before these ran; each must be closed by the first terrain story that builds a room, and a failure reopens this decision:
+Accepted 2026-11-22 by the project owner, before these ran; each must be closed by the first terrain story that builds a room, and a failure reopens this decision:
 - The GDD's corner and seam criteria on a built room (concave and convex corners, ledge lips and undersides, run speed against a wall, a body spanning a material change), with one assertion that normals are axis-aligned and a zero-gap placement case.
 - The builder measured end to end from a real `TileMapLayer` of 36,000 cells, and a checkerboard worst case.
 - `Terrain.face_materials` agreed with ability gating's precedence rule for the `no_cling` skip (its Open Question 2).
