@@ -1,7 +1,7 @@
 # ADR-0002: Display base 1920 x 1080 with the camera at zoom 4
 
 ## Status
-Proposed
+Accepted (2026-11-22, by the project owner)
 
 ## Date
 2026-11-22
@@ -172,6 +172,14 @@ func setup(target: Player) -> void:
 - At 1440 x 810 a nearest-filtered stripe sprite at fractional positions shows a uniform 3 px stripe with snapping on.
 - The art-room bench at 2560 x 1440 stays within the 500 draw-call budget and records frame time (target GPU not set).
 - Screenshots of the existing rooms before and after the migration show the same world framing.
+
+## Open verification items at acceptance
+Accepted after the migration was built and its framing test passed, before these ran:
+- The Seeker (both the painted and the pixel-art variant) and the snap settings in play at 1440 x 810 and a fractional size under `forward_plus`; the probes so far ran under `gl_compatibility`.
+- The art-room bench at 2560 x 1440 against the 500 draw-call budget, with frame time recorded.
+- HiDPI, `window_*_override` and the letterbox colour on the owner's machine.
+- Camera smoothing in `_process` against the Seeker's physics motion (jitter), and a 3 px shake measured as 12 base-canvas px.
+- The follow-up edits to Pause and menus F1 and terrain Open Question 9, which still say 480 x 270.
 
 ## Related
 - `design/gdd/terrain-pipeline.md` (rule 1, Open Question 9)

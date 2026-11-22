@@ -62,7 +62,8 @@
 ## Architecture Decisions Log
 
 <!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
+- ADR-0001 (Accepted): terrain collision is built from the room grid, one shape per face segment (`docs/architecture/adr-0001-terrain-collision-build.md`)
+- ADR-0002 (Accepted): display base 1920 x 1080 with the camera at zoom 4 (`docs/architecture/adr-0002-display-base-and-camera-zoom.md`)
 
 ## Engine Specialists
 
