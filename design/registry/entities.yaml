@@ -349,9 +349,9 @@ formulas:
       - health
       - max_health
       - heal_share
-    output_range: [10, 90]
+    output_range: [20, 72]
     expression: "health' = min(health + heal_share x max_health, max_health)"
-    notes: "Healing F2. heal_share 0.30 (range 0.10-0.50) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained. Range is heal_share x max_health at the share's bounds (0.10 x 100 to 0.50 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
+    notes: "Healing F2. heal_share 0.30 (range 0.20-0.40) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained, and a heal only starts when missing health is at least start_deficit_share x the heal (15 at the defaults). Range is heal_share x max_health at the share's bounds (0.20 x 100 to 0.40 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
     added: 2026-11-22
 
 # Example:
@@ -532,7 +532,7 @@ constants:
     referenced_by: []
     value: 120
     unit: damage units
-    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns about 2 heals per guard-break cycle once the 4.0 s stagger is counted (Healing F3, an estimate); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns 1 to about 2 heals per guard-break cycle once the 4.0 s stagger is counted, and about 1.7 when a charged heavy breaks the guard (meter 60; Healing F3, an estimate); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
     added: 2026-11-22
   - name: heal_share
     status: active
@@ -540,7 +540,7 @@ constants:
     referenced_by: []
     value: 0.30
     unit: share of max health
-    notes: "Healing F2 (range 0.10-0.50; owner, 2026-11-22). The share of the derived max health (max_health_derived) one heal restores. Bosses tune their hit damage against it (slam 40, lunge 25, shockwave 20); they add themselves to referenced_by when their GDD adopts it; empty until then."
+    notes: "Healing F2 (range 0.20-0.40, narrowed in the second design review; starting value owner, 2026-11-22). The share of the derived max health (max_health_derived) one heal restores. Bosses tune their hit damage against it (slam 40, lunge 25, shockwave 20); they add themselves to referenced_by when their GDD adopts it; empty until then."
     added: 2026-11-22
   - name: channel_time
     status: active
@@ -548,7 +548,7 @@ constants:
     referenced_by: []
     value: 1.0
     unit: s
-    notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the boss pattern recoveries (1.0-1.3 s) and stagger (4.0 s): a heal fits a recovery only barely and a stagger easily. Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
+    notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the gap between one boss strike and the next (at least 2.4 s: lunge 2.4, shockwave 2.6, slam 3.3 s, each recovery plus attack_cooldown 0.6 s plus the next wind-up; 1.0 s more after a stagger) and the 4.0 s stagger: a heal started right after a strike fits every gap, and a stagger easily. Revised in the second design review, which replaced the earlier 1.0-1.3 s recovery premise. Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
     added: 2026-11-22
 
 # Example:

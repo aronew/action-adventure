@@ -39,3 +39,51 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-22 — Verdict: NEEDS REVISION
+Review mode: full · Workflow: standard
+Scope signal: L
+Specialists: game-designer, systems-designer, qa-lead, gameplay-programmer, godot-specialist, ux-designer; creative-director (senior)
+Blocking items: 7 | Recommended: 17
+Summary: The owner's loop (hit-fed meter, planted channel, meter kept on cancel) holds together and the four first-review blockers are resolved, but the Overview's "gamble" is untrue (a free cancel, a 2.4 s or longer gap between boss strikes and 0.65 s of post-hit invulnerability make a heal near risk-free), F3 starts every cycle with an empty meter and ignores the charged-heavy guard break so the boss-tuning basis is wrong, and the doc still cites 1.0-1.3 s boss recoveries against Open Question 11's 2.4 s. The engineering spec (top-level HEAL state, rule 9 catch-all, foe marker, hit order, timer source) and several acceptance criteria (AC-26 gate, flash limit, tick tolerances) cannot yet support a story.
+Prior verdict resolved: Yes (the 4 blockers of 2026-11-22 lean review); 6 of its 8 recommendations remain open
+Findings:
+- [BLOCKING] Overview / Core Rules 9-10 / Game Feel: "a gamble" is not delivered; a free cancel plus readable telegraphs and 0.65 s of invulnerability make healing near risk-free; add a cost to a voluntary cancel plus a boss pattern that punishes healing, or drop the word (a meter cost reopens an owner decision)
+- [BLOCKING] Formulas F3 / Core Rules 12 / Edge Cases: F3 assumes an empty meter each cycle (steady state about 2.1 heals, 60 HP per cycle at max 100), omits the charged-heavy break (meter 60, 1 heal plus 0.73 banked), and "costs the punish damage" is false in stages 1-2; model carry-in meter and damage taken per cycle, log HP healed against boss damage
+- [BLOCKING] Formulas Values / Game Feel / registry channel_time: 1.0-1.3 s recovery premise contradicts Open Question 11 (gaps lunge 2.4, shockwave 2.6, slam 3.3 s, plus 1.0 s after a stagger); fix every site including the registry note
+- [BLOCKING] Core Rules 3, 6, 9 / States / Edge Cases: CHANNEL must be a new top-level Player.State.HEAL; rule 9 needs a catch-all and a jump-buffer clear on every exit; name a foe marker (hit_landed carries only the Area2D; decide TrainingDummy); name a hit-order mechanism (enemies call take_hit from their own _physics_process); the timer runs on the pausable physics delta; say what a ledge slide does
+- [BLOCKING] Acceptance Criteria AC-26: no pass/fail, "deferred" so the story cannot close; make it an advisory milestone playtest plus a scripted log test and a written decision
+- [BLOCKING] Acceptance Criteria / Visual/Audio: no visual or flash-limit criterion; the refusal cue has no rate limit so mashing is about 10 flashes per second against a limit of 3, and a tap-cancel can exceed it
+- [BLOCKING] Acceptance Criteria AC-10, AC-12, AC-13, AC-14, AC-18, AC-22: the door/rest press points at AC-20, which tests interact in a channel; no tick tolerances (float accumulation at 1.0 s, 3.8-6.1 px stop distance, same-tick order, pause resume)
+- [RECOMMENDED] Core Rules 2 / Open Question: guarded hits fill at full (meter about 88% when a guard breaks); owner to revisit
+- [RECOMMENDED] Core Rules 6, 8 / F2: whole meter spent for 1 HP (cost cliff 0 to 120); spend in proportion or refuse a start below about 50% of the heal
+- [RECOMMENDED] Formulas Values: heal_share 0.10-0.50 is degenerate at the bounds; narrow to about 0.20-0.40 and state the heal-to-slam ratio
+- [RECOMMENDED] Edge Cases: forbid a heal start while invulnerable, or lengthen the channel past the 0.65 s protected window
+- [RECOMMENDED] Core Rules 2 / F1: cap each hit's fill at the target's remaining health; guarded boss hits fill at 5 times the damage dealt
+- [RECOMMENDED] Edge Cases / Open Question 3: farming becomes mandatory for a banked heal after death; ship a diminishing fill per room
+- [RECOMMENDED] Core Rules 13 / Open Question 2: decide whether a stage change keeps the full stagger and gives no refill
+- [RECOMMENDED] Header / Overview: drop "Implements P4"; admit the planted-heal tension with P1; consider a fill floor for pogo and dash-attack hits
+- [RECOMMENDED] UI / Visual/Audio / Open Question 1: split the refusal cue by reason; persistent non-colour "meter full" marker; 0.1-0.15 s press buffer (press still held when the heal becomes possible); hold/toggle option in design/accessibility-requirements.md; stagger readout; reconsider the R3 default
+- [RECOMMENDED] Dependencies: PlayerHealth.heal(), a healed signal and set_max_health(); meter owned by Player; explicit reset hook for Continue and new game (revive has no callers yet)
+- [RECOMMENDED] Formulas Values: HealingConfig.validate() should clamp and push_error; "as the save-point config does" points at an unbuilt design
+- [RECOMMENDED] Visual/Audio: heal glow as a capped sprite effect (no Environment glow in the project, existing aura is additive); separate heal_loop and heal_end clips; state whether project.godot or PlayerInputBindings owns the heal binding
+- [RECOMMENDED] Acceptance Criteria: split bundled criteria (AC-4, 8, 9, 10, 11, 13, 16, 17); cover the pre-edge seam, rule 5, DASH/LEDGE/GRAPPLE/DEAD refusals, i-frame start, release on completion tick and the Game Feel timing targets; AC-9/19/20 as component-contract tests; AC-24 testable; AC-25 belongs to the HUD story
+- [RECOMMENDED] Dependencies seam / Open Question 4: settle the pre-edge damage seam on hit_landed before an edge step can complete
+- [RECOMMENDED] Open Question 8: state the evidence the first built story must retain for the heal clip and audio
+- [RECOMMENDED] Dependencies: Healing's index row should add Enemies, Bosses, HUD and Hit feedback
+- [RECOMMENDED] Player Fantasy and Tuning Knobs sections (advisory at standard)
+Reviewed-Content-Hash: design/gdd/healing.md c1bbe804b0f4040d293f53817707d94f2d2f9674
+Reviewed-Content-Hash: design/registry/entities.yaml ee25e2367cb2a24a2047a1c1924226c5c5f09574
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+Reviewed-Content-Hash: design/gdd/bosses.md 4bd4c5ba038f32b77eb4038503641332e5e7edb4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
