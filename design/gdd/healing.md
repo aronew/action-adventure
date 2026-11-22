@@ -43,14 +43,14 @@ Tags: **[Owner]** = the owner's stated rule; **[Rec]** = recommendation, change 
 
 6. **Input.** A new action, `heal`, held to heal. It starts a heal only when all of these hold: the meter is at `meter_capacity`, health is below max health, the Seeker is on the ground (the controller's GROUND state, not crouching), not attacking, not in hurt lock and not dead. If the meter is not full, or health is full, the press does nothing and starts nothing, and the player gets a "not ready" cue (UI Requirements). **[Rec: ground only, so a heal is a planted commitment and pillar 1's movement is not blocked mid-air]**
 7. **The channel.** A started heal is a channel of `channel_time` (1.0 s). The Seeker is planted: it skids to a stop as it does while charging a heavy, and cannot attack, jump, dash or grapple except to cancel (rule 9). The channel runs on game time, so hit-stop stretches it (Edge Cases). **[Owner, 2026-11-22: 1.0 s channel, planted]**
-8. **Completion.** When the channel timer reaches `channel_time` with the heal input still held, the meter is spent in full (set to 0) and health rises by the heal amount (Formulas F2), never above max health. Nothing is spent before that moment. **[Owner, 2026-11-22: the meter is spent only when the channel completes]**
+8. **Completion.** When the channel timer reaches `channel_time` with the heal input still held **and health below max health**, the meter is spent in full (set to 0) and health rises by the heal amount (Formulas F2), never above max health. If health is already at max health at that moment (a health step refilled it mid-channel, Edge Cases), nothing is spent and nothing is healed: the meter is kept. Nothing is spent before that moment. **[Owner, 2026-11-22: the meter is spent only when the channel completes]**
 9. **Cancelling.** The channel ends with nothing spent and no heal when any of these happens: the heal input is released; the Seeker presses jump, dash, grapple or attack; the Seeker takes a hit that lands (a hit in the invulnerability window does not land, so it does not cancel); the Seeker dies; a door, an exit or a rest takes over. The meter is kept in every case. The time already channelled is lost: there is no partial heal and no progress is kept. **[Owner, 2026-11-22: a hit cancels, meter kept; Rec: release and the movement presses cancel so the player is never stuck for 1.0 s]**
 10. **No protection.** The channel gives no invulnerability, no damage reduction and no armour. A hit that lands cancels it and deals its full damage, and starts the controller's hurt lock and invulnerability as any hit does. **[Rec: the risk is the point; the hit cancels so it cannot be tanked through]**
 11. **Fills do not happen during a heal.** The Seeker cannot attack while channelling, so nothing fills the meter then. A hit landed by a delayed source (none exist today) would still count. **[Rec]**
 
 **Boss fights**
 
-12. **The meter fills in a boss fight like anywhere else** (rule 2). A boss fight is where it matters most, so the boss's stages are tuned with the heal in mind: the starting values aim at about one heal earned per guard-break cycle (Formulas F3), which is what the boss's 3-4 attempt target is tuned against. **[Owner, 2026-11-22: tune the boss together with healing; Rec: one heal per guard-break cycle as the starting target]**
+12. **The meter fills in a boss fight like anywhere else** (rule 2). A boss fight is where it matters most, so the boss's stages are tuned with the heal in mind. The starting values are **not** tuned to a heals-per-cycle target: Formulas F3 estimates that a skilled player can earn up to about 2 heals per guard-break cycle (one spent in the stagger, one banked), and whether that is fair is **decided in play** (AC-26); the boss's damage is tuned against what the playtests show. **[Owner, 2026-11-22: tune the boss together with healing; the numbers cannot say whether it feels balanced or fair, so some of these values are determined by play]**
 13. **A stage change neither fills nor empties the meter.** What the stage transition does to the player's heal is not decided here; see Open Questions.
 
 ### States and Transitions
@@ -60,13 +60,14 @@ The meter has no states of its own: it is a number, and "full" means `heal_meter
 | State | Meaning | Enters when | Leaves when |
 |-------|---------|-------------|-------------|
 | `IDLE` | No heal in progress | Start of play; a heal completes or is cancelled | The heal input is pressed and rule 6 holds: to `CHANNEL` |
-| `CHANNEL` | Planted, timer running from 0 to `channel_time` | Rule 6 holds on a press | The timer reaches `channel_time` with the input held: to `IDLE` after the heal and the spend (rule 8). Any cancel (rule 9): to `IDLE`, nothing spent |
+| `CHANNEL` | Planted, timer running from 0 to `channel_time` | Rule 6 holds on a press | The timer reaches `channel_time` with the input held: to `IDLE` after the heal and the spend, or with nothing spent when health is already at max (rule 8). Any cancel (rule 9): to `IDLE`, nothing spent |
 
 Meter and health outcomes of `CHANNEL`'s exits:
 
 | Exit | Meter | Health | Player state after |
 |------|-------|--------|--------------------|
-| Completes | 0 | + heal amount (capped) | GROUND, control returns |
+| Completes (health below max) | 0 | + heal amount (capped) | GROUND, control returns |
+| Completes with health already at max | kept | unchanged | GROUND, control returns |
 | Released early | kept | unchanged | GROUND |
 | Jump, dash, grapple or attack pressed | kept | unchanged | the pressed action starts |
 | A hit lands | kept | - the hit's damage | HURT (or DEAD) |
@@ -83,7 +84,7 @@ Of these, only Combat, Guard-break, Player controller, Bosses and Collectible up
 | Player controller | Both | In: the `heal` input, the state (ground, attacking, hurt lock, dead), the landed-hit and death signals. Out: a `CHANNEL` state that plants the Seeker and the cancel rules | Controller owns states and input; this system owns when a heal may start, run and end |
 | Health, damage and death | Out | The heal amount, applied to `PlayerHealth.current` without touching invulnerability (a new method, Dependencies) | Health owns the values; this system owns the amount and when it applies |
 | Collectible upgrades | In | Max health (derived, 100 to 180): the heal amount is a share of it (F2) so it keeps its meaning as max health grows | Collectible upgrades owns max health; this system owns the heal share |
-| Enemies, Bosses | In | Every foe hit, via `hit_landed`. Bosses are tuned against one heal per guard-break cycle (F3) | Bosses owns the boss's tuning; this system owns the heal values |
+| Enemies, Bosses | In | Every foe hit, via `hit_landed`. Bosses are tuned against what the playtests show of heals per guard-break cycle (F3 estimates about 2 for skilled play) | Bosses owns the boss's tuning; this system owns the heal values |
 | Save points | None | A rest leaves the meter alone (rule 5) while it heals health to full | Save points |
 | HUD | Out | `heal_meter`, `meter_capacity`, ready and not-ready cues, the channel progress | HUD (R9) owns the display; provisional |
 | Hit feedback and effects | Out | A fill pulse, a ready cue and the heal effect | Hit feedback (R8); provisional |
@@ -129,18 +130,22 @@ The heal_amount formula is defined as:
 This is a tuning check, not a runtime calculation. The hits_per_heal and cycle_heals formulas are defined as:
 
 `hits_per_heal = meter_capacity / mean_hit_damage`
-`cycle_heals = cycle_fill / meter_capacity`, where `cycle_fill = sum of damage over the hits the player lands in one guard-break cycle`
+`cycle_fill = guard_fill + fill_rate x stagger_window`, where `guard_fill` is the damage of the hits that break the guard and `stagger_window = stagger_time` (or `stagger_time - channel_time` when the player heals inside the stagger, since nothing fills during a channel)
+`cycle_heals = cycle_fill / meter_capacity` before the cap; the effective count is lower, because the meter holds at most one heal (rule 4) and surplus is lost
 
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
 | meter_capacity | float | 40-300, starts at 120 | data file | As in F1 |
 | mean_hit_damage | float | 8-60 | calculated | The average damage of the hits the player uses; 14 for light combos (10, 12, 20 repeating: mean 14), 30 for uncharged heavies |
-| cycle_fill | float | 0 upward | calculated | Damage of every hit landed from the start of the cycle (the guard is full) to the end of the stagger |
-| cycle_heals | float | 0 upward | calculated | Heals the player earns in one cycle; the starting target is about 1 |
+| guard_fill | float | 0 upward | calculated | Damage of the hits from a full guard to the breaking hit: 106 for steady light combos (`guard-break.md` F2: 8 hits) |
+| fill_rate | float | 0 upward | estimated | Fill per second while landing combos. About 49 for light combos: a 3-hit combo (42) takes about 0.86 s, from the clip durations in `seeker_animations.json` (attack1 chains at frame 5, about 0.18 s; attack2 at frame 4, about 0.16 s; attack3 plays out 0.52 s). **An estimate to be measured**, not a tested figure |
+| stagger_time | float | 2.5 s default, 4.0 s boss | data file (`guard_config.tres`) | The window in which every hit lands at full damage. Hits do not extend it (`guard-break.md` rule 3) |
+| cycle_fill | float | 0 upward | calculated | Damage landed from a full guard to the end of the stagger |
+| cycle_heals | float | 0 upward | calculated | Heals earned in one cycle before the cap. **Not a target**: see Core Rules 12 and AC-26 |
 
-**Output Range:** `hits_per_heal` 3-40 (a combo of three hits is 42, a charged heavy is 60); `cycle_heals` is meant to sit near 1 for the boss. A value under 0.7 means a boss fight gives too few heals, over 1.5 too many **[Rec]**.
-**Example:** light-only combos from a full guard: `guard-break.md` F2 breaks the guard on the 8th hit (attack1, 2, 3, 1, 2, 3, 1, 2), a fill of 10+12+20+10+12+20+10+12 = 106, so `cycle_heals` = 106 / 120 = 0.88 before the punish hits; two finisher swings in the stagger (attack3 then attack1, 30) bring it to 136 / 120 = 1.13. Two charged heavies alone: 120, one heal.
+**Output Range:** `hits_per_heal` is 2 (two charged heavies) to 15 (pogo hits at 8) at the defaults, and 0.67 to 37.5 across the whole capacity and damage ranges. `cycle_heals` has no target band: it is a number the playtests read (AC-26), not a pass-fail check **[Owner, 2026-11-22: determined by play]**.
+**Example (boss, light combos, estimate):** the guard breaks on the 8th hit (attack1, 2, 3, 1, 2, 3, 1, 2: `guard-break.md` F2), `guard_fill` = 10+12+20+10+12+20+10+12 = 106. The stagger is 4.0 s, so landing combos for all of it gives `fill_rate x 4.0` = about 195, `cycle_fill` about 300 and `cycle_heals` about 2.5 before the cap. The meter is full about 0.3 s into the stagger (14 more fill). A player who then heals for 1.0 s refills in the remaining 2.7 s (about 132, capped at 120): one heal spent in the stagger and one banked, so about **2 heals per cycle** for skilled play, and 1 for a player who only punishes. This replaces the earlier two-swing count, which ignored that a 4.0 s stagger holds about 4.6 combos. Two charged heavies alone: 120, one heal.
 
 ### Values (`HealingConfig`)
 
@@ -162,7 +167,8 @@ This is a tuning check, not a runtime calculation. The hits_per_heal and cycle_h
 - **If `heal` is pressed with the meter full and health full**: nothing starts, nothing is spent, and the "not ready" cue plays. The meter stays full for the next fight.
 - **If `heal` is pressed with the meter below capacity**: nothing starts and the "not ready" cue plays. There is no buffering: a press that fails is gone, and a press 0.1 s before the meter fills does not start a heal later.
 - **If `heal` was already held when the conditions began to hold** (for example held through an attack or the end of hurt lock): it does not start a heal. The player must release and press again, so mashing the button during a fight never starts a 1.0 s plant by accident.
-- **If `heal` is pressed in the air, crouched, in an attack's lock window, during hurt lock, on a ladder, grappling, on a wall or during a door or rest**: nothing starts (rule 6), the cue plays and nothing is buffered.
+- **If `heal` is pressed in the air, crouched, in an attack's lock window, during hurt lock, on a ladder, grappling or on a wall**: nothing starts (rule 6), the cue plays and nothing is buffered.
+- **If `heal` is pressed during a door transition or a rest**: the controller has locked input (`save-points-and-save-load.md`, Resting), so the press never reaches the heal logic: nothing starts and **no cue plays**.
 - **If the Seeker is inside its invulnerability window (after a landed hit) and hurt lock is over**: a heal may start. The remaining window protects the first part of the channel; this is accepted, not a bug.
 - **If `interact` is pressed in a door or rest area while channelling**: the door or rest takes over and the channel is cancelled with the meter kept (rule 9). Movement cannot carry the Seeker through an exit during a channel because the Seeker is planted.
 
@@ -206,7 +212,7 @@ This is a tuning check, not a runtime calculation. The hits_per_heal and cycle_h
 
 | System | Hard / soft | What it needs from here |
 |--------|-------------|--------------------------|
-| Bosses | Hard | The meter values and the one-heal-per-guard-break-cycle target (F3) to tune the three stages against; its planned stages say the boss "must be tuned together with" healing |
+| Bosses | Hard | The meter values and F3's estimate of heals per guard-break cycle (about 2 for skilled play, decided in play, not a target) to tune the three stages against; its planned stages say the boss "must be tuned together with" healing |
 | HUD (R9) | Hard | `heal_meter`, `meter_capacity`, the ready and not-ready cues and the channel progress |
 | Hit feedback and effects (R8) | Soft | The fill pulse, the ready cue and the heal effect |
 | Pause and menus | Soft | The `heal` action on the read-only controls page (controls are fixed, `pause-and-menus.md` rule 17), a default binding that avoids its reserved inputs (Escape, Start and gamepad B, rule 19), and its flash limit (registry `flash_limit`, 3 per second) for the heal's light effects |
@@ -215,9 +221,9 @@ This is a tuning check, not a runtime calculation. The hits_per_heal and cycle_h
 
 **Seam to resolve (collectible upgrades F3 against Combat).** Collectible upgrades multiplies sword health damage by up to x1.3 "on every sword attack's health damage". If that multiplier is applied before Combat emits `hit_landed`, edge steps would raise the fill by up to 30% and quicken heals with an unrelated upgrade. This GDD says the fill reads the damage before the edge multiplier; Combat or Collectible upgrades must keep the pre-edge value available on the signal (or apply the edge multiplier at the target). Resolve when either is next revised; recorded in Open Questions.
 
-**Bidirectional check (2026-11-22):**
+**Bidirectional check (2026-11-22, updated after the first design review):**
 - **Bosses** names Healing (its planned-stages section and Open Questions). This matches.
-- **Combat, Guard-break, Player controller, Enemies, Collectible upgrades and Save points do not name Healing yet.** Each needs one row: Combat (a downstream reader of `hit_landed`), Player controller (the `heal` action and the `CHANNEL` state; also its Values table), Guard-break (none directly; a guarded hit fills at full), Enemies (foe hits feed the meter), Collectible upgrades (the heal share reads derived max health, and the edge-multiplier seam), Save points (a rest leaves the meter, a death and Continue zero it). `/design-system` does not edit another system's GDD without your go-ahead: Phase 5 lists these for you.
+- **Combat, Guard-break, Player controller, Enemies, Collectible upgrades, Save points and Pause and menus** each gained one Healing row in their Dependencies tables on 2026-11-22 (owner go-ahead). Combat's and Collectible upgrades' rows record the edge-multiplier seam; Player controller's records the `heal` action and the `CHANNEL` state, but its Values table and states list are not yet updated (a follow-up for its next revision).
 - **Systems index** row 27 lists Combat and Player controller and notes Guard-break and Collectible upgrades as touched; it should add Enemies, Bosses (downstream), HUD and Hit feedback.
 
 ## Visual/Audio Requirements
@@ -300,11 +306,11 @@ The `qa-lead` lens was applied in-session (lean mode spawns no agent). Defaults 
 - **AC-9 Resets [Integration].** GIVEN the meter is 80, THEN a death and `revive`, a Continue and a new game each leave it 0, and a rest at a save point and a room change each leave it 80.
 
 **Starting a heal**
-- **AC-10 Not ready [Logic].** GIVEN each of: the meter at 119 (not full), health at max with a full meter, the Seeker in the air, crouched, inside an attack's lock window, in hurt lock, on a ladder, on a wall, during a door or rest; WHEN `heal` is pressed, THEN no `CHANNEL` starts, nothing is spent and the refusal cue (`heal_refused`) is emitted. One case per condition.
+- **AC-10 Not ready [Logic].** GIVEN each of: the meter at 119 (not full), health at max with a full meter, the Seeker in the air, crouched, inside an attack's lock window, in hurt lock, on a ladder, on a wall; WHEN `heal` is pressed, THEN no `CHANNEL` starts, nothing is spent and the refusal cue (`heal_refused`) is emitted. One case per condition. (A press during a door transition or a rest never reaches the heal logic because input is locked; that case is covered by AC-20.)
 - **AC-11 Fresh press only [Logic].** GIVEN `heal` was already held when hurt lock ended and the meter is full, THEN no heal starts; WHEN it is released and pressed again, THEN `CHANNEL` starts. A press that failed is not buffered: a press 0.1 s before the meter fills starts nothing.
 
 **The channel**
-- **AC-12 Planted [Integration].** GIVEN the Seeker runs at 140 px/s with a full meter and health below max, WHEN `heal` is pressed, THEN its horizontal speed is 0 within 0.1 s and its position does not change until the channel ends.
+- **AC-12 Planted [Integration].** GIVEN the Seeker runs at 140 px/s with a full meter and health below max, WHEN `heal` is pressed, THEN its horizontal speed is 0 within 0.1 s (`charge_deceleration` 2000 px/s² stops 140 px/s in about 0.07 s and about 5 px), and from then until the channel ends its position does not change.
 - **AC-13 Completion [Logic].** GIVEN the meter is 120 and health 70 of 100, WHEN `heal` is held for 1.0 s, THEN health is 100, the meter is 0 and the Seeker is back in GROUND. With health 50: 80. With max health 180 and health 90: 144.
 - **AC-14 Not before time [Logic].** GIVEN a channel started, THEN at 0.95 s the meter is still 120 and health is unchanged; the heal is applied no earlier than 1.0 s and no later than 1.0 s plus one physics tick.
 - **AC-15 Released early [Logic].** GIVEN a channel at 0.5 s, WHEN `heal` is released, THEN health is unchanged, the meter is 120 and `IDLE` returns.
@@ -317,12 +323,12 @@ The `qa-lead` lens was applied in-session (lean mode spawns no agent). Defaults 
 - **AC-22 Pause [Integration].** GIVEN a channel at 0.6 s, WHEN the game is paused for 5 s and resumed, THEN the heal completes 0.4 s after the resume.
 
 **Balance and config**
-- **AC-23 Boss cycle [Integration].** GIVEN the default config and a full-guard boss, WHEN the Seeker lands attack1, 2, 3, 1, 2, 3, 1, 2 on it, THEN the guard breaks on the 8th hit with the meter at 106; WHEN attack3 and attack1 follow in the stagger, THEN the meter reaches 120 (136 capped).
+- **AC-23 Boss cycle arithmetic [Integration].** GIVEN the default config and a full-guard boss, WHEN the Seeker lands attack1, 2, 3, 1, 2, 3, 1, 2 on it, THEN the guard breaks on the 8th hit with the meter at 106; WHEN attack3 follows in the stagger, THEN the meter is 120 (126 capped) and stays 120 for further hits. This checks the fill and the cap only; how many heals a cycle gives is AC-26.
 - **AC-24 Config validation [Logic].** GIVEN `meter_capacity` 0, `heal_share` 0.6 and `channel_time` 3.0, WHEN `HealingConfig.validate()` runs, THEN it returns all three names; the game does not start with them.
 
 **Presentation**
 - **AC-25 Meter display [UI].** GIVEN the HUD, THEN a retained screenshot in `production/qa/evidence/` shows the meter at 0, about half and full, and the refusal cue. Blocking: needs the HUD GDD first.
-- **AC-26 Boss feel [Playtest, deferred].** GIVEN the three-stage boss is built, WHEN the owner plays three attempts, THEN the log shows at least one full meter in every attempt that reaches stage 2, and the owner reports whether the heal felt earned and risky. Deferred until the stages exist (`bosses.md`).
+- **AC-26 Heals per cycle and feel [Playtest, deferred].** GIVEN the boss fight is built (the current one-stage boss is enough to start) and the build logs each `heal_meter` full event, each completed heal and each guard-break per attempt, WHEN the owner plays three attempts, THEN the log gives the heals earned and spent per guard-break cycle (F3 estimates about 2 for skilled play), and the owner records whether the heal felt earned, risky and fair. The owner decides from the log and the feel whether `meter_capacity`, `heal_share` or the boss's damage changes; no number is a pass-fail threshold **[Owner, 2026-11-22]**. Stage-specific checks wait for the three stages (`bosses.md`).
 
 **Gaps found by the lens (not blocking):**
 - Rule 11 (no fill during a heal) cannot be tested today, since no delayed damage source exists. It is a design note, with no criterion.
@@ -343,3 +349,5 @@ The `qa-lead` lens was applied in-session (lean mode spawns no agent). Defaults 
 | 7 | **Channel time against the boss's recoveries** (1.0 s against 1.0-1.3 s): tuned in play. | Owner, with the boss stages | Boss tuning round |
 | 8 | **A heal clip and audio** do not exist; the Seeker needs a `heal` clip and the heal's sounds need a sound designer (Audio GDD not started). | Art and Audio | Before the heal is built |
 | 9 | **Numeric display** of the meter (rule: none by default). The HUD GDD decides. | HUD (R9) | HUD design |
+| 10 | **Heals per guard-break cycle.** F3 estimates about 2 for skilled play (one spent in the 4.0 s stagger, one banked) from an estimated fill rate. Whether that is fair, and whether `meter_capacity`, `heal_share` or the boss's damage should move, is decided in play (AC-26). | Owner | First boss playtest with the meter logged |
+| 11 | **Safe heal window against the boss.** The gap between one boss strike and the next is at least 2.4 s (recovery 1.0 + `attack_cooldown` 0.6 + shortest wind-up 0.8), longer than the 1.0-1.3 s recovery the `channel_time` range note cites; stages 2 and 3 shorten it. Whether a heal is meant to be this safe at range is a playtest question. | Owner, with the boss stages | Boss tuning round |

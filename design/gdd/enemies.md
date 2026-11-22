@@ -147,6 +147,7 @@ All three use gravity 900 and a fall cap of 480.
 | Rooms and transitions | Downstream | The return delay and removal at the room bounds (not built) |
 | World state | Downstream | `defeated` for named foes that stay dead (not built) |
 | Hit feedback and effects | Downstream, soft | Death burst, flash and the placeholder art |
+| Healing | Downstream, soft | Every foe hit feeds the heal meter through `hit_landed`; a dead foe's hurtbox leaves `hittable` and stops feeding it; foes rebuilt on room entry are a known farm (`healing.md` Edge Cases) |
 
 **Bidirectional check:** `level-design.md` (lines 120, 160, 176-180), `rooms-and-transitions.md` and `world-state.md` name Enemies, and the registry carries `chase_leash` and `enemy_return_delay`. `combat.md` and `guard-break.md` name Enemies downstream. The systems index row for Enemies lists Combat and Health; it should also list World state (soft), as `world-state.md` notes.
 

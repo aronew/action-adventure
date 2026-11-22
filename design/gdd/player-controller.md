@@ -174,6 +174,7 @@ Reach figures derived from these values (run jump about 122 px, dash-jump about 
 | Collectible upgrades | Downstream | `max_health` (100) is the base for health upgrades |
 | Enemies, Bosses | Downstream | Call `Player.take_hit` |
 | Pause and menus | Downstream | The input actions (rebinding is that system's) |
+| Healing | Both, hard | A new `heal` input action and a `CHANNEL` heal state that plants the Seeker and ends on the cancels of `healing.md` rule 9; Healing reads the state, hurt lock, death and `revive` |
 
 **Bidirectional check:** `world-state.md` and `ability-gating.md` name the controller; `combat.md` names it as upstream. Rooms, enemies and bosses have rooms-side or no GDD for their side.
 

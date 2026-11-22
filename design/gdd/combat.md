@@ -158,6 +158,7 @@ Example: attack1 opens at frame 5 and attack2 at frame 4; attack3 has no `next`,
 | Camera | Downstream, soft | Receives `camera_shake_requested` (attack3: 3 px, 0.15 s) |
 | Ability gating | Downstream, hard | Gate volumes keep clear of the pogo and the down-attack hitbox; panes are kept out of `hittable`; its F1 and F7 use `pogo_speed` and the down-attack reach |
 | Hit feedback and effects | Downstream, soft | Heavy-ready burst and flash are played by the player from `heavy_ready` |
+| Healing | Downstream, hard | Listens to `hit_landed` and adds the reported `damage` (charged x2 included) to the heal meter: once per target per swing, and without the edge multiplier (`healing.md` Dependencies seam) |
 | Health, damage and death | Peer | Enemy hits on the Seeker go through `Player.take_hit`, not through this system; the index lists Health as a Combat dependency, but the code has none |
 
 **Bidirectional check:** ability gating (`ability-gating.md`, lines 94 and 391) names Combat. `player-controller.md`, `guard-break.md`, `enemies.md` and `bosses.md` exist and name Combat. Camera, Hit feedback and effects, and Health, damage and death have no GDD yet (R6-R8), so their side is unwritten. The systems index lists Combat as depending on the Player controller only (the Health dependency was removed on 2026-11-22).

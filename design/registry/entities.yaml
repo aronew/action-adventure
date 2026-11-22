@@ -532,7 +532,7 @@ constants:
     referenced_by: []
     value: 120
     unit: damage units
-    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so one heal per guard-break cycle is the starting target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns about 2 heals per guard-break cycle once the 4.0 s stagger is counted (Healing F3, an estimate); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
     added: 2026-11-22
   - name: heal_share
     status: active
