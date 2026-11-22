@@ -341,3 +341,34 @@ Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b39
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
 Reviewed-Content-Hash: src/test_rooms/room_atmosphere.gd 86c710835d7a1d3e968afbcc526724ae69040cbc
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 636770ecb4cbe9e02ace2439486c68c57dc064ad
+
+## Review — 2026-11-22 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 0 | Recommended: 6
+Summary: The tenth review's blocker held (the radiance is radius 34 px, 68 px across, in rule 12 and its criterion, matching the reference's `2 x 34` sizing) and so did both ninth-review blockers. The seven recommended items were cleared: P7's range, the wall-end Edge Case, rule 14's blur wording, the P4 mask list and a Reduced run, rule 1's wording, a new Tuning Knobs section with ranges (checked against the reference's values) and a criterion that rejects an out-of-range preset, and the carried items (linear blend with the fog scale blended, the P1 and P2 range from the travel range, criteria for rules 16 and 17, the ground fog cap as a system constant, the flicker unit as cycles per second, the backdrop-section term, `build_time` with the bench's 1.4 to 1.6 s whole-room build). The reference now clamps the silhouette lag (P6). The registry shows 0 conflicts.
+Prior verdict resolved: Yes (the tenth-review blocker and the seven recommended items)
+Findings:
+- [RECOMMENDED] Formulas P4 and Open Question 10: the example is stale (measured before the darker background); re-measuring needs the mask method, which belongs with the test helpers; reconcile the reference's grade, fog and tint values with the art bible's Mood and Color sections (2 and 4)
+- [RECOMMENDED] Open Questions 8 and 9: ember footprint (5.6 px sprite, 2.8 px core) against Combat's twice-the-ember projectile rule; a wall thinner than `close_wall_extend` (72 px) lets the extension show in open air
+- [RECOMMENDED] Open Question 1: Terrain pipeline (Approved) does not yet hold the lip or the floor-run fields, including wall or drop per end
+- [RECOMMENDED] Open Question 3: the implementation ADR must say how the band build, particle pre-warm and first shader use fit `build_time` (0.10 s); the whole long-room build measured 1.4 s warm, 1.6 s cold in software GL, this system's share unmeasured
+- [RECOMMENDED] Formulas P6: the silhouette lag clamp in the reference parse-checks but has no automated test of the fall case
+- [RECOMMENDED] Open Question 4 and Acceptance Criteria (performance): Full against Reduced frame-time cost not yet run; draw calls max 287 (budget 500), frame time not comparable to hardware
+Advisory (not counted): Player Fantasy absent (advisory at standard).
+Receipt note: hashes are of the working-tree files reviewed.
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3bb845cb97e96885f12aff9865bef0764005e0f
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+Reviewed-Content-Hash: src/test_rooms/room_atmosphere.gd 86c710835d7a1d3e968afbcc526724ae69040cbc
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd e7d836738d4054b6e88ff0668ada94634d21caad
