@@ -40,7 +40,7 @@
 #   unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-22"
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -53,7 +53,17 @@ last_updated: ""
 # interface: how other systems access this state (read-only property, method call,
 #   signal, shared resource, etc.) — this is the contract other ADRs depend on.
 
-state_ownership: []
+state_ownership:
+  - state: terrain_collision
+    status: active
+    owner_system: terrain-pipeline
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    interface: "TerrainBuilder.build(layer, data) builds the room's collision once, before the room is shown; Terrain.face_materials(body_rect, normal) reads face materials. The painted grid and RoomTerrainData are the only source."
+    write_access: terrain-pipeline-only   # other systems read, never write
+    referenced_by:
+      - docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+    revised: ""
 
 # Example:
 #
@@ -81,7 +91,19 @@ state_ownership: []
 #
 # pattern options: signal | direct_call | event_bus | shared_resource | rpc | none
 
-interfaces: []
+interfaces:
+  - contract: face_material_query
+    status: active
+    pattern: direct_call
+    producer: terrain-pipeline
+    consumers:
+      - player-controller   # no_cling skip at a wall contact (ability gating rule 14)
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    signal_signature: "Terrain.face_materials(body_rect: Rect2, normal: Vector2) -> PackedStringArray (materials of the face cells the body overlaps along the contact; empty when the collider is not the terrain body)"
+    referenced_by:
+      - docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+    revised: ""
 
 # Example:
 #
@@ -141,7 +163,27 @@ performance_budgets: []
 # Register an API decision when the choice is non-obvious and other ADRs might
 # make a different choice for the same purpose without knowing this was decided.
 
-api_decisions: []
+api_decisions:
+  - purpose: terrain_collision_shapes
+    status: active
+    api: "RectangleShape2D strips, one per exposed face segment, in StaticBody2D bodies on physics layer 1"
+    not: "per-tile physics shapes from a TileMapLayer physics layer"
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    reason: "One shape per face segment meets T4 (shapes at most face segments, each segment in one shape); per-tile shapes cannot, and cannot carry a per-face material."
+    referenced_by:
+      - docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+    revised: ""
+  - purpose: one_way_platforms
+    status: active
+    api: "CollisionShape2D.one_way_collision = true, in a StaticBody2D separate from the solid terrain"
+    not: "one-way shapes sharing a body with solid shapes"
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    reason: "A collision exception on a shared body drops the body through the solid part too; a separate body can be excepted alone."
+    referenced_by:
+      - docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+    revised: ""
 
 # Example:
 #
@@ -167,7 +209,25 @@ api_decisions: []
 # Register a pattern when an ADR explicitly bans it AND other ADRs might
 # unknowingly use it (i.e., it's a tempting but wrong approach for this project).
 
-forbidden_patterns: []
+forbidden_patterns:
+  - pattern: stored_terrain_collision
+    status: active
+    description: "Built terrain collision must not be saved in a room scene or given a bake record; it is built from the grid at room build."
+    why: "A stored copy can go stale against the painted grid, which is the only authority."
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+  - pattern: terrain_tileset_physics_layer
+    status: active
+    description: "The terrain TileSet must not have a physics layer and its TileMapLayer must set collision_enabled = false."
+    why: "It would create one shape per tile, breaking T4 and carrying no per-face material."
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+  - pattern: shape_carried_face_material
+    status: active
+    description: "A collision shape must not carry a face material; read it through Terrain.face_materials after checking the collider is the terrain body."
+    why: "Materials are per face segment and may differ on the two sides of a wall; a shape or body property cannot express that."
+    adr: docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
 
 # Example:
 #
