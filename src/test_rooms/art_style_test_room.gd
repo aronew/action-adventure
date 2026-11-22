@@ -1164,6 +1164,11 @@ func _sway_silhouettes(center: Vector2) -> void:
 	if is_nan(_silhouette_lag_y):
 		_silhouette_lag_y = center.y
 	_silhouette_lag_y = lerpf(_silhouette_lag_y, center.y, 1.0 - exp(-delta / SILHOUETTE_LAG))
+	# Bound the lag so a drift at its cap eases back as soon as the camera stops
+	# (parallax GDD P6): it never trails the camera by more than max_drift / sway.
+	if SILHOUETTE_SWAY > 0.0:
+		var max_lag := SILHOUETTE_MAX_DRIFT / SILHOUETTE_SWAY
+		_silhouette_lag_y = clampf(_silhouette_lag_y, center.y - max_lag, center.y + max_lag)
 	var drift := clampf((_silhouette_lag_y - center.y) * SILHOUETTE_SWAY,
 			-SILHOUETTE_MAX_DRIFT, SILHOUETTE_MAX_DRIFT)
 	_silhouette_layer.position.y += drift
