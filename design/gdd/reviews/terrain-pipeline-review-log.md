@@ -230,3 +230,37 @@ Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca6
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
 Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
 Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 636770ecb4cbe9e02ace2439486c68c57dc064ad
+
+## Review — 2026-11-22 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean)
+Blocking items: 0 | Recommended: 6
+Summary: Both seventh-review blockers are resolved and consistent across the GDD, the tools spec and the criteria. The undressed-new-ground flag no longer blocks `dressed` (rule 12, States, tools spec section 5): the add-ledge, flag, dress, set `dressed`, flag closes path has no dead end. A moved block's shift now comes from the editor's move tool through a move record, a repaint counts as new ground, and a 6 x 2 ledge moved down one tile gives new face 0 and carries by exactly one tile (rule 13, T5, tools spec section 6). The registry shows 0 conflicts (`collision_tile` 6 px, `trim_overhang_max` 4 px).
+Prior verdict resolved: Yes (both seventh-review blockers)
+Findings:
+- [RECOMMENDED] Rule 13; tools spec section 6: move record gaps: a record written before the first baseline, a shift that returns to 0, two moved blocks where one lands on the other's baseline tiles, and tiles edited on a block after it was moved
+- [RECOMMENDED] Edge Cases l.203: still says "A moved block carries its props"; say a block moved with the move tool
+- [RECOMMENDED] Acceptance Criteria (Small fixes stay small): no criterion for a second move adding to the shift, the record dropping past `move_max`, records clearing when `dressed` records a baseline, or tiles edited on a moved block counting as new face
+- [RECOMMENDED] Header: Last Updated and Last Verified are 2026-11-19; the Dependencies row and Visual/Audio text say the art bible does not exist (it does, Draft)
+- [RECOMMENDED] Rules 5, 11, Open Question 2 (carried): no standing-line definition and no rule that edge pieces of one face kind agree to a fraction of a pixel (the art-style room measured a 0.6 px corner step and feet 2 px above the stone); rule 15 and the node-count criterion: 524 nodes is stale (1,681 and 1,493 now) and the "fixed ceiling the ADR sets" has no number
+- [RECOMMENDED] Interactions; Rule 1, Open Question 9 (carried): Pause and menus and Camera read the display base and are not listed; T1 visible gap `2 x trim_overhang_max <= gap_margin` has no criterion; one criterion in Small fixes still bundles conditions
+- [ADVISORY] Player Fantasy absent (advisory at standard). The seventh review's resampling-kernel item is closed: tools spec section 4 defines the box filter, the per-asset profile and the 100 ms target
+Receipt note: hashes are of the working-tree files reviewed; the GDD hash is the revised version.
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/registry/entities.yaml 54ae8bf7a7c531a21947aefc5034f4a369ef81bc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md 8789f9cfab9ccec5b5d3b8aec845e061793ed77b
+Reviewed-Content-Hash: design/gdd/systems-index.md 8a4cf96f8eaa0871e97e0cb8e1717312c3ff05d6
+Reviewed-Content-Hash: design/game-brief.md 56883b7b1e312ae6e2a9404665adf58563994694
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: docs/architecture/terrain-tools-spec.md 0da2fc48e3f2e123901662043132b3d31e1fb658
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: src/player/player.gd 1f9422e7b03bfbf52127055ec5b44dab4ba0c830
+Reviewed-Content-Hash: src/player/player_config.tres 7654ef2ba4121534d4d2e0d1e3ff115d401114f7
+Reviewed-Content-Hash: src/enemies/enemy_base.gd 5fcf5cee27afd58084b73e8cff82ca673a3dac51
+Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+Reviewed-Content-Hash: assets/environment/PACK-README.md 86f99965520d3b65a0a60c4555d0b5d4786b1af8
+Reviewed-Content-Hash: src/test_rooms/art_style_test_room.gd 636770ecb4cbe9e02ace2439486c68c57dc064ad

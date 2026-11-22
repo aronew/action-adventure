@@ -7,7 +7,7 @@
 
 ## Purpose and limits
 
-The terrain pipeline GDD says what must be true: the layout is approved and detected when it changes, trim is never older than its collision, art over a gate edge stays within `trim_overhang_max`, a moved block carries its dressing, flags are recomputed, and release builds ship only Dressed rooms. This spec says how the tools make that true. If the two disagree, the GDD wins and this spec is fixed. Nothing here is a design rule: a change to a value or behaviour the player or designer can observe goes to the GDD first.
+The terrain pipeline GDD says what must be true: the layout is approved and detected when it changes, trim is never older than its collision, art over a gate edge stays within `trim_overhang_max`, a block moved with the editor's move tool carries its dressing, flags are recomputed, and release builds ship only Dressed rooms. This spec says how the tools make that true. If the two disagree, the GDD wins and this spec is fixed. Nothing here is a design rule: a change to a value or behaviour the player or designer can observe goes to the GDD first.
 
 This spec is a draft. Its algorithms are proven by the fixture tests below in the prototype room (GDD Open Question 1), not by review.
 
@@ -54,23 +54,22 @@ This spec is a draft. Its algorithms are proven by the fixture tests below in th
 
 - Three kinds, all recomputed from room data on every run (GDD rule 12): overhang, off-ground, and undressed new ground.
 - A flag's identity is (kind, prop or face id). The editor shows every open flag on the collision overlay. No dismiss action exists.
-- **Setting `dressed`.** It is refused while any flag is open or while the trim is unbaked. Otherwise it records the dressed baseline (section 6) and the room becomes Dressed.
+- **Setting `dressed`.** It is refused while an overhang or off-ground flag is open or while the trim is unbaked. An open undressed-new-ground flag does not block it: recording the baseline closes that flag (GDD rule 12). Otherwise it records the dressed baseline (section 6) and the room becomes Dressed.
 - **Ground check geometry.** Each "reads solid" prop's catalogue entry holds its **walkable line** (a horizontal segment in prop space) and its **body** (an axis-aligned box in prop space). The check compares them with the tile grid after the placed transform.
 
 ## 6. Moved blocks and new face (T5)
 
 - **Baseline.** When `dressed` is set the tool stores a 1-bit-per-tile mask for solid tiles and one for one-way tiles (about 4.5 KB each for a 10-screen room). From the mask it derives the face tiles. The masks are editor-only and stripped from exports.
-- **Diff.** The removed tiles are baseline-solid tiles that are not now solid, and the added tiles are the reverse, computed separately per tile kind. Each set is split into 4-connected groups.
-- **Matching.** A removed group R matches an added group A when they have the same kinds and shape and `A = R + (dx, dy)` with `|dx|, |dy| <= move_max`. The tool considers candidate pairs in increasing `|dx| + |dy|`, then smaller `|dy|`, then smaller `|dx|`, then R's top-left tile in row-major order. Each group is used at most once.
-- **Recompute.** The tool shifts every matched A back by its shift in a virtual copy of the grid, derives face tiles, and computes `new_face = |F_now' \ F_base|`.
-- **Two-row case.** A 6 x 2 ledge moved down one tile appears as one row removed and one row added, two apart. These match with shift (0, 2), and shifting back restores the baseline, so new face is 0.
-- **Carry.** For each matched block:
+- **Move records.** The editor's move operation writes one record per moved block into the room data: the block's baseline tiles, per tile kind, and its total shift since the baseline. A second move of the same block adds to the shift. A record whose shift passes `move_max` on either axis is dropped, and the block counts as new ground. All records are cleared when `dressed` records a baseline. There is no detection from the tile diff: a tile-by-tile repaint, or a move made outside the tool, has no record and counts as new face (GDD rule 13, T5).
+- **Recompute.** The tool shifts each record's block back by its shift in a virtual copy of the grid (its current tiles are the record's baseline tiles plus the shift; any tile of the block's area added or removed since is an ordinary change), derives face tiles, and computes `new_face = |F_now' \ F_base|`.
+- **Two-row case.** A 6 x 2 ledge moved down one tile has a record with shift (0, 1). Shifting it back restores the baseline, so new face is 0 and the carry is one tile.
+- **Carry.** For each recorded block:
   - Props of either kind whose body or walkable line lies within `trim_overhang_max` of the block's tiles in the baseline move with it.
   - Record ranges that lie wholly on the block's faces move with it.
   - Objects whose collision rests on the block move with it.
 
   A range that lies partly on the block is left in place, and the gate check then fails and names it (GDD rule 13). The carry is written in the same save, and the editor's change report lists every carried item with its shift.
-- **Move tool.** The editor's move operation produces exactly the same diff. It is a convenience only, never a separate path.
+- **Move tool.** It is the only path to a move record, so it is part of the pipeline, not a convenience. Moving a block with it carries the items listed under Carry in the same save.
 
 ## 7. Prop catalogue
 
@@ -96,6 +95,7 @@ Moved from the GDD on 2026-11-19. Each is **[Auto]** unless marked.
 - **GIVEN** a room whose layout hash differs from its last bake record, including one never approved, **WHEN** the room-check command runs, **THEN** it re-bakes the room. **GIVEN** a room whose hash and biome match the record, **THEN** it is not re-baked.
 - **GIVEN** a Dressed room whose dressing was changed outside the editor so that a "reads solid" prop covers an edge range by 5 px, **WHEN** the room-check command runs before a release build, **THEN** it raises the flag, writes the cleared `dressed`, and the release export refuses the room by name. **WHEN** the export runs, **THEN** it leaves every room data file byte-identical.
 - **GIVEN** a dev build with an Approved room whose flags are open, **THEN** the room is accepted.
+- **GIVEN** a Dressed room, **WHEN** a block is moved with the move tool, **THEN** a move record (baseline tiles and shift) is written in the same save and cleared when `dressed` is next set. **GIVEN** the same block moved by editing tiles directly, **THEN** no record exists and the change counts as new face.
 - **GIVEN** `player_config.tres:hitbox_size` is changed, **WHEN** the room-check command runs, **THEN** the passage check re-runs on every Approved and Dressed room, and a check that does not declare `hitbox_size` is a cache hit. **GIVEN** an undeclared key changes, **THEN** no check re-runs.
 - **GIVEN** a dry run with `gap_margin` 16, **THEN** it lists every room holding a dash gap as "gate type unbuildable" and writes nothing.
 - **GIVEN** a prop whose source texture changed, **WHEN** the pack is re-imported, **THEN** its mark is cleared and the import asks for it.
