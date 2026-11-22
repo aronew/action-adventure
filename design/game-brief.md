@@ -43,7 +43,7 @@ also what comes later is the bow, and the spell cast that are in my characters a
 
 **Question:** Does the one move set feel good in a fight and in a room for ten minutes? *(guessed)*
 
-**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard (plus one first-minute tutorial foe); normal enemies have health only. Every movement ability opens rooms and adds an attack angle. *(guessed, except the guard rule: you said)*
+**Hooks:** The charged heavy, where the blade is swallowed in light and released in a huge arc, is the guard-breaker. Only bosses and mini-bosses have a guard (plus one first-minute tutorial foe); normal enemies have health only. Every movement ability opens rooms, and some also double as attacks (for example pogo and dash); the rest, such as double jump and wall cling, are pure traversal. *(you said, 2026-11-22: some abilities double as attacks; the examples are guessed; the guard rule: you said earlier)*
 
 **Intent:**
 
