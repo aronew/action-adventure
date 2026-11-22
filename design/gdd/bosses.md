@@ -25,7 +25,7 @@ The boss fight is the concept's signature and the subject of its kill condition:
 
 **Design intent**
 - **Confirmed by the owner (2026-11-22):** the implemented boss ("Region Guardian") **is Brun, the Stacker**, region 1's boss, with placeholder art. Brun's look and any special traits come later; the mini-boss (Keeper Tavik) is a separate foe that does not exist yet.
-- **Confirmed by the owner (2026-11-22):** the fight is **one phase** for now: three patterns and no behaviour changes at health thresholds. Phases may be considered after the kill-condition playtest.
+- **Changed by the owner after the first playtest (2026-11-22):** the fight is to become **three stages**, with no health bar (progress is read from the boss's behaviour), each stage ended by a guard-break. Stage 2 adds falling hazards and stage 3 adds small enemies. The boss was found "super easy" with one phase and three slow patterns. The code is still one phase; see "Planned: three stages" below. This replaces the earlier "one phase for now" intent.
 - **Confirmed by the owner (2026-11-22):** the next pattern is chosen **at random** among those in range, never the same twice in a row, for now; each pattern is telegraphed so it can be read. A fixed or weighted order is a tuning option after the playtest.
 - **Confirmed by the owner (2026-11-22):** the shockwave is a **jump check**: only a jump avoids it (the dash has no invulnerability). Story 005's "jump or dash" wording is outdated.
 - **From the brief and story 005:** beating the boss sets a flag and play goes on, with no completion screen (owner, 2026-11-18); the fight uses only the Seeker's combat kit; the Seeker dying resets the boss and restarts the fight.
@@ -70,6 +70,26 @@ When the cooldown is clear: the candidates are the patterns whose distance range
 - **Health and guard.** 600 health; the guard is built from the boss's own fields (100 meter, x0.2 guarded damage, 4.0 s stagger, 1.5 s recovery, regeneration after 3.0 s at 10 per s; see `guard-break.md`).
 - **Body and movement.** A 56 x 84 body, chase speed 55; it never leaves the ground and does not climb.
 - **Death.** 1.2 s fade, a 0.25 s game slowdown to 5%, a camera shake of 7 px for 0.4 s, 60 fragments.
+
+### Planned: three stages (owner, 2026-11-22; not built)
+
+Reference: the owner pointed to Hollow Knight, where a boss shows its stages by what it does, not by a health bar, and a player usually needs 3 or 4 attempts to learn its moves. A secondary design write-up (wiki-sourced, unverified) describes a four-beat loop (reset and position, tell, short threat, punish) and later stages that compress recoveries or layer hazards instead of adding random moves.
+
+**Confirmed by the owner (2026-11-22):**
+- **Three stages.**
+- **A stage ends on a guard-break count:** stage 1 ends at the first guard-break and stage 2 at the second. The guard-break stays the fight's signature move.
+- **No health bar.** The player reads progress from the boss's behaviour. The arena's health and guard bars are placeholders and would go.
+- **Stage 2 adds falling hazards; stage 3 adds small enemies** (one new element per stage).
+- **Design target:** a player needs about 3-4 attempts to learn the moves and beat the boss.
+- **A healing system is wanted** (Healing, index row 27, a meter filled by landing hits). The boss must be tuned together with it.
+
+**Proposed, not yet decided (needs the owner):**
+- Falling hazards are marked by dust about 1 s before they land; the hazard theme could follow the boss's name (kiln bricks, "the Stacker").
+- Stage 2 also shortens the recoveries; stage 3 chains patterns (for example lunge into slam).
+- A visible change at each stage transition (a roar, a new look) so the stage is readable without a bar.
+- Stage 3's small enemies reuse the Enemies base and config.
+
+`INTENT UNKNOWN`: what happens to the guard meter and the boss's health across a stage change, whether the stage transition replaces the stagger window or follows it, and whether the guard-break threshold changes with each stage.
 
 ### The arena (`BossArena`, test room)
 
@@ -166,10 +186,14 @@ Verification: **Logic** unless marked; an integration scene with a stepped physi
 9. **AC-9 Cooldown.** 0.6 s passes between a pattern's recovery and the next wind-up.
 10. **AC-10 Defeat.** At zero health: `died` once, `boss_defeated` once, `is_boss_defeated` true, no completion screen, the death slowdown returns to 1.0.
 11. **AC-11 Reset.** The Seeker's death reloads the arena with the boss at full health and not yet engaged (stand-in).
-12. **AC-12 Single phase.** The boss's patterns, ranges and timings are the same at 600 and at 50 health (records confirmed intent).
+12. **AC-12 Single phase (current behaviour).** The boss's patterns, ranges and timings are the same at 600 and at 50 health. *Documents today's code; replaced by AC-16 to AC-19 when the stages are built.*
 13. **AC-13 Data-driven (Config).** Every number above comes from `boss_config.tres`.
 14. **AC-14 Persistence (open).** `boss_defeated` survives save and load, and the boss stays defeated; the reward pickup stays in the room until collected.
-15. **AC-15 Kill condition (playtest, Visual/Feel).** After two tuning rounds the owner completes the guard-break fight without prompting and would keep playing (the concept's pass test). Evidence in `production/qa/evidence/`.
+15. **AC-15 Kill condition (playtest, Visual/Feel).** After two tuning rounds the owner completes the guard-break fight without prompting and would keep playing (the concept's pass test). Evidence in `production/qa/evidence/`. First playtest 2026-11-22: beaten, found too easy, stages requested (tuning round 1).
+16. **AC-16 Stage 1 to 2 (planned).** The first guard-break ends stage 1; from the next wind-up the boss is in stage 2 and the falling hazards are active.
+17. **AC-17 Stage 2 to 3 (planned).** The second guard-break ends stage 2; stage 3's small enemies appear.
+18. **AC-18 No health bar (planned).** No boss health or guard bar is shown; each stage change has a visible and audible cue.
+19. **AC-19 Learnability (playtest, planned).** A new player beats the boss in 3-4 attempts, and can say after each attempt what killed them (the owner's target, measured over three playtests).
 
 ---
 
@@ -180,5 +204,6 @@ Verification: **Logic** unless marked; an integration scene with a stepped physi
 - **Kill condition.** Run the pass test and up to two tuning rounds on this fight (guard values in `guard-break.md`, patterns here). The concept drops or redesigns the guard-break if it still fails.
 - **Reward and persistence.** Wire the defeat flag to world state and the reward pickup; replace the reload with the save-point respawn.
 - **Distance gaps.** `INTENT UNKNOWN`: whether the walk-closer behaviour at 64-200 px after a lunge and at 200-220 px is intended.
-- **Patterns after the playtest.** Random choice, one phase and the three patterns are all open to change once the fight has been played.
+- **Stages.** Build the three-stage fight (guard-break count, falling hazards, small enemies, stage cues, no health bar) after the Healing system is designed; tune for 3-4 attempts to learn.
+- **Patterns after the playtest.** Random choice and the three patterns are open to change once the stages have been played; the playtest found the first version too easy (long wind-ups and recoveries, a one-hit charged heavy break, a 4 s stagger).
 - **Tests.** Make the pattern choice seedable and pin AC-1 to AC-13 (`/test-setup`).

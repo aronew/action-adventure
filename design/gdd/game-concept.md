@@ -74,6 +74,7 @@ ordinary enemies have health only.
 3. Guard-break on bosses, mini-bosses and the tutorial foe
 4. Ability-gated world with rooms, doors, save points and a grid map
 5. Collectible upgrades
+6. Healing: a meter filled by landing hits; the Seeker can heal when it is full, as in Hollow Knight (owner, 2026-11-22; rules undecided, see Open Questions)
 
 ---
 
@@ -267,12 +268,15 @@ Source: `design/art/art-bible.md` (Draft, 2026-11-20), Section 1.
 ### Scope Risks
 - There is no fixed deadline (owner, 2026-11-22), but 8 regions is 24-36+ months solo and as a first game. The Vertical Slice (region 1) is the commit point; regions 2-8 are provisional until it is played.
 - Replacing pack art with own art adds work.
+- A heal meter (owner, 2026-11-22) is a new system on top of the built set (it touches combat, the controller and guard-break), and boss stages (three, each ended by a guard-break) add build and tuning work.
 
 ### Open Questions
 - Does the move set feel good for ten minutes in a room and a fight? Answer with the MVP pass test above.
 - Does the guard-break fight hold up in one arena? Answer with the MVP pass test and the two-round kill condition above.
 - Does the grapple also hit? Pogo and dash do; double jump and wall cling do not (pillar 4). Owner to decide before the grapple gates are tuned.
 - Shops or currency: allowed only as a convenience, never in place of a found reward (anti-pillar 2). Whether any exist is undecided.
+- Healing (owner, 2026-11-22: a meter filled by landing hits, heal when full): meter size, gain per hit, heal amount, channel time and the risk while healing, whether hits on a guarded foe count, whether it fills in a boss fight, and whether it empties on death. To be designed with `/design-system healing`.
+- Boss stages (owner, 2026-11-22): the first boss is to have three stages, each ended by a guard-break, with falling hazards in stage 2 and small enemies in stage 3; see `design/gdd/bosses.md`.
 
 ---
 
@@ -282,7 +286,7 @@ Source: `design/art/art-bible.md` (Draft, 2026-11-20), Section 1.
 
 **Pass test** (owner, 2026-11-22): the owner plays the MVP build for 10 minutes. Pass = the owner completes one guard-break without prompting and says they would keep playing. Anything else is a fail, and the owner records what felt wrong.
 
-**Kill condition** (from `design/game-brief.md`): if the guard-break fight is not fun in one arena after **two tuning rounds** (a round = change the numbers or the telegraphs, then replay the pass test), drop or redesign the guard-break. Not yet checked as of 2026-11-22.
+**Kill condition** (from `design/game-brief.md`): if the guard-break fight is not fun in one arena after **two tuning rounds** (a round = change the numbers or the telegraphs, then replay the pass test), drop or redesign the guard-break. First playtest 2026-11-22 (owner, boss arena): the boss was beaten and found far too easy, and the owner asked for a Hollow Knight-style multi-stage fight and a heal meter. Recorded as input to tuning round 1 (redesign into stages), not as a pass or a fail; whether the owner would keep playing was not stated.
 
 **Status (re-baselined 2026-11-22)**: the MVP was written after the build had passed it. Per `design/gdd/systems-index.md`, stories 001-006 built the controller, melee, guard-break, three enemy types, one boss and two gated abilities (double jump and grapple in code). The 10-minute pass test has **not** been run; it is owed to the owner and is the first thing to record. The kill condition is still unchecked.
 
