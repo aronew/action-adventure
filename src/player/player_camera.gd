@@ -11,6 +11,11 @@
 class_name PlayerCamera
 extends Camera2D
 
+## One screen of the world is this tall in game px; the zoom is the base canvas height
+## divided by it (4 at the 1080 base), so every length in the GDDs stays game px
+## (docs/architecture/adr-0002-display-base-and-camera-zoom.md).
+const GAME_SCREEN_HEIGHT := 270.0
+
 var _player: Player
 var _lead := Vector2.ZERO
 var _dip := 0.0
@@ -23,6 +28,8 @@ var _shake_left := 0.0
 ## camera is a child of the player and the player is in the tree.
 func setup(target: Player) -> void:
 	_player = target
+	var base_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	zoom = Vector2.ONE * (base_height / GAME_SCREEN_HEIGHT)
 	position_smoothing_enabled = true
 	position_smoothing_speed = target.config.camera_smoothing_speed
 	limit_smoothed = true

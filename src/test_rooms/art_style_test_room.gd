@@ -1,7 +1,8 @@
 ## Art-style test room (throwaway): the painted Cinderheart Caldera art at full
 ## resolution around the pixel-art Seeker drawn at 4x. Built in code so the .tscn only
-## attaches this script. It changes nothing outside itself: the window's content scale
-## is switched to 1920x1080 here, at runtime, and the project settings stay as they are.
+## attaches this script. The display is the project's (1920x1080 base, canvas_items
+## stretch, docs/architecture/adr-0002-display-base-and-camera-zoom.md); the camera's zoom
+## comes from PlayerCamera.
 ##
 ## How the two styles meet: gameplay keeps its pixel units (the Seeker is 22 px tall, a
 ## screen is 480x270 world px), the camera zooms 4x, and the window renders 1920x1080.
@@ -23,8 +24,6 @@ extends Node2D
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
 const BIOME := "res://assets/environment/cinderheart-caldera/"
-const RENDER_SIZE := Vector2i(1920, 1080)
-const ZOOM := 4.0
 const VIEW_SIZE := Vector2(480, 270)
 const SPAWN_POINT := Vector2(96, 260)
 const TERRAIN_COLOR := Color(0, 0, 0)
@@ -404,10 +403,6 @@ var _lit_props: Array[Sprite2D] = []
 
 
 func _ready() -> void:
-	var window := get_window()
-	window.content_scale_size = RENDER_SIZE
-	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
 	_room_size = Vector2(grid[0].length(), grid.size()) * CELL
 
@@ -455,7 +450,6 @@ func _ready() -> void:
 	add_child(player)
 	var camera := PlayerCamera.new()
 	_camera = camera
-	camera.zoom = Vector2(ZOOM, ZOOM)
 	camera.limit_left = 0
 	camera.limit_top = 0
 	camera.limit_right = int(_room_size.x)

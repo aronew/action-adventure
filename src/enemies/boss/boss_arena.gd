@@ -30,22 +30,22 @@ const ARENA_SIZE := Vector2(960, 270)
 const RELOAD_DELAY := 1.0
 const BACKGROUND_COLOR := Color(0.1, 0.09, 0.14)
 const SOLID_COLOR := Color(0.32, 0.3, 0.4)
-const HELP_POSITION := Vector2(4, 256)
+const HELP_POSITION := Vector2(4, 256) * DebugHud.SCALE
 const HELP_TEXT := "Move arrows/WASD  Jump Space/Z  Dash Shift/C  Attack X (hold: heavy)\nGuarded, the boss shrugs hits off.\nBreak its guard (a charged heavy does it at once), then hit hard."
-const FONT_SIZE := 8
+const FONT_SIZE := DebugHud.FONT_SIZE
 
-const PLAYER_BAR_POSITION := Vector2(4, 4)
-const PLAYER_BAR_SIZE := Vector2(100, 6)
+const PLAYER_BAR_POSITION := Vector2(4, 4) * DebugHud.SCALE
+const PLAYER_BAR_SIZE := Vector2(100, 6) * DebugHud.SCALE
 const PLAYER_HEALTH_COLOR := Color(0.85, 0.25, 0.25)
 const BAR_BACK_COLOR := Color(0.1, 0.1, 0.1)
-const BOSS_BAR_POSITION := Vector2(200, 11)
-const BOSS_BAR_SIZE := Vector2(200, 7)
+const BOSS_BAR_POSITION := Vector2(200, 11) * DebugHud.SCALE
+const BOSS_BAR_SIZE := Vector2(200, 7) * DebugHud.SCALE
 const BOSS_HEALTH_COLOR := Color(0.75, 0.2, 0.3)
-const GUARD_BAR_POSITION := Vector2(200, 20)
-const GUARD_BAR_SIZE := Vector2(200, 5)
-const BOSS_NAME_POSITION := Vector2(200, 0)
-const BOSS_HEALTH_TEXT_POSITION := Vector2(404, 8)
-const GUARD_TEXT_POSITION := Vector2(404, 17)
+const GUARD_BAR_POSITION := Vector2(200, 20) * DebugHud.SCALE
+const GUARD_BAR_SIZE := Vector2(200, 5) * DebugHud.SCALE
+const BOSS_NAME_POSITION := Vector2(200, 0) * DebugHud.SCALE
+const BOSS_HEALTH_TEXT_POSITION := Vector2(404, 8) * DebugHud.SCALE
+const GUARD_TEXT_POSITION := Vector2(404, 17) * DebugHud.SCALE
 ## Indexed by [enum GuardComponent.State]: GUARDED, BROKEN, RECOVERING.
 const GUARD_STATE_TEXT: Array[String] = ["GUARDED", "BROKEN", "RECOVERING"]
 const GUARD_STATE_COLORS: Array[Color] = [Color(0.4, 0.65, 1.0), Color(1.0, 0.85, 0.2),
@@ -128,7 +128,7 @@ func _build_hud() -> void:
 	var hud := CanvasLayer.new()
 	_add_label(hud, HELP_POSITION).text = HELP_TEXT
 	_player_fill = _add_bar(hud, PLAYER_BAR_POSITION, PLAYER_BAR_SIZE, PLAYER_HEALTH_COLOR)
-	_player_status = _add_label(hud, PLAYER_BAR_POSITION + Vector2(PLAYER_BAR_SIZE.x + 6.0, -4.0))
+	_player_status = _add_label(hud, PLAYER_BAR_POSITION + Vector2(PLAYER_BAR_SIZE.x + 6.0 * DebugHud.SCALE, -4.0 * DebugHud.SCALE))
 
 	_boss_hud = Control.new()
 	_boss_hud.visible = false

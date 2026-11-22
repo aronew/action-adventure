@@ -2,8 +2,8 @@
 
 > **Status**: Draft (approved by the project owner 2026-11-18; director gates skipped, review mode lean)
 > **Created**: 2026-11-18
-> **Last Updated**: 2026-11-19
-> **Source Concept**: design/game-brief.md (no game-concept.md; the brief is the design record up to this point)
+> **Last Updated**: 2026-11-22
+> **Source Concept**: design/gdd/game-concept.md (Draft, revised 2026-11-22 after its design review); design/game-brief.md stays the record of the owner's own statements
 > **Research**: design/research/metroidvania-world-design.md and research_notes/Metroidvania world design research/
 
 ---
@@ -27,14 +27,14 @@ Notes by area (balanced density):
 
 | # | System Name | Category | Priority | Status | Design Doc | Depends On |
 |---|-------------|----------|----------|--------|------------|------------|
-| 1 | Player controller and input | Core | MVP | Implemented (no GDD) | — (brief) | — |
+| 1 | Player controller and input | Core | MVP | Reverse-documented 2026-11-22 (controller and input only; 4 intents confirmed by the owner, rest INTENT UNKNOWN; dash and wall-cling ownership planned, not built; door-entry invulnerability gap vs the rooms GDD); design review owed | design/gdd/player-controller.md | Terrain pipeline (solid geometry) |
 | 2 | Camera | Core | MVP | Implemented (follow, look-ahead, shake); room framing not started | — (brief) | Player controller |
 | 3 | Rooms and transitions (inferred) | Core | MVP | Approved (fifth design review 2026-11-19, lean: APPROVED, 0 blockers; the exit lip holds against player.gd; 13 recommended revisions open (4 new: box centre vs the feet origin, unreachable corner tie, door `interact` action and ENTER_DOOR invulnerability as a controller need, shut-line landing refreshes air moves; 9 carried from the fourth review). Fourth design review 2026-11-19, lean: NEEDS REVISION, 1 blocker revised (the minimal overhang made the crossing frame hit solid, so a dash ended, a fall exit refilled the air moves and a jump lost its upward speed; owner: exit lip one frame of travel deeper, 12 px side and 24 px fall/rise, carved by the room build; carried state re-derived from contact; invulnerable and input locked during EnterDoor, 2.07 s door trip); 16 recommended revisions (7 fixed this session, 9 open: retired-id records, corner tie, perpendicular shut openings, residency cancel path and three-biome wording, arrival safety, graph edge attributes, camera zone ACs and R5 save-point arrivals, Tuning Knobs, compound ACs; plus registry referenced_by and terrain naming the lip). Third design review 2026-11-19, lean: NEEDS REVISION, 2 blockers revised (owner: exit overhang beyond the bounds per axis, 6 px side and 12 px fall/rise, so the centre-at-the-line crossing can fire; the transition-freeze AC scoped around the swap); prior blockers held; 14 recommended revisions open (11 carried, 3 new: AC holds build_time, R2 range and EnterDoor 1.62 s timing, same-room door rebuild). Second design review 2026-11-19, lean: NEEDS REVISION, 2 blockers revised (owner: apron reaches the arrived box's far edge, per axis, 18 px side and 24 px fall/rise; two ACs scoped to the fade-in); prior 4 blockers held; 7 recommended revisions open (retired-id records, corner tie, shut openings in the fade-in, carried-over residency/arrival safety/graph/camera/death-state items, R5 save-point arrivals, stale World state line, Tuning Knobs). First design review 2026-11-19, lean: NEEDS REVISION, 4 blockers revised (owner: freeze the world at the crossing frame, arrive `exit_rearm` px inside, openings shut until the fade-in ends; `build_time` in R3, budget 0.10 s, 0.45 s total; authored object ids, unique per room; R5 bounds falls by `fast_fall_speed` 640); 8 recommended revisions open (residency cancel path and free-before-load, arrival safety, graph edge attributes, camera zones and shake, death-state crossing, weak ACs, fade-sum cap and Tuning Knobs, stale line on World state)) | `design/gdd/rooms-and-transitions.md` | Player controller, Camera, Terrain pipeline, World state (soft) |
 | 4 | Terrain pipeline (inferred) | Core | MVP | Approved (eighth design review 2026-11-22, lean, of the revised GDD and tools spec: APPROVED, 0 blockers, 6 recommended open: move record gaps (before the first baseline, a zero shift, overlapping blocks, tiles edited after a move) with no criteria; Edge Cases l.203 wording; stale header dates; carried: standing line and 0.6 px edge agreement, stale 524-node figure and no ceiling number, Pause and menus and Camera missing from Interactions, no criterion for `2 x trim_overhang_max <= gap_margin`, one bundled criterion. Both seventh-review blockers held: the undressed-ground flag no longer blocks `dressed`, and a moved block's shift comes from the editor's move tool via a move record, a repaint counting as new ground. Seventh design review 2026-11-21: NEEDS REVISION, 2 blockers 2026-11-21, lean, of the restructured GDD and the tools spec: NEEDS REVISION, 2 blockers, 6 recommended. Blockers: the undressed-ground flag deadlocks `dressed` (rule 12 and tools spec section 5 refuse `dressed` while any flag is open, but rule 13 and the criterion at l.348 clear that flag by setting `dressed`); a moved block's shift is wrong for any block thicker than its move (T5 matches removed and added tile strips, so a 6 x 2 ledge moved down one tile matches at shift (0, 2) and its props, records and objects are carried by the wrong amount; every criterion uses a 1-tile-thick ledge). Recommended: a standing line and piece-agreement rule for baked trim (the art-style room found a 0.6 px corner step and feet 2 px above the stone), node counts (now 1,681 and 1,493, not 524) and a provisional ceiling, the display base and Pause and menus and Camera as consumers, T3 method and bake time, split bundled criteria. Four of the sixth review's six blockers confirmed resolved. Frozen until the prototype room runs its fixtures (Open Question 1). Earlier: In Review (sixth design review 2026-11-19, full: MAJOR REVISION NEEDED, 6 blockers (T3 failed at concave corners; T5 "mass" undefined so attached ledges never moved; a one-tile move flagged props and stranded records; `dressed` deadlocked on the stored flag; T3 units undefined; spawn points fingerprinted but not in rule 13), all revised the same day by restructuring: guarantees stay in the GDD, mechanics moved to `docs/architecture/terrain-tools-spec.md`. GDD frozen until the prototype room runs its fixtures; re-review after that)) | design/gdd/terrain-pipeline.md | — |
-| 5 | Combat | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller, Health/damage/death |
-| 6 | Guard-break | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat |
-| 7 | Enemies | Gameplay | MVP | Implemented (no GDD) | — (brief) | Combat, Health/damage/death |
-| 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Implemented (boss only, no GDD) | — (brief) | Guard-break, Enemies |
+| 5 | Combat | Gameplay | MVP | In Review: reverse-documented 2026-11-22 (melee only; 3 intents confirmed by the owner, rest INTENT UNKNOWN; dash attack planned, not built); first design review 2026-11-22 (lean): NEEDS REVISION, 3 blockers revised the same day (fall-cap and charge-origin wording, lock criterion), 8 recommended items revised or open; re-review owed | design/gdd/combat.md | Player controller (the code has no Health dependency) |
+| 6 | Guard-break | Gameplay | MVP | Reverse-documented 2026-11-22 (component and boss only; 4 intents confirmed by the owner, rest INTENT UNKNOWN; tutorial foe, mini-boss and shatter effects not built); design review owed | design/gdd/guard-break.md | Combat |
+| 7 | Enemies | Gameplay | MVP | Reverse-documented 2026-11-22 (normal enemies only; 4 intents confirmed by the owner; chase leash, spawn-point return, return delay and named-foe persistence required by other GDDs and not built; placeholder art); design review owed | design/gdd/enemies.md | Combat, Health/damage/death; World state (soft) |
+| 8 | Bosses (mini-boss support inferred) | Gameplay | MVP | Reverse-documented 2026-11-22 (one boss, three patterns, placeholder art; 4 intents confirmed by the owner; mini-boss, reward, persisted defeat flag, save-point respawn and a real boss room not built; kill-condition playtest owed); design review owed | design/gdd/bosses.md | Guard-break, Enemies; World state (soft) |
 | 9 | Ability gating | Progression | MVP | Approved (fifth design review 2026-11-21, lean: APPROVED, 0 blockers, 11 recommended open: 5 new (`pogo_dj_reach` rests on a 24-55 px contact, the grunt's height, while the brute's 34 px body reaches about 162 px, so the F7 band, not wall height, is the guard; rules 10 and 14, Visual/Audio and criterion 465 predate the art bible's shared key colours and glaze-band `no_cling`; stale "no GDD exists" dependency statements; F6 boundary criteria at 162 and `dj_hop_max`; `sweep_max_moves` per kit) and 6 carried from the fourth review. The key order change and `cling_wall_min` 165 (168 on the grid) recompute and no gate leaks). Was: In Review: key order changed by the owner 2026-11-20 (dash region 1, double jump region 2, wall cling region 3, grapple region 4; was dash and wall cling in region 1, grapple region 3), revised in the `/art-bible` follow-up; re-review owed. Was: Approved (fourth design review 2026-11-19, lean: APPROVED, 0 blockers, 7 recommended revisions open (F11 skip bound to add `far_face_extra`; F3a arrival pose and swept-box pull check; split the sweep AC; release-time AC to state 141 ± 10 px; grapple chain one-way, say so; `grapple_margin` start value; dash bisque vs reserved orange); F11 reach table independently re-simulated from `player.gd` and reproduced within about 1.5 px. Third design review 2026-11-19: NEEDS REVISION, 1 blocker revised (F11 reach table re-simulated from the code: the release ends after `grapple_release_time` 0.08 s, then ordinary air physics; reaches about 40% shorter, example chain now 140/310 px); owner decisions: last flight lands with no input, release time a config knob, F3a adds `ledge_nudge` (126 px); awaiting re-review. Second design review 2026-11-19: NEEDS REVISION, 3 blockers revised (pogoable spikes: F1 hazard floor at hazard_pit_depth_min 84, F3b kill plane only; climb restores air moves, no climbable in a grapple gate's flight envelope; F11 reaches by anchor height, old example chain rejected); awaiting re-review; code: double jump and grapple only) | design/gdd/ability-gating.md | Player controller, World state, Combat; supplies Terrain pipeline its `no_cling` and pane materials |
 | 10 | Health, damage and death (inferred) | Gameplay | MVP | Implemented (no GDD) | — (brief) | Player controller |
 | 11 | Bow | Gameplay | Alpha | Not Started | — | Player controller, Combat |
@@ -131,7 +131,7 @@ Why these tiers: the brief's last unticked feature (rooms, doors, saves, grid ma
 
 ## Recommended Design Order
 
-Systems that are already implemented but have no GDD (1, 2, 5-8, 9, 10, 20, 24; the camera's room framing is covered by order 2) are not in this order: they work and were played; write GDDs for them later with `/reverse-document` if wanted.
+Systems that are already implemented but have no GDD (1, 2, 5-8, 10, 20, 24; the camera's room framing is covered by order 2) are not in the numbered order below, which stays stable because other documents cite it. They are listed after it as R1-R9 (2026-11-22, after the concept and the 2026-11-22 gate check named combat, guard-break, enemies, bosses and the controller as missing GDDs).
 
 | Order | System | Priority | Layer | Agent(s) | Est. Effort |
 |-------|--------|----------|-------|----------|-------------|
@@ -154,6 +154,22 @@ Systems that are already implemented but have no GDD (1, 2, 5-8, 9, 10, 20, 24; 
 | 17 | Fast travel | Full Vision | Feature | level-designer | S |
 
 Level design (5) may start earlier than its order if the owner wants: its inputs (rooms, terrain, gating, world state) are small. The research report already supplies its metrics and key order.
+
+### Built systems with no GDD (R1-R9)
+
+Write these from the code with `/reverse-document`, using `/design-system` only where a rule is still undecided. Order within the table is the order to write them. Efforts are rough; producer to verify.
+
+| Doc | System (index #) | Priority | Pillar or anti-pillar served | Agent(s) | Est. Effort |
+|-----|------------------|----------|------------------------------|----------|-------------|
+| R1 | Combat (5) | MVP | P1 Movement Is the Mastery, P4 Two Jobs | game-designer, gameplay-programmer | M |
+| R2 | Guard-break (6) | MVP | P1, P4 (the hook, and the kill condition) | game-designer, systems-designer | M |
+| R3 | Player controller and input (1) | MVP | P1 | gameplay-programmer | M |
+| R4 | Enemies (7) | MVP | Anti-pillar 1: health only, no guards | game-designer, ai-programmer | M |
+| R5 | Bosses, mini-boss support inferred (8) | MVP | P2 Every Gate Is a Promise, anti-pillar 3 | game-designer | M |
+| R6 | Health, damage and death (10) | MVP | P1 (recovery from failure) | game-designer | S |
+| R7 | Camera (2) | MVP | P1, P5 A Place Worth Running Through | gameplay-programmer | S |
+| R8 | Hit feedback and effects (24) | MVP | P5 (art bible Principle 3, combat owns the light) | technical-artist | S |
+| R9 | HUD (20) | MVP | P5 (readability) | ux-designer, ui-programmer | S |
 
 ---
 
@@ -183,11 +199,12 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 |--------|-------|
 | Total systems identified | 26 |
 | Design docs started | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades, pause and menus) |
-| Design docs reviewed | 9 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades) |
-| Design docs approved | 9 (level design, ability gating, terrain pipeline, rooms and transitions, world state, grid map, save points, collectible upgrades, parallax lighting and atmosphere) |
+| Design docs reviewed | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, save points, grid map, parallax lighting and atmosphere, collectible upgrades, pause and menus) |
+| Design docs approved | 10 (level design, ability gating, terrain pipeline, rooms and transitions, world state, grid map, save points, collectible upgrades, parallax lighting and atmosphere, pause and menus) |
+| Built systems still without a GDD | 4 (R6-R9 above; R1-R5 Combat, Guard-break, Player controller, Enemies and Bosses reverse-documented 2026-11-22, review owed) |
 | Systems already implemented, in whole or part (no GDD) | 10 (1, 2, 5, 6, 7, 8, 9, 10, 20, 24) |
 | MVP systems designed | 7/16 (terrain pipeline, ability gating, level design, rooms and transitions, world state, grid map, save points approved) |
-| Vertical Slice systems designed | 3/4 (collectible upgrades approved; parallax, lighting and atmosphere approved; pause and menus in review, second review revised) |
+| Vertical Slice systems designed | 3/4 (collectible upgrades approved; parallax, lighting and atmosphere approved; pause and menus approved, third review 2026-11-21) |
 
 ---
 
@@ -195,6 +212,9 @@ Level design (5) may start earlier than its order if the owner wants: its inputs
 
 - [x] Review and approve this systems enumeration (owner, 2026-11-18)
 - [x] Level design GDD drafted (2026-11-18), awaiting `/design-review` in a fresh session
+- [x] `design/gdd/game-concept.md` written and design-reviewed 2026-11-22 (NEEDS REVISION, 2 blockers revised, re-review owed)
+- [ ] Write GDDs for the built systems R1-R9, combat and guard-break first (`/reverse-document`)
+- [ ] Run the concept's MVP pass test (owed to the owner; not a design task)
 - [ ] Design the remaining MVP systems in the order above (`/design-system [name]`)
 - [x] Provide the lore, so level design and the mentor/hub pact can use it (done 2026-11-18: The Kiln City, in design/narrative/)
 - [ ] Run `/design-review` on each completed GDD

@@ -64,6 +64,16 @@ state_ownership:
       - docs/architecture/adr-0001-terrain-collision-build.md
     added: 2026-11-22
     revised: ""
+  - state: camera_zoom
+    status: active
+    owner_system: camera
+    adr: docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    interface: "PlayerCamera.setup() sets zoom to the base canvas height / 270 (4 at a 1080 base); derived, fixed during play, never a tunable"
+    write_access: camera-only   # no other node sets a camera zoom or a content scale
+    referenced_by:
+      - docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    added: 2026-11-22
+    revised: ""
 
 # Example:
 #
@@ -184,6 +194,16 @@ api_decisions:
       - docs/architecture/adr-0001-terrain-collision-build.md
     added: 2026-11-22
     revised: ""
+  - purpose: display_scaling
+    status: active
+    api: "base 1920 x 1080, stretch canvas_items, aspect keep, scale_mode fractional, Camera2D zoom 4, 2D snap settings on"
+    not: "viewport stretch at 480 x 270, or scaling world nodes by 4"
+    adr: docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    reason: "Painted art renders at window resolution while world units, collision and GDD lengths stay game px."
+    referenced_by:
+      - docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    added: 2026-11-22
+    revised: ""
 
 # Example:
 #
@@ -227,6 +247,24 @@ forbidden_patterns:
     description: "A collision shape must not carry a face material; read it through Terrain.face_materials after checking the collider is the terrain body."
     why: "Materials are per face segment and may differ on the two sides of a wall; a shape or body property cannot express that."
     adr: docs/architecture/adr-0001-terrain-collision-build.md
+    added: 2026-11-22
+  - pattern: script_set_content_scale
+    status: active
+    description: "No script may set content_scale_size, content_scale_mode or content_scale_stretch; the display settings live in project.godot only."
+    why: "A runtime override hides the project's real display setup and fights the stretch settings."
+    adr: docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    added: 2026-11-22
+  - pattern: scale_world_to_match_display
+    status: active
+    description: "World nodes must be authored in game px and never scaled to match the display; the camera zoom does that."
+    why: "Scaling nodes breaks the 6 px collision and every GDD length."
+    adr: docs/architecture/adr-0002-display-base-and-camera-zoom.md
+    added: 2026-11-22
+  - pattern: canvas_layer_scale_for_fonts
+    status: active
+    description: "UI must be authored in 1920 x 1080 canvas px at CanvasLayer scale 1; a layer scale must not magnify small fonts."
+    why: "The text is rasterised small and magnified: blocky, and mangled at fractional window scales."
+    adr: docs/architecture/adr-0002-display-base-and-camera-zoom.md
     added: 2026-11-22
 
 # Example:

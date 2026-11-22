@@ -1,7 +1,7 @@
 # ADR-0001: Terrain collision is built from the room grid, one shape per face segment
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-11-22
@@ -59,7 +59,7 @@ The terrain GDD fixes what must be true of room collision: a 6 px grid of solid,
 The grid is the only authority; collision is derived from it every time a room is built and is never saved.
 
 1. **The painted grid.** Rooms are painted in a `TileMapLayer` with a 6 x 6 `TileSet` of two tiles, solid and one-way, and **no physics layer**. The layer must also set `collision_enabled = false` (it defaults to true), so a physics layer added to the `TileSet` later cannot silently create per-tile shapes. Everything else the GDD calls room data (face material overrides, placement records, `crack` marks, the dressed baseline, move records, the production state) lives in one `RoomTerrainData` resource on the room root, because a tile's custom data is per tile and a face material is per face. Cells outside the grid count as solid for exposure (no face is made at the grid edge); the author paints the room's border cells solid, and an exit is a gap of empty cells in that border.
-2. **Faces.** One pass over the grid finds every exposed face segment: a maximal run of one material and one tile kind along one face. A solid cell's side is exposed when its neighbour is empty; a one-way cell has only its top face, and it is exposed only when the cell above it is empty. A one-way cell under another one-way cell or on top of a solid cell has no face and no shape.
+2. **Faces.** One pass over the grid finds every exposed face segment: a maximal run of one material and one tile kind along one face. A solid cell's side is exposed when its neighbour is empty; a one-way cell has only its top face, and it is exposed only when the cell above it is empty. A one-way cell with a solid or one-way cell above it has no face and no shape; one resting on a solid cell keeps its top face.
 3. **Collision is built at room build.** `TerrainBuilder.build()` makes one `RectangleShape2D` per face segment, as an **overlapping strip** running inward from the segment: its length is the segment's, its depth is the smaller of `skin_tiles` (4) and the thinnest solid depth beneath the segment (at least one tile). Strips may overlap each other at corners; overlap is harmless to collision. So shapes equal face segments by construction and every segment lies inside exactly one shape (T4, rule 15). The interior is not built.
    - Solid strips go in one `StaticBody2D` (physics layer 1).
    - One-way strips (one tile deep, `one_way_collision = true`) go in a **second** `StaticBody2D`, so a drop-through can disable one body or one layer without dropping the player through solid ground (specialist run: a collision exception on a shared body drops the body through the solid part too).
@@ -184,6 +184,12 @@ No terrain code exists yet. The existing test rooms build their own rectangle sh
 - The seam criterion on a built room at the five listed speeds (displacement within 0.5 px per frame, distance from the face within 1 px), plus the corner cases listed under Risks, one assertion for axis-aligned normals, and a zero-gap placement case.
 - A builder run from a real `TileMapLayer` of 36,000 cells within 20 ms on the owner's machine, and a checkerboard worst case recorded.
 - The spikes re-run on every engine upgrade.
+
+## Open verification items at acceptance
+Accepted 2026-11-22 by the project owner, before these ran; each must be closed by the first terrain story that builds a room, and a failure reopens this decision:
+- The GDD's corner and seam criteria on a built room. Run 2026-11-22 in the terrain test room with the real Seeker (`tests/integration/terrain/terrain_room_walk_test.gd`, 6 passes): walking off a ledge lip, sliding down a flush pillar-and-block face, an inside corner (floor against a wall), a head against a ceiling block, up through a one-way platform, and the face lookup down a wall that turns `no_cling`; a mutated builder (strips shifted 1 px) fails two of them. Axis-aligned normals are asserted in `tests/integration/terrain/built_room_test.gd`. Still open: ledge undersides and concave pit corners, run speed into a wall, a body whose height spans a material change, and a zero-gap placement case. Finding: teleporting the Seeker into a solid mass lets him fall out of the world (the skin risk above); spawn and respawn points must be in empty cells.
+- ~~The builder measured end to end from a real `TileMapLayer`~~ Measured 2026-11-22 (`tests/performance/terrain_build_bench.gd`, software container): a typical 800 x 45 room, 8,878 solid cells, 230 shapes, builds in about 27 ms (layer read 2, the rest faces, strips and bodies), over the 20 ms aim and well inside the 100 ms budget; the checkerboard worst case (21,708 cells, 57,168 shapes) takes about 680 ms. The owner's machine decides the aim. The face pass is the place to optimise if it matters.
+- `Terrain.face_materials` agreed with ability gating's precedence rule for the `no_cling` skip (its Open Question 2).
 
 ## Related
 - `design/gdd/terrain-pipeline.md` (Open Question 1, rules 2-8, 15, T4)

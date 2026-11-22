@@ -21,7 +21,7 @@ const LADDER_COLOR := Color(0.3, 0.55, 0.3, 0.6)
 const DOOR_COLOR := Color(0.55, 0.4, 0.25)
 const ANCHOR_COLOR := Color(0.95, 0.85, 0.3)
 const HELP_TEXT := "Arrows/WASD move  Space/Z jump x2 (wall: wall jump)  Shift/C dash  Down crouch  Up door  E grapple (jump to launch out)\nX attack x3 (tap)  hold X heavy  Up+X up attack  air: X jump attack, Down+X pogo"
-const HIT_LABEL_POSITION := Vector2(4, 36)
+const HIT_LABEL_POSITION := Vector2(4, 36) * DebugHud.SCALE
 const FLOOR_TARGET := Rect2(188, 192, 24, 32)
 const HIGH_TARGET := Rect2(288, 162, 24, 20)
 const POGO_TARGET := Rect2(586, 160, 28, 16)
@@ -80,13 +80,13 @@ func _ready() -> void:
 
 	var hud := CanvasLayer.new()
 	_label = Label.new()
-	_label.position = Vector2(4, 2)
-	_label.add_theme_font_size_override(&"font_size", 8)
+	_label.position = Vector2(4, 2) * DebugHud.SCALE
+	_label.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	_label.text = HELP_TEXT
 	hud.add_child(_label)
 	_hit_label = Label.new()
 	_hit_label.position = HIT_LABEL_POSITION
-	_hit_label.add_theme_font_size_override(&"font_size", 8)
+	_hit_label.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	hud.add_child(_hit_label)
 	add_child(hud)
 
