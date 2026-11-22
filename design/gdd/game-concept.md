@@ -1,7 +1,7 @@
 # Game Concept: Guardbreak *(working title)*
 
 *Created: 2026-11-22*
-*Status: Draft*
+*Status: Draft, revised 2026-11-22 after `/design-review` (NEEDS REVISION: MVP re-baselined, scope constraint stated, pillars and anti-pillars confirmed by the owner)*
 
 ---
 
@@ -23,7 +23,7 @@
 | **Player Count** | Single-player |
 | **Session Length** | 30-120 minutes |
 | **Monetization** | None yet |
-| **Estimated Scope** | Large (24-36+ months, solo; estimate, not measured) |
+| **Estimated Scope** | Large (24-36+ months, solo; estimate, not measured). No fixed deadline (owner, 2026-11-22) |
 | **Comparable Titles** | Hollow Knight, Hollow Knight: Silksong, Ori and the Blind Forest, Ori and the Will of the Wisps, Nine Sols. Sales figures: not researched |
 
 ---
@@ -95,8 +95,8 @@ ordinary enemies have health only.
 - [ ] **Killers/Competitors**: not served (no PvP or leaderboards)
 
 Secondary appeal: lore-seekers who assemble the world from rooms and fragments.
-Not for: players who want loot, crafting or builds, or who dislike precision
-platforming.
+Not for: players who want loot grind, crafting or builds, or who dislike
+precision platforming.
 
 ### Flow State Design
 
@@ -147,6 +147,8 @@ game is 8 regions, one per biome.
 
 ## Game Pillars
 
+*Pillars 1-5 and the design tests below confirmed by the owner, 2026-11-22.*
+
 ### Pillar 1: Movement Is the Mastery
 
 Flowing momentum, executed precisely.
@@ -171,6 +173,8 @@ Abilities that open the world also give the player something to do in a fight, w
 
 *Design test*: a new ability must open a route; if it can also hit, it should.
 
+*Which abilities*: pogo and dash attack as well as carry (owner, 2026-11-22). Double jump and wall cling are pure traversal. Whether grapple also hits is an open question.
+
 ### Pillar 5: A Place Worth Running Through
 
 A beautiful world that is a pleasure to move in.
@@ -182,8 +186,10 @@ secrets), and pillar 2 against pillar 3 (promised gates against hidden things).
 
 ### Anti-Pillars (What This Game Is NOT)
 
+*Confirmed by the owner, 2026-11-22; anti-pillar 2 reworded the same day.*
+
 - **NOT guards on ordinary enemies**: every fight would become a duel and break pillar 1's flow. Guards belong to bosses, mini-bosses and the one tutorial foe.
-- **NOT loot, crafting or shops**: they would replace the rewards of pillars 2 and 3 with grind.
+- **NOT loot grind or crafting**: they would replace the rewards of pillars 2 and 3 with grind. Collectible upgrades are found in the world. A merchant or a currency may exist, as in Hollow Knight, only if it never stands in for a found reward (owner, 2026-11-22).
 - **NOT abilities handed over at the gate**: it would kill the promise of pillar 2.
 - **NOT story and dialogue before the core feels good**: lore reaches the player through the world (pillars 3 and 5), not exposition.
 
@@ -259,12 +265,14 @@ Source: `design/art/art-bible.md` (Draft, 2026-11-20), Section 1.
 - The genre is crowded with well-known titles (not researched).
 
 ### Scope Risks
-- 8 regions in the stated 1-2 year window, solo and as a first game, likely exceeds it.
+- There is no fixed deadline (owner, 2026-11-22), but 8 regions is 24-36+ months solo and as a first game. The Vertical Slice (region 1) is the commit point; regions 2-8 are provisional until it is played.
 - Replacing pack art with own art adds work.
 
 ### Open Questions
 - Does the move set feel good for ten minutes in a room and a fight? Answer with the MVP pass test above.
 - Does the guard-break fight hold up in one arena? Answer with the MVP pass test and the two-round kill condition above.
+- Does the grapple also hit? Pogo and dash do; double jump and wall cling do not (pillar 4). Owner to decide before the grapple gates are tuned.
+- Shops or currency: allowed only as a convenience, never in place of a found reward (anti-pillar 2). Whether any exist is undecided.
 
 ---
 
@@ -276,14 +284,18 @@ Source: `design/art/art-bible.md` (Draft, 2026-11-20), Section 1.
 
 **Kill condition** (from `design/game-brief.md`): if the guard-break fight is not fun in one arena after **two tuning rounds** (a round = change the numbers or the telegraphs, then replay the pass test), drop or redesign the guard-break. Not yet checked as of 2026-11-22.
 
-**Required for MVP**:
+**Status (re-baselined 2026-11-22)**: the MVP was written after the build had passed it. Per `design/gdd/systems-index.md`, stories 001-006 built the controller, melee, guard-break, three enemy types, one boss and two gated abilities (double jump and grapple in code). The 10-minute pass test has **not** been run; it is owed to the owner and is the first thing to record. The kill condition is still unchecked.
+
+**Required for MVP** (built):
 1. The controller wired to the pack's animations, with movement
 2. The 3-hit combo, heavy, pogo and dash
 3. A guard-break fight against one enemy
 
-**Explicitly NOT in MVP** (defer to later):
-- Second enemy type and the boss
-- Ability gates, room transitions, save points and the map
+**Built beyond the MVP** (so no longer "NOT in MVP"): further enemy types, the region boss, and the first ability gates.
+
+**Designed, not yet built** (approved GDDs): room transitions, ability gating rules, save points and the grid map. These belong to the Vertical Slice.
+
+**Still deferred**:
 - Bow, spell casts, elemental palettes and the Dream Seeker state
 
 ### Scope Tiers (if budget/time shrinks)
@@ -292,7 +304,7 @@ Timelines are estimates, not measured velocity; refine with `/estimate`.
 
 | Tier | Content | Features | Timeline |
 | ---- | ---- | ---- | ---- |
-| **MVP** | One arena | Movement, combo, guard-break | Weeks to about 3 months |
+| **MVP** | One arena | Movement, combo, guard-break (built; pass test owed) | Weeks to about 3 months |
 | **Vertical Slice** | Region 1 complete (Tavik, Brun, dash gate) | Core plus gates, saves, map | About 4-8 months |
 | **Alpha** | Regions 1-4 (all four abilities) | All features, rough | About 12-18 months |
 | **Full Vision** | All 8 regions | All features, polished | About 24-36+ months |
