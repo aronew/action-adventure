@@ -58,7 +58,7 @@ const GRAPPLE_COLOR := Color(0.6, 1.0, 0.5)
 const AREA_LABEL_COLOR := Color(0.7, 0.72, 0.8)
 const FONT_SIZE := 8
 const AREA_LABEL_SIZE := Vector2(160, 12)
-const HUD_ABILITIES_POSITION := Vector2(4, 30)
+const HUD_ABILITIES_POSITION := Vector2(4, 30) * DebugHud.SCALE
 const HELP_TEXT := "Arrows/WASD move  Space/Z jump  Shift/C dash  E grapple (jump to launch out)\nTake the double jump, reach the shelf, take the grapple, swing to the summit."
 
 ## Solid blocks of the layout, as rectangles (floor top y 380, h = 380 - y).
@@ -144,13 +144,13 @@ func _ready() -> void:
 
 	var hud := CanvasLayer.new()
 	var help := Label.new()
-	help.position = Vector2(4, 2)
-	help.add_theme_font_size_override(&"font_size", FONT_SIZE)
+	help.position = Vector2(4, 2) * DebugHud.SCALE
+	help.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	help.text = HELP_TEXT
 	hud.add_child(help)
 	_abilities_label = Label.new()
 	_abilities_label.position = HUD_ABILITIES_POSITION
-	_abilities_label.add_theme_font_size_override(&"font_size", FONT_SIZE)
+	_abilities_label.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	hud.add_child(_abilities_label)
 	add_child(hud)
 	_abilities.abilities_changed.connect(_on_abilities_changed)

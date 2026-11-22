@@ -163,6 +163,8 @@ func setup(target: Player) -> void:
 4. Multiply the positions and font sizes of each test room's debug HUD `CanvasLayer` by 4 (`boss_arena.gd`, `enemy_test_room.gd`, `gate_test_rooms.gd`, `movement_test_room.gd`); the art-style room's HUD is already at 22 px.
 5. Check the existing rooms and both Seeker variants in play at 1920 x 1080, 1440 x 810 and a fractional size; capture screenshots.
 
+**Done 2026-11-22.** Steps 1-4 are applied: the settings and snap settings in `project.godot`, the derived zoom in `PlayerCamera.setup()`, the art-style room's runtime override removed, and the four test-room debug HUDs scaled through `src/test_rooms/debug_hud.gd` (`DebugHud.SCALE` 4, `DebugHud.FONT_SIZE` 32) at CanvasLayer scale 1. Step 5 is partly done: screenshots of all five rooms at 1920 x 1080 and 1440 x 810 are in `production/qa/evidence/display-migration/` (`gl_compatibility` under a virtual display; the Seeker and shimmer checks at a fractional size under `forward_plus` are still open). `tests/integration/display/framing.gd` asserts the framing (watched to fail on the old 480 x 270 settings). The art-style ledge, corner and wall-slide runs still pass.
+
 ## Validation Criteria
 - A 16:9 window at 1920, 1440, 960 and 2560 wide shows exactly 480 x 270 world px (the spike; repeated in the test suite).
 - The terrain GDD's display criterion: the window renders at 1920 x 1080 with the camera at zoom 4, and the Seeker's collision box measures 10 x 22 game px.

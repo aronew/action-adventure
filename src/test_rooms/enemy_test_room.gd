@@ -21,8 +21,8 @@ const ROOM_SIZE := Vector2(3400, 270)
 const RELOAD_DELAY := 1.0
 const BACKGROUND_COLOR := Color(0.12, 0.12, 0.17)
 const SOLID_COLOR := Color(0.32, 0.34, 0.42)
-const HEALTH_BAR_SIZE := Vector2(100, 6)
-const HEALTH_BAR_POSITION := Vector2(4, 30)
+const HEALTH_BAR_SIZE := Vector2(100, 6) * DebugHud.SCALE
+const HEALTH_BAR_POSITION := Vector2(4, 30) * DebugHud.SCALE
 const HEALTH_BACK_COLOR := Color(0.1, 0.1, 0.1)
 const HEALTH_COLOR := Color(0.85, 0.25, 0.25)
 const HELP_TEXT := "Arrows/WASD move  Space/Z jump  Shift/C dash  X attack (hold: heavy)  E grapple\nEnemies wind up (orange, \"!\") before they hit. The Brute's swing can't be interrupted: dodge it."
@@ -87,8 +87,8 @@ func _ready() -> void:
 func _build_hud() -> void:
 	var hud := CanvasLayer.new()
 	var help := Label.new()
-	help.position = Vector2(4, 2)
-	help.add_theme_font_size_override(&"font_size", 8)
+	help.position = Vector2(4, 2) * DebugHud.SCALE
+	help.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	help.text = HELP_TEXT
 	hud.add_child(help)
 
@@ -104,8 +104,8 @@ func _build_hud() -> void:
 	hud.add_child(_health_fill)
 
 	_status = Label.new()
-	_status.position = HEALTH_BAR_POSITION + Vector2(HEALTH_BAR_SIZE.x + 6, -4)
-	_status.add_theme_font_size_override(&"font_size", 8)
+	_status.position = HEALTH_BAR_POSITION + Vector2(HEALTH_BAR_SIZE.x + 6, -4) * DebugHud.SCALE
+	_status.add_theme_font_size_override(&"font_size", DebugHud.FONT_SIZE)
 	hud.add_child(_status)
 	_on_player_damaged(0.0, _player.health.current)
 	add_child(hud)
