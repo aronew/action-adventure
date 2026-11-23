@@ -1,54 +1,61 @@
-# Cinderheart (region 1): first build
+# Cinderheart (region 1)
 
-Status: first playable layout, 2026-11-23. Built from `tools/level/cinderheart_layout.py`;
-the rooms are `src/world/cinderheart/rooms/*.tscn` and are edited in Godot from here on.
+Status: second layout, 2026-11-23. Layouts live in `tools/level/cinderheart_layout.py` and
+are checked by `tools/level/reach.py`; the built rooms are
+`src/world/cinderheart/rooms/*.tscn` and can be edited in Godot (paint the Layout layer:
+the rock brush, or the purple fake-wall brush for secret passages).
 
-## What we took from Hollow Knight and Silksong (principles, not layouts)
+## How metroidvanias build levels (what we took, from research)
 
-1. **Fall into the world, land in a hub.** The player starts small and safe, goes down,
-   and drops into a central room they can't climb back out of the same way. The hub has a
-   rest spot and several exits, so the first choice is "which way?".
-2. **Show the lock before the key.** The first gate (a gap too wide to jump) is one room
-   from the hub, seen early. The player learns there's a way forward they can't use yet.
-3. **The key is guarded and used at once.** The ability sits behind the region's toughest
-   fight so far, and the very next room needs it.
-4. **Loop home.** The path out of the key room comes back into the hub through a door the
-   player saw from the other side. The trip back is short; the world folds in on itself.
-5. **Rests by role, not distance.** One at the start, one in the hub, one before the boss.
-6. **Teach, then mix.** Enemies are met one at a time first (Ash Steps), then in groups on
-   uneven ground (Cinder Run), then with a brute (Keeper's Forge).
-7. **Room shapes vary.** Descents, a wide hub, a long corridor, an arena, a climb.
+- **No pass-through platforms; the terrain is the puzzle.** Hollow Knight's platforms are
+  all solid, so a room's route has to be read and climbed, and heights you can't reach
+  yet are gates. ([Ludonauta](https://ludonauta.itch.io/platformer-essentials/devlog/1084669/the-hidden-genius-behind-hollow-knights-terrain-design))
+- **Spatial memory: show it before you can get it.** A room has a path open on the first
+  visit and gated paths you can see; you come back with the ability.
+  ([Game Dev Bootcamp](https://seanking11.github.io/gamebootcamp/modules/14-metroidvania))
+- **Two or three ways forward after the start**, not a corridor; backtracking needs a
+  reason. ([Bycer](https://www.gamedeveloper.com/design/making-sense-of-metroidvania-game-design))
+- **Secrets of two kinds:** hard-to-reach spots that need no ability, and areas behind a
+  gate you return to. ([Bycer](https://www.gamedeveloper.com/design/the-foundation-of-metroidvania-design))
+- **Shortcuts that open from one side, bosses near a shortcut home, checkpoints never
+  more than about seven screens apart.** ([Blasphemous, Game Developer](https://gamedeveloper.com/design/how-i-blasphemous-i-level-design-iterates-on-classic-metroidvanias))
+- **Halls and shafts that compound into loops** (Super Metroid, Symphony of the Night).
+- **World first, by intuition, then iterate on play** (Team Cherry, via
+  [Game Developer](https://gamedeveloper.com/design/how-the-i-hollow-knight-i-devs-mapped-out-their-metroidvania-)).
+
+## Movement the layout is built on (measured in game, `tools/level/measure_jump.gd`)
+
+A cell is 36 px. `jump_speed` is now 420 (was 330): a jump rises 96 px, so **2-cell
+climbs** are possible and rooms can go up. A run jump crosses a 3-cell gap; the dash jump
+crosses 4. Dash gates are 4-cell gaps whose far side is a cell higher, over a pit you
+can climb back out of on the near side only.
 
 ## The map
 
 ```
- [C1 Waking Niche] ──► [C2 Ash Steps]
-   rest, start           descent, 2 grunts
-                              │ (one-way drop onto a high shelf)
-                              ▼
- [C7 Bellows Climb] ──► [C3 KILN HALL] ──► [C5 Glaze Bridge] ──► [C8 Antechamber] ──► Boss (Brun)
-   shortcut, dash gap     HUB, rest          DASH GATE (seen early)   rest
-        ▲                     │ floor hole
-        │                     ▼
- [C6 Keeper's Forge] ◄── [C4 Cinder Run]
-   brute + skitters        combat corridor
-   DASH PICKUP
+ [C1 Waking Niche] ─► [C2 Ash Steps] ───(one-way drop onto a high shelf)──┐
+  start, rest,          high road over a great rock,                       ▼
+  secret wall, climb    low cave under it, relic on islands    [C3 KILN HALL] ─► [C9 Ember Hoard]
+                                                                HUB, rest       hidden, relic
+ [C7 Bellows Climb] ──(dash gap)──────────────────────────────► low left        (island climb)
+  tall shaft, shortcut home                                         │ floor hole      │ right
+        ▲                                                           ▼                 ▼
+ [C6 Keeper's Forge] ◄────────────────────────────── [C4 Cinder Run]   [C5 Glaze Bridge] ─► [C8 Antechamber] ─► Boss
+  arena, DASH on a high island                         low road + island     DASH GATE, relic    rest
+                                                       road, secret wall     seen from the near side
 ```
 
-The intended first run: C1 → C2 → drop into C3 → try right, hit the dash gap in C5 →
-back to C3 → down the hole → C4 → C6, win the dash → C7, cross its dash gap → arrive in
-C3's lower left (shortcut done) → C5, dash across → C8, rest → boss.
+Intended first run: wake (C1), climb out, descend Ash Steps (high or low road), drop
+into the hub. Choices: try the bridge (blocked), climb the hub's islands to the hidden
+room, or go down the floor hole. Cinder Run → Keeper's Forge (win the dash on its high
+island) → Bellows Climb (zig-zag up, dash the gap) → the hub's lower left: the loop is
+closed. Cross the bridge, take its relic, rest, boss.
 
-## Numbers the layout relies on (from `player_config.tres`)
+Relics (Ember Hearts, +10 max health each): C1 behind the wall at the start, C2 on the
+island climb over the great rock, C4 behind the fake wall at the end of the upper road,
+C5 over the bridge (after the dash), C9 in the hidden room.
 
-- A cell is 36 px. A jump rises about 65 px, so **one-cell steps are climbable, two are
-  not**. Shelves two or more cells up are one-way.
-- A run jump crosses about 137 px. A **4-cell gap** (about 155 px between the painted rock
-  faces) needs the dash; the far side sits one cell higher so it can't be reached from the
-  pit below, and the pit has a step back to the near side.
+## Not built yet
 
-## Not built yet (placeholders today)
-
-- Keeper Tavik is a brute and two skitters; the boss door leads to the existing test arena.
-- No map screen, no collectibles, no breakable walls or levers, no kill planes, no save.
-- Rest spots heal and set the respawn point (press Up). Enemies come back on room entry.
+Keeper Tavik is a brute and two skitters; the boss door leads to the old test arena. No
+map screen, no saving, no breakable walls or levers, no deadly pits.

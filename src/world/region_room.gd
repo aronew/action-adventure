@@ -21,6 +21,8 @@ const METER_COLOR := Color(0.95, 0.85, 0.45)
 const METER_FILLING_COLOR := Color(0.55, 0.5, 0.35)
 const BAR_BACK := Color(0.08, 0.06, 0.06, 0.85)
 const REST_RADIUS := 14.0
+## Max health an Ember Heart relic adds.
+const RELIC_HEALTH := 10.0
 
 ## The room's name, shown on entry.
 @export var room_name := "Room"
@@ -37,6 +39,8 @@ const REST_RADIUS := 14.0
 
 ## Whether the mood pass shows; V toggles it, and the choice carries across rooms.
 static var mood_on := true
+## Backdrop images kept loaded across rooms, so a room change doesn't reload them.
+static var _backdrops := {}
 
 var player: Player
 var _camera: PlayerCamera
@@ -72,6 +76,9 @@ func _ready() -> void:
 	player.player_state = RegionTravel.player_state
 	player.position = _arrival_point()
 	add_child(player)
+	if RegionTravel.bonus_health > 0.0:
+		player.health.max_health += RegionTravel.bonus_health
+		player.health.current = player.health.max_health
 	if RegionTravel.health > 0.0:
 		player.health.current = minf(RegionTravel.health, player.health.max_health)
 	player.heal_meter.add(RegionTravel.heal_meter)
@@ -98,6 +105,9 @@ func _ready() -> void:
 		_mood_pass.setup(world, _camera, player, VIEW_SIZE)
 		_mood_pass.set_enabled(mood_on)
 	_build_hud()
+	for exit in _exits():
+		RegionTravel.preload_room(exit.target_room)
+	RegionTravel.fade(get_tree(), 0.0, 0.25)
 
 
 func _enter_tree() -> void:
@@ -183,6 +193,8 @@ func _spawn_markers() -> void:
 				gate.player_state = player.player_state
 				gate.position = spot.global_position
 				add_child(gate)
+			RoomSpawn.Kind.RELIC:
+				_add_relic(spot)
 			RoomSpawn.Kind.REST:
 				_rest_spots.append(spot)
 				var glow := Polygon2D.new()
@@ -197,6 +209,39 @@ func _spawn_markers() -> void:
 				label.add_theme_font_size_override(&"font_size", 8)
 				label.position = Vector2(-18, -REST_RADIUS * 2 - 12)
 				spot.add_child(label)
+
+
+## An Ember Heart: a glowing pickup that raises max health by RELIC_HEALTH, once per run.
+func _add_relic(spot: Node2D) -> void:
+	var key := scene_file_path + ":" + String(spot.name)
+	if RegionTravel.relics.has(key):
+		return
+	var area := Area2D.new()
+	area.collision_layer = 0
+	area.collision_mask = Player.LAYER_PLAYER
+	area.position = spot.global_position + Vector2(0, -12)
+	var shape := CollisionShape2D.new()
+	shape.shape = CircleShape2D.new()
+	(shape.shape as CircleShape2D).radius = 10.0
+	area.add_child(shape)
+	var gem := Polygon2D.new()
+	gem.polygon = PackedVector2Array([Vector2(0, -7), Vector2(5, 0), Vector2(0, 7), Vector2(-5, 0)])
+	gem.color = Color(1.0, 0.45, 0.25)
+	area.add_child(gem)
+	var tween := gem.create_tween().set_loops()
+	tween.tween_property(gem, "scale", Vector2.ONE * 1.25, 0.5)
+	tween.tween_property(gem, "scale", Vector2.ONE, 0.5)
+	add_child(area)
+	area.body_entered.connect(func(body: Node2D) -> void:
+		if body != player:
+			return
+		RegionTravel.relics[key] = true
+		RegionTravel.bonus_health += RELIC_HEALTH
+		player.health.max_health += RELIC_HEALTH
+		player.health.current += RELIC_HEALTH
+		player.damaged.emit(0.0, player.health.current)
+		_show_title("Ember Heart: max health +%d" % int(RELIC_HEALTH))
+		area.queue_free())
 
 
 func _rest(spot: Node2D) -> void:
@@ -215,6 +260,7 @@ func _on_player_died() -> void:
 	var room := RegionTravel.respawn_room if not RegionTravel.respawn_room.is_empty() \
 			else scene_file_path
 	RegionTravel.arrival_exit = RegionTravel.respawn_exit
+	await RegionTravel.fade(get_tree(), 1.0)
 	get_tree().change_scene_to_file.call_deferred(room)
 
 
@@ -224,7 +270,10 @@ func _add_back_layers(parent: Node2D) -> void:
 	var travel := (_room_size - VIEW_SIZE).max(Vector2.ZERO)
 	var index := -30
 	for entry in [["background", 0.15, false], ["midground", 0.5, true]]:
-		var texture := load(biome + "/parallax/%s.png" % entry[0]) as Texture2D
+		var path: String = biome + "/parallax/%s.png" % entry[0]
+		if not _backdrops.has(path):
+			_backdrops[path] = load(path)
+		var texture := _backdrops[path] as Texture2D
 		if texture == null:
 			continue
 		var factor: float = entry[1]

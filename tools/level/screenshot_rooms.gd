@@ -4,8 +4,8 @@
 extends SceneTree
 
 const ROOMS := ["c01_waking_niche", "c02_ash_steps", "c03_kiln_hall", "c04_cinder_run",
-		"c05_glaze_bridge", "c06_keepers_forge", "c07_bellows_climb", "c08_brun_antechamber"]
-const ARRIVE := ["", "left", "high_left", "up", "left", "right", "low_left", "left"]
+		"c05_glaze_bridge", "c06_keepers_forge", "c07_bellows_climb", "c08_brun_antechamber", "c09_ember_hoard"]
+const ARRIVE := ["", "left", "high_left", "up", "left", "right", "low_left", "left", "left"]
 
 
 func _initialize() -> void:

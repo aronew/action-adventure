@@ -183,10 +183,9 @@ func _ready() -> void:
 	_sensor.add_child(sensor_collision)
 	add_child(_sensor)
 
-	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ANIMATION_DATA_PATH))
-	_frames = _build_frames(data["character"], _pivots)
-	_vfx_frames = _build_frames(data["vfx"], _vfx_pivots)
-	_combat_fx_frames = _build_frames(data["combat_fx"], _combat_fx_pivots)
+	_frames = _cached_frames("character", _pivots)
+	_vfx_frames = _cached_frames("vfx", _vfx_pivots)
+	_combat_fx_frames = _cached_frames("combat_fx", _combat_fx_pivots)
 
 	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = _frames
@@ -1184,6 +1183,24 @@ func art_filter() -> CanvasItem.TextureFilter:
 ## Builds SpriteFrames from one group of seeker_animations.json: one animation per
 ## clip, sliced from its sheet, each frame lasting its listed milliseconds. Fills
 ## [param pivots] with each clip's feet point or anchor.
+## Built animation frames are shared by every Player with the same palette and art, so a
+## room change (which makes a new Player) doesn't reload and rebuild them (about 1.4 s).
+## [group, palette, painted] -> [SpriteFrames, pivots].
+static var _frames_cache := {}
+
+
+func _cached_frames(group: String, pivots: Dictionary) -> SpriteFrames:
+	var key := "%s|%s|%s" % [group, palette, painted]
+	if not _frames_cache.has(key):
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ANIMATION_DATA_PATH))
+		var built_pivots := {}
+		var frames := _build_frames(data[group], built_pivots)
+		_frames_cache[key] = [frames, built_pivots]
+	var entry: Array = _frames_cache[key]
+	pivots.merge(entry[1], true)
+	return entry[0]
+
+
 func _build_frames(group: Dictionary, pivots: Dictionary) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")

@@ -5,7 +5,7 @@
 class_name RoomSpawn
 extends Node2D
 
-enum Kind { ENEMY, ABILITY, GATE_SIGN, REST }
+enum Kind { ENEMY, ABILITY, GATE_SIGN, REST, RELIC }
 
 ## What this marker becomes.
 @export var kind := Kind.ENEMY:
@@ -19,8 +19,8 @@ enum Kind { ENEMY, ABILITY, GATE_SIGN, REST }
 ## Placeholder colour of a pickup or sign.
 @export var color := Color(1.0, 0.6, 0.3)
 
-const COLORS := [Color(1, 0.3, 0.3), Color(1, 0.8, 0.2), Color(0.4, 0.8, 1), Color(0.5, 1, 0.5)]
-const NAMES := ["enemy", "ability", "gate", "rest"]
+const COLORS := [Color(1, 0.3, 0.3), Color(1, 0.8, 0.2), Color(0.4, 0.8, 1), Color(0.5, 1, 0.5), Color(1, 0.5, 0.9)]
+const NAMES := ["enemy", "ability", "gate", "rest", "relic"]
 
 
 func _draw() -> void:
