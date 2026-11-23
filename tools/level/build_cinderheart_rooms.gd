@@ -27,21 +27,28 @@ func _initialize() -> void:
 	quit()
 
 
-## The layout brush: one 36 px tile, a dark rock square with a lighter rim, so painted
-## rock is easy to see in the editor (the painted art draws over it).
+## The layout brushes, 36 px each: tile (0, 0) is rock (dark red with an orange rim);
+## tile (1, 0) is a fake wall (purple with a pink rim): drawn as rock, walk-through.
 func _layout_tileset() -> TileSet:
 	if ResourceLoader.exists(TILESET_PATH):
-		return load(TILESET_PATH)
-	var image := Image.create(36, 36, false, Image.FORMAT_RGBA8)
-	image.fill(Color(0.35, 0.18, 0.16, 0.6))
-	for i in 36:
-		for e in [0, 35]:
-			image.set_pixel(i, e, Color(0.9, 0.45, 0.3, 0.9))
-			image.set_pixel(e, i, Color(0.9, 0.45, 0.3, 0.9))
+		var existing: TileSet = load(TILESET_PATH)
+		var src := existing.get_source(0) as TileSetAtlasSource
+		if src != null and src.has_tile(Vector2i(1, 0)):
+			return existing
+	var image := Image.create(72, 36, false, Image.FORMAT_RGBA8)
+	for tile in 2:
+		var fill := Color(0.35, 0.18, 0.16, 0.6) if tile == 0 else Color(0.35, 0.16, 0.4, 0.6)
+		var rim := Color(0.9, 0.45, 0.3, 0.9) if tile == 0 else Color(0.95, 0.5, 0.9, 0.9)
+		image.fill_rect(Rect2i(tile * 36, 0, 36, 36), fill)
+		for i in 36:
+			for e in [0, 35]:
+				image.set_pixel(tile * 36 + i, e, rim)
+				image.set_pixel(tile * 36 + e, i, rim)
 	var source := TileSetAtlasSource.new()
 	source.texture = ImageTexture.create_from_image(image)
 	source.texture_region_size = Vector2i(36, 36)
-	source.create_tile(Vector2i.ZERO)
+	source.create_tile(Vector2i(0, 0))
+	source.create_tile(Vector2i(1, 0))
 	var tileset := TileSet.new()
 	tileset.tile_size = Vector2i(36, 36)
 	tileset.add_source(source, 0)
@@ -64,7 +71,9 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	for y in h:
 		for x in w:
 			if rows[y][x] == "#":
-				layout.set_cell(Vector2i(x, y), 0, Vector2i.ZERO)
+				layout.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
+			elif rows[y][x] == "F":
+				layout.set_cell(Vector2i(x, y), 0, Vector2i(1, 0))
 
 	var terrain := PaintedTerrain.new()
 	terrain.name = "PaintedTerrain"
@@ -105,6 +114,8 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 				spawn.ability = StringName(m["ability"])
 			"rest":
 				spawn.kind = RoomSpawn.Kind.REST
+			"relic":
+				spawn.kind = RoomSpawn.Kind.RELIC
 		spawns.add_child(spawn)
 
 	for e in data["exits"]:

@@ -4,6 +4,8 @@
 ## this node redraws the painted edge tiles (top, sides, bottom, outer and inner corners)
 ## live in the editor and at runtime, the same way the art-style test room does.
 ## Cells outside [member room_cells] count as solid, so a room's border needs no paint.
+## Cells painted with the layout's second tile (atlas x 1) are fake walls: drawn as rock
+## but with no collision, so a secret passage hides behind them.
 ##
 ## Usage: a room scene holds a TileMapLayer named "Layout" and this node beside it with
 ## [member layout] pointing at it. Collision is one box per run of cells in a row that
@@ -45,6 +47,15 @@ void fragment() {
 }
 """
 
+## Floating islands one cell thick are drawn with the biome's painted platform prop
+## (assets/platform-long.png) instead of edge tiles; [walkable surface in the prop's
+## own px, its solid left and right in px]. Several overlap to cover a long island.
+const SLAB_PROP := "platform-long"
+const SLAB_SURFACE := 103.0
+const SLAB_BOUNDS := Vector2(12.0, 373.0)
+## The props are native-size art: world px per prop px.
+const PROP_SCALE := CELL / TILE_SOURCE * (3584.0 / 1254.0)
+
 ## The layout layer whose painted cells are solid rock.
 @export var layout: TileMapLayer:
 	set(value):
@@ -65,7 +76,9 @@ void fragment() {
 @export var interior_color := Color(0, 0, 0)
 
 var _solid_cells := {}
-var _textures := {}
+var _fake_cells := {}
+## Loaded tile textures, shared by every room so a room change doesn't reload them.
+static var _textures := {}
 var _fade_shader: Shader
 var _pending := false
 
@@ -91,10 +104,13 @@ func rebuild() -> void:
 		remove_child(child)
 		child.queue_free()
 	_solid_cells.clear()
+	_fake_cells.clear()
 	if layout == null:
 		return
 	for cell in layout.get_used_cells():
 		_solid_cells[cell] = true
+		if layout.get_cell_atlas_coords(cell).x == 1:
+			_fake_cells[cell] = true
 	_build()
 
 
@@ -122,13 +138,14 @@ func _build() -> void:
 		var run_left := 0.0
 		for col in room_cells.x + 1:
 			var solid: bool = col < room_cells.x and is_solid(col, row)
+			var collides: bool = solid and not _fake_cells.has(Vector2i(col, row))
 			var tile := _edge_tile(col, row) if solid else -1
 			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
 			var insets: Array = _collision_insets(tile)
 			if not corner.is_empty():
 				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0] if corner[0] == TILE_T \
 						else [0, TILE_INSETS[TILE_B][1], 0, 0]
-			var same: bool = solid and run_start >= 0 and insets[0] == run_insets[0] \
+			var same: bool = collides and run_start >= 0 and insets[0] == run_insets[0] \
 					and insets[1] == run_insets[1]
 			if run_start >= 0 and not same:
 				var prev_insets: Array = _collision_insets(_edge_tile(col - 1, row)) \
@@ -138,14 +155,15 @@ func _build() -> void:
 				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k + sink,
 						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k - sink))
 				run_start = -1
-			if solid and run_start < 0:
+			if collides and run_start < 0:
 				run_start = col
 				run_insets = insets
 				run_left = col * CELL + insets[2] * k
 			if not solid:
 				continue
 			if tile >= 0:
-				_add_tile(tiles, tile, col, row)
+				if not _is_slab(col, row):
+					_add_tile(tiles, tile, col, row)
 			elif not corner.is_empty():
 				_add_tile(tiles, corner[0], col, row)
 				var face := _add_tile(tiles, corner[1], col, row)
@@ -158,6 +176,7 @@ func _build() -> void:
 						p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
 				rect.color = interior_color
 				fill.add_child(rect)
+	_add_slabs(tiles)
 	# A border of plain rock around the room, so the camera never shows past its edge.
 	var margin := 8.0 * CELL
 	var size := Vector2(room_cells) * CELL
@@ -169,6 +188,45 @@ func _build() -> void:
 				r.end, r.position + Vector2(0, r.size.y)])
 		border.color = interior_color
 		fill.add_child(border)
+
+
+## True for a cell of a floating island one cell thick: rock with air above and below.
+func _is_slab(col: int, row: int) -> bool:
+	return is_solid(col, row) and not _fake_cells.has(Vector2i(col, row)) \
+			and not is_solid(col, row - 1) and not is_solid(col, row + 1)
+
+
+func _add_slabs(parent: Node2D) -> void:
+	var path := "%s/assets/%s.png" % [tiles_dir.get_base_dir().get_base_dir(), SLAB_PROP]
+	if not _textures.has(path):
+		_textures[path] = load(path)
+	var texture: Texture2D = _textures[path]
+	if texture == null:
+		return
+	var piece := (SLAB_BOUNDS.y - SLAB_BOUNDS.x) * PROP_SCALE
+	var k := CELL / TILE_SOURCE
+	for row in room_cells.y:
+		var col := 0
+		while col < room_cells.x:
+			if not _is_slab(col, row):
+				col += 1
+				continue
+			var start := col
+			while col < room_cells.x and _is_slab(col, row):
+				col += 1
+			var x0 := start * CELL
+			var width := (col - start) * CELL
+			var count := maxi(1, ceili(width / piece))
+			var surface := row * CELL + TILE_INSETS[TILE_T][0] * k + SURFACE_SINK
+			for i in count:
+				var center := x0 + (i + 0.5) * width / count
+				var sprite := Sprite2D.new()
+				sprite.texture = texture
+				sprite.centered = false
+				sprite.scale = Vector2.ONE * PROP_SCALE
+				sprite.position = Vector2(center - (SLAB_BOUNDS.x + SLAB_BOUNDS.y) * 0.5 * PROP_SCALE,
+						surface - SLAB_SURFACE * PROP_SCALE - SURFACE_SINK)
+				parent.add_child(sprite)
 
 
 func _edge_tile(col: int, row: int) -> int:

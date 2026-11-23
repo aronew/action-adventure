@@ -26,7 +26,13 @@ func _initialize() -> void:
 	for test_name in names:
 		_current = test_name
 		var before := _failures
+		var checks_before := _checks
 		await call(test_name)
+		# A test that stops on a script error returns early; one that made no checks at
+		# all most likely did, so it fails instead of passing silently.
+		if _checks == checks_before:
+			_failures += 1
+			print("  FAIL [%s] made no checks (did it stop on a script error?)" % test_name)
 		print("%s %s" % ["PASS" if _failures == before else "FAIL", test_name])
 		if _failures != before:
 			failed_tests += 1
