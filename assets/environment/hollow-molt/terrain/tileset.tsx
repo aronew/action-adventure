@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tileset version="1.10" tiledversion="1.11.0" name="The Hollow Molt" tilewidth="512" tileheight="512" tilecount="49" columns="7" spacing="0" margin="0"><image source="TileSet.png" width="3584" height="3584" /></tileset>

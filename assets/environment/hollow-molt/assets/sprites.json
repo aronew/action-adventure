@@ -1,0 +1,346 @@
+{
+  "source": "AssetSheet.png",
+  "native_size": [
+    1254,
+    1254
+  ],
+  "sprites": [
+    {
+      "id": 0,
+      "name": "platform-short",
+      "file": "platform-short.png",
+      "source_rect": [
+        36,
+        141,
+        135,
+        86
+      ],
+      "export_padding": 8,
+      "export_size": [
+        151,
+        102
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 1,
+      "name": "platform-medium",
+      "file": "platform-medium.png",
+      "source_rect": [
+        241,
+        141,
+        225,
+        98
+      ],
+      "export_padding": 8,
+      "export_size": [
+        241,
+        114
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 2,
+      "name": "platform-long",
+      "file": "platform-long.png",
+      "source_rect": [
+        526,
+        141,
+        345,
+        105
+      ],
+      "export_padding": 8,
+      "export_size": [
+        361,
+        121
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 3,
+      "name": "terrain-block",
+      "file": "terrain-block.png",
+      "source_rect": [
+        926,
+        54,
+        302,
+        223
+      ],
+      "export_padding": 8,
+      "export_size": [
+        318,
+        239
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 4,
+      "name": "wall-left",
+      "file": "wall-left.png",
+      "source_rect": [
+        70,
+        345,
+        131,
+        278
+      ],
+      "export_padding": 8,
+      "export_size": [
+        147,
+        294
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 5,
+      "name": "wall-right",
+      "file": "wall-right.png",
+      "source_rect": [
+        339,
+        345,
+        129,
+        278
+      ],
+      "export_padding": 8,
+      "export_size": [
+        145,
+        294
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 6,
+      "name": "terrain-corner",
+      "file": "terrain-corner.png",
+      "source_rect": [
+        580,
+        360,
+        261,
+        263
+      ],
+      "export_padding": 8,
+      "export_size": [
+        277,
+        279
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 7,
+      "name": "ceiling-overhang",
+      "file": "ceiling-overhang.png",
+      "source_rect": [
+        909,
+        370,
+        324,
+        228
+      ],
+      "export_padding": 8,
+      "export_size": [
+        340,
+        244
+      ],
+      "suggested_pivot": [
+        0.5,
+        0
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 8,
+      "name": "rubble-small",
+      "file": "rubble-small.png",
+      "source_rect": [
+        26,
+        764,
+        206,
+        106
+      ],
+      "export_padding": 8,
+      "export_size": [
+        222,
+        122
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 9,
+      "name": "molted-shell-large",
+      "file": "molted-shell-large.png",
+      "source_rect": [
+        298,
+        701,
+        277,
+        170
+      ],
+      "export_padding": 8,
+      "export_size": [
+        293,
+        186
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 10,
+      "name": "shell-clump-low",
+      "file": "shell-clump-low.png",
+      "source_rect": [
+        637,
+        765,
+        247,
+        103
+      ],
+      "export_padding": 8,
+      "export_size": [
+        263,
+        119
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 11,
+      "name": "shell-fan-tall",
+      "file": "shell-fan-tall.png",
+      "source_rect": [
+        941,
+        667,
+        272,
+        201
+      ],
+      "export_padding": 8,
+      "export_size": [
+        288,
+        217
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 12,
+      "name": "hanging-cocoon-fibers",
+      "file": "hanging-cocoon-fibers.png",
+      "source_rect": [
+        0,
+        946,
+        240,
+        308
+      ],
+      "export_padding": 8,
+      "export_size": [
+        256,
+        324
+      ],
+      "suggested_pivot": [
+        0.5,
+        0
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 13,
+      "name": "collapsed-shell-arch",
+      "file": "collapsed-shell-arch.png",
+      "source_rect": [
+        246,
+        972,
+        291,
+        217
+      ],
+      "export_padding": 8,
+      "export_size": [
+        307,
+        233
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 14,
+      "name": "hazard-straight",
+      "file": "hazard-straight.png",
+      "source_rect": [
+        566,
+        1047,
+        315,
+        142
+      ],
+      "export_padding": 8,
+      "export_size": [
+        331,
+        158
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    },
+    {
+      "id": 15,
+      "name": "hazard-curved",
+      "file": "hazard-curved.png",
+      "source_rect": [
+        916,
+        979,
+        338,
+        275
+      ],
+      "export_padding": 8,
+      "export_size": [
+        354,
+        291
+      ],
+      "suggested_pivot": [
+        0.5,
+        1
+      ],
+      "grid_locked": false
+    }
+  ],
+  "notes": "Native freeform art, 8px transparent padding. No collision or hazard behavior authored."
+}

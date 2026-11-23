@@ -30,6 +30,8 @@ class Room:
         self.expect_walk, self.expect_dash_only = set(), set()
         self.entries = None
         self.cave_from_col = -1
+        self.biome = "cinderheart"
+        self.out_dir = "res://src/world/cinderheart/rooms/"
 
     def _fill(self, x0, y0, x1, y1, ch):
         for y in range(y0, y1 + 1):
@@ -176,6 +178,7 @@ class Room:
 
     def dump(self):
         return dict(key=self.key, name=self.name, w=self.w, h=self.h, cave_from_col=self.cave_from_col,
+                    biome=self.biome, out_dir=self.out_dir,
                     rows=["".join(r) for r in self.g], exits=self.exits, markers=self.markers)
 
 
@@ -187,15 +190,20 @@ rooms = []
 # islands to the window on the right and walk out, or take the low tunnel into the cave
 # and climb its switchback. The islands also reach a ledge on the left wall with a fake
 # wall behind it (a relic).
-r = Room("c01_waking_niche", "Waking Niche", 60, 34).cave(30)
-r.open(3, 14, 29, 29)                                   # the cavern
-r.solid(3, 14, 3, 17).fake(3, 18, 3, 19).secret(1, 18, 2, 19).solid(3, 20, 11, 21)
-r.plat(5, 28, 3).island(9, 26, 7, 3).island(18, 24, 8, 4).plat(14, 22, 3).plat(27, 22, 2)
-r.solid(10, 14, 22, 15).solid(13, 16, 19, 16)           # rock hanging from the roof
-r.tunnel(30, 40, 20)                                    # the window into the cave
-r.tunnel(30, 40, 30)                                    # low tunnel to the switchback
-r.switchback(41, 56, 30, 3)
-r.tunnel(41, 59, 20)                                    # third level runs out to the exit
+def waking_niche_shapes(r):
+    """Waking Niche's carving (also the Hollow Molt test room's)."""
+    r.open(3, 14, 29, 29)                                   # the cavern
+    r.solid(3, 14, 3, 17).fake(3, 18, 3, 19).secret(1, 18, 2, 19).solid(3, 20, 11, 21)
+    r.plat(5, 28, 3).island(9, 26, 7, 3).island(18, 24, 8, 4).plat(14, 22, 3).plat(27, 22, 2)
+    r.solid(10, 14, 22, 15).solid(13, 16, 19, 16)           # rock hanging from the roof
+    r.tunnel(30, 40, 20)                                    # the window into the cave
+    r.tunnel(30, 40, 30)                                    # low tunnel to the switchback
+    r.switchback(41, 56, 30, 3)
+    r.tunnel(41, 59, 20)                                    # third level runs out to the exit
+    return r
+
+
+r = waking_niche_shapes(Room("c01_waking_niche", "Waking Niche", 60, 34).cave(30))
 r.exit("right", "right", 17, 19, "c02_ash_steps", "left")
 r.mark("start", 26, 30).mark("rest", 29, 30).mark("relic", 1, 20)
 r.mark("enemy", 48, 20, config="grunt").mark("enemy", 46, 25, config="skitter")
@@ -334,6 +342,16 @@ r.tunnel(0, 21, 11)
 r.open(10, 3, 21, 7)
 r.exit("left", "left", 8, 10, "c03_kiln_hall", "upper_right")
 r.mark("relic", 16, 11).mark("enemy", 10, 11, config="skitter")
+rooms.append(r)
+
+# The Hollow Molt test room: Waking Niche's shapes drawn with the Hollow Molt art, to compare
+# the two biomes on the same layout. No exits.
+r = waking_niche_shapes(Room("hm01_molt_test", "The Hollow Molt (test)", 60, 34))
+r.biome = "hollow_molt"
+r.out_dir = "res://src/world/hollow_molt/rooms/"
+r.solid(59, 17, 59, 19)                                 # no exit: close the tunnel's end
+r.mark("start", 26, 30).mark("rest", 29, 30).mark("relic", 1, 20)
+r.mark("enemy", 48, 20, config="grunt").mark("enemy", 46, 25, config="skitter")
 rooms.append(r)
 
 # Doors keep the player's direction: leaving left, you arrive on the next room's right

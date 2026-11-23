@@ -1,0 +1,207 @@
+{
+  "canvas": [
+    1920,
+    1080
+  ],
+  "camera_formula": "screen = world_anchor - camera_delta * factor",
+  "layers": [
+    {
+      "file": "background.png",
+      "factor": 0.15,
+      "z": -30,
+      "repeat_x": false
+    },
+    {
+      "file": "midground.png",
+      "factor": 0.5,
+      "z": -20,
+      "repeat_x": false
+    },
+    {
+      "file": "gameplay-preview.png",
+      "factor": 1,
+      "z": 0,
+      "notes": "Sample arrangement only"
+    },
+    {
+      "folder": "../middle-foreground",
+      "factor": 1.08,
+      "z": 5,
+      "notes": "Decorative depth terrain; no collisions"
+    },
+    {
+      "folder": "../foreground",
+      "factor": 1.2,
+      "z": 10
+    }
+  ],
+  "foreground_bands": {
+    "bottom": {
+      "core_size": [
+        2048,
+        512
+      ],
+      "extension_size": [
+        2048,
+        512
+      ],
+      "tall_size": [
+        2048,
+        1024
+      ],
+      "loop_width": 6144,
+      "sequence": [
+        "A",
+        "B",
+        "C"
+      ],
+      "peak_heights_px": [
+        960,
+        657,
+        737
+      ],
+      "row_exports": [
+        {
+          "native_rect": [
+            16,
+            60,
+            992,
+            508
+          ],
+          "export_art_height": 960,
+          "width": 2048,
+          "height_fit_applied": true
+        },
+        {
+          "native_rect": [
+            16,
+            671,
+            992,
+            318
+          ],
+          "export_art_height": 657,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            16,
+            1093,
+            992,
+            357
+          ],
+          "export_art_height": 737,
+          "width": 2048,
+          "height_fit_applied": false
+        }
+      ],
+      "joins": [
+        {
+          "pair": "A -> B",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "B -> C",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "C -> A",
+          "max_edge_rgba_difference": 0
+        }
+      ],
+      "extension_offset": [
+        0,
+        -512
+      ],
+      "core_plus_extension_matches_tall": true
+    },
+    "top": {
+      "core_size": [
+        2048,
+        512
+      ],
+      "extension_size": [
+        2048,
+        512
+      ],
+      "tall_size": [
+        2048,
+        1024
+      ],
+      "loop_width": 6144,
+      "sequence": [
+        "A",
+        "B",
+        "C"
+      ],
+      "peak_heights_px": [
+        737,
+        545,
+        588
+      ],
+      "row_exports": [
+        {
+          "native_rect": [
+            14,
+            105,
+            997,
+            359
+          ],
+          "export_art_height": 737,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            14,
+            615,
+            996,
+            265
+          ],
+          "export_art_height": 545,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            14,
+            1075,
+            996,
+            286
+          ],
+          "export_art_height": 588,
+          "width": 2048,
+          "height_fit_applied": false
+        }
+      ],
+      "joins": [
+        {
+          "pair": "A -> B",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "B -> C",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "C -> A",
+          "max_edge_rgba_difference": 0
+        }
+      ],
+      "extension_offset": [
+        0,
+        512
+      ],
+      "core_plus_extension_matches_tall": true
+    }
+  },
+  "borders": {
+    "left": "../foreground/borders/left.png",
+    "right": "../foreground/borders/right.png",
+    "size": [
+      512,
+      1080
+    ],
+    "notes": "Independent room boundary overlays, not part of the scrolling bands."
+  }
+}
