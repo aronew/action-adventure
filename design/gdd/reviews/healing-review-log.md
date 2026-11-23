@@ -306,3 +306,36 @@ Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291
 Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
 Reviewed-Content-Hash: src/player/player_health.gd 1b3845a8d619de08ff3041f78baa21f1a657b0bd
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean)
+Blocking items: 1 (revised the same day) | Recommended: 7
+Summary: Eighth review, after the restructure (61 KB, presentation split out, rules rewritten as outcomes). All 11 blockers from the seventh review are resolved in the text; the ACs spot-checked against F1 to F3 hold. One blocker remained: the registry disagreed with the GDD on the channel_time range (0.5 vs 0.7 s) and on meter_capacity and capacity_floor (84 fixed vs 60-120 tunable); registry and GDD ranges were aligned in this session. No re-review of the edited text yet.
+Prior verdict resolved: Yes (the seventh review's blockers)
+Findings:
+- [BLOCKING] Registry vs Values/F1/AC-38: channel_time range, meter_capacity output_range and capacity_floor "fixed" contradicted the GDD — revised
+- [RECOMMENDED] AC-18d / ADR-0003: spikes and floor hazards call take_hit but are not on the allowlist; the body_entered "probably safe" claim is unverified
+- [RECOMMENDED] Rule 10 / Values: at channel_time 0.7 s a post-hit heal is exposed for 4 ticks (0.07 s), so "can be punished" is nearly vacuous at the floor
+- [RECOMMENDED] Dependencies / Open Question 15: Player controller still owes heal_deceleration, stick_cancel_deadzone, heal_mode; Enemies row lacks the foe group and calls the dependency soft
+- [RECOMMENDED] design/accessibility-requirements.md does not exist; no test runner (gdUnit4)
+- [RECOMMENDED] Open Questions 11 and 13: guarded boss hits fill 5x the health they remove
+- [RECOMMENDED] Cross-References: stray rows after the table break at lines 284-286
+- [RECOMMENDED] Status line wording and systems-index row aligned (done)
+Reviewed-Content-Hash: design/gdd/healing.md 82abe4598bf5fe8bc83e27d5f4b66ea72d3f4cdc
+Reviewed-Content-Hash: design/registry/entities.yaml 372853165dc992da6330584ba30a784515e58fdc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: src/player/player_health.gd 1b3845a8d619de08ff3041f78baa21f1a657b0bd
