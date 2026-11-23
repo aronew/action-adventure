@@ -63,9 +63,9 @@ the editor) are covered in the game by painted rock that matches the walls aroun
 rock's edge, the textured fill, nothing behind it showing. Step into the fake wall and the
 cover fades out for the rest of the run.
 
-**Floating islands** get no textured wall fill. Their own edge is drawn again just inside
-them, twice, darker each time (where the island is thick enough), so each reads as a
-slightly smaller island inside itself; foliage grows on their tops.
+**Floating islands** get no textured wall fill: their painted edge around a black interior
+(inner rings of the edge were tried and dropped, owner 2026-11-23); foliage grows on their
+tops.
 
 **Bottom foreground**: the near rocks and plants sit along each whole stretch of floor
 (not broken up where islands change the ceiling height above it), rising a little in front

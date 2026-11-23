@@ -40,13 +40,6 @@ const ROOM_FILL_DEPTH := 6
 const CEILING_SHARE := 0.3
 const GROUND_SHARE := 0.35
 const BAND_MIN_SIZE := 0.3
-## The segments' opaque part, in source px of their 1920x1080 canvas: the ceiling's from
-## the top down to this, the ground's from this down to the bottom.
-const CEILING_OPAQUE_PX := 435.0
-const GROUND_OPAQUE_TOP_PX := 645.0
-## How far the ground band's canvas bottom sits below the floor line, world px at full size
-## (so its hills rise only a little above the floor, as in the art room).
-const GROUND_SINK := 66.0
 ## Foliage: canvas bottom below the floor line (world px at full size), the least headroom
 ## (cells) a floor needs for it, and the narrowest run (cells).
 const FOLIAGE_SINK := 64.0
@@ -82,18 +75,8 @@ void fragment() {
 }
 """
 static var _band_shader: Shader
-## Floating islands (rock not joined to the room's walls) get no textured wall fill; their
-## own edge is drawn again just inside them, darker each time, for depth
-## (ISLAND_RING_SHADES: one per inner ring). Foliage on their tops is drawn at this size.
-const ISLAND_RING_SHADES := [Color(0.62, 0.56, 0.56), Color(0.42, 0.38, 0.38)]
-## How far (world px) each inner ring sits inside the one before it.
-const ISLAND_RING_STEP := 14.0
-## Which way is "inward" for each edge piece.
-const ISLAND_NORMALS := {
-	0: Vector2i(1, 1), 1: Vector2i(0, 1), 2: Vector2i(-1, 1),
-	7: Vector2i(1, 0), 9: Vector2i(-1, 0),
-	14: Vector2i(1, -1), 15: Vector2i(0, -1), 16: Vector2i(-1, -1),
-}
+## Floating islands (rock not joined to the room's walls) get no textured wall fill: their
+## painted edge around a black interior. Foliage on their tops is drawn at this size.
 const ISLAND_FOLIAGE_SIZE := 0.55
 ## Secret rooms are covered by painted rock (z above everything in the room) until the
 ## Seeker steps into the fake wall or the room behind it; then the cover fades out.
@@ -103,8 +86,47 @@ const COVER_FADE_TIME := 0.35
 const EXIT_LIGHT := Color(1.0, 0.62, 0.3, 0.55)
 const EXIT_LIGHT_DEPTH := 3.0
 
+## Per-biome art settings, applied over the art room's defaults (Cinderheart Caldera).
+## "band": the foreground pieces for ceilings and floors (folders, piece names, how deep
+## their opaque part reaches in source px, where they sit); "platform_surface": the
+## walkable top of each floating-platform prop in its own px.
+const BIOMES := {
+	"cinderheart": {
+		"band": {"ceiling": "segments/foreground-top-%s.png", "ground": "segments/foreground-bottom-%s.png",
+				"pieces": ["A", "B"], "cave_folder": "corridor/", "open_folder": "parallax/",
+				"ceiling_opaque_px": 435.0, "ground_opaque_top_px": 645.0,
+				"ground_sink": 66.0, "ceiling_tuck": 30.0},
+		"platform_surface": {"platform-short": 83.0, "platform-long": 103.0},
+		"exit_light": Color(1.0, 0.62, 0.3, 0.55),
+	},
+	"hollow_molt": {
+		"biome": "res://assets/environment/hollow-molt/",
+		"close_rocks_dir": "", "close_plants_dir": "",
+		"middle_tileset": "", "middle_masks": "", "middle_fill": "", "middle_features": [],
+		"back_tint": Color(0.82, 0.82, 0.82),
+		"background_color": Color(0.04, 0.04, 0.045),
+		# Measured from the tiles' alpha (tools: the same method reproduces Cinderheart's).
+		"tile_insets": {
+			0: [84, 0, 105, 0], 1: [129, 0, 0, 0], 2: [89, 0, 0, 65],
+			7: [0, 0, 95, 0], 9: [0, 0, 0, 94],
+			14: [0, 75, 84, 0], 15: [0, 92, 0, 0], 16: [0, 81, 0, 72],
+		},
+		"prop_bounds": {"platform-short": [8, 8, 143, 94], "platform-medium": [8, 8, 233, 106],
+				"platform-long": [8, 8, 353, 113]},
+		"mood_enabled": false,
+		"band": {"ceiling": "foreground/top/%s.png", "ground": "foreground/bottom/%s.png",
+				"pieces": ["A", "B", "C"], "cave_folder": "", "open_folder": "",
+				"ceiling_opaque_px": 130.0, "ground_opaque_top_px": 300.0,
+				"ground_sink": 128.0, "ceiling_tuck": 10.0},
+		"platform_surface": {"platform-short": 15.0, "platform-long": 16.0},
+		"exit_light": Color(0.85, 0.87, 0.9, 0.4),
+	},
+}
+
 ## The room's name, shown on entry.
 @export var room_name := "Room"
+## Which biome's art the room is drawn with (a key of BIOMES).
+@export var biome_id := "cinderheart"
 ## Columns from this one on get the cave look; -1 for none (all open cavern), 0 for all.
 @export var cave_from_col := -1
 ## Seconds from death to respawn.
@@ -124,11 +146,15 @@ var _islands := {}
 ## Fake-wall and secret-room cells, hidden under the cover until found.
 var _cover_cells := {}
 var _cover: Node2D
+var _band: Dictionary
+var _platform_surface: Dictionary
+var _exit_light := EXIT_LIGHT
 
 
 func _ready() -> void:
 	if RegionTravel.player_state == null:
 		RegionTravel.reset()
+	_apply_biome()
 	_read_layout()
 	player_state = RegionTravel.player_state
 	ledge_grab = false
@@ -156,6 +182,19 @@ func _ready() -> void:
 	for exit in _exits():
 		RegionTravel.preload_room(exit.target_room)
 	RegionTravel.fade(get_tree(), 0.0, 0.25)
+
+
+## Sets the art room's biome settings from BIOMES[biome_id].
+func _apply_biome() -> void:
+	var settings: Dictionary = BIOMES.get(biome_id, BIOMES["cinderheart"])
+	for key in settings:
+		if key in ["band", "platform_surface", "exit_light"]:
+			continue
+		set(key, settings[key])
+	_band = settings.get("band", BIOMES["cinderheart"]["band"])
+	_platform_surface = settings.get("platform_surface", BIOMES["cinderheart"]["platform_surface"])
+	_exit_light = settings.get("exit_light", EXIT_LIGHT)
+	RenderingServer.set_default_clear_color(background_color)
 
 
 ## Turns the Layout layer into the pipeline's grid ('#' rock, '.' air) and its free-floating
@@ -254,31 +293,9 @@ func _find_islands() -> void:
 				_islands[c] = depth
 
 
-## No textured wall fill inside floating islands (they get inner rings instead).
+## No textured wall fill inside floating islands: their edge around a black interior.
 func _wants_fill(col: int, row: int) -> bool:
 	return not _islands.has(Vector2i(col, row))
-
-
-## An island's edge drawn again just inside it: each of its edge pieces copied and moved
-## inward along the edge's normal by ISLAND_RING_STEP (twice as far for the second ring),
-## shaded darker, so the island reads as a slightly smaller island inside itself. A ring
-## is drawn only where the island is thick enough behind that edge.
-func _add_island_rings(parent: Node2D) -> void:
-	for cell: Vector2i in _islands:
-		if _islands[cell] != 1:
-			continue
-		var tile := _edge_tile(cell.x, cell.y)
-		if not ISLAND_NORMALS.has(tile):
-			continue
-		var normal: Vector2i = ISLAND_NORMALS[tile]
-		for ring in ISLAND_RING_SHADES.size():
-			# The island must go on at least ring + 1 cells behind this edge.
-			if not _islands.has(cell + normal * (ring + 1)):
-				break
-			var sprite := _add_middle_tile(parent, tile, cell.x, cell.y)
-			sprite.position += Vector2(normal) * ISLAND_RING_STEP * (ring + 1)
-			sprite.modulate = ISLAND_RING_SHADES[ring]
-			sprite.z_index = MIDDLE_Z - 1
 
 
 ## True when the floor run stands on a floating island.
@@ -350,14 +367,17 @@ func _build_cover() -> void:
 		# part, then the rim on top; an inner cell is black under its fill.
 		if tile >= 0:
 			_add_tile(_cover, tile, c.x, c.y)
-			_add_middle_fill(_cover, c.x, c.y, [tile]).modulate.a = alpha
-			_add_middle_tile(_cover, tile, c.x, c.y)
+			if not middle_fill.is_empty():
+				_add_middle_fill(_cover, c.x, c.y, [tile]).modulate.a = alpha
+			if not middle_tileset.is_empty():
+				_add_middle_tile(_cover, tile, c.x, c.y)
 		else:
 			var black := Polygon2D.new()
 			black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
 			black.color = TERRAIN_COLOR
 			_cover.add_child(black)
-			_add_middle_fill(_cover, c.x, c.y).modulate.a = alpha
+			if not middle_fill.is_empty():
+				_add_middle_fill(_cover, c.x, c.y).modulate.a = alpha
 		var shape := CollisionShape2D.new()
 		shape.shape = RectangleShape2D.new()
 		(shape.shape as RectangleShape2D).size = Vector2.ONE * CELL
@@ -379,7 +399,6 @@ func _build_cover() -> void:
 ## foliage bands anchored to the terrain (see CEILING_SHARE).
 func _add_foreground(parent: Node2D) -> void:
 	_add_middle_rim(parent)
-	_add_island_rings(parent)
 	for run in _ceiling_runs():
 		if run[3] >= BAND_MIN_HEADROOM:
 			_add_ceiling_band(parent, run)
@@ -458,35 +477,38 @@ func _solid_below(run: Array, depth: int) -> bool:
 	return true
 
 
-func _segments(folder: String, side: String) -> Array[Texture2D]:
-	return [_texture(BIOME + folder + "segments/foreground-%s-A.png" % side),
-			_texture(BIOME + folder + "segments/foreground-%s-B.png" % side)]
-
-
-## The cave look's segments for runs in the cave columns, else the open cavern's.
-func _folder_for(run: Array) -> String:
+## The biome's foreground pieces for a ceiling ("ceiling") or a floor ("ground") band;
+## in a biome with a cave look, the cave's pieces for runs in the cave columns.
+func _segments(run: Array, side: String) -> Array[Texture2D]:
 	var mid: float = (run[1] + run[2]) * 0.5
-	return "corridor/" if corridor_start_col >= 0 and mid >= corridor_start_col else "parallax/"
+	var in_cave := corridor_start_col >= 0 and mid >= corridor_start_col
+	var folder: String = _band["cave_folder"] if in_cave else _band["open_folder"]
+	var pieces: Array[Texture2D] = []
+	for name in _band["pieces"]:
+		pieces.append(_texture(biome + folder + _band[side] % name))
+	return pieces
 
 
 func _add_ceiling_band(parent: Node2D, run: Array) -> void:
-	var pieces := _segments(_folder_for(run), "top")
+	var pieces := _segments(run, "ceiling")
 	var full := VIEW_SIZE.y / 1080.0
-	var size := clampf(run[3] * CELL * CEILING_SHARE / (CEILING_OPAQUE_PX * full), BAND_MIN_SIZE, 1.0)
+	var size := clampf(run[3] * CELL * CEILING_SHARE / (float(_band["ceiling_opaque_px"]) * full),
+			BAND_MIN_SIZE, 1.0)
 	# The canvas's top is solid rock: tuck it into the ceiling, its edge faded out.
-	var top: float = run[0] * CELL - 30.0 * size
+	var top: float = run[0] * CELL - float(_band["ceiling_tuck"]) * size
 	# Fixed to its ceiling (sideways too): it is the ceiling's own rock.
 	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_TOP, 0,
 			Vector2(CEILING_TOP_FADE, 1.0), 1.0)
 
 
 func _add_ground_band(parent: Node2D, run: Array) -> void:
-	var pieces := _segments(_folder_for(run), "bottom")
+	var pieces := _segments(run, "ground")
 	var full := VIEW_SIZE.y / 1080.0
-	var size := clampf(run[3] * CELL * GROUND_SHARE / ((1080.0 - GROUND_OPAQUE_TOP_PX) * full),
-			0.6, 1.0)
+	var canvas_h := float(pieces[0].get_height())
+	var size := clampf(run[3] * CELL * GROUND_SHARE
+			/ ((canvas_h - float(_band["ground_opaque_top_px"])) * full), 0.6, 1.0)
 	var floor_line: float = (run[0] + 1) * CELL
-	var top := floor_line + GROUND_SINK * size - VIEW_SIZE.y * size
+	var top := floor_line + float(_band["ground_sink"]) * size - canvas_h * full * size
 	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_BOTTOM, 0,
 			Vector2(0.0, 1.0 - GROUND_BOTTOM_FADE))
 
@@ -553,7 +575,7 @@ func _add_exit_lights(parent: Node2D) -> void:
 		var at: Vector2 = exit.position + (exit.get_parent() as Node2D).position
 		var half: Vector2 = exit.size * 0.5
 		var depth := EXIT_LIGHT_DEPTH * CELL
-		var clear := Color(EXIT_LIGHT, 0.0)
+		var clear := Color(_exit_light, 0.0)
 		var light := Polygon2D.new()
 		light.z_index = -5
 		var inward := Vector2.ZERO
@@ -576,7 +598,7 @@ func _add_exit_lights(parent: Node2D) -> void:
 			a = Vector2(at.x - half.x, y)
 			b = Vector2(at.x + half.x, y)
 		light.polygon = PackedVector2Array([a, b, b + inward * depth, a + inward * depth])
-		light.vertex_colors = PackedColorArray([EXIT_LIGHT, EXIT_LIGHT, clear, clear])
+		light.vertex_colors = PackedColorArray([_exit_light, _exit_light, clear, clear])
 		parent.add_child(light)
 
 
@@ -592,11 +614,12 @@ func _platform_props(col: int, count: int, row: int) -> Array:
 	var x0 := col * CELL
 	var width := count * CELL
 	if count == 1:
-		return [["platform-short", x0 + width * 0.5, surface, 83.0]]
+		return [["platform-short", x0 + width * 0.5, surface, _platform_surface["platform-short"]]]
 	var pieces := maxi(1, ceili(count / 2.0))
 	var props := []
 	for i in pieces:
-		props.append(["platform-long", x0 + (i + 0.5) * width / pieces, surface, 103.0])
+		props.append(["platform-long", x0 + (i + 0.5) * width / pieces, surface,
+				_platform_surface["platform-long"]])
 	return props
 
 

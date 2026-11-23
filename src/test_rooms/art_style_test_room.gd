@@ -247,7 +247,7 @@ const MIDDLE_PIECE_SCALE := 1.0
 ## floor or wall no longer breaks every cell. rim-cut/ is rim-loop/ with the black core
 ## cut out to a soft contact shadow (tools/asset-pipeline/cut_rim_core.py), so the wall
 ## fill drawn under every solid cell shows through: one continuous fill, no seam between
-## an edge tile's core and the fill beside it. MIDDLE_MASKS (the uncut set) masks the
+## an edge tile's core and the fill beside it. middle_masks (the uncut set) masks the
 ## fill to the solid.
 const MIDDLE_TILESET := "modular-foreground/rim-cut/"
 const MIDDLE_MASKS := "modular-foreground/rim-loop/"
@@ -382,6 +382,25 @@ var corridor_start_col := CORRIDOR_START_COL
 var corridor_ground_props: Array = CORRIDOR_GROUND_PROPS
 var corridor_hanging_props: Array = CORRIDOR_HANGING_PROPS
 var borders: Array = BORDERS
+## The biome's art (set before _ready by a room that reuses this pipeline for another
+## biome; the defaults are this room's, Cinderheart Caldera). An empty folder or list
+## turns that layer off.
+var biome := BIOME
+var close_rocks_dir := CLOSE_ROCKS
+var close_plants_dir := CLOSE_PLANTS
+var middle_tileset := MIDDLE_TILESET
+var middle_masks := MIDDLE_MASKS
+var middle_fill := MIDDLE_FILL
+var middle_features: Array = MIDDLE_FEATURES
+var back_tint := BACK_TINT
+var background_color := BACKGROUND_COLOR
+## Where each terrain edge tile's painted rock face sits (collision trim), and each prop's
+## solid bounds, for this biome's art.
+var tile_insets: Dictionary = TILE_INSETS
+var prop_bounds: Dictionary = PROP_BOUNDS
+## Whether the warm mood pass (fog, embers, colour grade) runs; a biome with another
+## palette turns it off.
+var mood_enabled := true
 ## Set before _ready by a room that reuses this pipeline (RegionRoom): the Seeker's
 ## abilities (null: the Player's own test default, everything owned), whether the ledge
 ## grab is on, and how many cells deep into solid rock the wall fill reaches (-1: all of
@@ -420,7 +439,7 @@ var _lit_props: Array[Sprite2D] = []
 
 
 func _ready() -> void:
-	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
+	RenderingServer.set_default_clear_color(background_color)
 	_room_size = Vector2(grid[0].length(), grid.size()) * CELL
 	if fill_depth >= 0:
 		_measure_depth()
@@ -431,9 +450,9 @@ func _ready() -> void:
 	add_child(world)
 
 	_add_back_layers(world)
-	_add_close_band(world, CLOSE_ROCKS, CLOSE_ROCK_PIECES, CLOSE_ROCKS_SCALE,
+	_add_close_band(world, close_rocks_dir, CLOSE_ROCK_PIECES, CLOSE_ROCKS_SCALE,
 			CLOSE_ROCKS_SINK, CLOSE_ROCKS_TALLEST, 0)
-	_add_close_band(world, CLOSE_PLANTS, CLOSE_PLANT_PIECES, CLOSE_PLANTS_SCALE,
+	_add_close_band(world, close_plants_dir, CLOSE_PLANT_PIECES, CLOSE_PLANTS_SCALE,
 			CLOSE_ROCKS_SINK - CLOSE_PLANTS_RISE, CLOSE_PLANTS_TALLEST, 1)
 	_add_corridor_wall(world)
 	_add_terrain(world)
@@ -441,21 +460,21 @@ func _ready() -> void:
 		_add_island(world, island)
 	var s := _prop_scale()
 	for entry in ground_props if SHOW_GROUND_PROPS else []:
-		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var bounds: Array = prop_bounds[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
-	var ceiling_bottom := CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
+	var ceiling_bottom: float = CELL - tile_insets[TILE_B][1] * CELL / TILE_SOURCE
 	for entry in hanging_props:
-		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var bounds: Array = prop_bounds[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], ceiling_bottom - bounds[1] * s - PROP_SINK)
 	for entry in corridor_ground_props if SHOW_GROUND_PROPS else []:
-		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var bounds: Array = prop_bounds[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1] - bounds[0] * s, entry[2] - bounds[3] * s + PROP_SINK)
-	var corridor_ceiling := 2.0 * CELL - TILE_INSETS[TILE_B][1] * CELL / TILE_SOURCE
+	var corridor_ceiling: float = 2.0 * CELL - tile_insets[TILE_B][1] * CELL / TILE_SOURCE
 	for entry in corridor_hanging_props:
-		var bounds: Array = PROP_BOUNDS[entry[0]]
+		var bounds: Array = prop_bounds[entry[0]]
 		var sprite := _prop_sprite(world, entry[0])
 		sprite.position = Vector2(entry[1], corridor_ceiling - bounds[1] * s - PROP_SINK)
 	_add_foreground(world)
@@ -482,11 +501,12 @@ func _ready() -> void:
 	player.add_child(camera)
 	camera.setup(player)
 
-	_mood = RoomAtmosphere.new()
-	add_child(_mood)
-	_mood.setup(world, camera, player, VIEW_SIZE)
-	for sprite in _lit_props:
-		var bounds: Array = PROP_BOUNDS[sprite.get_meta(&"prop")]
+	if mood_enabled:
+		_mood = RoomAtmosphere.new()
+		add_child(_mood)
+		_mood.setup(world, camera, player, VIEW_SIZE)
+	for sprite in _lit_props if _mood != null else []:
+		var bounds: Array = prop_bounds[sprite.get_meta(&"prop")]
 		var centre := Vector2(bounds[0] + bounds[2], bounds[1] + bounds[3]) * 0.5
 		_mood.add_glow(world, sprite.position + centre * sprite.scale,
 				GLOWING_PROPS[sprite.get_meta(&"prop")])
@@ -549,7 +569,7 @@ func _texture(path: String) -> Texture2D:
 
 func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 	var sprite := Sprite2D.new()
-	sprite.texture = _texture(BIOME + "assets/%s.png" % prop)
+	sprite.texture = _texture(biome + "assets/%s.png" % prop)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * _prop_scale()
 	sprite.set_meta(&"prop", prop)
@@ -673,8 +693,8 @@ func _add_terrain(parent: Node2D) -> void:
 			if not corner.is_empty():
 				# The floor (or ceiling) beside it runs on under the wall face at its
 				# surface height.
-				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0] if corner[0] == TILE_T \
-						else [0, TILE_INSETS[TILE_B][1], 0, 0]
+				insets = [tile_insets[TILE_T][0], 0, 0, 0] if corner[0] == TILE_T \
+						else [0, tile_insets[TILE_B][1], 0, 0]
 			var same: bool = collides and run_start >= 0 and insets[0] == run_insets[0] \
 					and insets[1] == run_insets[1]
 			var interior: bool = solid and tile < 0 and corner.is_empty()
@@ -718,7 +738,7 @@ func _add_terrain(parent: Node2D) -> void:
 
 func _add_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D:
 	var sprite := Sprite2D.new()
-	sprite.texture = _texture(BIOME + "terrain/tiles/tile-%02d.png" % tile)
+	sprite.texture = _texture(biome + "terrain/tiles/tile-%02d.png" % tile)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL)
@@ -736,7 +756,7 @@ func _add_box(body: StaticBody2D, rect: Rect2) -> void:
 
 
 func _add_island(parent: Node2D, island: Array) -> void:
-	var bounds: Array = PROP_BOUNDS[island[0]]
+	var bounds: Array = prop_bounds[island[0]]
 	var s := _prop_scale()
 	var sprite := _prop_sprite(parent, island[0])
 	sprite.position = Vector2(island[1] - (bounds[0] + bounds[2]) * 0.5 * s,
@@ -761,7 +781,7 @@ func _add_back_layers(parent: Node2D) -> void:
 	for entry in BACK_LAYERS:
 		var factor: float = entry[1]
 		var repeats: bool = entry[2]
-		var texture := _texture(BIOME + "parallax/%s.png" % entry[0])
+		var texture := _texture(biome + "parallax/%s.png" % entry[0])
 		var needed := VIEW_SIZE + camera_travel * factor
 		var image_scale := needed.y / texture.get_height() if repeats \
 				else maxf(needed.x / texture.get_width(), needed.y / texture.get_height())
@@ -769,13 +789,13 @@ func _add_back_layers(parent: Node2D) -> void:
 		var copies := int(ceil(needed.x / tile.x)) if repeats else 1
 		var layer := _strip_layer(parent, texture, Rect2(Vector2.ZERO, texture.get_size()),
 				image_scale, copies, index)
-		layer.modulate = BACK_TINT
+		layer.modulate = back_tint
 		index += 10
 		var size := Vector2(tile.x * copies, tile.y)
 		_layers.append([layer, Vector2(factor, factor), _room_size * 0.5 * factor - size * 0.5])
 
 
-## A close scenery band (the close rocks, the close plants; see CLOSE_ROCKS): one
+## A close scenery band (the close rocks, the close plants; see close_rocks_dir): one
 ## stretch per run of floor, from [param folder]'s [param names] repeating (starting at
 ## [param first_piece]), scrolling sideways at [param scroll], its bottom [param sink]
 ## world px below the floor at full size. [param tallest]: the art's tallest point in
@@ -786,7 +806,7 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 		return
 	var pieces: Array[Texture2D] = []
 	for piece in names:
-		pieces.append(_texture(BIOME + folder + "%s.png" % piece))
+		pieces.append(_texture(biome + folder + "%s.png" % piece))
 	var image_scale := VIEW_SIZE.y / 1080.0
 	var piece_size := pieces[0].get_size() * image_scale
 	var tallest := tallest_px * image_scale
@@ -920,7 +940,7 @@ func _add_foreground(parent: Node2D) -> void:
 	_add_silhouettes(parent)
 	# Borders are fixed in the world at the room's ends (see BORDERS for their scale).
 	for border in borders:
-		var texture := _texture(BIOME + border[0])
+		var texture := _texture(biome + border[0])
 		var height := _room_size.y if border[2] else VIEW_SIZE.y
 		var image_scale := height / texture.get_height()
 		var sprite := Sprite2D.new()
@@ -937,16 +957,20 @@ func _add_foreground(parent: Node2D) -> void:
 ## The middle rim: for every exposed terrain edge cell, the kit's matching piece, set
 ## inside the solid on each exposed side, fixed in the world like the terrain.
 func _add_middle_rim(parent: Node2D) -> void:
+	# A biome with neither a modular rim set nor the corner kit has no rim layer.
+	if middle_tileset.is_empty() and not ResourceLoader.exists(
+			biome + "middle-foreground/pieces/%s.png" % MIDDLE_PIECES[TILE_T]):
+		return
 	var size := CELL * MIDDLE_PIECE_SCALE
-	var featured := _add_middle_features(parent) if not MIDDLE_FILL.is_empty() else {}
+	var featured := _add_middle_features(parent) if not middle_fill.is_empty() else {}
 	for row in grid.size():
 		for col in grid[0].length():
 			if not _solid(col, row):
 				continue
 			var tile := _edge_tile(col, row)
-			if not MIDDLE_TILESET.is_empty():
+			if not middle_tileset.is_empty():
 				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
-				if not MIDDLE_FILL.is_empty() and not featured.has(Vector2i(col, row)) \
+				if not middle_fill.is_empty() and not featured.has(Vector2i(col, row)) \
 						and _shallow(col, row):
 					_add_middle_fill(parent, col, row, tiles)
 				if tile < 0 and not tiles.is_empty():
@@ -972,12 +996,12 @@ func _add_middle_rim(parent: Node2D) -> void:
 			layer.z_index = MIDDLE_Z
 			parent.add_child(layer)
 			var sprite := Sprite2D.new()
-			sprite.texture = _texture(BIOME + "middle-foreground/pieces/%s.png" % MIDDLE_PIECES[tile])
+			sprite.texture = _texture(biome + "middle-foreground/pieces/%s.png" % MIDDLE_PIECES[tile])
 			sprite.centered = false
 			sprite.scale = Vector2.ONE * size / 512.0
 			layer.add_child(sprite)
 			layer.position = spot
-	if not MIDDLE_TILESET.is_empty() and not MIDDLE_FILL.is_empty() and MIDDLE_PATCHES:
+	if not middle_tileset.is_empty() and not middle_fill.is_empty() and MIDDLE_PATCHES:
 		_add_middle_patches(parent, featured)
 
 
@@ -1015,7 +1039,7 @@ func _fade(sprite: Sprite2D, along_x: bool, solid: float, clear: float) -> void:
 func _add_middle_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D:
 	var inset := _middle_inset(tile)
 	var sprite := Sprite2D.new()
-	sprite.texture = _texture(BIOME + MIDDLE_TILESET + "tile-%02d.png" % tile)
+	sprite.texture = _texture(biome + middle_tileset + "tile-%02d.png" % tile)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL) + inset
@@ -1065,24 +1089,24 @@ func _middle_inset(tile: int) -> Vector2:
 	return inset
 
 
-## A tile's collision trim, [top, bottom, left, right] in source px (TILE_INSETS), with
+## A tile's collision trim, [top, bottom, left, right] in source px (tile_insets), with
 ## the outer corners' top (or bottom) and side set to the straight tiles': their own art rounds
 ## off a little higher, which left a 0.6 px step in the floor at every ledge corner that
 ## caught the player. One floor is now one level box.
 func _collision_insets(tile: int) -> Array:
 	if tile < 0:
 		return [0, 0, 0, 0]
-	var insets: Array = TILE_INSETS[tile].duplicate()
+	var insets: Array = tile_insets[tile].duplicate()
 	if tile in [TILE_TL, TILE_TR]:
-		insets[0] = TILE_INSETS[TILE_T][0]
+		insets[0] = tile_insets[TILE_T][0]
 	if tile in [TILE_BL, TILE_BR]:
-		insets[1] = TILE_INSETS[TILE_B][1]
+		insets[1] = tile_insets[TILE_B][1]
 	# Their sides likewise take the straight wall's, or the wall face had a small lip
 	# under each corner that the player caught on while sliding down it.
 	if tile in [TILE_TL, TILE_BL]:
-		insets[2] = TILE_INSETS[TILE_L][2]
+		insets[2] = tile_insets[TILE_L][2]
 	if tile in [TILE_TR, TILE_BR]:
-		insets[3] = TILE_INSETS[TILE_R][3]
+		insets[3] = tile_insets[TILE_R][3]
 	return insets
 
 
@@ -1108,7 +1132,7 @@ func _add_middle_patches(parent: Node2D, featured: Dictionary) -> void:
 				continue
 			var variant := posmod(hash(Vector2i(col2 * 3 + 1, row2 * 5 + 2)), MIDDLE_FILL_VARIANTS)
 			var sprite := Sprite2D.new()
-			sprite.texture = _texture(BIOME + MIDDLE_FILL + "fill-%02d.png" % variant)
+			sprite.texture = _texture(biome + middle_fill + "fill-%02d.png" % variant)
 			sprite.centered = false
 			sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 			sprite.position = square.position
@@ -1153,12 +1177,12 @@ func _fill_cell(col: int, row: int) -> bool:
 			and _inside_corner_tiles(col, row).is_empty()
 
 
-## Places the large 2x2 rock features (see MIDDLE_FEATURES) and returns the cells they
+## Places the large 2x2 rock features (see middle_features) and returns the cells they
 ## cover, so the fill skips them. Scans top-left to bottom-right; a block is taken only
 ## when all four cells are free fill cells, so features never overlap or touch an edge.
 func _add_middle_features(parent: Node2D) -> Dictionary:
 	var covered := {}
-	if MIDDLE_FEATURES.is_empty():
+	if middle_features.is_empty():
 		return covered
 	for row in grid.size() - 1:
 		for col in grid[0].length() - 1:
@@ -1176,7 +1200,7 @@ func _add_middle_features(parent: Node2D) -> Dictionary:
 				continue
 			for cell in block:
 				covered[cell] = true
-			var texture := _texture(BIOME + MIDDLE_FEATURES[posmod(roll / 7, MIDDLE_FEATURES.size())])
+			var texture := _texture(biome + middle_features[posmod(roll / 7, middle_features.size())])
 			var sprite := Sprite2D.new()
 			sprite.texture = texture
 			sprite.centered = false
@@ -1193,7 +1217,7 @@ func _add_middle_features(parent: Node2D) -> Dictionary:
 func _add_middle_fill(parent: Node2D, col: int, row: int, masks: Array = []) -> Sprite2D:
 	var variant := posmod(hash(Vector2i(col, row)), MIDDLE_FILL_VARIANTS)
 	var sprite := Sprite2D.new()
-	sprite.texture = _texture(BIOME + MIDDLE_FILL + "fill-%02d.png" % variant)
+	sprite.texture = _texture(biome + middle_fill + "fill-%02d.png" % variant)
 	sprite.centered = false
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL)
@@ -1209,7 +1233,7 @@ func _add_middle_fill(parent: Node2D, col: int, row: int, masks: Array = []) -> 
 		for i in mini(masks.size(), 2):
 			var tile: int = masks[i]
 			material.set_shader_parameter("mask_" + keys[i],
-					_texture(BIOME + MIDDLE_MASKS + "tile-%02d.png" % tile))
+					_texture(biome + middle_masks + "tile-%02d.png" % tile))
 			material.set_shader_parameter("shift_" + keys[i], _middle_inset(tile) / CELL)
 		material.set_shader_parameter("use_b", 1.0 if masks.size() > 1 else 0.0)
 		sprite.material = material
@@ -1224,7 +1248,7 @@ func _add_foreground_set(mask: Node2D, folder: String, top_ref: float, bottom_re
 	var camera_travel := _room_size - VIEW_SIZE
 	var center_min := VIEW_SIZE * 0.5
 	for strip in FOREGROUND_STRIPS:
-		var texture := _texture(BIOME + folder + "%s.png" % strip)
+		var texture := _texture(biome + folder + "%s.png" % strip)
 		var image_scale := VIEW_SIZE.y / texture.get_height()
 		var period := texture.get_width() * image_scale
 		var copies := int(ceil((VIEW_SIZE.x + camera_travel.x * FOREGROUND_SCALE.x) / period)) + 1
@@ -1325,7 +1349,7 @@ func _add_corridor_wall(parent: Node2D) -> void:
 		return
 	var mouth := corridor_start_col * CELL
 	var mask := _blend_mask(parent, mouth - LAYER_BLEND * 0.5, _room_size.x, true, -10)
-	var texture := _texture(BIOME + "corridor/background-loop.png")
+	var texture := _texture(biome + "corridor/background-loop.png")
 	var image_scale := VIEW_SIZE.y / texture.get_height()
 	var period := texture.get_width() * image_scale
 	var factor := Vector2(CORRIDOR_WALL_SCALE, CORRIDOR_WALL_SCALE)

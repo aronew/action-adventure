@@ -1,0 +1,214 @@
+{
+  "biome": "The Hollow Molt",
+  "terrain_sets": [
+    {
+      "folder": "terrain",
+      "atlas_size": [
+        3584,
+        3584
+      ],
+      "tile_size": [
+        512,
+        512
+      ],
+      "verified_tiles": 49,
+      "matched_section_target_rectangles": true,
+      "new_contours": true
+    },
+    {
+      "folder": "middle-foreground",
+      "atlas_size": [
+        3584,
+        3584
+      ],
+      "tile_size": [
+        512,
+        512
+      ],
+      "verified_tiles": 49,
+      "matched_section_target_rectangles": true,
+      "new_contours": true
+    }
+  ],
+  "main_terrain_tiles": 49,
+  "decorative_depth_tiles": 49,
+  "props": 16,
+  "parallax_canvas": [
+    1920,
+    1080
+  ],
+  "background_opaque": true,
+  "midground_center_alpha": 0,
+  "foreground": {
+    "bottom": {
+      "core_size": [
+        2048,
+        512
+      ],
+      "extension_size": [
+        2048,
+        512
+      ],
+      "tall_size": [
+        2048,
+        1024
+      ],
+      "loop_width": 6144,
+      "sequence": [
+        "A",
+        "B",
+        "C"
+      ],
+      "peak_heights_px": [
+        960,
+        657,
+        737
+      ],
+      "row_exports": [
+        {
+          "native_rect": [
+            16,
+            60,
+            992,
+            508
+          ],
+          "export_art_height": 960,
+          "width": 2048,
+          "height_fit_applied": true
+        },
+        {
+          "native_rect": [
+            16,
+            671,
+            992,
+            318
+          ],
+          "export_art_height": 657,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            16,
+            1093,
+            992,
+            357
+          ],
+          "export_art_height": 737,
+          "width": 2048,
+          "height_fit_applied": false
+        }
+      ],
+      "joins": [
+        {
+          "pair": "A -> B",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "B -> C",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "C -> A",
+          "max_edge_rgba_difference": 0
+        }
+      ],
+      "extension_offset": [
+        0,
+        -512
+      ],
+      "core_plus_extension_matches_tall": true
+    },
+    "top": {
+      "core_size": [
+        2048,
+        512
+      ],
+      "extension_size": [
+        2048,
+        512
+      ],
+      "tall_size": [
+        2048,
+        1024
+      ],
+      "loop_width": 6144,
+      "sequence": [
+        "A",
+        "B",
+        "C"
+      ],
+      "peak_heights_px": [
+        737,
+        545,
+        588
+      ],
+      "row_exports": [
+        {
+          "native_rect": [
+            14,
+            105,
+            997,
+            359
+          ],
+          "export_art_height": 737,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            14,
+            615,
+            996,
+            265
+          ],
+          "export_art_height": 545,
+          "width": 2048,
+          "height_fit_applied": false
+        },
+        {
+          "native_rect": [
+            14,
+            1075,
+            996,
+            286
+          ],
+          "export_art_height": 588,
+          "width": 2048,
+          "height_fit_applied": false
+        }
+      ],
+      "joins": [
+        {
+          "pair": "A -> B",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "B -> C",
+          "max_edge_rgba_difference": 0
+        },
+        {
+          "pair": "C -> A",
+          "max_edge_rgba_difference": 0
+        }
+      ],
+      "extension_offset": [
+        0,
+        512
+      ],
+      "core_plus_extension_matches_tall": true
+    }
+  },
+  "borders": [
+    512,
+    1080
+  ],
+  "strict_grayscale_pngs_verified": 149,
+  "mean_nonblack_rim_value": {
+    "gameplay": 68.78,
+    "middle_foreground": 36.65
+  },
+  "collision_or_engine_autotile_verified": false,
+  "all_tile_extractions_verified": 98,
+  "all_prop_extractions_verified": 16
+}

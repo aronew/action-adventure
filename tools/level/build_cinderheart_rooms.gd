@@ -65,6 +65,7 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	root.name = String(data["key"]).to_pascal_case()
 	root.room_name = data["name"]
 	root.cave_from_col = int(data.get("cave_from_col", -1))
+	root.biome_id = data.get("biome", "cinderheart")
 	var w: int = data["w"]
 	var h: int = data["h"]
 	var rows: Array = data["rows"]
@@ -86,6 +87,9 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	terrain.name = "PaintedTerrain"
 	terrain.room_cells = Vector2i(w, h)
 	terrain.preview_only = true
+	var biome_dir: String = RegionRoom.BIOMES.get(root.biome_id, {}).get("biome",
+			"res://assets/environment/cinderheart-caldera/")
+	terrain.tiles_dir = biome_dir + "terrain/tiles"
 	root.add_child(terrain)
 	terrain.layout = layout
 
@@ -164,7 +168,9 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	_own(root, root)
 	var packed := PackedScene.new()
 	packed.pack(root)
-	var path: String = OUT_DIR + data["key"] + ".tscn"
+	var out_dir: String = data.get("out_dir", OUT_DIR)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out_dir))
+	var path: String = out_dir + data["key"] + ".tscn"
 	var err := ResourceSaver.save(packed, path)
 	print("%s -> %s (%s)" % [data["key"], path, error_string(err)])
 	root.free()
