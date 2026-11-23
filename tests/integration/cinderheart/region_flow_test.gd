@@ -23,7 +23,7 @@ func _release_all() -> void:
 
 func test_walking_out_the_right_edge_arrives_in_the_next_room() -> void:
 	var room: RegionRoom = await _load("c01_waking_niche", &"", false)
-	room.player.global_position = Vector2(44 * 36, 6 * 36 - 4)
+	room.player.global_position = Vector2(57 * 36, 10 * 36 - 4)
 	Input.action_press(&"move_right")
 	for i in 120:
 		await physics_frame

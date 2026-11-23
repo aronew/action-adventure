@@ -382,16 +382,27 @@ var corridor_start_col := CORRIDOR_START_COL
 var corridor_ground_props: Array = CORRIDOR_GROUND_PROPS
 var corridor_hanging_props: Array = CORRIDOR_HANGING_PROPS
 var borders: Array = BORDERS
+## Set before _ready by a room that reuses this pipeline (RegionRoom): the Seeker's
+## abilities (null: the Player's own test default, everything owned), whether the ledge
+## grab is on, and how many cells deep into solid rock the wall fill reaches (-1: all of
+## it; big carved rooms limit it, since deep rock is never seen and every cell is sprites).
+var player_state: PlayerState = null
+var ledge_grab := true
+var fill_depth := -1
+## The Seeker this room made (read only).
+var seeker: Player
+## Distance in cells from each solid cell to the nearest open one (only when fill_depth >= 0).
+var _depth := {}
 
-var _textures := {}
-var _fade_shader: Shader
-var _mask_shader: Shader
-var _end_fade_shader: Shader
-var _bend_shader: Shader
+static var _textures := {}
+static var _fade_shader: Shader
+static var _mask_shader: Shader
+static var _end_fade_shader: Shader
+static var _bend_shader: Shader
 var _silhouette_layer: Node2D
 var _silhouette_lag_y := NAN
 var _silhouette_ticks := 0
-var _patch_shader: Shader
+static var _patch_shader: Shader
 var _camera: Camera2D
 var _room_size := Vector2.ZERO
 ## Manual parallax: [layer node, scroll scale, base]. Each frame a layer is placed at
@@ -405,6 +416,8 @@ var _lit_props: Array[Sprite2D] = []
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(BACKGROUND_COLOR)
 	_room_size = Vector2(grid[0].length(), grid.size()) * CELL
+	if fill_depth >= 0:
+		_measure_depth()
 
 	var world := Node2D.new()
 	world.name = "PaintedWorld"
@@ -446,8 +459,11 @@ func _ready() -> void:
 	# This room is the all-abilities arena: the ledge grab is on here (it is off by
 	# default; see PlayerConfig.ledge_grab_enabled). A copy, so other rooms keep theirs.
 	player.config = player.config.duplicate()
-	player.config.ledge_grab_enabled = true
+	player.config.ledge_grab_enabled = ledge_grab
+	if player_state != null:
+		player.player_state = player_state
 	add_child(player)
+	seeker = player
 	var camera := PlayerCamera.new()
 	_camera = camera
 	camera.limit_left = 0
@@ -540,7 +556,44 @@ func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 func _solid(col: int, row: int) -> bool:
 	if row < 0 or row >= grid.size() or col < 0 or col >= grid[0].length():
 		return true
-	return grid[row][col] == "#"
+	return grid[row][col] == "#" or grid[row][col] == "F"
+
+
+## True when the cell is solid and blocks movement ('F' is a fake wall: drawn, no collision).
+func _collides(col: int, row: int) -> bool:
+	return _solid(col, row) and not (row >= 0 and row < grid.size() and col >= 0 \
+			and col < grid[0].length() and grid[row][col] == "F")
+
+
+## Fills _depth: each solid cell's distance (8-neighbour steps) to open air, up to
+## fill_depth + 2.
+func _measure_depth() -> void:
+	_depth.clear()
+	var frontier: Array[Vector2i] = []
+	for row in grid.size():
+		for col in grid[0].length():
+			if not _solid(col, row):
+				frontier.append(Vector2i(col, row))
+	var d := 0
+	while not frontier.is_empty() and d <= fill_depth + 2:
+		d += 1
+		var next: Array[Vector2i] = []
+		for cell in frontier:
+			for dy in [-1, 0, 1]:
+				for dx in [-1, 0, 1]:
+					var c := cell + Vector2i(dx, dy)
+					if c.x < 0 or c.y < 0 or c.x >= grid[0].length() or c.y >= grid.size():
+						continue
+					if _depth.has(c) or not _solid(c.x, c.y):
+						continue
+					_depth[c] = d
+					next.append(c)
+		frontier = next
+
+
+## True when the wall fill should reach this solid cell (see fill_depth).
+func _shallow(col: int, row: int) -> bool:
+	return fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth
 
 
 ## The edge tile for a solid cell, or -1 for an interior cell (plain black).
@@ -588,8 +641,10 @@ func _add_terrain(parent: Node2D) -> void:
 		var run_start := -1
 		var run_insets: Array = []
 		var run_left := 0.0
+		var fill_start := -1
 		for col in grid[0].length() + 1:
 			var solid: bool = col < grid[0].length() and _solid(col, row)
+			var collides: bool = solid and _collides(col, row)
 			var tile := _edge_tile(col, row) if solid else -1
 			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
 			var insets: Array = _collision_insets(tile)
@@ -598,8 +653,20 @@ func _add_terrain(parent: Node2D) -> void:
 				# surface height.
 				insets = [TILE_INSETS[TILE_T][0], 0, 0, 0] if corner[0] == TILE_T \
 						else [0, TILE_INSETS[TILE_B][1], 0, 0]
-			var same: bool = solid and run_start >= 0 and insets[0] == run_insets[0] \
+			var same: bool = collides and run_start >= 0 and insets[0] == run_insets[0] \
 					and insets[1] == run_insets[1]
+			var interior: bool = solid and tile < 0 and corner.is_empty()
+			if fill_start >= 0 and not interior:
+				# One black polygon per run of interior cells (big carved rooms have thousands).
+				var p0 := Vector2(fill_start * CELL, row * CELL)
+				var p1 := Vector2(col * CELL, (row + 1) * CELL)
+				var fill := Polygon2D.new()
+				fill.polygon = PackedVector2Array([p0, Vector2(p1.x, p0.y), p1, Vector2(p0.x, p1.y)])
+				fill.color = TERRAIN_COLOR
+				parent.add_child(fill)
+				fill_start = -1
+			if interior and fill_start < 0:
+				fill_start = col
 			if run_start >= 0 and not same:
 				var prev_tile := _edge_tile(col - 1, row)
 				var prev_insets: Array = _collision_insets(prev_tile)
@@ -609,7 +676,7 @@ func _add_terrain(parent: Node2D) -> void:
 				_add_box(body, Rect2(run_left, row * CELL + run_insets[0] * k + sink,
 						x1 - run_left, CELL - (run_insets[0] + run_insets[1]) * k - sink))
 				run_start = -1
-			if solid and run_start < 0:
+			if collides and run_start < 0:
 				run_start = col
 				run_insets = insets
 				run_left = col * CELL + insets[2] * k
@@ -625,13 +692,6 @@ func _add_terrain(parent: Node2D) -> void:
 				# across the lip instead (see TERRAIN_CORNER_FADES).
 				var fade: Array = TERRAIN_CORNER_FADES["floor" if corner[0] == TILE_T else "ceiling"]
 				_fade(face, false, fade[0], fade[1])
-			else:
-				var fill := Polygon2D.new()
-				var p := Vector2(col * CELL, row * CELL)
-				fill.polygon = PackedVector2Array([p, p + Vector2(CELL, 0),
-						p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
-				fill.color = TERRAIN_COLOR
-				parent.add_child(fill)
 
 
 func _add_tile(parent: Node2D, tile: int, col: int, row: int) -> Sprite2D:
@@ -858,7 +918,8 @@ func _add_middle_rim(parent: Node2D) -> void:
 			var tile := _edge_tile(col, row)
 			if not MIDDLE_TILESET.is_empty():
 				var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
-				if not MIDDLE_FILL.is_empty() and not featured.has(Vector2i(col, row)):
+				if not MIDDLE_FILL.is_empty() and not featured.has(Vector2i(col, row)) \
+						and _shallow(col, row):
 					_add_middle_fill(parent, col, row, tiles)
 				if tile < 0 and not tiles.is_empty():
 					_add_middle_corner(parent, tiles[0], tiles[1], col, row)
@@ -1037,7 +1098,7 @@ func _patch_fits(square: Rect2, featured: Dictionary, clear_depth: float) -> boo
 		for col in range(first.x, last.x + 1):
 			if col < 0 or row < 0 or col >= grid[0].length() or row >= grid.size():
 				return false
-			if not _solid(col, row) or featured.has(Vector2i(col, row)):
+			if not _solid(col, row) or featured.has(Vector2i(col, row)) or not _shallow(col, row):
 				return false
 			if _edge_tile(col, row) < 0 and not _inside_corner_tiles(col, row).is_empty():
 				return false
@@ -1057,7 +1118,7 @@ func _patch_fits(square: Rect2, featured: Dictionary, clear_depth: float) -> boo
 ## features may go.
 func _fill_cell(col: int, row: int) -> bool:
 	return _solid(col, row) and col >= 0 and row >= 0 and col < grid[0].length() \
-			and row < grid.size() and _edge_tile(col, row) < 0 \
+			and row < grid.size() and _shallow(col, row) and _edge_tile(col, row) < 0 \
 			and _inside_corner_tiles(col, row).is_empty()
 
 
@@ -1240,8 +1301,20 @@ func _add_corridor_wall(parent: Node2D) -> void:
 	# Long enough to cover the corridor's whole width plus the screen at both ends.
 	var needed := (_room_size.x - mouth) + VIEW_SIZE.x * 2.0
 	var copies := int(ceil(needed / period)) + 1
-	var layer := _strip_layer(mask, texture, Rect2(Vector2.ZERO, texture.get_size()),
-			image_scale, copies, 0, false)
+	# In a room taller than a screen the wall must also cover the camera's travel down:
+	# rows of the loop stacked below, every other one mirrored so the seams meet.
+	var height := texture.get_height() * image_scale
+	var travel_y := maxf(_room_size.y - VIEW_SIZE.y, 0.0)
+	var rows := int(ceil((VIEW_SIZE.y + travel_y * (1.0 - factor.y)) / height)) + 1
+	var layer := Node2D.new()
+	mask.add_child(layer)
+	for r in rows:
+		var strip := _strip_layer(layer, texture, Rect2(Vector2.ZERO, texture.get_size()),
+				image_scale, copies, 0, false)
+		strip.position.y = r * height
+		if r % 2 == 1:
+			strip.scale.y = -1.0
+			strip.position.y += height
 	# Its left edge sits a screen left of the mouth when the camera is at the mouth, and
 	# its top meets the screen's top with the camera at the room's top.
 	var mouth_center := mouth

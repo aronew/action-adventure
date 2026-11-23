@@ -60,6 +60,7 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	var root := RegionRoom.new()
 	root.name = String(data["key"]).to_pascal_case()
 	root.room_name = data["name"]
+	root.cave_from_col = int(data.get("cave_from_col", -1))
 	var w: int = data["w"]
 	var h: int = data["h"]
 	var rows: Array = data["rows"]
@@ -78,6 +79,7 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 	var terrain := PaintedTerrain.new()
 	terrain.name = "PaintedTerrain"
 	terrain.room_cells = Vector2i(w, h)
+	terrain.preview_only = true
 	root.add_child(terrain)
 	terrain.layout = layout
 
@@ -137,9 +139,11 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 				exit.arrive_offset = Vector2(40.0 if left else -40.0, floor_y - cy)
 			"top":
 				var cx := (a + b + 1) * 0.5 * CELL
-				exit.position = Vector2(cx, 16)
-				exit.size = Vector2(span, 32)
-				exit.arrive_offset = Vector2(0, 30)
+				# The trigger covers the top 4 rows, so a jump from a ledge near the hole
+				# reaches it; arriving, the Seeker appears just under it and falls in.
+				exit.position = Vector2(cx, 2.0 * CELL)
+				exit.size = Vector2(span, 4.0 * CELL)
+				exit.arrive_offset = Vector2(0, 2.5 * CELL)
 			"bottom":
 				var cx2 := (a + b + 1) * 0.5 * CELL
 				exit.position = Vector2(cx2, h * CELL - 12)

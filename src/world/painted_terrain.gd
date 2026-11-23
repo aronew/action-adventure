@@ -83,7 +83,15 @@ var _fade_shader: Shader
 var _pending := false
 
 
+## When true the painted tiles only show in the editor: at runtime the room's own
+## renderer (RegionRoom, the full art pipeline) draws the terrain and builds its collision.
+@export var preview_only := false
+
+
 func _ready() -> void:
+	if preview_only and not Engine.is_editor_hint():
+		visible = false
+		return
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	if layout != null and not layout.changed.is_connected(_queue_rebuild):
 		layout.changed.connect(_queue_rebuild)
