@@ -69,7 +69,6 @@ When the cooldown is clear: the candidates are the patterns whose distance range
 - **Shockwave.** It leaves from the boss's front in the facing direction and hits the Seeker once, then vanishes; if the Seeker is invulnerable at that moment the hit does not land and the wave keeps going. It vanishes after 3.5 s or when the boss dies. A wave already in flight continues if the boss is staggered.
 - **Health and guard.** 600 health; the guard is built from the boss's own fields (100 meter, x0.2 guarded damage, 4.0 s stagger, 1.5 s recovery, regeneration after 3.0 s at 10 per s; see `guard-break.md`).
 - **Body and movement.** A 56 x 84 body, chase speed 55; it never leaves the ground and does not climb.
-- **Heal read (all stages) [Owner, 2026-11-23: the boss punishes a planted heal].** When the Seeker starts a heal (`heal_started`, `healing.md`) with the horizontal distance to the boss at most `heal_read_range` (160 px), and the boss is in CHASE, its cooldown or a pattern's recovery, the boss reads it: after `heal_read_reaction` (0.1 s) it drops what is left of the recovery and cooldown and starts a **read lunge**, the lunge with its wind-up shortened to `heal_read_windup` (0.4 s) and everything else unchanged (dash 320 px/s for 0.5 s, damage 25, recovery 1.0 s). A read never starts during a wind-up, a strike, STAGGER or the boss's death, and never more than once per `heal_read_cooldown` (3.0 s, counted from the read's start). The read lunge counts as the last pattern used (F1). If the heal has already ended when the reaction delay is over, the read lunge still starts (the boss committed). The answer the player has: the 0.4 s wind-up is the cue to let go (free, meter kept) and dodge; a heal beyond 160 px or in a stagger is not read. A heal started inside the invulnerability window of an earlier hit (`healing.md` rule 10) is protected for about its first 0.65 s, so a close read lunge can pass through it: the read targets a fresh heal. **Feint:** starting a heal and letting go baits a read lunge and its 1.0 s recovery; it needs a full meter and is limited by `heal_read_cooldown` (a playtest question, `healing.md` Open Question 22).
 - **Death.** 1.2 s fade, a 0.25 s game slowdown to 5%, a camera shake of 7 px for 0.4 s, 60 fragments.
 
 ### Planned: three stages (owner, 2026-11-22; not built)
@@ -106,7 +105,6 @@ A flat code-built room of three solids between two walls. The Seeker spawns at x
 | Guard | see `guard-break.md` |
 | Slam | range 0-64, wind-up 1.4 s, live 0.2 s, recovery 1.3 s, damage 40, box (8, -72, 76, 76) |
 | Lunge | range 0-200, wind-up 0.8 s, live 0.5 s, recovery 1.0 s, damage 25, speed 320, box (0, -40, 76, 44) |
-| Heal read | `heal_read_range` 160 px (safe 120-200: above about 180 the hit lands after tick 54 at the 0.9 s `channel_time` floor, F6), `heal_read_reaction` 0.1 s (0-0.2), `heal_read_windup` 0.4 s (0.3-0.6: below 0.3 s the cue is unreadable, above 0.6 s a close hit lands after the 0.9 s floor), `heal_read_cooldown` 3.0 s (2-6) |
 | Shockwave | range 220-2000, wind-up 1.0 s, release 0.15 s, recovery 1.0 s, damage 20, speed 150, size 20 x 14, lifetime 3.5 s |
 | Death | fade 1.2 s, hit-stop 0.25 s, shake 7 px for 0.4 s, 60 fragments |
 
@@ -121,8 +119,6 @@ A flat code-built room of three solids between two walls. The Seeker spawns at x
 **F3. Lunge reach.** `dash = lunge_speed x active_time` = 320 x 0.5 = 160 px, then the base's skid `lunge_speed² / (2 x hurt_deceleration)` = 320² / 1800 = about 57 px, so the boss ends about 217 px from where it began, against a 200 px choice range; the strike box adds 76 px ahead of the boss.
 
 **F4. Shockwave reach.** `travel = ranged_speed x ranged_lifetime` = 150 x 3.5 = 525 px; the lane drawn in the wind-up is that length from the boss's front.
-
-**F6. Heal read timing.** `t_hit = heal_read_reaction + heal_read_windup + max(0, d - lunge_box_reach) / lunge_speed`, with `t_hit` measured from the heal's press tick, `d` the horizontal distance at that tick, `lunge_box_reach` about 76 px (the strike box ahead of the boss) and `lunge_speed` 320. The read must land before the heal completes at the shortest allowed channel: `t_hit < channel_time` floor 0.9 s (`healing.md` Values). Examples: d 40 px: 0.1 + 0.4 + 0 = 0.50 s (tick 30); d 160 px: 0.1 + 0.4 + 84 / 320 = about 0.76 s (tick 46); d 200 px: about 0.89 s, too close to the floor, hence the 160 px range. The box reach is approximate; AC-20 measures it in a real scene.
 
 **F5. Damage to the boss.** Governed by `guard-break.md` (x0.2 guarded, x1 broken, x2 finisher) and `combat.md`. No time-to-kill is stated here: it needs the attack animation timings, which are not in the source.
 
@@ -164,7 +160,7 @@ A flat code-built room of three solids between two walls. The Seeker spawns at x
 | Guard-break (`guard-break.md`) | Upstream, hard | The boss's guard config is built from `BossConfig.make_guard_config()`; guard break is the only stagger |
 | Combat (`combat.md`) | Upstream, hard | The fight is beatable with the Seeker's combat set only |
 | Player controller | Upstream, hard | `Player.take_hit`, layers, the jump that avoids the shockwave |
-| Healing (`healing.md`) | Upstream, hard | The heal meter and heal values the three stages are tuned against ("tuned together with healing"); the `heal_started` signal the heal read listens for, and the `channel_time` floor (0.9 s) F6 must beat; the heal read (Other rules) is the pattern that punishes a planted Seeker (`healing.md` Open Question 12, resolved 2026-11-23); the stagger and stage-change heal rules (`healing.md` Open Question 2). A shockwave in flight can hit a planted Seeker. Row added 2026-11-23 (third Healing design review) |
+| Healing (`healing.md`) | Upstream, hard | The heal meter and heal values the three stages are tuned against ("tuned together with healing"); the boss must supply a pattern or stage element that punishes a planted Seeker, because at the current timings a 1.0 s channel ends 0.6 to 0.9 s before the next wind-up begins (`healing.md` Open Question 12); the stagger and stage-change heal rules (`healing.md` Open Question 2). A shockwave in flight can hit a planted Seeker. Row added 2026-11-23 (third Healing design review) |
 | Camera | Downstream, soft | Death shake |
 | Level design | Downstream, hard | Boss rooms, the defeat flag, the reward pickup, the save point before the arena (rules 10, 15, 21) |
 | World state | Downstream, hard | Stores `boss_defeated`; `boss_arena.gd` is listed as the emitter |
@@ -198,7 +194,6 @@ Verification: **Logic** unless marked; an integration scene with a stepped physi
 16. **AC-16 Stage 1 to 2 (planned).** The first guard-break ends stage 1; from the next wind-up the boss is in stage 2 and the falling hazards are active.
 17. **AC-17 Stage 2 to 3 (planned).** The second guard-break ends stage 2; stage 3's small enemies appear.
 18. **AC-18 No health bar (planned).** No boss health or guard bar is shown; each stage change has a visible and audible cue.
-20. **AC-20 Heal read [Integration].** With the boss in a recovery and the cooldown clear of reads: a fresh heal started at 160 px is hit by the read lunge before tick 54 (and before tick 60 at the 1.0 s default), the heal is cancelled with reason `hit` and the meter is 0; the read lunge's wind-up is 0.4 s and starts 0.1 s after the press. A heal at 170 px, a heal during STAGGER and a heal during a wind-up are not read and complete. Two heals started 2.0 s apart within range produce exactly one read lunge; a third 3.0 s after the first produces a second. A heal released 0.05 s after the press still gets the read lunge, and the boss counts it as the last pattern. Positive control: the same scene with `heal_read_range` 0 lets the 160 px heal complete.
 19. **AC-19 Learnability (playtest, planned).** A new player beats the boss in 3-4 attempts, and can say after each attempt what killed them (the owner's target, measured over three playtests).
 
 ---
@@ -212,5 +207,4 @@ Verification: **Logic** unless marked; an integration scene with a stepped physi
 - **Distance gaps.** `INTENT UNKNOWN`: whether the walk-closer behaviour at 64-200 px after a lunge and at 200-220 px is intended.
 - **Stages.** Build the three-stage fight (guard-break count, falling hazards, small enemies, stage cues, no health bar) after the Healing system is designed; tune for 3-4 attempts to learn.
 - **Patterns after the playtest.** Random choice and the three patterns are open to change once the stages have been played; the playtest found the first version too easy (long wind-ups and recoveries, a one-hit charged heavy break, a 4 s stagger).
-- **Heal read tuning.** Whether 160 px, 0.4 s and 3.0 s make a heal near the boss risky but fair, whether the feint (bait a read lunge, punish its recovery) is fun or degenerate, and whether a heal started right after a hit also needs a punisher (it is protected for about 0.65 s); read from `healing.md` AC-26. Also owed: a distinct read telegraph (a sound or pose that differs from the normal lunge's), with `healing-presentation.md`.
 - **Tests.** Make the pattern choice seedable and pin AC-1 to AC-13 (`/test-setup`).

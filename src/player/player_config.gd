@@ -191,6 +191,16 @@ extends Resource
 ## How fast the dip recovers (px/s).
 @export var camera_landing_dip_recover_speed: float
 
+@export_group("Healing")
+## Fill the heal meter needs for one heal; each hit on a foe adds its damage.
+@export var heal_meter_capacity: float
+## Health one heal restores.
+@export var heal_amount: float
+## Seconds the Seeker stands planted, holding heal, before the heal applies.
+@export var heal_channel_time: float
+## How fast the Seeker skids to a stop when a heal starts (px/s per second).
+@export var heal_deceleration: float
+
 @export_group("Health")
 ## Health the Seeker starts and respawns with (story 004).
 @export var max_health: float

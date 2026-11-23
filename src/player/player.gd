@@ -36,14 +36,17 @@ signal door_entered(door: Area2D)
 signal landed(impact_speed: float)
 ## Emitted on every hit that lands, with the damage taken and the health left.
 signal damaged(amount: float, health_left: float)
+## Emitted when a heal completes, with the health restored and the new health.
+signal healed(amount: float, health_now: float)
 ## Emitted once the Death animation has played; the player holds its last frame until
 ## [method revive] is called. The save system (story 007) respawns from this.
 signal died
 
 ## Controller states.
 ## ATTACK is a ground swing or the heavy charge; air attacks play in AIR. HURT is the
-## short loss of control after a hit, DEAD lasts until [method revive].
-enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK, HURT, DEAD, LEDGE }
+## short loss of control after a hit, DEAD lasts until [method revive]. HEAL is the
+## planted heal: hold heal with a full meter on the ground (design/gdd/healing.md).
+enum State { GROUND, AIR, DASH, WALL_SLIDE, CLIMB, CROUCH, GRAPPLE, ENTER_DOOR, ATTACK, HURT, DEAD, LEDGE, HEAL }
 ## Steps of a grapple: throw (frames 0-2), pull (3-6 looped), release (7).
 enum GrapplePhase { THROW, PULL, RELEASE }
 ## The ledge grab: catching the edge, hanging, pulling up.
@@ -57,6 +60,8 @@ const LAYER_INTERACTABLE := 2
 const LAYER_PLAYER := 4
 const GROUP_CLIMBABLE := &"climbable"
 const GROUP_DOOR := &"door"
+## Colour the Seeker glows toward while a heal channels.
+const HEAL_TINT := Color(1.0, 0.92, 0.6)
 const GROUP_GRAPPLE_ANCHOR := &"grapple_anchor"
 const ANIMATION_DATA_PATH := "res://src/player/seeker_animations.json"
 const PAINTED_SCALE := 8.0
@@ -93,6 +98,10 @@ var facing: int = 1
 var combat: PlayerCombat
 ## Health and invulnerability (read only). Its values come from [member config].
 var health: PlayerHealth
+## The heal meter, filled by hits on foes (read only).
+var heal_meter: HealMeter
+## Seconds into the current heal, 0 outside HEAL (read only).
+var heal_time := 0.0
 
 var _sprite: AnimatedSprite2D
 var _aura: AnimatedSprite2D
@@ -149,6 +158,9 @@ func _ready() -> void:
 	health = PlayerHealth.new()
 	health.configure(config.max_health, config.invulnerability_time)
 	health.damaged.connect(func(amount: float, left: float) -> void: damaged.emit(amount, left))
+	health.healed.connect(func(amount: float, now: float) -> void: healed.emit(amount, now))
+	heal_meter = HealMeter.new()
+	heal_meter.configure(config.heal_meter_capacity)
 	collision_layer = LAYER_PLAYER
 	collision_mask = LAYER_WORLD
 
@@ -264,6 +276,8 @@ func _physics_process(delta: float) -> void:
 			_state_dead(delta)
 		State.LEDGE:
 			_state_ledge()
+		State.HEAL:
+			_state_heal(delta)
 
 	combat.update(delta)
 	_sprite.scale = Vector2(float(facing), 1.0) * art_scale()
@@ -285,6 +299,8 @@ func resume_from_door() -> void:
 func take_hit(damage: float, source: Vector2) -> bool:
 	if state == State.DEAD or not health.take_damage(damage):
 		return false
+	if state == State.HEAL:
+		heal_meter.spend()
 	var toward := signf(source.x - global_position.x)
 	if toward != 0.0:
 		facing = int(toward)
@@ -301,6 +317,7 @@ func revive(at: Vector2) -> void:
 	global_position = at
 	velocity = Vector2.ZERO
 	health.reset()
+	heal_meter.reset()
 	_set_state(State.GROUND)
 	_play_loop(&"idle")
 
@@ -319,6 +336,9 @@ func _state_ground(delta: float) -> void:
 		if door != null:
 			_start_enter_door(door)
 			return
+	if Input.is_action_just_pressed(&"heal") and _can_start_heal():
+		_start_heal()
+		return
 	if _move_x != 0.0:
 		facing = int(_move_x)
 	if combat.poll(delta, true, _vertical, _find_overlap(GROUP_DOOR) != null):
@@ -452,6 +472,48 @@ func _state_attack(delta: float) -> void:
 		_set_state(State.AIR)
 
 
+## The planted heal. Holding heal for heal_channel_time restores heal_amount and empties
+## the meter. Letting go, jumping, dashing, attacking or grappling ends it early for free
+## (the meter is kept); a hit that lands ends it and empties the meter (take_hit).
+func _state_heal(delta: float) -> void:
+	if not Input.is_action_pressed(&"heal"):
+		_end_heal()
+		return
+	if Input.is_action_just_pressed(&"grapple") or Input.is_action_just_pressed(&"dash") \
+			or Input.is_action_just_pressed(&"attack") or _jump_buffer_timer > 0.0:
+		_end_heal()
+		_state_ground(delta)
+		return
+	velocity.x = move_toward(velocity.x, 0.0, config.heal_deceleration * delta)
+	velocity.y = config.gravity * delta
+	move_and_slide()
+	if not is_on_floor():
+		_set_state(State.AIR)
+		return
+	heal_time += delta
+	_sprite.modulate = Color.WHITE.lerp(HEAL_TINT, clampf(heal_time / config.heal_channel_time, 0.0, 1.0))
+	if heal_time >= config.heal_channel_time:
+		health.heal(config.heal_amount)
+		heal_meter.spend()
+		_end_heal()
+
+
+func _can_start_heal() -> bool:
+	return heal_meter.is_full() and health.is_hurt()
+
+
+func _start_heal() -> void:
+	_set_state(State.HEAL)
+	heal_time = 0.0
+	_jump_buffer_timer = 0.0
+	_play_loop(&"idle")
+
+
+func _end_heal() -> void:
+	_set_state(State.GROUND)
+	_play_loop(&"idle")
+
+
 ## No control for hurt_lock_time; leftover speed bleeds off and gravity still pulls.
 func _state_hurt(delta: float) -> void:
 	_hurt_timer -= delta
@@ -573,6 +635,9 @@ func _set_state(new_state: State) -> void:
 		_rope.visible = false
 	if state == State.LEDGE and new_state != State.LEDGE:
 		_sprite.position = Vector2.ZERO
+	if state == State.HEAL and new_state != State.HEAL:
+		heal_time = 0.0
+		_sprite.modulate = Color.WHITE
 	_landing = false
 	_flipping = false
 	_standing_up = false
@@ -588,6 +653,7 @@ func _start_hurt(knockback: bool) -> void:
 
 
 func _start_death() -> void:
+	heal_meter.reset()
 	_set_state(State.DEAD)
 	velocity.x = 0.0
 	_start_clip(&"death")
@@ -748,7 +814,9 @@ func _on_combat_lunge_requested(speed: float) -> void:
 	velocity.x = float(facing) * maxf(velocity.x * float(facing), speed)
 
 
-func _on_combat_hit_landed(_target: Node2D, attack: String, _damage: float) -> void:
+func _on_combat_hit_landed(target: Node2D, attack: String, damage: float) -> void:
+	if not target is HitTarget:
+		heal_meter.add(damage)
 	if attack == PlayerCombat.ATTACK_DOWN:
 		velocity.y = -attack_config.pogo_speed
 		_refresh_air_moves()
