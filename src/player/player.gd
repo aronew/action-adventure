@@ -154,6 +154,7 @@ func _ready() -> void:
 		player_state = PlayerState.new()
 		player_state.has_double_jump = true
 		player_state.has_grapple = true
+		player_state.has_dash = true
 	PlayerInputBindings.register()
 	health = PlayerHealth.new()
 	health.configure(config.max_health, config.invulnerability_time)
@@ -699,7 +700,7 @@ func _land(impact: float) -> void:
 
 
 func _try_start_dash() -> bool:
-	if _dash_cooldown_timer > 0.0:
+	if not player_state.has_dash or _dash_cooldown_timer > 0.0:
 		return false
 	var grounded := is_on_floor()
 	if not grounded and _air_dashes_left <= 0:

@@ -106,6 +106,7 @@ func _ready() -> void:
 	add_child(anchor)
 
 	_abilities = PlayerState.new()
+	_abilities.has_dash = true
 	_player = PLAYER_SCENE.instantiate()
 	_player.player_state = _abilities
 	_player.position = SPAWN_POINT

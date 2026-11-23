@@ -19,6 +19,16 @@ signal abilities_changed
 const DOUBLE_JUMP := &"double_jump"
 ## Ability id of the grapple.
 const GRAPPLE := &"grapple"
+## Ability id of the dash (region 1, Cinderheart).
+const DASH := &"dash"
+
+## True once the dash is owned. Without it the dash input does nothing.
+@export var has_dash := false:
+	set(value):
+		if value == has_dash:
+			return
+		has_dash = value
+		abilities_changed.emit()
 
 ## True once the double jump is owned. Without it an air jump does nothing.
 @export var has_double_jump := false:
@@ -45,6 +55,8 @@ func grant(ability: StringName) -> void:
 			has_double_jump = true
 		GRAPPLE:
 			has_grapple = true
+		DASH:
+			has_dash = true
 
 
 ## Returns true when [param ability] ([constant DOUBLE_JUMP] or [constant GRAPPLE]) is owned.
@@ -54,4 +66,6 @@ func owns(ability: StringName) -> bool:
 			return has_double_jump
 		GRAPPLE:
 			return has_grapple
+		DASH:
+			return has_dash
 	return false
