@@ -351,7 +351,7 @@ formulas:
       - heal_share
     output_range: [20, 72]
     expression: "health' = min(health + heal_share x max_health, max_health)"
-    notes: "Healing F2. heal_share 0.30 (range 0.20-0.40) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained, and a heal only starts when missing health is at least start_deficit_share x the heal (15 at the defaults). Range is heal_share x max_health at the share's bounds (0.20 x 100 to 0.40 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
+    notes: "Healing F2. heal_share 0.30 (range 0.20-0.40) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained, and a heal only starts when missing health is at least start_deficit = max(1, min(start_deficit_share x the heal, start_deficit_cap 20)) (15 at 100 max health, 20 from about 133 max health up). Range is heal_share x max_health at the share's bounds (0.20 x 100 to 0.40 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
     added: 2026-11-22
 
 # Example:
@@ -530,10 +530,18 @@ constants:
     status: active
     source: design/gdd/healing.md
     referenced_by: []
+    variables:
+      - meter_cost_ratio
+      - heal_share
+      - max_health
+      - capacity_floor
+    output_range: [84, 720]
+    expression: "meter_capacity = max(capacity_floor, meter_cost_ratio x heal_share x max_health)"
     value: 120
     unit: damage units
-    notes: "Healing F1 and F3 (range 84-300, raised from 40 in the third design review because one 42-damage combo filled a 40 meter; starting value owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns 1 heal per guard-break cycle and 2 when a banked heal is also spent in the guard phase, and about 1.5 sustained when a charged heavy breaks the guard (meter 60; Healing F3 cap-aware cycle model, estimates); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    notes: "Healing F1, derived from the heal amount in the fourth design review (owner, 2026-11-23) so a heal costs the same fighting at every max health. `value` is the result at 100 max health and the defaults: meter_cost_ratio 4.0 (range 2.8-10) x heal_share 0.30 x 100 = 120; 216 at 180 max health. capacity_floor 84 (fixed: two combos, above a charged heavy; raised from 40 in the third design review). The meter keeps its fraction when max health changes. The meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal at 100 max health. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns about 1 heal per guard-break cycle and 2 when a banked heal is also spent in the guard phase, about 1.5 sustained when a charged heavy breaks the guard (meter 60; Healing F3 cap-aware cycle model, estimates); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
     added: 2026-11-22
+    revised: 2026-11-23
   - name: heal_share
     status: active
     source: design/gdd/healing.md

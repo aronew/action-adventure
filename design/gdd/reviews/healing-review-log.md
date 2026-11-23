@@ -128,3 +128,59 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: full · Workflow: standard
+Scope signal: L
+Specialists: game-designer, systems-designer, economy-designer, qa-lead, gameplay-programmer, godot-specialist, ux-designer, audio-director; creative-director (senior)
+Blocking items: 14 | Recommended: 18
+Summary: The meter, the HEAL state and the config are sound enough to build, and none of the blockers is a wrong core design: they are precision defects (tick counts, the jump buffer, an unbuildable glow recipe, untestable ACs) plus three economy decisions that belong to the owner. This is the fourth NEEDS REVISION in a row and the new defects keep appearing in the same places (tick ordering, implementation recipes, the "gamble" framing), so the creative-director's condition is that the next pass consolidates the document; a fifth review finding new contradictions there would escalate to MAJOR REVISION NEEDED. The owner decided: RECOVER and the free window are cut, the meter capacity is derived from the heal amount with a capped start deficit, guarded hits keep their full fill, and a heal may start inside the invulnerability window. All 11 GDD blockers and the 3 decisions were revised the same day; the document grew from 98.6 KB to 110.7 KB, so the consolidation is still owed.
+Prior verdict resolved: Mostly (the third review's 8 blockers held in substance; the revised text introduced new defects in tick counting, the jump buffer and the glow recipe, and the boss gap table was still not exact)
+Findings:
+- [BLOCKING] Core Rules 9, 15 / AC-15b: the free-window tick count was off by one against rule 15's step order (the timer is read before it advances); a release on the completion tick needs a one-delta lookahead
+- [BLOCKING] States / Core Rules 9: the jump buffer was cleared on every exit from HEAL but must survive a jump cancel; the same-tick dispatch to the ground handler was unspecified
+- [BLOCKING] Core Rules 10 / Edge Cases: a heal started inside the invulnerability window is protected, contradicting "no protection" (owner: allowed, rule 10 reworded)
+- [BLOCKING] Core Rules 9, 14: a press could cancel and restart a heal in one tick (toggle mode) because the press age was never consumed
+- [BLOCKING] Core Rules 9 / AC-16d: an attack cancel cannot start an attack on the same tick (Combat arms its tap/hold resolution)
+- [BLOCKING] Acceptance Criteria: the Logic ACs cannot drive Input (a pure HealChannel step), cues had no signal contract, AC-28d contradicted AC-16a, AC-24 asserted and forbade the error stream, AC-26a was not deterministic, toggle mode, pause release and rule 13 were uncovered
+- [BLOCKING] Formulas / Values: start_deficit_share 0 started a heal at full health, fill_rate 0 gave NaN, no cross-field validation
+- [BLOCKING] Visual/Audio: the HealGlow overlay shader cannot read the parent sprite's pixels, ignores self_modulate and is multiplied by modulate
+- [BLOCKING] Visual/Audio / UI: "ready" (meter full) is not "usable" (health must also be low enough); the marker had no contrast or size
+- [BLOCKING] Overview / Visual/Audio / Formulas: the text argued with itself (a leftover gamble sentence, "the one vulnerable moment", a wrong "damped three ways")
+- [BLOCKING] Visual/Audio: the 0.5 s pip had no visual twin
+- [BLOCKING, owner decision] Core Rules 9 / States: RECOVER was unreadable (stick movement did not interrupt it); cut together with the free window
+- [BLOCKING, owner decision] Formulas F1, F2 / Values: a fixed meter cost against a heal and start_deficit that scale with max health; capacity derived from the heal (ratio 4.0), start_deficit capped at 20
+- [BLOCKING, owner decision] Core Rules 2: guarded hits fill at full; kept, with the fill source logged (Open Question 11)
+- [RECOMMENDED] Core Rules 12: the 2.4 to 3.0 s boss gaps are lower bounds and some pairs cannot occur for a planted Seeker (distance windows, walk time)
+- [RECOMMENDED] Dependencies: priority 10 is a plan; the boundary cases need numbers and AC-18 needs real frames
+- [RECOMMENDED] Open Question 3 / Edge Cases: ship the kill counter as logging and restate the farming trigger as fill per minute
+- [RECOMMENDED] Core Rules 6, 9: heal start's place in the ground handler's polling order, climb in the ignored list, "landing" is a flag not a state
+- [RECOMMENDED] Visual/Audio: heal_end needs a gating flag (GROUND replays idle every tick); missing clips are a hard error
+- [RECOMMENDED] Core Rules 14 / Edge Cases: a press the pause menu consumed cannot be detected by polling; hit-stop must restore time_scale from a static; clamp a duplicate of the config, not the shared resource
+- [RECOMMENDED] Visual/Audio / UI: refusal cues are peripheral HUD transients with nothing on the Seeker; a start refused in the hurt lock gives no cue; edge-slide cancels are invisible
+- [RECOMMENDED] Visual/Audio: channel progress readable without the glow; photosensitivity capture should include a boss fight
+- [RECOMMENDED] Formulas: heal_ratio at zero damage, hits_per_heal ceil, press_buffer operator, heal_share rationale arithmetic
+- [RECOMMENDED] Formulas / Open Question 18: max health up to 280 against the 100 to 180 ranges
+- [RECOMMENDED] Acceptance Criteria: pin a test fixture, AC-17b setup, AC-15e, AC-18d allowlist, orphaned ACs (9b, 9c, 20c, 32b), UI ACs not closable, AC-26b trigger, luma scale mismatch
+- [RECOMMENDED] Visual/Audio: the telegraph-fundamental constraint has no referent in Bosses; event contract and audio ACs
+- [RECOMMENDED] Overview: Player Fantasy section (advisory) and consolidation of the document
+- [RECOMMENDED] Core Rules 12 / Edge Cases: a heal in a stagger is nearly free (owner-accepted, watched in the log)
+- [RECOMMENDED] Dependencies: design/accessibility-requirements.md does not exist; toggle mode must ship with the heal
+- [RECOMMENDED] Dependencies: Health (R6), HUD (R9) and Hit feedback (R8) have no GDD; interfaces stay provisional
+- [RECOMMENDED] Rule 3: TrainingDummy is in group foe and must stay out of shipped rooms (specialist-rated NICE, kept as a note)
+- [RECOMMENDED] Open Question 21: whether bow, cast and rapid-fire hits fill the meter
+Reviewed-Content-Hash: design/gdd/healing.md 788dcea94c353fce0bad417ff5e23823d7891023
+Reviewed-Content-Hash: design/registry/entities.yaml b2c2e737a8b0057ffbb8daf22ca999bdabf9c5fc
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
