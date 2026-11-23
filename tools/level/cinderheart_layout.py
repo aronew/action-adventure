@@ -1,6 +1,7 @@
 """Cinderheart room layouts -> JSON for the Godot room builder, checked for reachability.
 
-'#' rock, '.' air, 'F' fake wall (drawn as rock, walk-through: secrets).
+'#' rock, '.' air, 'F' fake wall (drawn as rock, walk-through), 's' a secret room's air
+(open, but covered in the game by painted rock until the Seeker steps in).
 Cells are 36 px. The Seeker (jump_speed 420) climbs 2 cells, run-jumps a 3-cell gap and
 dash-jumps a 4-cell gap (tools/level/reach.py has the exact model).
 
@@ -44,6 +45,10 @@ class Room:
 
     def fake(self, x0, y0, x1, y1):
         return self._fill(x0, y0, x1, y1, "F")
+
+    def secret(self, x0, y0, x1, y1):
+        """A secret room's air: open, but hidden under painted rock until found."""
+        return self._fill(x0, y0, x1, y1, "s")
 
     def island(self, x, s, w, h):
         """A large floating rock island: top (surface) row s, w columns, h rows thick. Drawn
@@ -184,7 +189,7 @@ rooms = []
 # wall behind it (a relic).
 r = Room("c01_waking_niche", "Waking Niche", 60, 34).cave(30)
 r.open(3, 14, 29, 29)                                   # the cavern
-r.solid(3, 14, 3, 17).fake(3, 18, 3, 19).open(1, 18, 2, 19).solid(3, 20, 11, 21)
+r.solid(3, 14, 3, 17).fake(3, 18, 3, 19).secret(1, 18, 2, 19).solid(3, 20, 11, 21)
 r.plat(5, 28, 3).island(9, 26, 7, 3).island(18, 24, 8, 4).plat(14, 22, 3).plat(27, 22, 2)
 r.solid(10, 14, 22, 15).solid(13, 16, 19, 16)           # rock hanging from the roof
 r.tunnel(30, 40, 20)                                    # the window into the cave
@@ -257,7 +262,7 @@ r.tunnel(10, 53, 21)                                    # low tunnel
 r.solid(44, 19, 46, 20).open(30, 21, 32, 22)            # a mound and a dip
 r.open(12, 7, 30, 20)                                   # the Middle Chamber
 r.solid(20, 19, 25, 20).island(12, 17, 7, 3).plat(21, 15, 3).island(25, 13, 6, 3)
-r.open(3, 13, 10, 16).fake(11, 13, 11, 16)              # the hidden nook
+r.secret(3, 13, 10, 16).fake(11, 13, 11, 16)            # the hidden nook
 r.tunnel(0, 9, 21)
 r.exit("up", "top", 64, 66, "c03_kiln_hall", "down")
 r.exit("left", "left", 18, 20, "c06_keepers_forge", "right")
@@ -291,26 +296,27 @@ r.open(0, 12, 0, 15).open(39, 12, 39, 15)
 r.solid(1, 2, 12, 3).solid(27, 2, 38, 4)
 r.plat(6, 14, 3).island(10, 12, 4, 2).island(15, 10, 8, 3).island(25, 12, 4, 2).plat(31, 14, 3)
 r.exit("right", "right", 12, 15, "c04_cinder_run", "left")
-r.exit("left", "left", 12, 15, "c07_bellows_climb", "low_left")
+r.exit("left", "left", 12, 15, "c07_bellows_climb", "low_right")
 r.mark("enemy", 20, 16, config="brute").mark("enemy", 12, 16, config="skitter") \
  .mark("enemy", 28, 16, config="skitter")
 r.mark("ability", 19, 10, ability="dash")
 rooms.append(r)
 
-# C7 Bellows Climb, the shortcut home: a switchback of six levels up through the rock.
-# The top level runs right to a dash gap, then out to the hub's low left tunnel. From the
-# hub side you can drop in and walk down.
+# C7 Bellows Climb, the shortcut home: you come in at the bottom right (from the Keeper's
+# Forge, moving left) and climb a switchback of six levels up through the rock. The top
+# level runs right to a dash gap, then out to the hub's low left tunnel (moving right).
+# From the hub side you can drop in and walk down.
 r = Room("c07_bellows_climb", "Bellows Climb", 40, 40).cave(0)
-r.tunnel(0, 2, 36)
-r.switchback(3, 24, 36, 6)
+r.tunnel(25, 39, 36)
+r.switchback(3, 24, 36, 6, first_turn="left")
 r.tunnel(25, 39, 11)                                    # the top level runs on to the right
 r.open(27, 11, 30, 13).solid(27, 13, 27, 13)            # the pit, with a step
 r.solid(31, 10, 39, 10).open(31, 7, 39, 9)              # far side, a cell higher
 r.mark("gate", 33, 10, ability="dash")
 r.mark("enemy", 12, 26, config="skitter").mark("enemy", 14, 16, config="grunt")
-r.exit("low_left", "left", 33, 35, "c06_keepers_forge", "left")
+r.exit("low_right", "right", 33, 35, "c06_keepers_forge", "left")
 r.exit("high_right", "right", 7, 9, "c03_kiln_hall", "low_left")
-r.enter_from("low_left").expect(dash_only=["exit:high_right", "gate@33,10"])
+r.enter_from("low_right").expect(dash_only=["exit:high_right", "gate@33,10"])
 rooms.append(r)
 
 # C8 Brun's Antechamber: a rest before the boss door.
@@ -330,7 +336,30 @@ r.exit("left", "left", 8, 10, "c03_kiln_hall", "upper_right")
 r.mark("relic", 16, 11).mark("enemy", 10, 11, config="skitter")
 rooms.append(r)
 
-bad = False
+# Doors keep the player's direction: leaving left, you arrive on the next room's right
+# side (moving left), and the next room's door leads back to this one.
+OPPOSITE = {"left": "right", "right": "left", "top": "bottom", "bottom": "top"}
+by_path = {ROOMS_DIR + r.key + ".tscn": r for r in rooms}
+door_problems = []
+for r in rooms:
+    for e in r.exits:
+        t = by_path.get(e["target"])
+        if t is None:
+            continue
+        back = [x for x in t.exits if x["id"] == e["target_exit"]]
+        if not back:
+            door_problems.append("%s:%s leads to missing %s:%s" % (r.key, e["id"], t.key, e["target_exit"]))
+            continue
+        b = back[0]
+        if b["side"] != OPPOSITE[e["side"]]:
+            door_problems.append("%s:%s (%s side) opens onto %s:%s (%s side): direction flips"
+                                 % (r.key, e["id"], e["side"], t.key, b["id"], b["side"]))
+        if b["target"] != ROOMS_DIR + r.key + ".tscn" or b["target_exit"] != e["id"]:
+            door_problems.append("%s:%s is not led back to by %s:%s" % (r.key, e["id"], t.key, b["id"]))
+
+bad = bool(door_problems)
+for p in door_problems:
+    print("DOOR:", p)
 for r in rooms:
     problems = r.check()
     print(r.key, r.w, "x", r.h, "OK" if not problems else "")

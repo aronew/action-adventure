@@ -54,6 +54,23 @@ under it and the black foliage standing on it. All of it is fixed to the terrain
 down, scrolls sideways at the art room's 1.2, is sized to the space it sits in, and fades
 on every edge that lands inside rock.
 
+**Doors keep your direction.** Leave a room moving left and you arrive on the next room's
+right side, still moving left (up through a ceiling hole, you arrive in the next room's
+floor hole). `cinderheart_layout.py` checks every door pair and fails on one that flips.
+
+**Secrets are hidden until found.** A fake wall and the room behind it (the green brush in
+the editor) are covered in the game by painted rock that matches the walls around it: the
+rock's edge, the textured fill, nothing behind it showing. Step into the fake wall and the
+cover fades out for the rest of the run.
+
+**Floating islands** get no textured wall fill. Their own edge is drawn again just inside
+them, twice, darker each time (where the island is thick enough), so each reads as a
+slightly smaller island inside itself; foliage grows on their tops.
+
+**Bottom foreground**: the near rocks and plants sit along each whole stretch of floor
+(not broken up where islands change the ceiling height above it), rising a little in front
+of the floor line as in the art room.
+
 **Exits are lit**: a warm light in each exit's opening, so the way on reads from across the
 room. Waking Niche's exit is at the end of its third level, reached two ways: climb the
 cavern's islands to the window, or take the low tunnel up the switchback.
@@ -68,7 +85,7 @@ far side is a cell higher, over a pit you can climb back out of on the near side
 
 Room layouts as pictures: `production/qa/evidence/cinderheart/layout-*.png` (tan open
 cavern, grey cave section, purple fake wall, blue exits, green rest, red enemies, pink
-relics, yellow ability).
+relics, yellow ability, green secret rooms).
 
 ```
  [C1 Waking Niche] ─► [C2 Ash Steps] ───(one-way drop onto an island)───┐

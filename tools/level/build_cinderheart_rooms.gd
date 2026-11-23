@@ -28,17 +28,20 @@ func _initialize() -> void:
 
 
 ## The layout brushes, 36 px each: tile (0, 0) is rock (dark red with an orange rim);
-## tile (1, 0) is a fake wall (purple with a pink rim): drawn as rock, walk-through.
+## tile (1, 0) is a fake wall (purple with a pink rim): drawn as rock, walk-through;
+## tile (2, 0) is a secret room's air (green): open, covered in the game until found.
 func _layout_tileset() -> TileSet:
 	if ResourceLoader.exists(TILESET_PATH):
 		var existing: TileSet = load(TILESET_PATH)
 		var src := existing.get_source(0) as TileSetAtlasSource
-		if src != null and src.has_tile(Vector2i(1, 0)):
+		if src != null and src.has_tile(Vector2i(2, 0)):
 			return existing
-	var image := Image.create(72, 36, false, Image.FORMAT_RGBA8)
-	for tile in 2:
-		var fill := Color(0.35, 0.18, 0.16, 0.6) if tile == 0 else Color(0.35, 0.16, 0.4, 0.6)
-		var rim := Color(0.9, 0.45, 0.3, 0.9) if tile == 0 else Color(0.95, 0.5, 0.9, 0.9)
+	var image := Image.create(108, 36, false, Image.FORMAT_RGBA8)
+	var fills := [Color(0.35, 0.18, 0.16, 0.6), Color(0.35, 0.16, 0.4, 0.6), Color(0.15, 0.4, 0.2, 0.35)]
+	var rims := [Color(0.9, 0.45, 0.3, 0.9), Color(0.95, 0.5, 0.9, 0.9), Color(0.4, 0.95, 0.5, 0.9)]
+	for tile in 3:
+		var fill: Color = fills[tile]
+		var rim: Color = rims[tile]
 		image.fill_rect(Rect2i(tile * 36, 0, 36, 36), fill)
 		for i in 36:
 			for e in [0, 35]:
@@ -49,6 +52,7 @@ func _layout_tileset() -> TileSet:
 	source.texture_region_size = Vector2i(36, 36)
 	source.create_tile(Vector2i(0, 0))
 	source.create_tile(Vector2i(1, 0))
+	source.create_tile(Vector2i(2, 0))
 	var tileset := TileSet.new()
 	tileset.tile_size = Vector2i(36, 36)
 	tileset.add_source(source, 0)
@@ -75,6 +79,8 @@ func _build_room(data: Dictionary, tileset: TileSet) -> void:
 				layout.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 			elif rows[y][x] == "F":
 				layout.set_cell(Vector2i(x, y), 0, Vector2i(1, 0))
+			elif rows[y][x] == "s":
+				layout.set_cell(Vector2i(x, y), 0, Vector2i(2, 0))
 
 	var terrain := PaintedTerrain.new()
 	terrain.name = "PaintedTerrain"

@@ -597,9 +597,16 @@ func _measure_depth() -> void:
 		frontier = next
 
 
-## True when the wall fill should reach this solid cell (see fill_depth).
+## True when the wall fill should reach this solid cell (see fill_depth). A room that
+## reuses this pipeline can turn the fill off for some cells by overriding _wants_fill.
 func _shallow(col: int, row: int) -> bool:
-	return fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth
+	return (fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth) \
+			and _wants_fill(col, row)
+
+
+## Whether this solid cell gets the textured wall fill (all of them here).
+func _wants_fill(_col: int, _row: int) -> bool:
+	return true
 
 
 ## How opaque the wall fill is at this cell: full near open air, fading out over its last
@@ -1141,7 +1148,8 @@ func _patch_fits(square: Rect2, featured: Dictionary, clear_depth: float) -> boo
 ## features may go.
 func _fill_cell(col: int, row: int) -> bool:
 	return _solid(col, row) and col >= 0 and row >= 0 and col < grid[0].length() \
-			and row < grid.size() and _fill_alpha(col, row) >= 1.0 and _edge_tile(col, row) < 0 \
+			and row < grid.size() and _shallow(col, row) and _fill_alpha(col, row) >= 1.0 \
+			and _edge_tile(col, row) < 0 \
 			and _inside_corner_tiles(col, row).is_empty()
 
 

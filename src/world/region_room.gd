@@ -65,7 +65,7 @@ const GROUND_MIN_ROCK := 4
 ## so no hard black edge shows on the textured rock (the art room hides them at the
 ## screen's edges).
 const CEILING_TOP_FADE := 0.06
-const GROUND_BOTTOM_FADE := 0.45
+const GROUND_BOTTOM_FADE := 0.15
 const FOLIAGE_BOTTOM_FADE := 0.4
 const BAND_SHADER := """
 shader_type canvas_item;
@@ -82,6 +82,23 @@ void fragment() {
 }
 """
 static var _band_shader: Shader
+## Floating islands (rock not joined to the room's walls) get no textured wall fill; their
+## own edge is drawn again just inside them, darker each time, for depth
+## (ISLAND_RING_SHADES: one per inner ring). Foliage on their tops is drawn at this size.
+const ISLAND_RING_SHADES := [Color(0.62, 0.56, 0.56), Color(0.42, 0.38, 0.38)]
+## How far (world px) each inner ring sits inside the one before it.
+const ISLAND_RING_STEP := 14.0
+## Which way is "inward" for each edge piece.
+const ISLAND_NORMALS := {
+	0: Vector2i(1, 1), 1: Vector2i(0, 1), 2: Vector2i(-1, 1),
+	7: Vector2i(1, 0), 9: Vector2i(-1, 0),
+	14: Vector2i(1, -1), 15: Vector2i(0, -1), 16: Vector2i(-1, -1),
+}
+const ISLAND_FOLIAGE_SIZE := 0.55
+## Secret rooms are covered by painted rock (z above everything in the room) until the
+## Seeker steps into the fake wall or the room behind it; then the cover fades out.
+const COVER_Z := 26
+const COVER_FADE_TIME := 0.35
 ## The warm light at each exit, so the way on reads from across the room.
 const EXIT_LIGHT := Color(1.0, 0.62, 0.3, 0.55)
 const EXIT_LIGHT_DEPTH := 3.0
@@ -102,6 +119,11 @@ var _meter_fill: ColorRect
 var _status: Label
 var _title: Label
 var _rest_spots: Array[Node2D] = []
+## Island cells and their depth in cells from the island's edge (1 = the edge).
+var _islands := {}
+## Fake-wall and secret-room cells, hidden under the cover until found.
+var _cover_cells := {}
+var _cover: Node2D
 
 
 func _ready() -> void:
@@ -129,14 +151,16 @@ func _ready() -> void:
 	if _mood != null:
 		_mood.set_enabled(mood_on)
 	_spawn_markers()
+	_build_cover()
 	_build_hud()
 	for exit in _exits():
 		RegionTravel.preload_room(exit.target_room)
 	RegionTravel.fade(get_tree(), 0.0, 0.25)
 
 
-## Turns the Layout layer into the pipeline's grid ('#' rock, 'F' fake wall, '.' air) and
-## its floating one-cell-thick rock into painted floating platforms.
+## Turns the Layout layer into the pipeline's grid ('#' rock, '.' air) and its free-floating
+## one-cell-thick rock into painted floating platforms. Fake walls (tile 1,0) and secret-room
+## air (tile 2,0) are air to the pipeline and go under the cover (see _build_cover).
 func _read_layout() -> void:
 	var terrain := _terrain()
 	var layout := get_node_or_null(^"Layout") as TileMapLayer
@@ -148,7 +172,10 @@ func _read_layout() -> void:
 		for x in cells.x:
 			row[x] = "."
 			if layout != null and layout.get_cell_source_id(Vector2i(x, y)) >= 0:
-				row[x] = "F" if layout.get_cell_atlas_coords(Vector2i(x, y)).x == 1 else "#"
+				var brush := layout.get_cell_atlas_coords(Vector2i(x, y)).x
+				row[x] = "#" if brush == 0 else "."
+				if brush == 1 or brush == 2:
+					_cover_cells[Vector2i(x, y)] = true
 		rows.append(row)
 	if layout != null:
 		layout.visible = false
@@ -163,6 +190,9 @@ func _read_layout() -> void:
 			var start := x
 			while x < cells.x and _is_slab(rows, x, y, cells):
 				x += 1
+			# Only free-floating runs: a ledge joined to rock (a switchback's step) stays rock.
+			if rows[y][start - 1] != "." or (x < cells.x and rows[y][x] != "."):
+				continue
 			for c in range(start, x):
 				rows[y][c] = "."
 			platforms.append_array(_platform_props(start, x - start, y))
@@ -176,6 +206,171 @@ func _read_layout() -> void:
 	corridor_hanging_props = []
 	corridor_start_col = cave_from_col
 	borders = []
+	_find_islands()
+
+
+## Finds the floating islands: groups of rock cells (side by side) that don't reach the
+## room's edge; records each cell's depth from the island's edge (8-neighbour steps).
+func _find_islands() -> void:
+	_islands.clear()
+	var w: int = grid[0].length()
+	var h := grid.size()
+	var seen := {}
+	for y in h:
+		for x in w:
+			var start := Vector2i(x, y)
+			if seen.has(start) or grid[y][x] != "#":
+				continue
+			var group: Array[Vector2i] = [start]
+			seen[start] = true
+			var floating := true
+			var i := 0
+			while i < group.size():
+				var c := group[i]
+				i += 1
+				if c.x == 0 or c.y == 0 or c.x == w - 1 or c.y == h - 1:
+					floating = false
+				for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+					var n: Vector2i = c + d
+					if n.x < 0 or n.y < 0 or n.x >= w or n.y >= h or seen.has(n) or grid[n.y][n.x] != "#":
+						continue
+					seen[n] = true
+					group.append(n)
+			if not floating:
+				continue
+			var members := {}
+			for c in group:
+				members[c] = true
+			for c in group:
+				var depth := 1
+				var found := false
+				while not found and depth < 8:
+					for dy in range(-depth, depth + 1):
+						for dx in range(-depth, depth + 1):
+							if not members.has(c + Vector2i(dx, dy)):
+								found = true
+					if not found:
+						depth += 1
+				_islands[c] = depth
+
+
+## No textured wall fill inside floating islands (they get inner rings instead).
+func _wants_fill(col: int, row: int) -> bool:
+	return not _islands.has(Vector2i(col, row))
+
+
+## An island's edge drawn again just inside it: each of its edge pieces copied and moved
+## inward along the edge's normal by ISLAND_RING_STEP (twice as far for the second ring),
+## shaded darker, so the island reads as a slightly smaller island inside itself. A ring
+## is drawn only where the island is thick enough behind that edge.
+func _add_island_rings(parent: Node2D) -> void:
+	for cell: Vector2i in _islands:
+		if _islands[cell] != 1:
+			continue
+		var tile := _edge_tile(cell.x, cell.y)
+		if not ISLAND_NORMALS.has(tile):
+			continue
+		var normal: Vector2i = ISLAND_NORMALS[tile]
+		for ring in ISLAND_RING_SHADES.size():
+			# The island must go on at least ring + 1 cells behind this edge.
+			if not _islands.has(cell + normal * (ring + 1)):
+				break
+			var sprite := _add_middle_tile(parent, tile, cell.x, cell.y)
+			sprite.position += Vector2(normal) * ISLAND_RING_STEP * (ring + 1)
+			sprite.modulate = ISLAND_RING_SHADES[ring]
+			sprite.z_index = MIDDLE_Z - 1
+
+
+## True when the floor run stands on a floating island.
+func _on_island(run: Array) -> bool:
+	return _islands.has(Vector2i((run[1] + run[2]) / 2, run[0] + 1))
+
+
+# --- Secret rooms ------------------------------------------------------------------
+
+## Covers the fake wall and the secret room behind it with painted rock: black, the
+## textured wall fill (faded with depth like the walls around it), and the rock's edge
+## where it faces the open room. Fades out for good once the Seeker steps in.
+func _build_cover() -> void:
+	if _cover_cells.is_empty():
+		return
+	var key := scene_file_path
+	if RegionTravel.revealed.has(key):
+		return
+	_cover = Node2D.new()
+	_cover.z_index = COVER_Z
+	_cover.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	add_child(_cover)
+	var visible_open := func(c: Vector2i) -> bool:
+		return not _solid(c.x, c.y) and not _cover_cells.has(c)
+	# Depth of each covered cell from the open room (8-neighbour steps).
+	var depth := {}
+	var frontier: Array[Vector2i] = []
+	for c: Vector2i in _cover_cells:
+		for dy in [-1, 0, 1]:
+			for dx in [-1, 0, 1]:
+				if visible_open.call(c + Vector2i(dx, dy)):
+					depth[c] = 1
+		if depth.has(c):
+			frontier.append(c)
+	var d := 1
+	while not frontier.is_empty():
+		d += 1
+		var next: Array[Vector2i] = []
+		for c in frontier:
+			for dy in [-1, 0, 1]:
+				for dx in [-1, 0, 1]:
+					var n: Vector2i = c + Vector2i(dx, dy)
+					if _cover_cells.has(n) and not depth.has(n):
+						depth[n] = d
+						next.append(n)
+		frontier = next
+	var area := Area2D.new()
+	area.collision_layer = 0
+	area.collision_mask = Player.LAYER_PLAYER
+	add_child(area)
+	for c: Vector2i in _cover_cells:
+		var p := Vector2(c) * CELL
+		var cell_depth: int = depth.get(c, 99)
+		var alpha := clampf(float(fill_depth + 1 - cell_depth) / float(FILL_FADE_CELLS + 1), 0.0, 1.0)
+		var up: bool = visible_open.call(c + Vector2i.UP)
+		var down: bool = visible_open.call(c + Vector2i.DOWN)
+		var left: bool = visible_open.call(c + Vector2i.LEFT)
+		var right: bool = visible_open.call(c + Vector2i.RIGHT)
+		var tile := -1
+		if up:
+			tile = TILE_TL if left and not right else (TILE_TR if right and not left else TILE_T)
+		elif down:
+			tile = TILE_BL if left and not right else (TILE_BR if right and not left else TILE_B)
+		elif left:
+			tile = TILE_L
+		elif right:
+			tile = TILE_R
+		# Drawn like the real walls: the edge's rock face, the wall fill cut to its solid
+		# part, then the rim on top; an inner cell is black under its fill.
+		if tile >= 0:
+			_add_tile(_cover, tile, c.x, c.y)
+			_add_middle_fill(_cover, c.x, c.y, [tile]).modulate.a = alpha
+			_add_middle_tile(_cover, tile, c.x, c.y)
+		else:
+			var black := Polygon2D.new()
+			black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
+			black.color = TERRAIN_COLOR
+			_cover.add_child(black)
+			_add_middle_fill(_cover, c.x, c.y).modulate.a = alpha
+		var shape := CollisionShape2D.new()
+		shape.shape = RectangleShape2D.new()
+		(shape.shape as RectangleShape2D).size = Vector2.ONE * CELL
+		shape.position = p + Vector2.ONE * CELL * 0.5
+		area.add_child(shape)
+	area.body_entered.connect(func(body: Node2D) -> void:
+		if body != player or _cover == null:
+			return
+		RegionTravel.revealed[key] = true
+		var tween := create_tween()
+		tween.tween_property(_cover, "modulate:a", 0.0, COVER_FADE_TIME)
+		tween.tween_callback(_cover.queue_free)
+		_cover = null)
 
 
 # --- Terrain-anchored foreground ------------------------------------------------
@@ -184,13 +379,18 @@ func _read_layout() -> void:
 ## foliage bands anchored to the terrain (see CEILING_SHARE).
 func _add_foreground(parent: Node2D) -> void:
 	_add_middle_rim(parent)
+	_add_island_rings(parent)
 	for run in _ceiling_runs():
 		if run[3] >= BAND_MIN_HEADROOM:
 			_add_ceiling_band(parent, run)
 	var next_foliage := 0
-	for run in _floor_runs():
-		if run[2] - run[1] + 1 < BAND_MIN_RUN or run[3] < BAND_MIN_HEADROOM \
-				or not _solid_below(run, GROUND_MIN_ROCK):
+	for run in _ground_runs():
+		if run[2] - run[1] + 1 < BAND_MIN_RUN or run[3] < BAND_MIN_HEADROOM:
+			continue
+		if _on_island(run):
+			next_foliage = _add_foliage(parent, run, next_foliage, ISLAND_FOLIAGE_SIZE)
+			continue
+		if not _solid_below(run, GROUND_MIN_ROCK):
 			continue
 		_add_ground_band(parent, run)
 		if run[3] >= FOLIAGE_MIN_HEADROOM:
@@ -223,6 +423,30 @@ func _ceiling_runs() -> Array:
 	return runs
 
 
+## Whole stretches of floor: [row of the open cells, first col, last col, the most open
+## cells above any of them]. Unlike the art room's floor runs these don't break where the
+## ceiling changes height, so a floor under islands keeps one band of foreground.
+func _ground_runs() -> Array:
+	var runs := []
+	for row in grid.size() - 1:
+		var start := -1
+		var most := 0
+		for col in grid[0].length() + 1:
+			var cell: bool = col < grid[0].length() and not _solid(col, row) and _solid(col, row + 1) \
+					and not _cover_cells.has(Vector2i(col, row))
+			if cell:
+				var room := 0
+				while row - room >= 0 and not _solid(col, row - room):
+					room += 1
+				most = maxi(most, room) if start >= 0 else room
+				if start < 0:
+					start = col
+			elif start >= 0:
+				runs.append([row, start, col - 1, most])
+				start = -1
+	return runs
+
+
 ## True when the floor run stands on at least [param depth] rows of rock all along it
 ## (sampled at its ends, quarters and middle), not a ledge or an island.
 func _solid_below(run: Array, depth: int) -> bool:
@@ -251,15 +475,16 @@ func _add_ceiling_band(parent: Node2D, run: Array) -> void:
 	var size := clampf(run[3] * CELL * CEILING_SHARE / (CEILING_OPAQUE_PX * full), BAND_MIN_SIZE, 1.0)
 	# The canvas's top is solid rock: tuck it into the ceiling, its edge faded out.
 	var top: float = run[0] * CELL - 30.0 * size
+	# Fixed to its ceiling (sideways too): it is the ceiling's own rock.
 	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_TOP, 0,
-			Vector2(CEILING_TOP_FADE, 1.0))
+			Vector2(CEILING_TOP_FADE, 1.0), 1.0)
 
 
 func _add_ground_band(parent: Node2D, run: Array) -> void:
 	var pieces := _segments(_folder_for(run), "bottom")
 	var full := VIEW_SIZE.y / 1080.0
 	var size := clampf(run[3] * CELL * GROUND_SHARE / ((1080.0 - GROUND_OPAQUE_TOP_PX) * full),
-			BAND_MIN_SIZE, 1.0)
+			0.6, 1.0)
 	var floor_line: float = (run[0] + 1) * CELL
 	var top := floor_line + GROUND_SINK * size - VIEW_SIZE.y * size
 	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_BOTTOM, 0,
@@ -268,13 +493,13 @@ func _add_ground_band(parent: Node2D, run: Array) -> void:
 
 ## Black foliage standing on a cavern floor, in front of the player. Returns the next piece
 ## index (the pieces cycle across runs, like the art room's band).
-func _add_foliage(parent: Node2D, run: Array, first: int) -> int:
+func _add_foliage(parent: Node2D, run: Array, first: int, size := 1.0) -> int:
 	var pieces: Array[Texture2D] = []
 	for name in SILHOUETTE_PIECES:
 		pieces.append(_texture(SILHOUETTES + "%s.png" % name))
-	var full := VIEW_SIZE.y / 1080.0
+	var full := VIEW_SIZE.y / 1080.0 * size
 	var floor_line: float = (run[0] + 1) * CELL
-	var top := floor_line + FOLIAGE_SINK - pieces[0].get_height() * full
+	var top := floor_line + FOLIAGE_SINK * size - pieces[0].get_height() * full
 	return _add_band(parent, run, pieces, full, top, SILHOUETTE_Z, first,
 			Vector2(0.0, 1.0 - FOLIAGE_BOTTOM_FADE))
 
@@ -284,7 +509,8 @@ func _add_foliage(parent: Node2D, run: Array, first: int) -> int:
 ## scrolling sideways at FOREGROUND_SCALE.x around the run's centre. Returns the index of
 ## the piece after the last one used.
 func _add_band(parent: Node2D, run: Array, pieces: Array[Texture2D], image_scale: float,
-		top: float, z: int, first := 0, vfade := Vector2(0.0, 1.0)) -> int:
+		top: float, z: int, first := 0, vfade := Vector2(0.0, 1.0),
+		scroll := FOREGROUND_SCALE.x) -> int:
 	var x0: float = run[1] * CELL
 	var x1: float = (run[2] + 1) * CELL
 	var width := x1 - x0
@@ -315,7 +541,7 @@ func _add_band(parent: Node2D, run: Array, pieces: Array[Texture2D], image_scale
 		index += 1
 	var spot := Vector2(x0, top)
 	var reference := clampf((x0 + x1) * 0.5, VIEW_SIZE.x * 0.5, _room_size.x - VIEW_SIZE.x * 0.5)
-	var factor := Vector2(FOREGROUND_SCALE.x, 1.0)
+	var factor := Vector2(scroll, 1.0)
 	_layers.append([layer, factor, spot - Vector2(reference * (1.0 - factor.x), 0.0),
 			Vector2(spot.x - BAND_DRIFT, spot.x + BAND_DRIFT)])
 	return index

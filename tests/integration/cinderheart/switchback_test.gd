@@ -1,5 +1,5 @@
 ## Integration test: a switchback turn in Bellows Climb is climbable with real jumps (the
-## layout checker's model is only a model). The turn at the right end of the bottom level:
+## layout checker's model is only a model). The turn at the left end of the bottom level:
 ## floor -> the 2-cell step -> the ledge -> the next level up. Real room, real physics.
 ## Run: godot --headless --path . -s res://tests/integration/cinderheart/switchback_test.gd
 extends MiniTest
@@ -41,12 +41,12 @@ func _hop(player: Player, direction: StringName) -> Vector2:
 func test_turn_climbs_floor_step_ledge_next_level() -> void:
 	var room: RegionRoom = await _room()
 	var player := room.player
-	player.global_position = Vector2(22.5 * CELL, 36 * CELL - 2)
+	player.global_position = Vector2(5.5 * CELL, 36 * CELL - 2)
 	for i in 20:
 		await physics_frame
-	var a: Vector2 = await _hop(player, &"move_right")
+	var a: Vector2 = await _hop(player, &"move_left")
 	assert_near(a.y, 34 * CELL + FLOOR_OFFSET, 3.0, "on the step (x %.0f)" % a.x)
-	var b: Vector2 = await _hop(player, &"move_left")
+	var b: Vector2 = await _hop(player, &"move_right")
 	assert_near(b.y, 32 * CELL + FLOOR_OFFSET, 3.0, "on the ledge (x %.0f)" % b.x)
-	var c: Vector2 = await _hop(player, &"move_left")
+	var c: Vector2 = await _hop(player, &"move_right")
 	assert_near(c.y, 31 * CELL + FLOOR_OFFSET, 3.0, "on the next level (x %.0f)" % c.x)

@@ -5,7 +5,8 @@
 ## live in the editor and at runtime, the same way the art-style test room does.
 ## Cells outside [member room_cells] count as solid, so a room's border needs no paint.
 ## Cells painted with the layout's second tile (atlas x 1) are fake walls: drawn as rock
-## but with no collision, so a secret passage hides behind them.
+## but with no collision, so a secret passage hides behind them. The third tile (atlas
+## x 2) marks a secret room's air: open, and covered in the game until it is found.
 ##
 ## Usage: a room scene holds a TileMapLayer named "Layout" and this node beside it with
 ## [member layout] pointing at it. Collision is one box per run of cells in a row that
@@ -116,8 +117,11 @@ func rebuild() -> void:
 	if layout == null:
 		return
 	for cell in layout.get_used_cells():
+		var brush := layout.get_cell_atlas_coords(cell).x
+		if brush == 2:
+			continue  # secret-room air: open, covered in the game until found
 		_solid_cells[cell] = true
-		if layout.get_cell_atlas_coords(cell).x == 1:
+		if brush == 1:
 			_fake_cells[cell] = true
 	_build()
 
