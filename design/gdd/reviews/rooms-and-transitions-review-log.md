@@ -212,3 +212,35 @@ Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec
 Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
 Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 8
+Summary: Re-review after the sixth review's two blockers were revised. Both hold: rules 8, 9 and 16 and their ACs now match Save points, and the R1-R6 arithmetic and registry values check out against player_config.tres. The remaining blocker was a seam with Save points rule 6: a dead Seeker's body could start a crossing. Revised the same session (a dead Seeker never crosses or enters a door; death wins a same-frame tie). Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (both 2026-11-23 blockers resolved)
+Findings:
+- [BLOCKING] Rule 5 / Edge Cases: a dead Seeker sliding or falling through a fall exit would start a transition, against Save points rule 6 and Edge Cases — revised: rule 5 sentence, Edge Case, AC
+- [RECOMMENDED] Rule 9: the controller's proposed ownership of the damage hold's clear on every exit path was unanswered — revised: adopted, Edge Case, AC
+- [RECOMMENDED] ACs L359-361 tested respawn only, rule 8 also covers load and fast travel — revised: parametrising AC
+- [RECOMMENDED] Stale Enemies references (enemies.md adopted enemy_return_delay) — revised in Edge Cases and Open Question 5; Dependencies and registry referenced_by left open
+- [RECOMMENDED] Rule 16 overlap list narrower than Save points (another rest area, any up-bound object) — revised, AC fixture added
+- [RECOMMENDED] Rule 5 Healing citation ("an exit takes over") not confirmed in healing.md rule 9 — revised to cite the door press
+- [RECOMMENDED] Rule 16 reads fields no GDD defines (arena flag, hazard and kill plane data) and Rooms-owned values are not in the registry — open, Open Question 11
+- [RECOMMENDED] Carried from 2026-11-19: box centre vs feet origin, unreachable corner tie, shut-line landing refresh, residency cancel and free-before-load, graph edge attributes, camera zone ACs, compound ACs, retired room id record, Parallax and Grid map room data, Tuning Knobs and Player Fantasy (advisory) — open
+Receipt note: the target doc is stamped at the revised text; the other files at their state when the review ended.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md e54edfe98df81f9f0dcadfa30b879483683d3cf2
+Reviewed-Content-Hash: design/registry/entities.yaml f9a1ec2541f72715a52114f805bf6d32d3ee9dcb
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
