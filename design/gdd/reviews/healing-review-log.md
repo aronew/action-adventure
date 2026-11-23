@@ -278,3 +278,31 @@ Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b39
 
 ## Change note — 2026-11-23 — not a review
 Edited during the Pause and menus session, on the owner's decision (2026-11-23): a hit that lands during the heal channel cancels it, deals its damage and **empties the meter**, as a hit loses the soul in Hollow Knight; every voluntary cancel (letting go, a jump, dash, grapple or attack press, a toggle press or stick push) and the environmental ones (door, rest, edge slide) stay free and keep the meter. Changed: Overview, "Where the risk lives", the pillar 1 line, rules 9, 10 and 15, the state table, Edge Cases, the Feel reference and Game Feel row, AC-17a, AC-17c and AC-18, and a new Open Question 27. Context: cross-GDD review D-1 (the heal makes boss stage 1 risk-free): the heal still needs a boss attack that lands inside the channel window (Open Question 12), which now costs the bar as well as the damage. Status unchanged (Needs Revision, 11 blockers from the sixth review not yet revised); a full re-review in a fresh session is owed.
+
+## Review — 2026-11-23 — Verdict: MAJOR REVISION NEEDED
+Review mode: lean · Workflow: standard
+Scope signal: L (trending XL, unchanged)
+Specialists: none (lean)
+Blocking items: 11 | Recommended: carried from the sixth review
+Summary: Seventh review. The text changed only by owner decisions made in other sessions (a hit empties the meter; a door, exit or rest takes over); the change note confirms the sixth review's 11 blockers were not revised, and the creative-director's precondition (under 60 KB, no engine names outside Dependencies) is unmet at 88 KB. Each sixth-review blocker was checked against the current text and src/player/player_health.gd and all still stand; the changed sections (Overview through Values) were read in full and add one new blocker. The remaining ~50 KB was not re-read line by line (it would reproduce known findings on a document its own senior reviewer said must be restructured first). Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: No (the sixth review's blockers stand)
+Findings:
+- [BLOCKING] Player Fantasy ("Being hit"): says the player keeps the bar; rules 9 and 10, the exit table and the Overview now empty it on a landed hit (owner, 2026-11-23) — new
+- [BLOCKING] Rule 6: "jump is polled first" contradicts rule 9's order (jump last) and player.gd; stand-up still described as a GROUND flag — carried
+- [BLOCKING] Interactions / Dependencies: PlayerHealth.heal and healed do not exist (player_health.gd has configure() only) — carried
+- [BLOCKING] Values: stick_cancel_deadzone 0.2-0.9 below the project deadzone 0.5; channel_time lower bound 0.5 s (needs about 0.7 s); max health to 280 (Open Question 18) — carried
+- [BLOCKING] Rule 6 / Edge Cases: "reason is visible on the Seeker" false for crouch, ladder, wall, ledge — carried
+- [BLOCKING] Interactions / UI: no HUD data contract — carried
+- [BLOCKING] Visual/Audio: "stops within 80 ms" vs the completion swell — carried
+- [BLOCKING] Acceptance Criteria: AC-17d, AC-27a/40, AC-37, AC-26b defects unrevised — carried
+- [BLOCKING] Whole document: 88 KB against the 60 KB condition; engine API names outside Dependencies (e.g. Engine.time_scale line 222) — carried
+- [RECOMMENDED] Rule 9 summary list (line 59) omits an exit taking over (the involuntary list names it); Dependencies does not name Rooms and transitions
+- [RECOMMENDED] All sixth-review recommended items remain open
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: design/registry/entities.yaml f9a1ec2541f72715a52114f805bf6d32d3ee9dcb
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: src/player/player_health.gd 1b3845a8d619de08ff3041f78baa21f1a657b0bd

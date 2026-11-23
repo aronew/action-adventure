@@ -142,3 +142,34 @@ Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dd
 Reviewed-Content-Hash: design/gdd/player-controller.md bb4d01ede7c8e08fbfe7c9c58f0021616fa8a5f3
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
 Reviewed-Content-Hash: design/gdd/healing.md 1fb4e240b8b05464b727dfca70910cf1cdcd2f51
+
+## Review — 2026-11-23 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 0 | Recommended: 7
+Summary: Eighth review, after the cross-GDD review's B-1 (rule 2 refused a rest from HEAL) was revised in af8ac42. B-1 is resolved: rule 2 accepts a rest from HEAL with the meter kept, matching healing.md rule 9, the controller's RESTING row and rule 14, and Rooms rule 7. Behaviour agrees with the approved Rooms rules 5, 8, 9 and 16; clip times (death 2410 ms, crouch_down 200 ms, crouch_stand 100 ms) and all F1/F2 arithmetic re-verified. What remains is stale text about other documents and one missing criterion. Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (cross-GDD review B-1)
+Findings:
+- [RECOMMENDED] Rule 8, Interactions, Dependencies, Cross-References: still say Rooms must adopt a seated arrival, the hold and discarded presses ("five"/"four changes"); Rooms adopted them (only the retired-id record is open, Rooms Open Question 9)
+- [RECOMMENDED] Rules 8, 12: a new game's seated arrival relies on Rooms' transition and hold, but Rooms rule 8 lists only respawn, load and fast travel; settle on both sides
+- [RECOMMENDED] Acceptance Criteria: no criterion for a rest started from HEAL (meter unchanged, Resting that tick, health max); lets healing.md AC-20c close
+- [RECOMMENDED] Header, Interactions, Cross-References, Bidirectional check: stale statuses (sixth review in header, Last Verified 2026-11-20; controller "Approved", now Needs Revision; Level design "Approved", In Review; controller, Pause, Bosses, Enemies "no GDD"; Grid map "pending review")
+- [RECOMMENDED] Carried from the seventh review: Open Question 2 and the Level design row (rule 15 holds the checks); controller RESTING/ARRIVING lack the hit exit; hit-during-rest AC wording
+- [RECOMMENDED] Carried from the fifth review: two Open Questions numbered 7; dead-body trigger AC omits exit, door, arena-lock and shortcut; no AC for a step a tile or more below the seat
+- [RECOMMENDED] Registry: rest_area_max_width note says referenced_by is empty; Level design to add itself
+- [ADVISORY] Player Fantasy absent (advisory at `standard`)
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/registry/entities.yaml f9a1ec2541f72715a52114f805bf6d32d3ee9dcb
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: src/player/seeker_animations.json ac029ef6d533048e6eb7d8b003eefc0539140e77
