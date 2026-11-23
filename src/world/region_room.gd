@@ -82,18 +82,8 @@ void fragment() {
 }
 """
 static var _band_shader: Shader
-## Floating islands (rock not joined to the room's walls) get no textured wall fill; their
-## own edge is drawn again just inside them, darker each time, for depth
-## (ISLAND_RING_SHADES: one per inner ring). Foliage on their tops is drawn at this size.
-const ISLAND_RING_SHADES := [Color(0.62, 0.56, 0.56), Color(0.42, 0.38, 0.38)]
-## How far (world px) each inner ring sits inside the one before it.
-const ISLAND_RING_STEP := 14.0
-## Which way is "inward" for each edge piece.
-const ISLAND_NORMALS := {
-	0: Vector2i(1, 1), 1: Vector2i(0, 1), 2: Vector2i(-1, 1),
-	7: Vector2i(1, 0), 9: Vector2i(-1, 0),
-	14: Vector2i(1, -1), 15: Vector2i(0, -1), 16: Vector2i(-1, -1),
-}
+## Floating islands (rock not joined to the room's walls) get no textured wall fill: their
+## painted edge around a black interior. Foliage on their tops is drawn at this size.
 const ISLAND_FOLIAGE_SIZE := 0.55
 ## Secret rooms are covered by painted rock (z above everything in the room) until the
 ## Seeker steps into the fake wall or the room behind it; then the cover fades out.
@@ -254,31 +244,9 @@ func _find_islands() -> void:
 				_islands[c] = depth
 
 
-## No textured wall fill inside floating islands (they get inner rings instead).
+## No textured wall fill inside floating islands: their edge around a black interior.
 func _wants_fill(col: int, row: int) -> bool:
 	return not _islands.has(Vector2i(col, row))
-
-
-## An island's edge drawn again just inside it: each of its edge pieces copied and moved
-## inward along the edge's normal by ISLAND_RING_STEP (twice as far for the second ring),
-## shaded darker, so the island reads as a slightly smaller island inside itself. A ring
-## is drawn only where the island is thick enough behind that edge.
-func _add_island_rings(parent: Node2D) -> void:
-	for cell: Vector2i in _islands:
-		if _islands[cell] != 1:
-			continue
-		var tile := _edge_tile(cell.x, cell.y)
-		if not ISLAND_NORMALS.has(tile):
-			continue
-		var normal: Vector2i = ISLAND_NORMALS[tile]
-		for ring in ISLAND_RING_SHADES.size():
-			# The island must go on at least ring + 1 cells behind this edge.
-			if not _islands.has(cell + normal * (ring + 1)):
-				break
-			var sprite := _add_middle_tile(parent, tile, cell.x, cell.y)
-			sprite.position += Vector2(normal) * ISLAND_RING_STEP * (ring + 1)
-			sprite.modulate = ISLAND_RING_SHADES[ring]
-			sprite.z_index = MIDDLE_Z - 1
 
 
 ## True when the floor run stands on a floating island.
@@ -379,7 +347,6 @@ func _build_cover() -> void:
 ## foliage bands anchored to the terrain (see CEILING_SHARE).
 func _add_foreground(parent: Node2D) -> void:
 	_add_middle_rim(parent)
-	_add_island_rings(parent)
 	for run in _ceiling_runs():
 		if run[3] >= BAND_MIN_HEADROOM:
 			_add_ceiling_band(parent, run)
