@@ -52,3 +52,36 @@ Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b16
 Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
 Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
 Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+
+## Review — 2026-11-23 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 0 | Recommended: 10
+Summary: Third review. The GDD is faithful to the code and the cross-GDD pogo figures hold (forward reach 27, back 21, 32 below the feet, rise 37.6 px against the registry's pogo entries); the arithmetic in F1, F2, F5 and AC-2/AC-10 re-derives. The AC-21 blocker is revised and agrees with the controller GDD. What is left is documentation of seams, testability and timing detail.
+Prior verdict resolved: Yes (the second review's 1 blocker is revised; its 6 recommended items remain open)
+Findings:
+- [RECOMMENDED] Dependencies: Level design (rule 24) and Collectible upgrades missing from the table; F1 does not state that `hit_landed` damage is before the edge multiplier
+- [RECOMMENDED] Detailed Design: no timings in seconds (frames last 40-140 ms); needed to check Healing F3's damage-per-second assumption
+- [RECOMMENDED] Input resolution: tap swing starts on release, so press-to-swing latency is up to 0.133 s; intent and feel target not stated
+- [RECOMMENDED] Acceptance Criteria: all tagged Logic but PlayerCombat needs Player, Input, AnimatedSprite2D and a physics step; retag Integration or add an injection seam
+- [RECOMMENDED] Edge Cases: a press queued during an air swing starts a fresh air swing (a pogo if down is held), not only "a fresh ground attack"
+- [RECOMMENDED] Contract with targets / AC-16: "layer bit 8" is collision value 8 (editor layer 4); state the shared bitmask convention
+- [RECOMMENDED] Input resolution 1 / AC-1: the up attack is suppressed only on a door; save-points (L252) and the controller's rule 14 also suppress it in a rest area
+- [RECOMMENDED] Input resolution / Dependencies: healing.md rule 9 says an attack press cancels a heal and arms Combat's tap or hold resolution that tick; Combat does not say a poll can begin from a cancelled heal
+- [RECOMMENDED] Acceptance Criteria: no AC for a queued press becoming a heavy (rule 3) or for a same-frame press not being queued; AC-5 says "about 25 ticks"
+- [RECOMMENDED] The pogo: not stated whether a bounce fires on a dead, invulnerable or unstaggerable target (the boss, a Brute mid-attack); ability gating's pogo reach depends on it
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at `standard`); F3's overlap measurement still open
+Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061
+Reviewed-Content-Hash: design/registry/entities.yaml 6973ce3317cea2b607472cc1b224a83515918536
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/player-controller.md fb10bc6b71d00494a5b4d4c56d15ed4ae9980629
+Reviewed-Content-Hash: design/gdd/healing.md e999a7ef97a08ddf4b2f9c7cea9a96b8bd87c311
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4

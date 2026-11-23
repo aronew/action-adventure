@@ -275,3 +275,6 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Change note — 2026-11-23 — not a review
+Edited during the Pause and menus session, on the owner's decision (2026-11-23): a hit that lands during the heal channel cancels it, deals its damage and **empties the meter**, as a hit loses the soul in Hollow Knight; every voluntary cancel (letting go, a jump, dash, grapple or attack press, a toggle press or stick push) and the environmental ones (door, rest, edge slide) stay free and keep the meter. Changed: Overview, "Where the risk lives", the pillar 1 line, rules 9, 10 and 15, the state table, Edge Cases, the Feel reference and Game Feel row, AC-17a, AC-17c and AC-18, and a new Open Question 27. Context: cross-GDD review D-1 (the heal makes boss stage 1 risk-free): the heal still needs a boss attack that lands inside the channel window (Open Question 12), which now costs the bar as well as the damage. Status unchanged (Needs Revision, 11 blockers from the sixth review not yet revised); a full re-review in a fresh session is owed.
