@@ -525,7 +525,7 @@ constants:
       - design/gdd/player-controller.md   # input table: `pause` is a reserved, planned action
     value: {keyboard: Escape, gamepad: Start}
     unit: input
-    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack. Gamepad B is reserved for `cancel` (rule 19), so the controller's `interact` drops it (pause-and-menus.md Open Questions; player-controller.md input table)."
+    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack. Gamepad B is not reserved: it is `cancel` in menus and the map and `heal` in play (rule 19, owner 2026-11-23); a menu or the map withholds input from the Seeker, so the two never meet. The controller's `interact` drops B (pause-and-menus.md Open Questions; player-controller.md input table)."
     added: 2026-11-21
   - name: meter_capacity
     status: active

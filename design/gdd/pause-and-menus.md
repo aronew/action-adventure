@@ -1,9 +1,9 @@
 # Pause and menus
 
-> **Status**: In Review. Second `/design-review` 2026-11-21 (lean): NEEDS REVISION, 1 blocker (the rebinding swap broke on the inputs Up and Interact share) resolved by the owner dropping control remapping from the first scope: fixed controls (rule 17), a read-only controls page. 4 recommended applied (teardown order, held input after closing, F2/F4 wording, stale dependency text); 9 open. First `/design-review` 2026-11-21 (lean): NEEDS REVISION, 3 blockers revised. Designed 2026-11-21 (`/design-system`, lean, standard, guided, balanced density); awaiting re-review in a fresh session
+> **Status**: In Review. Fourth `/design-review` 2026-11-23 (lean): NEEDS REVISION, 1 blocker (rule 17's table stale against the owner's 2026-11-23 layout) revised the same day; owner, 2026-11-23: keyboard movement and menus on the arrow keys only, `heal` on the A key and gamepad B, gamepad B no longer reserved in play (rule 19), `rapid_fire` stays on Y; awaiting re-review. Second `/design-review` 2026-11-21 (lean): NEEDS REVISION, 1 blocker (the rebinding swap broke on the inputs Up and Interact share) resolved by the owner dropping control remapping from the first scope: fixed controls (rule 17), a read-only controls page. 4 recommended applied (teardown order, held input after closing, F2/F4 wording, stale dependency text); 9 open. First `/design-review` 2026-11-21 (lean): NEEDS REVISION, 3 blockers revised. Designed 2026-11-21 (`/design-system`, lean, standard, guided, balanced density); awaiting re-review in a fresh session
 > **Creative Director Review (CD-GDD-ALIGN)**: skipped, Lean mode
 > **Author**: project owner + Claude
-> **Last Updated**: 2026-11-21
+> **Last Updated**: 2026-11-23
 > **Last Verified**: 2026-11-21
 > **Implements Pillar**: none defined (the brief has no pillars; the art bible's "calm clarity: stepping out of the world to think" is the state this system serves)
 
@@ -45,7 +45,7 @@ Tags: **[Owner]** = the owner's stated rule; **[Rec]** = recommendation, change 
 
 **Looking and moving through a menu**
 
-10. **Menu input.** Menus use their own fixed actions: up, down, left and right (arrows, WASD, D-pad, left stick), `accept` (Enter, gamepad A) and `cancel` (Escape, gamepad B). They are fixed, as every control is (rule 17), and no game action holds Escape, Start or B (rule 19), so the way back is always free. Cancel goes back one level; at the top of the pause menu it is a resume; at the top of the title it does nothing. Every control also works with the mouse: hovering moves the highlight and a click activates, and the mouse highlight and the keyboard or gamepad focus are shown apart (Godot 4.6 keeps them separate). **[Owner, 2026-11-21: mouse works too; Rec for the keys]**
+10. **Menu input.** Menus use their own fixed actions: up, down, left and right (the arrow keys, D-pad, left stick; no WASD, as in play), `accept` (Enter, gamepad A) and `cancel` (Escape, gamepad B). They are fixed, as every control is (rule 17). No game action holds Escape or Start, and gamepad B, which is `heal` in play, never acts as `heal` while a menu is open (rule 19), so the way back is always free. Cancel goes back one level; at the top of the pause menu it is a resume; at the top of the title it does nothing. Every control also works with the mouse: hovering moves the highlight and a click activates, and the mouse highlight and the keyboard or gamepad focus are shown apart (Godot 4.6 keeps them separate). **[Owner, 2026-11-21: mouse works too; Rec for the keys; Owner, 2026-11-23: arrows only in menus]**
 11. **Look.** Menus draw above the grade, ungraded and flat, and the frozen world sits under a dark scrim (art bible, state table; Parallax Interactions). The UI is rectilinear with 45-degree chamfers, selection is a bracket and brightness, never a hue, no circle appears (the grapple ring is reserved) and text is Bone Pale on Void Black (art bible sections 3, 4). The look is the art bible's, not this GDD's.
 
 **Options and settings**
@@ -73,23 +73,24 @@ Tags: **[Owner]** = the owner's stated rule; **[Rec]** = recommendation, change 
 
     | Action | Keyboard | Gamepad | Owner of the action |
     |---|---|---|---|
-    | Move (`move_left`, `move_right`, `move_up`, `move_down`) | WASD or the arrow keys | Left stick or D-pad | Player controller |
-    | Crouch (`crouch`) | S or the down arrow | D-pad down or left stick down | Player controller |
+    | Move (`move_left`, `move_right`, `move_up`, `move_down`) | The arrow keys | Left stick or D-pad | Player controller |
+    | Crouch (`crouch`) | The down arrow | D-pad down or left stick down | Player controller |
     | Jump (`jump`) | Z or Space | A | Player controller |
     | Attack (`attack`): tap for the combo, hold for the heavy, down + attack the pogo, up + attack the up slash | X | X | Combat (code: `player_combat.gd`) |
     | Dash (`dash`) | C or Shift | RB | Player controller |
     | Grapple (`grapple`) | E | LB | Player controller |
-    | Doors and save points (`interact`) | W or the up arrow | D-pad up (the stick does not interact, Save points rule 2) | Player controller |
+    | Doors and save points (`interact`) | The up arrow | D-pad up (the stick does not interact, Save points rule 2) | Player controller |
+| Heal (`heal`): hold to heal (planned) | The A key | B | Healing (`healing.md`) |
     | Bow (`bow`) | F | RT | Bow (no GDD) |
     | Cast (`cast`): hold for the charged cast | Q | LT | Spell casts (no GDD) |
     | Rapid fire (`rapid_fire`) | V | Y | Rapid fire (no GDD) |
     | Map (`map`) | M or Tab | Back | Grid map (its Dependencies, Rec) |
     | Pause (`pause`) | Escape | Start | This system (rule 5) |
 
-    These are the code's bindings (`PlayerInputBindings.BINDINGS`, Code) with one change: `interact` drops gamepad B, which is reserved for `cancel` (rule 19). `PlayerInputBindings` and Save points' rest glyph ("B or D-pad up") must follow (Open Questions). A mouse button is not bound to any action. **[Owner, second review 2026-11-21: the keyboard list and the gamepad layout]**
+    These are the owner's 2026-11-23 layout (`player-controller.md` input table), which differs from today's code (`PlayerInputBindings.BINDINGS`, Code): WASD is gone from movement, crouch and `interact` (the A key is `heal`); `heal` is added; `interact` drops gamepad B, which is `heal` in play; and `pause` and `map` are added. The A key is the keyboard letter, not gamepad A, which is Jump. `PlayerInputBindings` must follow (Open Questions). A mouse button is not bound to any action. **[Owner, second review 2026-11-21: the keyboard list and the gamepad layout; Owner, 2026-11-23: arrows only, `heal` on the A key and gamepad B, `rapid_fire` stays on Y]**
 18. **The controls page.** The fourth options page lists every action that does something today with its keyboard and gamepad bindings from rule 17, in that table's order. An action whose system does not exist yet (bow, cast, rapid fire, map) shows only once it does. The page is read-only: its rows can be scrolled but not selected, and it has no Reset item. The gamepad column draws the glyph tiles (Visual/Audio). **[Rec]**
-19. **Reserved inputs.** Escape and Start are reserved for `pause`, and gamepad B for `cancel`: no game action is bound to any of them, so the way back out of a menu is always free on both devices. **[Rec; Owner, first review 2026-11-21: B reserved like Start]**
-20. **Labels.** Any prompt or hint in the game that names a control reads its binding from the input map, never typed-in text, so a later remapping or a binding change in code updates every label at once. The rest-area glyph is B or D-pad up in Save points UI Requirements today, and becomes D-pad up (rule 17). **[Rec]**
+19. **Reserved inputs.** Escape and Start are reserved for `pause`: no game action is bound to either. Gamepad B is `cancel` in every menu and the map and `heal` in play. The two never meet: a menu or the map withholds input from the Seeker, and a press made while one is open, the closing press included, is discarded and reads as not held until released (rule 9, Grid map rule 12), so a cancel never heals and the way back out of a menu is always free on both devices. **[Rec; Owner, first review 2026-11-21: B reserved like Start; Owner, 2026-11-23: B is `heal` in play, so only Escape and Start stay reserved]**
+20. **Labels.** Any prompt or hint in the game that names a control reads its binding from the input map, never typed-in text, so a later remapping or a binding change in code updates every label at once. The rest-area glyph is D-pad up (Save points UI Requirements, revised 2026-11-23). **[Rec]**
 
 ### States and Transitions
 
@@ -105,7 +106,7 @@ Only one of these is active at a time; Closed is the state with the world runnin
 
 ### Interactions with Other Systems
 
-Of these, only Save points, World state, Rooms and transitions, Grid map, Parallax and Collectible upgrades have GDDs; the rest have code or are not designed, and each interface is **provisional** until its owner is designed.
+Of these, only Save points, World state, Rooms and transitions, Grid map, Parallax, Collectible upgrades, Player controller, Combat and Healing have GDDs; the rest have code or are not designed, and each interface is **provisional** until its owner is designed.
 
 | System | Direction | Data flowing | Owner of the interface |
 |--------|-----------|--------------|------------------------|
@@ -236,7 +237,8 @@ The flash_rate formula is defined as:
 **Controls**
 
 - **If two gamepads are connected**: every binding answers any gamepad, as in the code today (`device` -1). **[Code]**
-- **If W or the up arrow is pressed at a door or a save point**: it is both `move_up` and `interact`, as the code does today; the two share inputs by design, never by accident (rule 17).
+- **If the up arrow is pressed at a door or a save point**: it is both `move_up` and `interact`, as the code does today; the two share inputs by design, never by accident (rule 17).
+- **If the pause menu or the map is closed with gamepad B (`cancel`) and B is still held**: B reads as not held (rule 9), so no heal starts until B is released and pressed again (rule 19). **[Owner, 2026-11-23]**
 - **If the player cannot use a fixed control** (a broken button, one hand): the first scope has no answer; remapping is a later option (Open Questions). **[Owner, second review 2026-11-21]**
 
 **Gaps this section does not close** are open questions: what happens to the menus if the only gamepad disconnects in play; whether the Seeker is protected during the fade-in while a pause waits for it (the world runs then, Rooms and transitions rule 9); and how many presses a menu buffers during a load (Open Questions).
@@ -247,7 +249,7 @@ The flash_rate formula is defined as:
 
 | System | Hard / soft | What this system needs | GDD exists |
 |--------|-------------|------------------------|------------|
-| Player controller (input) | Hard | The action list and its fixed bindings (`PlayerInputBindings.BINDINGS`, rule 17), with `interact`'s gamepad B dropped and the `pause` and `map` actions added; input withheld from the Seeker while frozen | No (code exists: `src/player/player_input_bindings.gd`, `player.gd`) |
+| Player controller (input) | Hard | The action list and its fixed bindings (rule 17): arrows-only movement, `heal` on the A key and gamepad B, `interact` without W or gamepad B, the `pause` and `map` actions added; input withheld from the Seeker while frozen | Yes (`design/gdd/player-controller.md`, Approved 2026-11-23; the layout is planned in its input table, the code still binds WASD) |
 | Save points and save/load | Hard | What Continue, New game and the replace prompt do, when each is offered, and the messages to show (rules 10-12); pause during a rest, a death or an arrival (rules 3, 8); no save action in the menus (rule 5) | Yes (`design/gdd/save-points-and-save-load.md`, Approved) |
 | World state | Hard | Whether a commit is failing, whether the commit chain is idle, the quit flow (a last write attempt, then a prompt while a commit is failing), the record dropped on a quit to the title, and the messages for a newer or unreadable save | Yes (`design/gdd/world-state.md`, Approved) |
 | Rooms and transitions | Hard | The freeze (rule 9) and the end of a transition, so a pause waits for the fade-in (Edge Cases); held input carries on across a freeze | Yes (`design/gdd/rooms-and-transitions.md`, Approved per the systems index) |
@@ -268,7 +270,7 @@ The flash_rate formula is defined as:
 | Collectible upgrades | Soft | An optional collection view (later) |
 | HUD | Soft | The current binding of an action, to label a prompt or glyph (rule 20) |
 | Audio, Camera, Hit feedback and effects, Combat | Soft | The settings' values: volumes, the shake scale and the flash-reduction setting |
-| Healing | Soft | The `heal` action on the read-only controls page, a default binding that avoids Escape, Start and gamepad B (rules 17 and 19), and `flash_limit` for its light effects |
+| Healing | Soft | The `heal` action on the read-only controls page, bound to the A key and gamepad B and never to Escape or Start (rules 17 and 19, owner 2026-11-23), and `flash_limit` for its light effects |
 
 **Bidirectional check (2026-11-21):**
 - **Save points** lists Pause and menus as a hard dependency for the title screen and its choices. This matches.
@@ -278,7 +280,7 @@ The flash_rate formula is defined as:
 - **Collectible upgrades** lists it as soft for a collection view. This matches.
 - **Rooms and transitions** mentions pause only in its Edge Cases and does not list this system in its Dependencies table; it should, as soft (the freeze's end and a pause waiting for the fade-in).
 - **The systems index** row 22 lists Player controller (input), Save points, World state and Rooms and transitions as hard and Grid map, Parallax, Camera, Audio and Combat as soft. This matches, except that Hit feedback and effects, HUD and Collectible upgrades are not listed (soft).
-- **Player controller, Camera, Audio, HUD, Hit feedback and effects, Combat** have no GDD yet. Each needs a matching entry when designed.
+- **Player controller** (`player-controller.md`) lists this system for the reserved `pause` and the input table. **Combat** (`combat.md`) does not list it yet (shake and flash requirements). **Camera, Audio, HUD, Hit feedback and effects** have no GDD yet. Each needs a matching entry when designed.
 
 ## Visual/Audio Requirements
 
@@ -331,8 +333,8 @@ These are design targets, not acceptance criteria: they guide the build and beco
 | The shared freeze (rule 11), the closing rule (rule 12), the never-stack rule (Edge Cases), `map` and `cancel`, Open Question 7 | Grid map | `design/gdd/grid-map.md`, Approved |
 | The Atmosphere option and what Full and Reduced do (rule 14), the world's clock stopping (rule 16), menus above the grade | Parallax, lighting and atmosphere | `design/gdd/parallax-lighting-and-atmosphere.md`, In Review |
 | `held` and the steps per kind, for an optional collection view | Collectible upgrades | `design/gdd/collectible-upgrades.md`, Approved |
-| `PlayerInputBindings.BINDINGS` as the fixed controls, `device` -1 for any gamepad | Player controller | Code (`src/player/player_input_bindings.gd`); no GDD |
-| `glow_step_time_fast` 0.05 s, the shake of an attack (`shake_size`, `shake_time`) | Combat | Code (`src/player/attack_data.tres`); no GDD |
+| The action list and the 2026-11-23 layout as the fixed controls, `device` -1 for any gamepad | Player controller | `design/gdd/player-controller.md`, Approved (input table); code `src/player/player_input_bindings.gd` still on the old layout |
+| `glow_step_time_fast` 0.05 s, the shake of an attack (`shake_size`, `shake_time`) | Combat | `design/gdd/combat.md`, Approved; values in `src/player/attack_data.tres` |
 | The 480 x 270 screen (viewport size) | Terrain pipeline (rules 1-2) | `design/gdd/terrain-pipeline.md`, In Review |
 | The state table (Map, pause and menus), the shape grammar, the UI palette and contrast, the reserved key shapes and colours (sections 1, 3, 4) | Art bible | `design/art/art-bible.md`, sections 1-4 (Draft) |
 | Mouse and keyboard focus kept apart (4.6), event device ids (4.7), SDL3 gamepads, AccessKit (4.5) | Engine reference | `docs/engine-reference/godot/modules/ui.md`, `input.md` |
@@ -355,7 +357,7 @@ Types: **[Auto]** automated test (unit test, or a check on the settings and room
 - **GIVEN** a focused window in play, **WHEN** it loses focus, **THEN** the menu opens that frame; **GIVEN** the loss during a transition, **THEN** it opens on the first frame after the fade-in even if focus is back; **GIVEN** the loss with the map open, the title showing or the menu open, **THEN** nothing happens. **[Auto, engine]** (rule 7)
 - **GIVEN** an enemy moving, particles drifting and a camera shake running, **WHEN** the menu opens and stays open 5 s, **THEN** every position, timer, animation frame, particle position, the camera and its shake offset and the world's clock are unchanged on the frame it closes. **GIVEN** a hit-pause (`Engine.time_scale` 0.05) running when the menu opens, **THEN** the world is still frozen when the time scale returns to 1.0 and the first frame after closing runs at normal speed. **[Auto, engine]** (rule 8; Grid map rule 11)
 - **GIVEN** the pause held 3 s during a rest, **THEN** control returns 3 s later than without it; **GIVEN** 3 s in the death clip, **THEN** `died` and the respawn request come 3 s later (the Save points criteria, run with this menu). **[Auto, engine]** (rule 8; cross-system: Save points Edge Cases)
-- **GIVEN** the menu open, **WHEN** jump is pressed and released and then the closing press is made, **THEN** no jump, attack or dash happens after closing; **GIVEN** X released while the menu was open, **THEN** X reads not held on the first frame after closing; **GIVEN** X or a direction held since before opening and still held, **THEN** it reads held and the direction carries on as a run. **GIVEN** the menu closed with Resume on gamepad A and A still down for 10 frames after closing, **THEN** `jump` reads not held on each of those frames and no jump starts; **GIVEN** A then released and pressed again, **THEN** the jump starts. **[Auto, engine]** (rule 9)
+- **GIVEN** the menu open, **WHEN** jump is pressed and released and then the closing press is made, **THEN** no jump, attack or dash happens after closing; **GIVEN** X released while the menu was open, **THEN** X reads not held on the first frame after closing; **GIVEN** X or a direction held since before opening and still held, **THEN** it reads held and the direction carries on as a run. **GIVEN** the menu closed with Resume on gamepad A and A still down for 10 frames after closing, **THEN** `jump` reads not held on each of those frames and no jump starts; **GIVEN** A then released and pressed again, **THEN** the jump starts. **GIVEN** the menu (and, separately, the map) closed with gamepad B as `cancel` and B still down for 10 frames, with a full heal meter, **THEN** `heal` reads not held and no heal starts. **[Auto, engine]** (rules 9, 19)
 
 **Navigation and look (rules 10, 11)**
 - **GIVEN** any screen, **WHEN** up, down, accept and cancel are pressed from a keyboard and from a gamepad, **THEN** the highlight moves, the item activates and the screen goes back one level; **GIVEN** the top of the pause menu, **THEN** cancel resumes; **GIVEN** the title's top level, **THEN** cancel does nothing. **GIVEN** the controls page, **THEN** none of the menu actions is listed. **[Auto, engine]** (rule 10)
@@ -371,7 +373,7 @@ Types: **[Auto]** automated test (unit test, or a check on the settings and room
 - **GIVEN** a change to any setting, **THEN** the settings file holds it and the save record does not; **GIVEN** a slider dragged through 10 values and released, **THEN** one write happened, on release. **GIVEN** a missing file, **THEN** every default is used; **GIVEN** an unreadable file, **THEN** every default is used and a copy is kept before the first write; **GIVEN** a value out of range, **THEN** only that value is replaced; **GIVEN** a file with an unknown key and one of a newer version, **THEN** a write keeps the key and the newer version number. **GIVEN** the file unwritable, **THEN** the change applies, the "settings not saved" mark shows and a write is retried on the next change and on quit. **[Auto]** (rule 16, Edge Cases)
 
 **Controls (rules 17-20)**
-- **GIVEN** the input map after startup, **THEN** every action's keyboard and gamepad bindings equal rule 17's table, `interact` holds W, the up arrow and D-pad up and no gamepad B, and no game action holds Escape, Start or gamepad B. **[Auto]** (rules 17, 19)
+- **GIVEN** the input map after startup, **THEN** every action's keyboard and gamepad bindings equal rule 17's table, `interact` holds the up arrow and D-pad up and no gamepad B, `heal` (once built) holds the A key and gamepad B, no game action holds W, A, S or D for movement, and no game action holds Escape or Start. **GIVEN** the menu input map, **THEN** its directions are the arrow keys, D-pad and left stick, with no WASD. **[Auto]** (rules 10, 17, 19)
 - **GIVEN** the controls page, **THEN** it lists every action that does something today with the bindings of rule 17 in that order, no row for bow, cast, rapid fire or map until their systems exist, no row can be selected for editing and the page has no Reset item. **[Auto, engine]** for the rows and the absent editing; **[Shot]** of the page on keyboard and on gamepad (rule 18)
 - **GIVEN** a test binding for `jump` changed in the input map, **THEN** a stub label provider reads the new binding, never typed-in text (HUD has no GDD, so a stub stands in). **[Auto]** (rule 20)
 - **GIVEN** a settings file from an earlier build that holds bindings, **WHEN** it loads and a setting is then changed, **THEN** the controls equal rule 17 and the write keeps the old binding keys unchanged. **[Auto]** (Edge Cases, rule 16)
@@ -413,10 +415,11 @@ Owner is the project owner unless stated. Each has a target step instead of a da
     - Grid map: done 2026-11-21 (its Edge Cases, criterion and Open Question 7 now follow rule 6).
     - Parallax: the Atmosphere option sits on the Display page.
     - The systems index: row 22's dependencies are listed (done); add Hit feedback and effects, HUD and Collectible upgrades as soft, and drop "control remapping" from its name and scope.
-    - The registry: `flash_limit` and the Escape and Start reservation, once Hit feedback and effects and Combat adopt them; `pause_inputs`' notes should also record gamepad B reserved for `cancel` (rule 19).
-    - Save points UI Requirements: the rest-area glyph "B or D-pad up" becomes D-pad up, as B is reserved for `cancel` (rules 17, 19).
+    - The registry: `flash_limit` and the Escape and Start reservation, once Hit feedback and effects and Combat adopt them; `pause_inputs`' notes record that gamepad B is `cancel` in menus and `heal` in play (rule 19; done 2026-11-23).
+    - Save points UI Requirements: done 2026-11-23 (the rest-area glyph is D-pad up); its rule 2 reason for B starting no rest now reads `heal` and menu `cancel` (done the same day).
+    - Player controller and Healing: `heal` on gamepad B, not Y, and `rapid_fire` stays on Y (owner, 2026-11-23; both edited the same day).
     - Grid map: its `map` binding (M and Tab, Back) is now in rule 17's table; no edit needed unless it changes.
-    - Code (`PlayerInputBindings.BINDINGS`): `interact` drops `JOY_BUTTON_B`, and `pause` and `map` are added; a story, not a GDD edit.
+    - Code (`PlayerInputBindings.BINDINGS`): WASD removed from movement, crouch and `interact`; `interact` drops `JOY_BUTTON_B`; `heal` added on the A key and `JOY_BUTTON_B`; `pause` and `map` added; a story, not a GDD edit.
 
     Target: the next revision of each.
 13. **Scope.** The systems index sizes this system at S. Four screens, a settings file and four settings groups are larger, though dropping remapping (rule 17) removes its biggest part. Owner: producer. Target: before sprint planning.

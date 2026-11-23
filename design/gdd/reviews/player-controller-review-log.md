@@ -66,3 +66,6 @@ Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b16
 Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
 Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+
+## Change note — 2026-11-23 — not a review
+Edited during the Pause and menus fourth review, with the owner's go-ahead (coordination rule 5): `heal` moves from gamepad Y to gamepad B (B is `cancel` only in menus and the map, `pause-and-menus.md` rule 19), and `rapid_fire` stays on Y instead of moving to R3. Input table, Design intent, AC-17 and the Keyboard layout Open Question updated. Status unchanged (Approved); the next review reads this file as CHANGED.
