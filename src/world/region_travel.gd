@@ -20,6 +20,8 @@ static var arrival_exit: StringName = &""
 static var respawn_room := ""
 ## Relics picked up this run ("room path:marker name"), and the max health they add.
 static var relics := {}
+## Secret rooms found this run (room scene paths); their cover stays off.
+static var revealed := {}
 static var bonus_health := 0.0
 static var respawn_exit: StringName = &""
 
@@ -28,6 +30,7 @@ static var respawn_exit: StringName = &""
 static func reset() -> void:
 	player_state = PlayerState.new()
 	relics = {}
+	revealed = {}
 	bonus_health = 0.0
 	health = -1.0
 	heal_meter = 0.0

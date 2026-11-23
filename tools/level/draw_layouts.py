@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, "..", "..", "production", "qa", "evidence", "cinderheart")
 S = 12  # px per cell
-COLORS = {"#": (52, 36, 36), ".": (196, 170, 150), "F": (150, 90, 160)}
+COLORS = {"#": (52, 36, 36), ".": (196, 170, 150), "F": (150, 90, 160), "s": (110, 190, 120)}
 MARK = {"start": (60, 160, 255), "rest": (90, 220, 120), "enemy": (230, 60, 50),
         "relic": (255, 120, 200), "ability": (255, 210, 40), "gate": (80, 200, 255)}
 
