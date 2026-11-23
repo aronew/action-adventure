@@ -131,3 +131,34 @@ Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d
 Reviewed-Content-Hash: design/gdd/player-controller.md bb4d01ede7c8e08fbfe7c9c58f0021616fa8a5f3
 Reviewed-Content-Hash: design/gdd/healing.md 1fb4e240b8b05464b727dfca70910cf1cdcd2f51
 Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061
+
+## Review — 2026-11-23 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 0 | Recommended: 6
+Summary: Fifth review, a re-check of the fourth review's revised blocker. The freshness receipt read UNCHANGED against the fourth review's entry, which had been stamped after the revision, so the revised text had not been independently re-read; this review re-read the 24-line revision and every revised line against player-controller.md, healing.md, save-points-and-save-load.md, grid-map.md and the registry. It holds: rule 17 matches the controller's input table, rule 19 reserves only Escape and Start, and B as `cancel` in menus and `heal` in play never collides (menus withhold input and discard presses on close). One stale line was found in healing.md L260 and fixed with the owner's go-ahead.
+Prior verdict resolved: Yes (fourth review's 1 blocker)
+Findings:
+- [RECOMMENDED] Acceptance Criteria (controls page): the "no row until their systems exist" list omits heal, which is planned
+- [RECOMMENDED] Core Rules rule 13: the hold or toggle `heal_mode` setting that healing.md Open Questions 14 and 15 ask Pause to own is not in the settings table
+- [RECOMMENDED] Dependencies / Interactions: Combat does not list this system for the shake and flash requirements
+- [RECOMMENDED] Open Questions 5: premise out of date; Rooms and the controller's Damage block protect the Seeker until the fade-in ends
+- [RECOMMENDED] Carried from the third review: F1 vs the 1920 x 1080 migration, automatable flash events, shader TIME in the freeze, slider writes on keys, menu timers on real time, arrival state and door-entry pause, window-close and fullscreen-refused ACs, freeze audio and hint-line device
+- [FIXED, healing.md] Dependencies row said heal's binding avoids gamepad B as reserved; changed to Escape and Start
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at `standard`)
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/registry/entities.yaml d1898ffe66580263b8666942a93138dcfd3a0616
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 2d8206c28ee7195ad626719bcdddb7781b4de0b3
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/player-controller.md bb4d01ede7c8e08fbfe7c9c58f0021616fa8a5f3
+Reviewed-Content-Hash: design/gdd/healing.md 75fd41abe05aba573527adb3b1b3a5720c82ccae
+Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061

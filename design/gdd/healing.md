@@ -257,7 +257,7 @@ Every case is a **[Rec]**; the system is not built, so none is "handled in the c
 | Bosses | Hard | The meter values and F3's bounds (1 to 2 heals per cycle); **a pattern or stage element that punishes a planted Seeker, required since the owner decision of 2026-11-23** (Open Question 12); a boss damage budget (Open Question 24); the stage-change and stagger rule (Open Question 2); a telegraph sound outside the heal swell's band (Open Question 25); whether stage-3 adds feed the meter (Open Question 17) |
 | HUD (R9) | Hard | `heal_meter`, `meter_capacity`, `heal_progress`, the ready, banked-but-not-usable and refusal cues |
 | Hit feedback and effects (R8) | Soft | The fill pulse, the ready cue and the heal effect |
-| Pause and menus | Soft | The `heal` row on the read-only controls page, a default binding that avoids its reserved inputs (Escape, Start, gamepad B), the `heal_mode` option, and `flash_limit` (3 per second) for the heal's light effects |
+| Pause and menus | Soft | The `heal` row on the read-only controls page, a default binding that avoids its reserved inputs (Escape and Start; gamepad B is heal's own binding in play and `cancel` only inside menus and the map, owner 2026-11-23), the `heal_mode` option, and `flash_limit` (3 per second) for the heal's light effects |
 
 **Provisional interfaces.** Health (R6), the HUD (R9) and Hit feedback (R8) have no GDD.
 
