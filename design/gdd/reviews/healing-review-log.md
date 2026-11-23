@@ -87,3 +87,44 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: full · Workflow: standard
+Scope signal: L
+Specialists: game-designer, systems-designer, economy-designer, qa-lead, gameplay-programmer, godot-specialist, ux-designer, audio-director; creative-director (senior)
+Blocking items: 8 | Recommended: 15
+Summary: The owner's loop is coherent and most of the second review's mechanical blockers held, but "gamble" came back for the third time: a free movement cancel, a kept meter and a 1.0 s channel that ends 0.6 to 0.9 s before the boss's next wind-up mean no current pattern can punish a heal. F3's cycle model ignored the cap and carry-in (and the stated boss gaps were same-pattern repeats), rule 15's ordering mechanism did not work, and four acceptance criteria could not pass as written. The owner decided the stake belongs to the boss, plus a free release window, an interruptible recovery and none in toggle mode; all 8 blockers were revised the same day.
+Prior verdict resolved: Partly (5 of the 7 blockers of the second full review held; the "gamble" and F3 tuning-basis blockers recurred in new forms)
+Findings:
+- [BLOCKING] Overview / Core Rules 9-10, 12: "gamble" untrue at default timings; owner decision (b): the stake is the boss's (Open Question 12 a requirement); a free release window, interruptible recovery and none in toggle mode
+- [BLOCKING] Core Rules 12 / Values channel_time / registry: boss gap labels were same-pattern repeats; true gaps 2.4 to 3.0 s; the in-flight shockwave was uncovered; "above 2.0 s" claim was false
+- [BLOCKING] Formulas F3 / Values: cycle model ignored carry-in and the cap; Example 1 heal_ratio 1.5 contradicted start_deficit; stagger_time minus channel could go negative; meter_capacity minimum 40 degenerate (raised to 84)
+- [BLOCKING] Core Rules 15: the completion re-test fallback cannot see later hitters; the boss Shockwave Area2D was not covered; priority value and location unnamed
+- [BLOCKING] Core Rules 9, 14: jump-buffer clear ate the cancelling press and a stale buffer cancelled a heal on its first tick; release detection lost during pause; no priority for simultaneous presses; completion-tick asymmetry unstated
+- [BLOCKING] Acceptance Criteria: AC-17b hit landed on tick 62, past the 60-tick window; AC-18 tested tick 59 and one caller; AC-27 impossible by letting go and contradicted Flash reduction; AC-28 contradicted rule 9; AC-15 self-contradictory; AC-9/19/20 could pass vacuously; refusal priority untested
+- [BLOCKING] Visual/Audio / AC-27: a "still change of brightness" is still a luminance change; Flash reduction defaults Off; an additive self_modulate collides with the blink and heavy-ready writers and cannot guarantee the luma cap; HDR output could defeat it
+- [BLOCKING] Dependencies: Bosses dependency one-way and misstated (no Dependencies row, no Open Questions entry)
+- [RECOMMENDED] Open Question 3 / Edge Cases: farming had no measurable trigger (about 6 to 12 heals a minute on paper); trigger and per-spawn diminishing fill recorded
+- [RECOMMENDED] Core Rules 6, 8 / Open Question 17: whole-bar spend cost cliff; start_deficit scales with max health but boss hits do not; capacity versus heal scaling; pogo and dash-attack fill; invulnerable heal start
+- [RECOMMENDED] Open Question 18: max health can reach 280 under collectible-upgrades ranges while the registry says 20 to 72
+- [RECOMMENDED] Open Questions 1, 14: no viable default binding (R3 poor, controls fixed) and the heal_mode option unspecified; owner decision before the controller story
+- [RECOMMENDED] Visual/Audio / Open Question 19: audio rows are directions only (mix priority, ready-tone trigger, swell structure, cancel sounds, 0.5 s pip twin); one negative constraint kept; owner audio-director
+- [RECOMMENDED] UI / Open Question 20: refusal priority applied; buffer-expiry silence, cancel feedback, non-luminance progress cue, ready-marker size and stagger readout owed to the UX spec
+- [RECOMMENDED] Edge Cases / Core Rules 7: Engine.time_scale scales delta, not tick rate (unverified); hit-stop could leave time_scale stuck; coyote refresh in HEAL; missing heal clips are a hard error
+- [RECOMMENDED] Acceptance Criteria: toggle-mode, Game Feel timing targets, HealingConfig bounds and launch-and-observe evidence (a story gate, not a GDD gate)
+- [NICE] Acceptance Criteria numbering is out of reading order; AC-25 and AC-31 captures named exact values; validate() returns names so tests avoid the error stream
+Reviewed-Content-Hash: design/gdd/healing.md 7694a62838d58f409ef68369ba9b02907083f637
+Reviewed-Content-Hash: design/registry/entities.yaml a8852b71d2c5ee1b6dc8396122809d50baf9f2c7
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+Reviewed-Content-Hash: design/gdd/bosses.md 4bd4c5ba038f32b77eb4038503641332e5e7edb4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
