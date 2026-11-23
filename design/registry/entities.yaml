@@ -593,7 +593,7 @@ constants:
       - design/gdd/level-design.md   # anchor placement
     value: 200
     unit: px
-    notes: "Player controller rule 9 (`player_config.tres` `grapple_range`). The nearest grapple_anchor within this distance is chosen, with no line-of-sight check. The farthest anchor it can fling from gives a rise of at most 224 px and a vy of at most -635 px/s (F4). Ability gating F11 bounds every hop by it."
+    notes: "Player controller rule 9 (`player_config.tres` `grapple_range`). The nearest grapple_anchor within this distance is chosen, with no line-of-sight check. Ability gating F11 bounds every hop by it. Corrected in the third design review of the controller (2026-11-23): the range does not bound the fling. A release begins only when the hand is within 6 px of the anchor (`grapple_arrive_distance`), so the feet are within about 27 px of it and the fling rise is about 0 to 51 px, vy about -304 to 0 (the earlier note said a rise of at most 224 and a vy of at most -635, which the code cannot produce)."
     added: 2026-11-23
   - name: base_max_health
     status: active
@@ -604,6 +604,29 @@ constants:
     value: 100
     unit: health
     notes: "Player controller Values (`player_config.tres` `max_health`). Max health with no upgrade steps. Anything that heals or sizes a bar must read max_health_derived (base + steps x health_step, 100-180), never this base; Healing and Save points already do."
+    added: 2026-11-23
+  - name: grapple_release_time
+    status: active
+    source: design/gdd/ability-gating.md
+    referenced_by:
+      - design/gdd/ability-gating.md   # rule 18, F11
+      - design/gdd/player-controller.md   # rule 9, Values (Grapple), AC-13
+    value: 0.08
+    unit: s
+    notes: "Ability gating rule 18 and Tuning Knobs (owner, third design review 2026-11-19). How long the grapple's release phase lasts before the ordinary air state; the window for a jump-out after arrival, and the length of a gate anchor's release. Not yet in `player_config.tres`: today it is the one-frame `grapple_release` clip (80 ms in `seeker_animations.json`), so the config field is owed. A change needs /propagate-design-change (F11 reaches). Registered 2026-11-23 from the controller's third design review."
+    added: 2026-11-23
+  - name: hitbox_size
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # Values (Body), Overview
+      - design/gdd/ability-gating.md   # hitbox_width, hitbox_height (F1, F2, F3a)
+      - design/gdd/level-design.md   # gate dimensions
+      - design/gdd/rooms-and-transitions.md   # half_extent, the box centre against the feet origin
+      - design/gdd/save-points-and-save-load.md   # seat box, rest area width
+    value: [10, 22]
+    unit: px (width, height at the 480 x 270 base)
+    notes: "Player controller Values (`player_config.tres` `hitbox_size`). The standing collision box; its bottom is the feet origin. The crouch box is 14 px high (`crouch_hitbox_height`), same width, feet unmoved. Gate sizes, exit placement and the rest seat all derive from it; a change needs /propagate-design-change. Registered 2026-11-23 from the controller's third design review."
     added: 2026-11-23
 
 # Example:

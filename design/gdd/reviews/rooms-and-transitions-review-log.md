@@ -197,7 +197,7 @@ Findings:
 - [RECOMMENDED] Parallax room-data fields and two room-check items (Parallax OQ2) — open, Open Question 10
 - [RECOMMENDED] Grid map room index and hidden exit mark — open, Open Question 10
 - [RECOMMENDED] R3: Parallax measured a long-room build of 1.4-1.6 s against the 0.02-0.4 s range — open, Open Question 10
-- [RECOMMENDED] R2: fastest rise is the grapple fling (635 px/s), not the wall jump (380); the lip holds — revised
+- [RECOMMENDED] R2: fastest rise is a grapple jump-out (440 px/s, controller F2 as corrected by its parallel third review), not the wall jump (380); the lip holds — revised
 - [RECOMMENDED] Stale status text (header, pillar line, "no GDD" lines, Terrain and Level design status, save-during-transition edge case, no Pause row) — revised
 - [RECOMMENDED] Retired room id record naming its region (Save points rule 9) — open, Open Question 9
 - [RECOMMENDED] Carried from 2026-11-19: box centre vs feet origin, unreachable corner tie, shut-line landing refresh, residency cancel and free-before-load, graph edge attributes, camera zone ACs, compound ACs, Tuning Knobs and Player Fantasy (advisory) — open

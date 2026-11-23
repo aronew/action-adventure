@@ -140,7 +140,7 @@ The arrival_inset formula is defined as:
 | apron_depth | int (game px) | 18-54 (side), 24-60 (fall, rise) | calculated | Depth of the solid-free strip behind an opening (rule 4): reaches the far edge of the arrived box, rounded up to whole tiles |
 | lip_depth | int (game px) | 12 (side), 24 (fall, rise) | calculated | Depth of the solid-free exit lip beyond the bounds along an opening's span (rule 4): the box's half extent plus one physics frame of the fastest move, rounded up to whole tiles, so the frame that carries the centre past the bounds line (rule 5) never touches solid |
 | max_step | float (game px) | 6.2 (side), 10.7 (fall, rise) | calculated | Farthest the box moves along the exit's normal in one physics frame: `fastest_move / physics_ticks` |
-| fastest_move | float (px/s) | about 370 (side), about 640 (fall, rise) | `player_config.tres` | `dash_speed` along a side opening, `fast_fall_speed` along a fall or rise exit (the fastest rise is the grapple fling, up to 635 px/s, `player-controller.md` F4, under the 640 used, so the 24 px lip holds: 11 + 10.6 = 21.6; a wall jump rises at 380); the same speeds R5 uses; read, never copied. A faster move added to the kit deepens the lip |
+| fastest_move | float (px/s) | about 370 (side), about 640 (fall, rise) | `player_config.tres` | `dash_speed` along a side opening, `fast_fall_speed` along a fall or rise exit (the fastest rise is a grapple jump-out straight up, 440 px/s, `player-controller.md` F2 and F4, under the 640 used, so the 24 px lip holds: 11 + 7.3 = 18.3; a wall jump rises at 380 and the largest grapple fling at about 304); the same speeds R5 uses; read, never copied. A faster move added to the kit deepens the lip |
 | physics_ticks | int | 60 | project settings (Godot default; `project.godot` does not override it) | Physics frames per second |
 | transition_time | float (s) | 0.2 or more | calculated (R3) | How long every opening of the live room stays shut after a crossing |
 
@@ -325,7 +325,7 @@ These are design targets; the acceptance criteria check the measurable parts.
 | Tile grid, whole screens of 80 x 45 tiles, solid outside bounds except exits, one biome per room, passage check | Terrain pipeline | `design/gdd/terrain-pipeline.md`, Approved |
 | Encounter data is not layout (rule 10) | Terrain pipeline | Approved |
 | Biome texture memory about 97 MB, first load 0.75-1.07 s | Level design Open Question 22 | Measured 2026-11-19 in the container (no GPU) |
-| `dash_speed` 370, `fast_fall_speed` 640, collision box 10 x 22, EnterDoor animation, grapple fling up to 635 px/s (F4), the Damage block, door entry from HEAL (rule 12) | Player controller | `design/gdd/player-controller.md`; `player_config.tres`, `player.gd`, `seeker_animations.json` |
+| `dash_speed` 370, `fast_fall_speed` 640, collision box 10 x 22, EnterDoor animation, strongest rise 440 px/s, a grapple jump-out (F2, F4), the Damage block, door entry from HEAL (rule 12) | Player controller | `design/gdd/player-controller.md`; `player_config.tres`, `player.gd`, `seeker_animations.json` |
 | Seated arrival, presses discarded, the hold on arrival (rule 8); rest area, seat and seat box, `rest_area_max_width` (rules 1, 3) | Save points | `design/gdd/save-points-and-save-load.md`, Approved |
 | An exit or a door ending a heal, meter kept (rule 9) | Healing | `design/gdd/healing.md`, Needs Revision |
 | Camera follow, look-ahead, dip, shake | Camera | `player_camera.gd`; no GDD |

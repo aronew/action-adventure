@@ -67,5 +67,39 @@ Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee5
 Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 1 | Recommended: 7
+Summary: Third review of the day (the second, `923dc4a`, was never logged: 2 blockers on ability gating rules 14 and 18 and Rooms' damage hold, revised). All five earlier blockers held. The rules, values and arithmetic of F1, F3 and F5 match `player_config.tres` and `player.gd`, with no registry value conflicts. The one blocker was F4 and F2's grapple-fling range and example: a fling happens only when the hand is within 6 px of the anchor, so the rise is about 0 to 51 px (vy about -304 to 0), not 224 px and -635. Blocker and 6 of 7 recommended items revised the same session (owner: crouch no-jump rule confirmed; grapple choice left open; registry only, no edits to other GDDs); a re-review is owed.
+Prior verdict resolved: Yes (all 3 blockers of the first review and 2 of the second held)
+Findings:
+- [BLOCKING] Formulas F4 / F2: stated fling range (rise at most 224, vy in [-635, 0]) and example (rise 124 gives -472) contradicted by `player.gd:540-545`; the registry `grapple_range` note copied them. Revised: rise about 0 to 51, vy about -304 to 0; F2 range [-440, 640]
+- [RECOMMENDED] States / Open Questions: `healing.md` rule 9 already settles that a door or rest `interact` takes over a channel; HEAL missing from the Entered-from cells, rule 14 and the ACs. Revised
+- [RECOMMENDED] Acceptance Criteria: AC-3 and AC-9 tested one tick from their boundaries against the GDD's two-tick rule. Revised
+- [RECOMMENDED] Acceptance Criteria: AC-12, 13, 16, 20 and 22 compound. Split into lettered single assertions, today vs target marked. Revised
+- [RECOMMENDED] Damage block: nothing says who clears Rooms' hold on a cancelled transition; `kill()` and the setter missing from the API list. Revised (clear owned by Rooms, proposed; Rooms to confirm)
+- [RECOMMENDED] Registry: `hitbox_size` and `grapple_release_time` unregistered. Revised (registered; `grapple_release_time` still not in the `.tres`)
+- [RECOMMENDED] Edge Cases: crouch and grapple choice `INTENT UNKNOWN`. Crouch confirmed by the owner; grapple left open, ACs provisional, level design to avoid ties and anchors behind walls
+- [RECOMMENDED] Dependencies: `world-state.md` L159 and `rooms-and-transitions.md` L281 still say the controller has no GDD. NOT applied (owner: registry only); owed
+- [ADVISORY] Player Fantasy and Tuning Knobs absent (advisory at `standard`)
+Reviewed-Content-Hash: design/gdd/player-controller.md 315f55945099c90034e155cae67d966c20307bdd
+Reviewed-Content-Hash: design/registry/entities.yaml 46729d88ae3792c3ae46c396c3407ba729b6e088
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/healing.md e999a7ef97a08ddf4b2f9c7cea9a96b8bd87c311
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+
 ## Change note — 2026-11-23 — not a review
 Edited during the Pause and menus fourth review, with the owner's go-ahead (coordination rule 5): `heal` moves from gamepad Y to gamepad B (B is `cancel` only in menus and the map, `pause-and-menus.md` rule 19), and `rapid_fire` stays on Y instead of moving to R3. Input table, Design intent, AC-17 and the Keyboard layout Open Question updated. Status unchanged (Approved); the next review reads this file as CHANGED.
