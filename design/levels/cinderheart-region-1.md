@@ -37,8 +37,11 @@ section: **every room starts as solid rock and is carved**:
 - **The big islands are the rock left between passages**, not boxes floating in air.
   Small floating platforms sit between them where a climb needs a step.
 - **Switchbacks:** stacked tunnels climbed in a zig-zag. Run to the end, hop up through a
-  gap in the slab (a 2-cell step, then a ledge), run back the other way a level higher
-  (Waking Niche, Bellows Climb).
+  gap in the slab (a 2-cell step, then a free-standing 2x2 stepping stone, then the floor
+  above), run back the other way a level higher (Waking Niche, Bellows Climb). Every piece
+  of rock is at least 2 cells thick and no rock meets rock only at a corner: the painted
+  tiles draw one edge or corner per cell, and those shapes came out as black squares.
+  `cinderheart_layout.py` fails a room with either (THIN ROCK, SADDLE ROCK).
 
 Every room renders through the art-style test room's full pipeline (`RegionRoom` extends
 it): far city and ruins, close rock and plant bands, the cave's close rear wall, the porous
@@ -61,7 +64,9 @@ floor hole). `cinderheart_layout.py` checks every door pair and fails on one tha
 **Secrets are hidden until found.** A fake wall and the room behind it (the green brush in
 the editor) are covered in the game by painted rock that matches the walls around it: the
 rock's edge, the textured fill, nothing behind it showing. Step into the fake wall and the
-cover fades out for the rest of the run.
+cover fades out for the rest of the run. Under the cover the room is drawn as it looks
+with the secret found (the nook's floor, walls and roof faced into it); the cover paints
+the secret and every rock cell beside it that looks different while hidden.
 
 **Floating islands** get no textured wall fill: their painted edge around a black interior
 (inner rings of the edge were tried and dropped, owner 2026-11-23); foliage grows on their

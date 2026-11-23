@@ -82,6 +82,29 @@ const ISLAND_FOLIAGE_SIZE := 0.55
 ## Seeker steps into the fake wall or the room behind it; then the cover fades out.
 const COVER_Z := 26
 const COVER_FADE_TIME := 0.35
+## Webs (a biome's "webs" folder; Hollow Molt): standalone pieces hung from the ceilings.
+## Each piece's attach point and lowest strand in source px, and the most it hangs, in cells.
+## Grey silk hangs behind the rock (its top tucked behind the ceiling's edge); black
+## silhouettes hang in front of the Seeker, smaller, beside some of them.
+const WEB_PIECES := {
+	"curtain": {"file": "ceiling-curtain", "anchor": Vector2(362, 80), "bottom": 470.0, "cells": 3.5},
+	"shroud": {"file": "hanging-shroud", "anchor": Vector2(80, 22), "bottom": 520.0, "cells": 4.5},
+	"corner": {"file": "corner-web", "anchor": Vector2(60, 24), "bottom": 490.0, "cells": 3.0},
+}
+## Only ceilings with at least this many open cells below get webs (not the low tunnels).
+const WEB_MIN_HEADROOM := 5
+## A web hangs at most this share of the open height below its ceiling.
+const WEB_DROP_SHARE := 0.42
+## Cells between webs along a ceiling, and kept clear beside a corner web.
+const WEB_SPACING := 9
+const WEB_CORNER_CELLS := 3
+## How far into the rock a web's attach point is tucked, in world px.
+const WEB_TUCK := 3.0
+const WEB_BACK_Z := -3
+const WEB_FRONT_Z := 10
+const WEB_SILK_TINT := Color(0.72, 0.72, 0.74, 0.85)
+## A silhouette's size against the silk piece it hangs beside.
+const WEB_FRONT_SIZE := 0.75
 ## The warm light at each exit, so the way on reads from across the room.
 const EXIT_LIGHT := Color(1.0, 0.62, 0.3, 0.55)
 const EXIT_LIGHT_DEPTH := 3.0
@@ -120,6 +143,7 @@ const BIOMES := {
 				"ground_sink": 128.0, "ceiling_tuck": 10.0},
 		"platform_surface": {"platform-short": 15.0, "platform-long": 16.0},
 		"exit_light": Color(0.85, 0.87, 0.9, 0.4),
+		"webs": "foreground/webs/",
 	},
 }
 
@@ -147,6 +171,8 @@ var _islands := {}
 var _cover_cells := {}
 var _cover: Node2D
 var _band: Dictionary
+## The biome's web folder under its art folder, or "" for no webs.
+var _webs := ""
 var _platform_surface: Dictionary
 var _exit_light := EXIT_LIGHT
 
@@ -162,6 +188,8 @@ func _ready() -> void:
 	close_band_overlap_at_steps = false
 	help_text = ""
 	spawn_point = _arrival_point()
+	# The terrain is drawn with its secrets found; the cover paints them shut (_build_cover).
+	_cover_open = true
 	super._ready()
 	player = seeker
 	if RegionTravel.bonus_health > 0.0:
@@ -188,9 +216,10 @@ func _ready() -> void:
 func _apply_biome() -> void:
 	var settings: Dictionary = BIOMES.get(biome_id, BIOMES["cinderheart"])
 	for key in settings:
-		if key in ["band", "platform_surface", "exit_light"]:
+		if key in ["band", "platform_surface", "exit_light", "webs"]:
 			continue
 		set(key, settings[key])
+	_webs = settings.get("webs", "")
 	_band = settings.get("band", BIOMES["cinderheart"]["band"])
 	_platform_surface = settings.get("platform_surface", BIOMES["cinderheart"]["platform_surface"])
 	_exit_light = settings.get("exit_light", EXIT_LIGHT)
@@ -199,7 +228,8 @@ func _apply_biome() -> void:
 
 ## Turns the Layout layer into the pipeline's grid ('#' rock, '.' air) and its free-floating
 ## one-cell-thick rock into painted floating platforms. Fake walls (tile 1,0) and secret-room
-## air (tile 2,0) are air to the pipeline and go under the cover (see _build_cover).
+## air (tile 2,0) become 'C': rock to the cells around them (so their edges run on), not
+## drawn by the pipeline and walk-through; the cover draws them (see _build_cover).
 func _read_layout() -> void:
 	var terrain := _terrain()
 	var layout := get_node_or_null(^"Layout") as TileMapLayer
@@ -212,8 +242,8 @@ func _read_layout() -> void:
 			row[x] = "."
 			if layout != null and layout.get_cell_source_id(Vector2i(x, y)) >= 0:
 				var brush := layout.get_cell_atlas_coords(Vector2i(x, y)).x
-				row[x] = "#" if brush == 0 else "."
-				if brush == 1 or brush == 2:
+				row[x] = "#" if brush == 0 else "C"
+				if brush != 0:
 					_cover_cells[Vector2i(x, y)] = true
 		rows.append(row)
 	if layout != null:
@@ -230,7 +260,7 @@ func _read_layout() -> void:
 			while x < cells.x and _is_slab(rows, x, y, cells):
 				x += 1
 			# Only free-floating runs: a ledge joined to rock (a switchback's step) stays rock.
-			if rows[y][start - 1] != "." or (x < cells.x and rows[y][x] != "."):
+			if rows[y][start - 1] != "." or (x < cells.x and rows[y][x] != "."):  # 'C' counts as rock
 				continue
 			for c in range(start, x):
 				rows[y][c] = "."
@@ -305,9 +335,11 @@ func _on_island(run: Array) -> bool:
 
 # --- Secret rooms ------------------------------------------------------------------
 
-## Covers the fake wall and the secret room behind it with painted rock: black, the
-## textured wall fill (faded with depth like the walls around it), and the rock's edge
-## where it faces the open room. Fades out for good once the Seeker steps in.
+## The terrain under the cover is drawn with the secret already found (see _cover_open).
+## The cover paints it shut: the fake wall and the room behind it, and every rock cell
+## around them that looks different while it is hidden (an edge that faces into the secret
+## is plain rock then), all drawn the way the terrain draws them. It fades out for good
+## once the Seeker steps into the fake wall or the room behind it.
 func _build_cover() -> void:
 	if _cover_cells.is_empty():
 		return
@@ -318,79 +350,84 @@ func _build_cover() -> void:
 	_cover.z_index = COVER_Z
 	_cover.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(_cover)
-	var visible_open := func(c: Vector2i) -> bool:
-		return not _solid(c.x, c.y) and not _cover_cells.has(c)
-	# Depth of each covered cell from the open room (8-neighbour steps).
-	var depth := {}
-	var frontier: Array[Vector2i] = []
-	for c: Vector2i in _cover_cells:
-		for dy in [-1, 0, 1]:
-			for dx in [-1, 0, 1]:
-				if visible_open.call(c + Vector2i(dx, dy)):
-					depth[c] = 1
-		if depth.has(c):
-			frontier.append(c)
-	var d := 1
-	while not frontier.is_empty():
-		d += 1
-		var next: Array[Vector2i] = []
-		for c in frontier:
-			for dy in [-1, 0, 1]:
-				for dx in [-1, 0, 1]:
-					var n: Vector2i = c + Vector2i(dx, dy)
-					if _cover_cells.has(n) and not depth.has(n):
-						depth[n] = d
-						next.append(n)
-		frontier = next
+	_cover_open = true
+	var found := _cell_looks()
+	var found_depth := _depth
+	_cover_open = false
+	if fill_depth >= 0:
+		_depth = {}
+		_measure_depth()
+	var hidden := _cell_looks()
+	for c: Vector2i in hidden:
+		if _cover_cells.has(c) or found.get(c) != hidden[c]:
+			_paint_cell(_cover, c.x, c.y)
+	_depth = found_depth
 	var area := Area2D.new()
 	area.collision_layer = 0
 	area.collision_mask = Player.LAYER_PLAYER
 	add_child(area)
 	for c: Vector2i in _cover_cells:
-		var p := Vector2(c) * CELL
-		var cell_depth: int = depth.get(c, 99)
-		var alpha := clampf(float(fill_depth + 1 - cell_depth) / float(FILL_FADE_CELLS + 1), 0.0, 1.0)
-		var up: bool = visible_open.call(c + Vector2i.UP)
-		var down: bool = visible_open.call(c + Vector2i.DOWN)
-		var left: bool = visible_open.call(c + Vector2i.LEFT)
-		var right: bool = visible_open.call(c + Vector2i.RIGHT)
-		var tile := -1
-		if up:
-			tile = TILE_TL if left and not right else (TILE_TR if right and not left else TILE_T)
-		elif down:
-			tile = TILE_BL if left and not right else (TILE_BR if right and not left else TILE_B)
-		elif left:
-			tile = TILE_L
-		elif right:
-			tile = TILE_R
-		# Drawn like the real walls: the edge's rock face, the wall fill cut to its solid
-		# part, then the rim on top; an inner cell is black under its fill.
-		if tile >= 0:
-			_add_tile(_cover, tile, c.x, c.y)
-			if not middle_fill.is_empty():
-				_add_middle_fill(_cover, c.x, c.y, [tile]).modulate.a = alpha
-			if not middle_tileset.is_empty():
-				_add_middle_tile(_cover, tile, c.x, c.y)
-		else:
-			var black := Polygon2D.new()
-			black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
-			black.color = TERRAIN_COLOR
-			_cover.add_child(black)
-			if not middle_fill.is_empty():
-				_add_middle_fill(_cover, c.x, c.y).modulate.a = alpha
 		var shape := CollisionShape2D.new()
 		shape.shape = RectangleShape2D.new()
 		(shape.shape as RectangleShape2D).size = Vector2.ONE * CELL
-		shape.position = p + Vector2.ONE * CELL * 0.5
+		shape.position = (Vector2(c) + Vector2.ONE * 0.5) * CELL
 		area.add_child(shape)
 	area.body_entered.connect(func(body: Node2D) -> void:
 		if body != player or _cover == null:
 			return
 		RegionTravel.revealed[key] = true
-		var tween := create_tween()
+		var tween := _cover.create_tween()
 		tween.tween_property(_cover, "modulate:a", 0.0, COVER_FADE_TIME)
 		tween.tween_callback(_cover.queue_free)
 		_cover = null)
+
+
+## How each solid cell is drawn as things stand (secrets open or not, see _cover_open):
+## its edge tile, inside-corner tiles, whether it gets the wall fill, and how strongly.
+func _cell_looks() -> Dictionary:
+	var looks := {}
+	for row in grid.size():
+		for col in grid[0].length():
+			if not _solid(col, row):
+				continue
+			var tile := _edge_tile(col, row)
+			looks[Vector2i(col, row)] = [tile, _inside_corner_tiles(col, row) if tile < 0 else [],
+					_paints_fill(col, row), _fill_alpha(col, row)]
+	return looks
+
+
+## True when this solid cell gets the textured wall fill (the rim's rule, covered cells too).
+func _paints_fill(col: int, row: int) -> bool:
+	return not middle_fill.is_empty() and _wants_fill(col, row) \
+			and (fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth)
+
+
+## Paints one solid cell into [param parent] the way the terrain and the rim paint it: its
+## edge tile (or inside corner, or black), the wall fill cut to its solid part, the rim.
+func _paint_cell(parent: Node2D, col: int, row: int) -> void:
+	var tile := _edge_tile(col, row)
+	var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
+	if tile >= 0:
+		_add_tile(parent, tile, col, row)
+	elif not tiles.is_empty():
+		_add_tile(parent, tiles[0], col, row)
+		var fade: Array = TERRAIN_CORNER_FADES["floor" if tiles[0] == TILE_T else "ceiling"]
+		_fade(_add_tile(parent, tiles[1], col, row), false, fade[0], fade[1])
+	else:
+		var p := Vector2(col, row) * CELL
+		var black := Polygon2D.new()
+		black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
+		black.color = TERRAIN_COLOR
+		parent.add_child(black)
+	if middle_tileset.is_empty():
+		return
+	if _paints_fill(col, row):
+		_add_middle_fill(parent, col, row, tiles)
+	if tile < 0 and not tiles.is_empty():
+		_add_middle_corner(parent, tiles[0], tiles[1], col, row)
+		return
+	for each in tiles:
+		_add_middle_tile(parent, each, col, row)
 
 
 # --- Terrain-anchored foreground ------------------------------------------------
@@ -399,6 +436,8 @@ func _build_cover() -> void:
 ## foliage bands anchored to the terrain (see CEILING_SHARE).
 func _add_foreground(parent: Node2D) -> void:
 	_add_middle_rim(parent)
+	# The bands sit on the rock as it looks with its secrets hidden.
+	_cover_open = false
 	for run in _ceiling_runs():
 		if run[3] >= BAND_MIN_HEADROOM:
 			_add_ceiling_band(parent, run)
@@ -414,7 +453,84 @@ func _add_foreground(parent: Node2D) -> void:
 		_add_ground_band(parent, run)
 		if run[3] >= FOLIAGE_MIN_HEADROOM:
 			next_foliage = _add_foliage(parent, run, next_foliage)
+	_add_webs(parent)
 	_add_exit_lights(parent)
+
+
+## Hangs the biome's webs (see WEB_PIECES): a corner web where a tall ceiling meets a wall,
+## then curtains and shrouds along it every WEB_SPACING cells, some with a silhouette in
+## front. Placement is fixed per room (hashed from the cells), so a room looks the same
+## every visit.
+func _add_webs(parent: Node2D) -> void:
+	if _webs.is_empty():
+		return
+	var ceiling_inset: float = tile_insets[TILE_B][1] * CELL / TILE_SOURCE
+	for run in _ceiling_runs():
+		if run[3] < WEB_MIN_HEADROOM:
+			continue
+		var y: float = run[0] * CELL - ceiling_inset - WEB_TUCK
+		var reach: float = run[3] * CELL * WEB_DROP_SHARE
+		var left_wall := _solid(run[1] - 1, run[0])
+		var right_wall := _solid(run[2] + 1, run[0])
+		if left_wall:
+			var x: float = run[1] * CELL - tile_insets[TILE_R][3] * CELL / TILE_SOURCE - WEB_TUCK
+			_add_web(parent, "corner", false, Vector2(x, y), reach, false)
+		if right_wall:
+			var x: float = (run[2] + 1) * CELL + tile_insets[TILE_L][2] * CELL / TILE_SOURCE + WEB_TUCK
+			_add_web(parent, "corner", false, Vector2(x, y), reach, true)
+		var first: int = run[1] + (WEB_CORNER_CELLS if left_wall else 0)
+		var last: int = run[2] - (WEB_CORNER_CELLS if right_wall else 0)
+		var count := (last - first + 1) / WEB_SPACING
+		for i in count:
+			var col := first + (i + 0.5) * (last - first + 1) / float(count)
+			var roll := absi(hash(Vector2i(int(col), run[0] * 7 + i)))
+			var kind := "shroud" if roll % 3 == 0 else "curtain"
+			var drop := _web_drop(kind, reach)
+			if kind == "curtain" and _web_width(kind, drop) > (last - first + 1) * CELL / float(count):
+				kind = "shroud"
+				drop = _web_drop(kind, reach)
+			var at := Vector2(col * CELL, y)
+			_add_web(parent, kind, false, at, drop, roll % 2 == 0)
+			if roll % 4 < 2:
+				var front := "curtain" if kind == "shroud" else "shroud"
+				var side := CELL * (1.5 if roll % 8 < 4 else -1.5)
+				_add_web(parent, front, true, at + Vector2(side, 0.0),
+						_web_drop(front, reach) * WEB_FRONT_SIZE, roll % 3 == 1)
+
+
+## How far a [param kind] web hangs below a ceiling with [param reach] px to spare.
+func _web_drop(kind: String, reach: float) -> float:
+	return minf(reach, float(WEB_PIECES[kind]["cells"]) * CELL)
+
+
+## A [param kind] web's drawn width when it hangs [param drop] px.
+func _web_width(kind: String, drop: float) -> float:
+	var piece: Dictionary = WEB_PIECES[kind]
+	var texture := _texture(biome + _webs + "%s-grey-white.png" % piece["file"])
+	return texture.get_width() * drop / (float(piece["bottom"]) - (piece["anchor"] as Vector2).y)
+
+
+## One web, its attach point (WEB_PIECES' anchor) at world [param at], hanging
+## [param drop] px: grey silk behind the rock, or a black [param silhouette] in front of the
+## Seeker. [param flip] mirrors it (a corner web then fits a wall on the right).
+func _add_web(parent: Node2D, kind: String, silhouette: bool, at: Vector2, drop: float,
+		flip: bool) -> void:
+	var piece: Dictionary = WEB_PIECES[kind]
+	var texture := _texture(biome + _webs + "%s-%s.png" % [piece["file"],
+			"silhouette" if silhouette else "grey-white"])
+	var anchor: Vector2 = piece["anchor"]
+	var size := drop / (float(piece["bottom"]) - anchor.y)
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.flip_h = flip
+	sprite.scale = Vector2.ONE * size
+	var anchor_x := texture.get_width() - anchor.x if flip else anchor.x
+	sprite.position = at - Vector2(anchor_x, anchor.y) * size
+	sprite.z_index = WEB_FRONT_Z if silhouette else WEB_BACK_Z
+	if not silhouette:
+		sprite.modulate = WEB_SILK_TINT
+	parent.add_child(sprite)
 
 
 ## Runs of open cells with rock right above: [row, first col, last col, headroom in cells

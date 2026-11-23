@@ -1,18 +1,30 @@
-## Saves a zoomed-out picture of each whole Cinderheart room (mood pass off) to
-## production/qa/evidence/cinderheart/overview-<room>.png.
+## Saves a zoomed-out picture of each whole region room (mood pass off) to
+## production/qa/evidence/<biome>/overview-<room>.png.
 ## Run (needs a display): xvfb-run -a godot --path . -s res://tools/level/overview_rooms.gd
+## Only some rooms: add -- and parts of their names (e.g. -- hm01 c07).
 extends SceneTree
 
-const ROOMS := ["c01_waking_niche", "c02_ash_steps", "c03_kiln_hall", "c04_cinder_run",
-		"c05_glaze_bridge", "c06_keepers_forge", "c07_bellows_climb", "c08_brun_antechamber",
-		"c09_ember_hoard"]
+const CINDERHEART := "res://src/world/cinderheart/rooms/%s.tscn"
+## [scene, evidence folder]
+const ROOMS := [
+	[CINDERHEART % "c01_waking_niche", "cinderheart"], [CINDERHEART % "c02_ash_steps", "cinderheart"],
+	[CINDERHEART % "c03_kiln_hall", "cinderheart"], [CINDERHEART % "c04_cinder_run", "cinderheart"],
+	[CINDERHEART % "c05_glaze_bridge", "cinderheart"], [CINDERHEART % "c06_keepers_forge", "cinderheart"],
+	[CINDERHEART % "c07_bellows_climb", "cinderheart"], [CINDERHEART % "c08_brun_antechamber", "cinderheart"],
+	[CINDERHEART % "c09_ember_hoard", "cinderheart"],
+	["res://src/world/hollow_molt/rooms/hm01_molt_test.tscn", "hollow-molt"],
+]
 
 
 func _initialize() -> void:
 	RegionRoom.mood_on = false
-	for key in ROOMS:
+	var only := Array(OS.get_cmdline_user_args())
+	for entry in ROOMS:
+		var key: String = (entry[0] as String).get_file().get_basename()
+		if not only.is_empty() and not only.any(func(part: String) -> bool: return key.contains(part)):
+			continue
 		RegionTravel.reset()
-		change_scene_to_file("res://src/world/cinderheart/rooms/%s.tscn" % key)
+		change_scene_to_file(entry[0])
 		for f in 20:
 			await process_frame
 		var room := current_scene as RegionRoom
@@ -33,6 +45,6 @@ func _initialize() -> void:
 		room.player.set_physics_process(false)
 		for f in 10:
 			await process_frame
-		root.get_texture().get_image().save_png("res://production/qa/evidence/cinderheart/overview-%s.png" % key)
+		root.get_texture().get_image().save_png("res://production/qa/evidence/%s/overview-%s.png" % [entry[1], key])
 		print("overview ", key)
 	quit()

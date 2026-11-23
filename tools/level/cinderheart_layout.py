@@ -64,17 +64,20 @@ class Room:
     def switchback(self, x0, x1, bottom_floor, levels, first_turn="right"):
         """A switchback climb carved in rock: `levels` stacked tunnels (3 rows tall, 2-row
         rock slabs between, so each level is 5 rows above the last), joined at alternating
-        ends by a hole through the slab with two steps: a 2-row block at the tunnel's end
-        and a one-cell ledge on the slab's edge. Run to the end, hop up twice, run back."""
+        ends by a 5-wide hole through the slab with two steps: a 2-row block against the end
+        wall, then a free-standing 2x2 stepping stone in the hole, its top one row below the
+        floor above (every piece of rock at least 2 cells thick, and no rock meeting rock
+        only at a corner, so the painted tiles can draw it). Run to the end, hop up three
+        times, run back."""
         floors = [bottom_floor - 5 * k for k in range(levels)]
         for f in floors:
             self.tunnel(x0, x1, f)
         side = first_turn
         for f in floors[:-1]:
             if side == "right":
-                self.open(x1 - 2, f - 5, x1, f - 4).solid(x1, f - 2, x1, f - 1).solid(x1 - 2, f - 4, x1 - 2, f - 4)
+                self.open(x1 - 4, f - 5, x1, f - 4).solid(x1, f - 2, x1, f - 1).solid(x1 - 3, f - 4, x1 - 2, f - 3)
             else:
-                self.open(x0, f - 5, x0 + 2, f - 4).solid(x0, f - 2, x0, f - 1).solid(x0 + 2, f - 4, x0 + 2, f - 4)
+                self.open(x0, f - 5, x0 + 4, f - 4).solid(x0, f - 2, x0, f - 1).solid(x0 + 2, f - 4, x0 + 3, f - 3)
             side = "left" if side == "right" else "right"
         return self
 
@@ -150,6 +153,41 @@ class Room:
         for m in self.markers:
             c, r = m["col"], m["row"]
             assert self.g[r][c] == "#" and self.g[r - 1][c] != "#", (self.key, m, "marker must stand on rock")
+        # Rock the painted tiles can't draw: a cell open on opposite sides or on three sides
+        # shows a hard black square (a tile draws one edge or corner). Free-floating rock
+        # one cell thick is fine: it becomes the painted floating platforms. Fake walls and
+        # secret air count as rock here (the rock around a secret is drawn as if it were).
+        g = self.g
+        def rock(x, y):
+            return x < 0 or y < 0 or x >= self.w or y >= self.h or g[y][x] in "#Fs"
+        thin = []
+        for y in range(self.h):
+            for x in range(self.w):
+                if g[y][x] != "#":
+                    continue
+                up, dn, lf, rt = not rock(x, y - 1), not rock(x, y + 1), not rock(x - 1, y), not rock(x + 1, y)
+                if up and dn:
+                    a, b = x, x
+                    while rock(a - 1, y) and g[y][a - 1] == "#" and not rock(a - 1, y - 1) and not rock(a - 1, y + 1):
+                        a -= 1
+                    while rock(b + 1, y) and g[y][b + 1] == "#" and not rock(b + 1, y - 1) and not rock(b + 1, y + 1):
+                        b += 1
+                    if not rock(a - 1, y) and not rock(b + 1, y):
+                        continue
+                if (up and dn) or (lf and rt) or (up + dn + lf + rt) >= 3:
+                    thin.append((x, y))
+        problems_thin = ["THIN ROCK (the tiles can't draw it) at %s" % (thin[:8],)] if thin else []
+        # A rock cell closed on all four sides but open at two opposite corners (a staircase
+        # meeting itself) needs a floor corner and a ceiling corner at once: drawn black.
+        saddle = []
+        for y in range(self.h):
+            for x in range(self.w):
+                if not rock(x, y) or not all(rock(x + dx, y + dy) for dx, dy in ((0, -1), (0, 1), (-1, 0), (1, 0))):
+                    continue
+                if (not rock(x + 1, y - 1) and not rock(x - 1, y + 1)) or (not rock(x - 1, y - 1) and not rock(x + 1, y + 1)):
+                    saddle.append((x, y))
+        if saddle:
+            problems_thin.append("SADDLE ROCK (open on opposite diagonals, drawn black) at %s" % (saddle[:8],))
         starts = []
         for e in self.exits:
             if self.entries is None or e["id"] in self.entries:
@@ -161,7 +199,7 @@ class Room:
         dash = self.names(reach.reachable(self.g, starts, True))
         everything = set("exit:" + e["id"] for e in self.exits) | set(
             "%s@%d,%d" % (m["kind"], m["col"], m["row"]) for m in self.markers)
-        problems = []
+        problems = list(problems_thin)
         for n in sorted(everything - dash):
             problems.append("UNREACHABLE even with dash: " + n)
         for n in sorted(self.expect_dash_only & walk):
@@ -265,15 +303,15 @@ r.open(64, 0, 66, 4)                                    # hole up to the hub
 r.plat(59, 19, 2).island(62, 17, 6, 3).plat(58, 15, 3).plat(62, 13, 2).plat(66, 11, 2)
 r.plat(62, 9, 2).plat(63, 7, 3)
 r.solid(68, 5, 75, 8).solid(71, 9, 75, 11)             # the chamber's rough roof
-r.tunnel(20, 53, 11).solid(54, 11, 57, 11)              # high tunnel and its ledge
-r.tunnel(10, 53, 21)                                    # low tunnel
+r.tunnel(20, 53, 11).solid(54, 11, 57, 12)              # high tunnel and its ledge
+r.tunnel(12, 53, 21)                                    # low tunnel
 r.solid(44, 19, 46, 20).open(30, 21, 32, 22)            # a mound and a dip
 r.open(12, 7, 30, 20)                                   # the Middle Chamber
 r.solid(20, 19, 25, 20).island(12, 17, 7, 3).plat(21, 15, 3).island(25, 13, 6, 3)
 r.secret(3, 13, 10, 16).fake(11, 13, 11, 16)            # the hidden nook
-r.tunnel(0, 9, 21)
+r.tunnel(0, 11, 22)                                     # its left end, a row lower
 r.exit("up", "top", 64, 66, "c03_kiln_hall", "down")
-r.exit("left", "left", 18, 20, "c06_keepers_forge", "right")
+r.exit("left", "left", 19, 21, "c06_keepers_forge", "right")
 r.mark("relic", 5, 17)
 r.mark("enemy", 40, 21, config="grunt").mark("enemy", 36, 21, config="skitter") \
  .mark("enemy", 22, 19, config="grunt").mark("enemy", 42, 11, config="grunt") \

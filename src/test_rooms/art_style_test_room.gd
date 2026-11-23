@@ -418,6 +418,9 @@ var close_band_overlap_at_steps := true
 var seeker: Player
 ## Distance in cells from each solid cell to the nearest open one (only when fill_depth >= 0).
 var _depth := {}
+## While true, covered cells ('C') read as open air to everything that asks _solid: the
+## terrain is then drawn as it looks with its secrets found (see RegionRoom's cover).
+var _cover_open := false
 
 static var _textures := {}
 static var _fade_shader: Shader
@@ -582,13 +585,25 @@ func _prop_sprite(parent: Node2D, prop: String) -> Sprite2D:
 func _solid(col: int, row: int) -> bool:
 	if row < 0 or row >= grid.size() or col < 0 or col >= grid[0].length():
 		return true
-	return grid[row][col] == "#" or grid[row][col] == "F"
+	return grid[row][col] == "#" or grid[row][col] == "F" \
+			or (grid[row][col] == "C" and not _cover_open)
 
 
-## True when the cell is solid and blocks movement ('F' is a fake wall: drawn, no collision).
+## True when the cell is solid and blocks movement ('F' is a fake wall: drawn, no
+## collision; 'C' is covered: a secret, solid to the rock around it but not drawn here and
+## walk-through, see _is_cover).
 func _collides(col: int, row: int) -> bool:
-	return _solid(col, row) and not (row >= 0 and row < grid.size() and col >= 0 \
-			and col < grid[0].length() and grid[row][col] == "F")
+	if row < 0 or row >= grid.size() or col < 0 or col >= grid[0].length():
+		return true
+	return grid[row][col] == "#"
+
+
+## True for a covered cell ('C'): part of a secret (its fake wall and the room behind it).
+## The rock around it is drawn as if it were rock, so its edges run on unbroken; the cell
+## itself is drawn by whoever covers it (RegionRoom's cover) and has no collision.
+func _is_cover(col: int, row: int) -> bool:
+	return row >= 0 and row < grid.size() and col >= 0 and col < grid[0].length() \
+			and grid[row][col] == "C"
 
 
 ## Fills _depth: each solid cell's distance (8-neighbour steps) to open air, up to
@@ -621,7 +636,7 @@ func _measure_depth() -> void:
 ## reuses this pipeline can turn the fill off for some cells by overriding _wants_fill.
 func _shallow(col: int, row: int) -> bool:
 	return (fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth) \
-			and _wants_fill(col, row)
+			and _wants_fill(col, row) and not _is_cover(col, row)
 
 
 ## Whether this solid cell gets the textured wall fill (all of them here).
@@ -639,11 +654,11 @@ func _fill_alpha(col: int, row: int) -> float:
 
 
 ## The edge tile for a solid cell, or -1 for an interior cell (plain black).
-func _edge_tile(col: int, row: int) -> int:
-	var up := not _solid(col, row - 1)
-	var down := not _solid(col, row + 1)
-	var left := not _solid(col - 1, row)
-	var right := not _solid(col + 1, row)
+func _edge_tile(col: int, row: int, cover_open := false) -> int:
+	var up := not _solid(col, row - 1) or (cover_open and _is_cover(col, row - 1))
+	var down := not _solid(col, row + 1) or (cover_open and _is_cover(col, row + 1))
+	var left := not _solid(col - 1, row) or (cover_open and _is_cover(col - 1, row))
+	var right := not _solid(col + 1, row) or (cover_open and _is_cover(col + 1, row))
 	if up:
 		return TILE_TL if left and not right else (TILE_TR if right and not left else TILE_T)
 	if down:
@@ -689,7 +704,9 @@ func _add_terrain(parent: Node2D) -> void:
 			var collides: bool = solid and _collides(col, row)
 			var tile := _edge_tile(col, row) if solid else -1
 			var corner: Array = _inside_corner_tiles(col, row) if solid and tile < 0 else []
-			var insets: Array = _collision_insets(tile)
+			# Collision trims as if covered cells were open: a secret's floor and walls are
+			# trimmed to the faces it shows once it is found.
+			var insets: Array = _collision_insets(_edge_tile(col, row, true) if solid else -1)
 			if not corner.is_empty():
 				# The floor (or ceiling) beside it runs on under the wall face at its
 				# surface height.
@@ -697,7 +714,7 @@ func _add_terrain(parent: Node2D) -> void:
 						else [0, tile_insets[TILE_B][1], 0, 0]
 			var same: bool = collides and run_start >= 0 and insets[0] == run_insets[0] \
 					and insets[1] == run_insets[1]
-			var interior: bool = solid and tile < 0 and corner.is_empty()
+			var interior: bool = solid and tile < 0 and corner.is_empty() and not _is_cover(col, row)
 			if fill_start >= 0 and not interior:
 				# One black polygon per run of interior cells (big carved rooms have thousands).
 				var p0 := Vector2(fill_start * CELL, row * CELL)
@@ -710,7 +727,7 @@ func _add_terrain(parent: Node2D) -> void:
 			if interior and fill_start < 0:
 				fill_start = col
 			if run_start >= 0 and not same:
-				var prev_tile := _edge_tile(col - 1, row)
+				var prev_tile := _edge_tile(col - 1, row, true)
 				var prev_insets: Array = _collision_insets(prev_tile)
 				var x1: float = col * CELL - prev_insets[3] * k
 				# A walkable top sits SURFACE_SINK below the stones' top outline.
@@ -722,7 +739,7 @@ func _add_terrain(parent: Node2D) -> void:
 				run_start = col
 				run_insets = insets
 				run_left = col * CELL + insets[2] * k
-			if not solid:
+			if not solid or _is_cover(col, row):
 				continue
 			if tile >= 0:
 				_add_tile(parent, tile, col, row)
@@ -965,7 +982,7 @@ func _add_middle_rim(parent: Node2D) -> void:
 	var featured := _add_middle_features(parent) if not middle_fill.is_empty() else {}
 	for row in grid.size():
 		for col in grid[0].length():
-			if not _solid(col, row):
+			if not _solid(col, row) or _is_cover(col, row):
 				continue
 			var tile := _edge_tile(col, row)
 			if not middle_tileset.is_empty():
