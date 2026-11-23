@@ -112,3 +112,33 @@ Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dd
 Reviewed-Content-Hash: design/gdd/player-controller.md fb10bc6b71d00494a5b4d4c56d15ed4ae9980629
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/healing.md e999a7ef97a08ddf4b2f9c7cea9a96b8bd87c311
+
+## Review — 2026-11-23 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 0 | Recommended: 7
+Summary: Seventh review, a re-check of the sixth review's two revised blockers (the diff against the text read in full earlier the same day, and every cross-document fact). Both hold: no invulnerability remains anywhere, a rest and an arrival are safe by placement or by Rooms' hold, and `interact` is the up arrow and D-pad up, with B starting no rest. The text agrees with player-controller.md (Damage block, AC-20, input table), pause-and-menus.md (rule 19) and level-design.md rule 15, which now holds the placement checks. What remains is housekeeping and two hand-offs.
+Prior verdict resolved: Yes (sixth review's 2 blockers)
+Findings:
+- [RECOMMENDED] Dependencies (Level design row), Open Questions 2 and 3: still say Level design lacks the placement checks; it adopted them (level-design.md rule 15, Open Question 23); registry `rest_area_max_width` `referenced_by` still empty
+- [RECOMMENDED] States and Transitions / player-controller.md: this GDD says a landed hit ends a rest or an arrival; the controller's RESTING and ARRIVING rows leave only when the stand-up ends; add the hit exit there
+- [RECOMMENDED] Acceptance Criteria (hit during a rest): "max_health set on the press frame stand" should read health is `max_health` minus the hit's damage and the respawn point is unchanged
+- [RECOMMENDED] Rule 2: whether `interact` during HEAL starts a rest (healing.md rule 9 says the rest takes over); settle with the Healing revision
+- [RECOMMENDED] Dependencies, Bidirectional check, header: Pause and menus, Bosses and Enemies "no GDD yet", Grid map "Designed, pending review", review history stale
+- [RECOMMENDED] Carried from the fifth review: two Open Questions numbered 7; dead-body trigger AC omits exit, door, arena-lock and shortcut triggers; no AC for a step one tile or more below the seat; cite controller rule 14 for same-tick precedence
+- [RECOMMENDED] Open Question 1: Rooms and transitions owes five changes (seated arrival, discarded presses, room checks, retired-id region, the damage hold for rule 8 arrivals); nothing changed on its side
+- [ADVISORY] Player Fantasy absent (advisory at `standard`)
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 2d8206c28ee7195ad626719bcdddb7781b4de0b3
+Reviewed-Content-Hash: design/registry/entities.yaml d1898ffe66580263b8666942a93138dcfd3a0616
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/player-controller.md bb4d01ede7c8e08fbfe7c9c58f0021616fa8a5f3
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/gdd/healing.md 1fb4e240b8b05464b727dfca70910cf1cdcd2f51
