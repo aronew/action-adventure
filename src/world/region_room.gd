@@ -35,6 +35,9 @@ const REST_RADIUS := 14.0
 ## Seconds from death to respawn.
 @export var respawn_delay := 1.2
 
+## Whether the mood pass shows; V toggles it, and the choice carries across rooms.
+static var mood_on := true
+
 var player: Player
 var _camera: PlayerCamera
 var _room_size := Vector2.ZERO
@@ -93,6 +96,7 @@ func _ready() -> void:
 		_mood_pass = RoomAtmosphere.new()
 		add_child(_mood_pass)
 		_mood_pass.setup(world, _camera, player, VIEW_SIZE)
+		_mood_pass.set_enabled(mood_on)
 	_build_hud()
 
 
@@ -102,6 +106,17 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	RenderingServer.frame_pre_draw.disconnect(_place_layers)
+
+
+## V turns the mood pass (fog, blur, embers, colour grade) on or off, for slower machines.
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key == null or not key.pressed or key.echo or key.keycode != KEY_V:
+		return
+	mood_on = not mood_on
+	if _mood_pass != null:
+		_mood_pass.set_enabled(mood_on)
+	_show_title("Mood on" if mood_on else "Mood off")
 
 
 func _physics_process(_delta: float) -> void:
@@ -258,7 +273,7 @@ func _build_hud() -> void:
 	_status = _label(hud, Vector2(24 + BAR_SIZE.x + 12, 16))
 	_title = _label(hud, Vector2(24, 1000))
 	var help := _label(hud, Vector2(24, 64))
-	help.text = "Move arrows  Jump Space/Z  Attack X  Heal hold R  Rest Up  Dash Shift/C (once found)"
+	help.text = "Move arrows  Jump Space/Z  Attack X  Heal hold R  Rest Up  Dash Shift/C (once found)  V mood on/off"
 	help.add_theme_font_size_override(&"font_size", 16)
 	player.damaged.connect(func(_a: float, _l: float) -> void: _update_health())
 	player.healed.connect(func(_a: float, _l: float) -> void: _update_health())
