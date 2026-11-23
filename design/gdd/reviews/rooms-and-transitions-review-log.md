@@ -182,3 +182,33 @@ Reviewed-Content-Hash: src/player/player_input_bindings.gd dbdc4b68adbe123516947
 Reviewed-Content-Hash: src/player/seeker_animations.json 239b491a4a44fdf87998575f680742e2e714eaa0
 Reviewed-Content-Hash: production/epics/guardbreak/story-007-rooms-saves-map.md 71f3e50fc28b2fe93ac0dd1a8e105ab77230014d
 Reviewed-Content-Hash: project.godot 04b86ddcde7969009cb0b855698a7a6271ff874b
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 2 | Recommended: 8
+Summary: Re-review of the unchanged 2026-11-19 text against GDDs that moved since (cross-GDD review 2026-11-23 B-2). The exit, lip, R1-R6 and camera mechanics still hold and registry values match; the failures are at the seams: since the owner removed the rest and arrival damage block (2026-11-23), Save points' safety rests on two things Rooms owns, the hold on an arrival and the room check, and Rooms had neither. Both blockers revised the same session (owner: Rooms' room check runs every rest-area check). Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (prior APPROVED; 13 recommended items from 2026-11-19, 3 now fixed: stale World state line, door input and ENTER_DOOR block as a controller need, R5 save-point arrivals via rule 8)
+Findings:
+- [BLOCKING] Rule 8 / rule 9 / ACs L347, L351: respawn arrives standing with buffered presses delivered and no damage hold stated, against Save points rule 8 (seated, presses discarded) and its AC L265 and L267 — revised: seated arrival, presses discarded, hold from the request to the fade-in's end, two new ACs
+- [BLOCKING] Room check: no rest-area checks although Save points rule 1 and Level design rule 15 assign them to it — revised: new rule 16 (shape and placement checks), two AC groups, Save points and Level design upstream rows
+- [RECOMMENDED] Rules 5, 7 / AC L346: door press from HEAL (owner B-1) and a heal ended by a crossing, meter kept — revised
+- [RECOMMENDED] Parallax room-data fields and two room-check items (Parallax OQ2) — open, Open Question 10
+- [RECOMMENDED] Grid map room index and hidden exit mark — open, Open Question 10
+- [RECOMMENDED] R3: Parallax measured a long-room build of 1.4-1.6 s against the 0.02-0.4 s range — open, Open Question 10
+- [RECOMMENDED] R2: fastest rise is the grapple fling (635 px/s), not the wall jump (380); the lip holds — revised
+- [RECOMMENDED] Stale status text (header, pillar line, "no GDD" lines, Terrain and Level design status, save-during-transition edge case, no Pause row) — revised
+- [RECOMMENDED] Retired room id record naming its region (Save points rule 9) — open, Open Question 9
+- [RECOMMENDED] Carried from 2026-11-19: box centre vs feet origin, unreachable corner tie, shut-line landing refresh, residency cancel and free-before-load, graph edge attributes, camera zone ACs, compound ACs, Tuning Knobs and Player Fantasy (advisory) — open
+Receipt note: the target doc is stamped at the reviewed (pre-revision) text; the other files at their state when the review ended.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/registry/entities.yaml fa7bf604b024d9a00eec9d8af9bd36137f36015d
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/gdd/player-controller.md 44a81dd9f3c23d59ca70498d81be889701c020be
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f

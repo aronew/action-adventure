@@ -477,7 +477,8 @@ constants:
   - name: rest_area_max_width
     status: active
     source: design/gdd/save-points-and-save-load.md
-    referenced_by: []
+    referenced_by:
+      - design/gdd/rooms-and-transitions.md   # rule 16, the room check (adopted 2026-11-23)
     value: 3
     unit: tiles
     notes: "Save points Tuning Knobs (range 2-4, Owner, second review 2026-11-20; floor of 2 at the fourth review: a rest area must be as wide as the 10 px hitbox). Widest rest area, in 6 px tiles, the room check accepts; the sideways snap to the seat is at most this plus half the hitbox width (5 px), and the vertical snap one tile. Rooms and transitions (room check) and level design (placement) must read it and add themselves to referenced_by when they adopt Save points Open Questions 1 and 2; empty until then. Lives in src/save/save_point_config.tres."
