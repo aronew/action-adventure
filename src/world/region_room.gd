@@ -162,6 +162,8 @@ func _ready() -> void:
 	close_band_overlap_at_steps = false
 	help_text = ""
 	spawn_point = _arrival_point()
+	# The terrain is drawn with its secrets found; the cover paints them shut (_build_cover).
+	_cover_open = true
 	super._ready()
 	player = seeker
 	if RegionTravel.bonus_health > 0.0:
@@ -199,7 +201,8 @@ func _apply_biome() -> void:
 
 ## Turns the Layout layer into the pipeline's grid ('#' rock, '.' air) and its free-floating
 ## one-cell-thick rock into painted floating platforms. Fake walls (tile 1,0) and secret-room
-## air (tile 2,0) are air to the pipeline and go under the cover (see _build_cover).
+## air (tile 2,0) become 'C': rock to the cells around them (so their edges run on), not
+## drawn by the pipeline and walk-through; the cover draws them (see _build_cover).
 func _read_layout() -> void:
 	var terrain := _terrain()
 	var layout := get_node_or_null(^"Layout") as TileMapLayer
@@ -212,8 +215,8 @@ func _read_layout() -> void:
 			row[x] = "."
 			if layout != null and layout.get_cell_source_id(Vector2i(x, y)) >= 0:
 				var brush := layout.get_cell_atlas_coords(Vector2i(x, y)).x
-				row[x] = "#" if brush == 0 else "."
-				if brush == 1 or brush == 2:
+				row[x] = "#" if brush == 0 else "C"
+				if brush != 0:
 					_cover_cells[Vector2i(x, y)] = true
 		rows.append(row)
 	if layout != null:
@@ -230,7 +233,7 @@ func _read_layout() -> void:
 			while x < cells.x and _is_slab(rows, x, y, cells):
 				x += 1
 			# Only free-floating runs: a ledge joined to rock (a switchback's step) stays rock.
-			if rows[y][start - 1] != "." or (x < cells.x and rows[y][x] != "."):
+			if rows[y][start - 1] != "." or (x < cells.x and rows[y][x] != "."):  # 'C' counts as rock
 				continue
 			for c in range(start, x):
 				rows[y][c] = "."
@@ -305,9 +308,11 @@ func _on_island(run: Array) -> bool:
 
 # --- Secret rooms ------------------------------------------------------------------
 
-## Covers the fake wall and the secret room behind it with painted rock: black, the
-## textured wall fill (faded with depth like the walls around it), and the rock's edge
-## where it faces the open room. Fades out for good once the Seeker steps in.
+## The terrain under the cover is drawn with the secret already found (see _cover_open).
+## The cover paints it shut: the fake wall and the room behind it, and every rock cell
+## around them that looks different while it is hidden (an edge that faces into the secret
+## is plain rock then), all drawn the way the terrain draws them. It fades out for good
+## once the Seeker steps into the fake wall or the room behind it.
 func _build_cover() -> void:
 	if _cover_cells.is_empty():
 		return
@@ -318,79 +323,84 @@ func _build_cover() -> void:
 	_cover.z_index = COVER_Z
 	_cover.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(_cover)
-	var visible_open := func(c: Vector2i) -> bool:
-		return not _solid(c.x, c.y) and not _cover_cells.has(c)
-	# Depth of each covered cell from the open room (8-neighbour steps).
-	var depth := {}
-	var frontier: Array[Vector2i] = []
-	for c: Vector2i in _cover_cells:
-		for dy in [-1, 0, 1]:
-			for dx in [-1, 0, 1]:
-				if visible_open.call(c + Vector2i(dx, dy)):
-					depth[c] = 1
-		if depth.has(c):
-			frontier.append(c)
-	var d := 1
-	while not frontier.is_empty():
-		d += 1
-		var next: Array[Vector2i] = []
-		for c in frontier:
-			for dy in [-1, 0, 1]:
-				for dx in [-1, 0, 1]:
-					var n: Vector2i = c + Vector2i(dx, dy)
-					if _cover_cells.has(n) and not depth.has(n):
-						depth[n] = d
-						next.append(n)
-		frontier = next
+	_cover_open = true
+	var found := _cell_looks()
+	var found_depth := _depth
+	_cover_open = false
+	if fill_depth >= 0:
+		_depth = {}
+		_measure_depth()
+	var hidden := _cell_looks()
+	for c: Vector2i in hidden:
+		if _cover_cells.has(c) or found.get(c) != hidden[c]:
+			_paint_cell(_cover, c.x, c.y)
+	_depth = found_depth
 	var area := Area2D.new()
 	area.collision_layer = 0
 	area.collision_mask = Player.LAYER_PLAYER
 	add_child(area)
 	for c: Vector2i in _cover_cells:
-		var p := Vector2(c) * CELL
-		var cell_depth: int = depth.get(c, 99)
-		var alpha := clampf(float(fill_depth + 1 - cell_depth) / float(FILL_FADE_CELLS + 1), 0.0, 1.0)
-		var up: bool = visible_open.call(c + Vector2i.UP)
-		var down: bool = visible_open.call(c + Vector2i.DOWN)
-		var left: bool = visible_open.call(c + Vector2i.LEFT)
-		var right: bool = visible_open.call(c + Vector2i.RIGHT)
-		var tile := -1
-		if up:
-			tile = TILE_TL if left and not right else (TILE_TR if right and not left else TILE_T)
-		elif down:
-			tile = TILE_BL if left and not right else (TILE_BR if right and not left else TILE_B)
-		elif left:
-			tile = TILE_L
-		elif right:
-			tile = TILE_R
-		# Drawn like the real walls: the edge's rock face, the wall fill cut to its solid
-		# part, then the rim on top; an inner cell is black under its fill.
-		if tile >= 0:
-			_add_tile(_cover, tile, c.x, c.y)
-			if not middle_fill.is_empty():
-				_add_middle_fill(_cover, c.x, c.y, [tile]).modulate.a = alpha
-			if not middle_tileset.is_empty():
-				_add_middle_tile(_cover, tile, c.x, c.y)
-		else:
-			var black := Polygon2D.new()
-			black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
-			black.color = TERRAIN_COLOR
-			_cover.add_child(black)
-			if not middle_fill.is_empty():
-				_add_middle_fill(_cover, c.x, c.y).modulate.a = alpha
 		var shape := CollisionShape2D.new()
 		shape.shape = RectangleShape2D.new()
 		(shape.shape as RectangleShape2D).size = Vector2.ONE * CELL
-		shape.position = p + Vector2.ONE * CELL * 0.5
+		shape.position = (Vector2(c) + Vector2.ONE * 0.5) * CELL
 		area.add_child(shape)
 	area.body_entered.connect(func(body: Node2D) -> void:
 		if body != player or _cover == null:
 			return
 		RegionTravel.revealed[key] = true
-		var tween := create_tween()
+		var tween := _cover.create_tween()
 		tween.tween_property(_cover, "modulate:a", 0.0, COVER_FADE_TIME)
 		tween.tween_callback(_cover.queue_free)
 		_cover = null)
+
+
+## How each solid cell is drawn as things stand (secrets open or not, see _cover_open):
+## its edge tile, inside-corner tiles, whether it gets the wall fill, and how strongly.
+func _cell_looks() -> Dictionary:
+	var looks := {}
+	for row in grid.size():
+		for col in grid[0].length():
+			if not _solid(col, row):
+				continue
+			var tile := _edge_tile(col, row)
+			looks[Vector2i(col, row)] = [tile, _inside_corner_tiles(col, row) if tile < 0 else [],
+					_paints_fill(col, row), _fill_alpha(col, row)]
+	return looks
+
+
+## True when this solid cell gets the textured wall fill (the rim's rule, covered cells too).
+func _paints_fill(col: int, row: int) -> bool:
+	return not middle_fill.is_empty() and _wants_fill(col, row) \
+			and (fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth)
+
+
+## Paints one solid cell into [param parent] the way the terrain and the rim paint it: its
+## edge tile (or inside corner, or black), the wall fill cut to its solid part, the rim.
+func _paint_cell(parent: Node2D, col: int, row: int) -> void:
+	var tile := _edge_tile(col, row)
+	var tiles: Array = [tile] if tile >= 0 else _inside_corner_tiles(col, row)
+	if tile >= 0:
+		_add_tile(parent, tile, col, row)
+	elif not tiles.is_empty():
+		_add_tile(parent, tiles[0], col, row)
+		var fade: Array = TERRAIN_CORNER_FADES["floor" if tiles[0] == TILE_T else "ceiling"]
+		_fade(_add_tile(parent, tiles[1], col, row), false, fade[0], fade[1])
+	else:
+		var p := Vector2(col, row) * CELL
+		var black := Polygon2D.new()
+		black.polygon = PackedVector2Array([p, p + Vector2(CELL, 0), p + Vector2(CELL, CELL), p + Vector2(0, CELL)])
+		black.color = TERRAIN_COLOR
+		parent.add_child(black)
+	if middle_tileset.is_empty():
+		return
+	if _paints_fill(col, row):
+		_add_middle_fill(parent, col, row, tiles)
+	if tile < 0 and not tiles.is_empty():
+		_add_middle_corner(parent, tiles[0], tiles[1], col, row)
+		return
+	for each in tiles:
+		_add_middle_tile(parent, each, col, row)
 
 
 # --- Terrain-anchored foreground ------------------------------------------------
@@ -399,6 +409,8 @@ func _build_cover() -> void:
 ## foliage bands anchored to the terrain (see CEILING_SHARE).
 func _add_foreground(parent: Node2D) -> void:
 	_add_middle_rim(parent)
+	# The bands sit on the rock as it looks with its secrets hidden.
+	_cover_open = false
 	for run in _ceiling_runs():
 		if run[3] >= BAND_MIN_HEADROOM:
 			_add_ceiling_band(parent, run)
