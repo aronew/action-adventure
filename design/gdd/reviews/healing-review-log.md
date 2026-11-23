@@ -184,3 +184,51 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-23 — Verdict: MAJOR REVISION NEEDED
+Review mode: full · Workflow: standard
+Scope signal: L (trends to XL if the tick-order change reaches Combat and Enemies)
+Specialists: game-designer, systems-designer, economy-designer, qa-lead, gameplay-programmer, godot-specialist, ux-designer, audio-director; creative-director (senior)
+Blocking items: 10 | Recommended: 15
+Summary: The core design is buildable and no finding is a wrong mechanic. The fourth review's escalation condition is met: the document is still 110.7 KB (consolidation not done) and new contradictions appeared in tick ordering, implementation recipes and the risk framing. The creative-director's plan: split the document (rules, formulas, edge cases, dependencies and ACs stay; the priority mechanism, hit-stop, press age, unpause and latch details go to an ADR; the shader recipe and test seam go to an implementation-notes file), state each fact once, fix the blockers, target 50 KB or less, and do not re-review until it is under 60 KB with no engine API names outside Dependencies. Owner decisions (not editor fixes): stick cancel (recommended: toggle mode only), tick-order approach (helper node vs Seeker-wide priority, with the technical-director), a boss damage budget and whether stage-3 adds feed the meter (recommended: no), the farming trigger as a per-spawn kill count (log only), whether an empty meter is announced mid-combo or in the air, and the default `heal` binding.
+Prior verdict resolved: Mostly (the fourth review's 14 items held in substance; consolidation was not done and the revised text introduced new defects)
+Findings:
+- [BLOCKING] whole document: 110.7 KB, mixes rules, rationale and engine recipes; consolidate and split (creative-director condition unmet)
+- [BLOCKING] Dependencies, Implementation notes (1) / Core Rules 15: the priority-10 claim "a hitter sees the previous tick's invulnerability decrement" is wrong; real effects are a hurt lock one tick shorter and Seeker swings resolving after the foe's strike on the same tick, so Combat and Enemies ACs need re-derivation (alternative: a priority-10 helper node)
+- [BLOCKING] Overview, Player Fantasy, Cross-References / Core Rules 9: "any movement press cancels" contradicts rule 9, which ignores stick, D-pad, crouch and climb; a toggle-mode player is trapped planted with no cue (wording fix mandatory; stick cancel is an owner decision)
+- [BLOCKING] Core Rules 14: a buffered press needs the input "still held", which breaks toggle mode (a tap)
+- [BLOCKING] Dependencies (4) / Visual/Audio / AC-39: no `heal_progress` or pip signal for the swell and the 0.5 s pip; the at-max completion fits neither `heal_completed` nor `heal_cancelled`; the `heal_cancelled` reasons are not enumerated
+- [BLOCKING] Acceptance Criteria: the `HealChannel` seam cannot drive AC-10, 11, 13, 21, 33, 16 or 28e; AC-28c's setup contradicts rule 6; AC-39 does not cover the at-max completion
+- [BLOCKING] Formulas / Values: "above 10 a guard phase (106) never fills it" is false (true at 4.0); F3 `hits_per_heal` range 38 is wrong (50 at 100 max health, 90 overall); Core Rules 12's 0.6 to 0.9 s margin ignores the hurt lock (about 0.25 s after a lunge) and "1.0 s more after a stagger" is +0.4 s; OQ18's 210 max health bound is 172 on the charged path
+- [BLOCKING] AC-26: the log schema cannot compute fill per minute, `heal_ratio`, `heal_effective` or the max-health read; needs fill, damage_taken, kill and died rows and max_health, attack_id, amount, lost and spawn_id columns
+- [BLOCKING] Visual/Audio: the ready marker's 3:1 contrast against the lightest background cannot be met by Bone Pale; add a Void Black outline or halo
+- [BLOCKING] Player Fantasy / AC-26: "pressing heal is a decision" and "felt risky / felt fair" hold only once Bosses supplies the risk (OQ12); state that stage 1 is risk-free (downgraded from the game-designer's blocker: an accepted dependency)
+- [RECOMMENDED] Core Rules 14: "first tick after resume" has no mechanism; specify `NOTIFICATION_UNPAUSED` or a frame counter and an `_input` latch for sub-tick taps
+- [RECOMMENDED] Visual/Audio: the glow shader recipe still bakes in `modulate` through `COLOR`; sample `TEXTURE` and take only alpha from `COLOR`; confirm which sprite layer shows in `HEAL`
+- [RECOMMENDED] Core Rules 9: a cancel press that cannot start (dash on cooldown, no grapple anchor) still cancels; the polling order is not `_state_ground`'s (climb precedes jump); `heal_cancelled(reason)` needs a stored reason
+- [RECOMMENDED] Visual/Audio, Game Feel, AC-27/39: the 0.5 s refusal rate limit contradicts "within 1 tick"; rate-limit only the luminance event
+- [RECOMMENDED] Core Rules 6 / UI: an empty meter is silent when mashing mid-combo or in the air; banked is not usable and the marker's name and meaning disagree across sections
+- [RECOMMENDED] Visual/Audio / AC-27: the flash-limit unit (WCAG absolute 0.10 vs relative 10%) is ambiguous; per-hit meter brightening is unrated; HDR must be a requirement
+- [RECOMMENDED] Open Questions 3, 17 / F3: farming trigger as a per-spawn kill count (log only); add the uncharged-heavy break path (120 fill); log missing health at heal start; decide whether stage-3 adds feed the meter
+- [RECOMMENDED] Formulas / Values: `capacity_floor` is not in `validate()` (zero makes "full" always true and divides by zero); add float tolerance on "full" and `is_finite` on damage
+- [RECOMMENDED] Acceptance Criteria: about nine rules and edges lack an AC; AC-8 is Logic; AC-3 needs a tolerance; AC-17d for the real protected window (about 0.63 s); renumber (AC-29 missing); split AC-35
+- [RECOMMENDED] Visual/Audio: make the telegraph-versus-swell constraint bilateral with Bosses; the ready tone's rising shape and the swell's pause and `time_scale` behaviour are undefined
+- [RECOMMENDED] Edge Cases (pause/time_scale): reduce the hit-stop paragraph to one requirement (restore `time_scale` from a static counter)
+- [RECOMMENDED] Open Question 1: name a proposed default `heal` binding (none is free today; ux-designer suggests Y with `rapid_fire` moved to R3)
+- [RECOMMENDED] Visual/Audio: `heal_end` flag must be set after `_set_state(GROUND)`; hurt-lock press buffer expires before the natural heal moment
+- [RECOMMENDED] Open Question 12: heal income is about 3x boss damage at every max health, so one punishing pattern punishes timing, not volume; a boss damage budget is owed to Bosses
+Reviewed-Content-Hash: design/gdd/healing.md 70619b5f57de352fe342dc0b51bd0f61b1dfa605
+Reviewed-Content-Hash: design/registry/entities.yaml 66e7b3910ab53e9ac66c44ed12c435386d5081b4
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
