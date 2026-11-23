@@ -503,3 +503,42 @@ Owner decision, 2026-11-23: rule 7 amended to follow pillar 4 (only the dash, an
 Findings:
 - [BLOCKING, revised] Core Rules rule 7: per-key combat roles contradict pillar 4 and the game brief
 - Full re-review owed in a fresh session (no other section re-read here)
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: XL
+Specialists: none (lean; no agents spawned)
+Blocking items: 1 (revised the same day) | Recommended: 7 (13 carried items counted as one)
+Summary: Nineteenth review, a full read after rule 7 was amended to concept pillar 4 (owner, 2026-11-23) and after the game brief and registry changed. The amended rule 7 now matches pillar 4, the brief and the concept, and F5 and F7 and every registry value (`pogo_far_ext` 14, `pogo_clearance_px` 250, `pogo_clearance_f3a_px` 320, `hazard_pit_depth_min` 84, `chase_leash` 48, `enemy_return_delay` 2, `rest_area_max_width` 3, `collision_tile` 6) re-derive and match. The one blocker: the rest-area placement checks and each region's start save point, which Save points rules 3 and 9 ask of this GDD, were absent, and are now a rest's only protection (no damage block, owner 2026-11-23). Revised the same day with the Save points wording (owner approved the changeset); a re-review is owed.
+Prior verdict resolved: Yes (eighteenth review APPROVED; its 13 recommended items remain open)
+Findings:
+- [BLOCKING] Core Rules rule 15, Acceptance Criteria, Interactions, Dependencies: rest-area placement checks (leash bound, spawn point or hazard on its screens, arena) and each region's start save point not adopted. Revised: rule 15 extended, AC added, Open Question 23
+- [RECOMMENDED] Interactions, Dependencies, Bidirectional check, Cross-References, ability-gating status: stale "no GDD" and "In Review" text. Revised
+- [RECOMMENDED] Header: "Implements Pillar: none defined" although the concept defines five. Revised
+- [RECOMMENDED] Acceptance Criteria: no test for rule 7's amended clause (double jump and wall cling change no fight rule); add one or hand it to Combat
+- [RECOMMENDED] Rule 24 / combat.md: pogoing hazards is an owner decision here that Combat does not define
+- [RECOMMENDED] F7 / Tuning Knobs: say the gate figures assume `ledge_grab_enabled = false`
+- [RECOMMENDED] States and Transitions: Room "drives the grid map" and Secret "recorded for the map" against Grid map's revealed cells
+- [RECOMMENDED] Carried from the eighteenth review: workshop wall band, brute contact in `pogo_dj_reach`, sweep step sizes, art-bible colour wording, registry notes, knob ranges below derived minimums, wall-mounted hazards, others
+- [ADVISORY] The GDD is about 91 KB with rule 24 as one paragraph; `Last Verified` is stale
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/registry/entities.yaml d1898ffe66580263b8666942a93138dcfd3a0616
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 2d8206c28ee7195ad626719bcdddb7781b4de0b3
+Reviewed-Content-Hash: design/gdd/player-controller.md bb4d01ede7c8e08fbfe7c9c58f0021616fa8a5f3
+Reviewed-Content-Hash: design/gdd/combat.md 0afd74178f6fa44180760a752dcf3a8456d62061
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/research/metroidvania-world-design.md 4e070deab986ec3cae1a6a0173245f04901b0e67
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-visual-direction.md ab42152eac4cb7fee23eac9eb8635f12c8f4c021
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+Reviewed-Content-Hash: src/player/player_config.tres 7654ef2ba4121534d4d2e0d1e3ff115d401114f7
+Reviewed-Content-Hash: src/player/player.gd 1f9422e7b03bfbf52127055ec5b44dab4ba0c830
+Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43433406bb5e6
