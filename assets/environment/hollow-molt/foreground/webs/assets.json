@@ -1,0 +1,38 @@
+[
+  {
+    "file": "ceiling-curtain-silhouette.png",
+    "width": 732,
+    "height": 521,
+    "transparent_pixels": 293178
+  },
+  {
+    "file": "corner-web-silhouette.png",
+    "width": 571,
+    "height": 528,
+    "transparent_pixels": 229777
+  },
+  {
+    "file": "hanging-shroud-silhouette.png",
+    "width": 318,
+    "height": 543,
+    "transparent_pixels": 122294
+  },
+  {
+    "file": "ceiling-curtain-grey-white.png",
+    "width": 732,
+    "height": 544,
+    "transparent_pixels": 281217
+  },
+  {
+    "file": "corner-web-grey-white.png",
+    "width": 572,
+    "height": 543,
+    "transparent_pixels": 228872
+  },
+  {
+    "file": "hanging-shroud-grey-white.png",
+    "width": 311,
+    "height": 544,
+    "transparent_pixels": 108911
+  }
+]

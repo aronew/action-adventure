@@ -13,6 +13,25 @@ props (including the floating platforms), and a darker decorative copy of the te
 (`middle-foreground/`) meant as near-camera scenery blocks, not used yet. Imported with
 mipmaps on, like Cinderheart's.
 
+## Webs
+
+`assets/environment/hollow-molt/foreground/webs/`, the owner's web pack (2026-11-23):
+three standalone pieces (ceiling curtain, corner web, hanging shroud), each in black
+silhouette and grey-white silk. `RegionRoom._add_webs` hangs them from every ceiling with
+at least 5 open cells below it (`WEB_MIN_HEADROOM`; the low tunnels get none):
+
+- a corner web where the ceiling meets a wall, mirrored for a wall on the right;
+- curtains and shrouds along the ceiling every 9 cells (`WEB_SPACING`), kept 3 cells
+  clear of a corner web, a curtain swapped for a shroud where it wouldn't fit;
+- grey silk behind the rock (its attach point tucked behind the ceiling's edge), tinted
+  to a mid-grey and a little see-through like the concept art (`WEB_SILK_TINT`);
+- beside half of them, a smaller black silhouette in front of the Seeker (the pack's
+  README: silhouettes nearest the camera, silk behind).
+
+A web hangs at most 42% of the open height below it (`WEB_DROP_SHARE`), capped per piece
+(`WEB_PIECES`). Placement is hashed from the cells, so a room looks the same every visit.
+A biome turns webs on with a `"webs"` folder in its `BIOMES` entry; Cinderheart has none.
+
 ## How a room picks its biome
 
 `RegionRoom.biome_id` ("cinderheart" or "hollow_molt") selects an entry of

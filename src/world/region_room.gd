@@ -82,6 +82,29 @@ const ISLAND_FOLIAGE_SIZE := 0.55
 ## Seeker steps into the fake wall or the room behind it; then the cover fades out.
 const COVER_Z := 26
 const COVER_FADE_TIME := 0.35
+## Webs (a biome's "webs" folder; Hollow Molt): standalone pieces hung from the ceilings.
+## Each piece's attach point and lowest strand in source px, and the most it hangs, in cells.
+## Grey silk hangs behind the rock (its top tucked behind the ceiling's edge); black
+## silhouettes hang in front of the Seeker, smaller, beside some of them.
+const WEB_PIECES := {
+	"curtain": {"file": "ceiling-curtain", "anchor": Vector2(362, 80), "bottom": 470.0, "cells": 3.5},
+	"shroud": {"file": "hanging-shroud", "anchor": Vector2(80, 22), "bottom": 520.0, "cells": 4.5},
+	"corner": {"file": "corner-web", "anchor": Vector2(60, 24), "bottom": 490.0, "cells": 3.0},
+}
+## Only ceilings with at least this many open cells below get webs (not the low tunnels).
+const WEB_MIN_HEADROOM := 5
+## A web hangs at most this share of the open height below its ceiling.
+const WEB_DROP_SHARE := 0.42
+## Cells between webs along a ceiling, and kept clear beside a corner web.
+const WEB_SPACING := 9
+const WEB_CORNER_CELLS := 3
+## How far into the rock a web's attach point is tucked, in world px.
+const WEB_TUCK := 3.0
+const WEB_BACK_Z := -3
+const WEB_FRONT_Z := 10
+const WEB_SILK_TINT := Color(0.72, 0.72, 0.74, 0.85)
+## A silhouette's size against the silk piece it hangs beside.
+const WEB_FRONT_SIZE := 0.75
 ## The warm light at each exit, so the way on reads from across the room.
 const EXIT_LIGHT := Color(1.0, 0.62, 0.3, 0.55)
 const EXIT_LIGHT_DEPTH := 3.0
@@ -120,6 +143,7 @@ const BIOMES := {
 				"ground_sink": 128.0, "ceiling_tuck": 10.0},
 		"platform_surface": {"platform-short": 15.0, "platform-long": 16.0},
 		"exit_light": Color(0.85, 0.87, 0.9, 0.4),
+		"webs": "foreground/webs/",
 	},
 }
 
@@ -147,6 +171,8 @@ var _islands := {}
 var _cover_cells := {}
 var _cover: Node2D
 var _band: Dictionary
+## The biome's web folder under its art folder, or "" for no webs.
+var _webs := ""
 var _platform_surface: Dictionary
 var _exit_light := EXIT_LIGHT
 
@@ -190,9 +216,10 @@ func _ready() -> void:
 func _apply_biome() -> void:
 	var settings: Dictionary = BIOMES.get(biome_id, BIOMES["cinderheart"])
 	for key in settings:
-		if key in ["band", "platform_surface", "exit_light"]:
+		if key in ["band", "platform_surface", "exit_light", "webs"]:
 			continue
 		set(key, settings[key])
+	_webs = settings.get("webs", "")
 	_band = settings.get("band", BIOMES["cinderheart"]["band"])
 	_platform_surface = settings.get("platform_surface", BIOMES["cinderheart"]["platform_surface"])
 	_exit_light = settings.get("exit_light", EXIT_LIGHT)
@@ -426,7 +453,84 @@ func _add_foreground(parent: Node2D) -> void:
 		_add_ground_band(parent, run)
 		if run[3] >= FOLIAGE_MIN_HEADROOM:
 			next_foliage = _add_foliage(parent, run, next_foliage)
+	_add_webs(parent)
 	_add_exit_lights(parent)
+
+
+## Hangs the biome's webs (see WEB_PIECES): a corner web where a tall ceiling meets a wall,
+## then curtains and shrouds along it every WEB_SPACING cells, some with a silhouette in
+## front. Placement is fixed per room (hashed from the cells), so a room looks the same
+## every visit.
+func _add_webs(parent: Node2D) -> void:
+	if _webs.is_empty():
+		return
+	var ceiling_inset: float = tile_insets[TILE_B][1] * CELL / TILE_SOURCE
+	for run in _ceiling_runs():
+		if run[3] < WEB_MIN_HEADROOM:
+			continue
+		var y: float = run[0] * CELL - ceiling_inset - WEB_TUCK
+		var reach: float = run[3] * CELL * WEB_DROP_SHARE
+		var left_wall := _solid(run[1] - 1, run[0])
+		var right_wall := _solid(run[2] + 1, run[0])
+		if left_wall:
+			var x: float = run[1] * CELL - tile_insets[TILE_R][3] * CELL / TILE_SOURCE - WEB_TUCK
+			_add_web(parent, "corner", false, Vector2(x, y), reach, false)
+		if right_wall:
+			var x: float = (run[2] + 1) * CELL + tile_insets[TILE_L][2] * CELL / TILE_SOURCE + WEB_TUCK
+			_add_web(parent, "corner", false, Vector2(x, y), reach, true)
+		var first: int = run[1] + (WEB_CORNER_CELLS if left_wall else 0)
+		var last: int = run[2] - (WEB_CORNER_CELLS if right_wall else 0)
+		var count := (last - first + 1) / WEB_SPACING
+		for i in count:
+			var col := first + (i + 0.5) * (last - first + 1) / float(count)
+			var roll := absi(hash(Vector2i(int(col), run[0] * 7 + i)))
+			var kind := "shroud" if roll % 3 == 0 else "curtain"
+			var drop := _web_drop(kind, reach)
+			if kind == "curtain" and _web_width(kind, drop) > (last - first + 1) * CELL / float(count):
+				kind = "shroud"
+				drop = _web_drop(kind, reach)
+			var at := Vector2(col * CELL, y)
+			_add_web(parent, kind, false, at, drop, roll % 2 == 0)
+			if roll % 4 < 2:
+				var front := "curtain" if kind == "shroud" else "shroud"
+				var side := CELL * (1.5 if roll % 8 < 4 else -1.5)
+				_add_web(parent, front, true, at + Vector2(side, 0.0),
+						_web_drop(front, reach) * WEB_FRONT_SIZE, roll % 3 == 1)
+
+
+## How far a [param kind] web hangs below a ceiling with [param reach] px to spare.
+func _web_drop(kind: String, reach: float) -> float:
+	return minf(reach, float(WEB_PIECES[kind]["cells"]) * CELL)
+
+
+## A [param kind] web's drawn width when it hangs [param drop] px.
+func _web_width(kind: String, drop: float) -> float:
+	var piece: Dictionary = WEB_PIECES[kind]
+	var texture := _texture(biome + _webs + "%s-grey-white.png" % piece["file"])
+	return texture.get_width() * drop / (float(piece["bottom"]) - (piece["anchor"] as Vector2).y)
+
+
+## One web, its attach point (WEB_PIECES' anchor) at world [param at], hanging
+## [param drop] px: grey silk behind the rock, or a black [param silhouette] in front of the
+## Seeker. [param flip] mirrors it (a corner web then fits a wall on the right).
+func _add_web(parent: Node2D, kind: String, silhouette: bool, at: Vector2, drop: float,
+		flip: bool) -> void:
+	var piece: Dictionary = WEB_PIECES[kind]
+	var texture := _texture(biome + _webs + "%s-%s.png" % [piece["file"],
+			"silhouette" if silhouette else "grey-white"])
+	var anchor: Vector2 = piece["anchor"]
+	var size := drop / (float(piece["bottom"]) - anchor.y)
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.flip_h = flip
+	sprite.scale = Vector2.ONE * size
+	var anchor_x := texture.get_width() - anchor.x if flip else anchor.x
+	sprite.position = at - Vector2(anchor_x, anchor.y) * size
+	sprite.z_index = WEB_FRONT_Z if silhouette else WEB_BACK_Z
+	if not silhouette:
+		sprite.modulate = WEB_SILK_TINT
+	parent.add_child(sprite)
 
 
 ## Runs of open cells with rock right above: [row, first col, last col, headroom in cells
