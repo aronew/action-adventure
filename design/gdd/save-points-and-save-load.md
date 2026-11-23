@@ -176,6 +176,7 @@ The systems index lists this system as depending on World state, Rooms and trans
 | Enemies | Soft | Nothing beyond the rebuild on entry (rule 7); a rest resets no enemy (rule 4) |
 | Grid map | Hard | Save point positions and the respawn point (its rule 8); the Playing state, the only one its map opens in (its rule 11) |
 | Fast travel (Full Vision) | Soft | Save points as candidate stations, if it uses them |
+| Healing | Soft | Nothing beyond leaving the heal meter alone on a rest (rule 4 changes health only); a death, a Continue and a new game start it at 0 (`healing.md` rule 5) |
 
 **Bidirectional check:**
 

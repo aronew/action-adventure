@@ -268,6 +268,7 @@ The flash_rate formula is defined as:
 | Collectible upgrades | Soft | An optional collection view (later) |
 | HUD | Soft | The current binding of an action, to label a prompt or glyph (rule 20) |
 | Audio, Camera, Hit feedback and effects, Combat | Soft | The settings' values: volumes, the shake scale and the flash-reduction setting |
+| Healing | Soft | The `heal` action on the read-only controls page, a default binding that avoids Escape, Start and gamepad B (rules 17 and 19), and `flash_limit` for its light effects |
 
 **Bidirectional check (2026-11-21):**
 - **Save points** lists Pause and menus as a hard dependency for the title screen and its choices. This matches.

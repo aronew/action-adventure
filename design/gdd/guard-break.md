@@ -133,6 +133,7 @@ Observed context, not a rule: the guard costs equal each attack's damage except 
 | Bosses | Downstream, hard | Builds the guard config; boss rules around stagger and wind-ups |
 | HUD | Downstream, soft | Reads `meter`, `state` and `health` for the debug guard bar |
 | Hit feedback and effects | Downstream, soft | Shatter and spark effects are not built (gap) |
+| Healing | None directly | Reads no guard state: a guarded hit fills the heal meter at full damage; the stagger is a window in which the player can heal or punish (`healing.md` rule 2, F3) |
 
 **Bidirectional check:** `combat.md` lists Guard-break as a downstream hard dependency. The systems index row 6 lists Combat as its dependency and rows 7 and 8 list Guard-break for Bosses. Enemies and Bosses have no GDD yet (R4, R5), so their side is unwritten.
 

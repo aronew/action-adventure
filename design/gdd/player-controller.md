@@ -2,7 +2,8 @@
 status: reverse-documented
 source: src/player/player.gd, src/player/player_config.gd, src/player/player_config.tres, src/player/player_state.gd, src/player/player_input_bindings.gd
 date: 2026-11-22
-verified-by: pending review (intent confirmed by the owner in session for 4 items, marked below)
+revised: 2026-11-23 (second design review, lean: NEEDS REVISION; 2 blocking and 4 recommended items revised the same day; re-review owed)
+verified-by: design review 2026-11-23 (lean) found the values and formulas faithful to the code; the second review (same day) found two cross-GDD contract gaps (ability gating rules 14 and 18; Rooms rule 7 and the hazard and kill-plane entry point), now revised and awaiting a re-review (intent confirmed by the owner for 4 items on 2026-11-22 and 6 on 2026-11-23, marked below)
 ---
 
 # Player Controller and Input — Design Document
@@ -12,17 +13,22 @@ verified-by: pending review (intent confirmed by the owner in session for 4 item
 > This records what the code **does**; intent marked `INTENT UNKNOWN` below was
 > inferred, not confirmed by the author. Where this document and the code
 > disagree, do not assume the document is the requirement.
+>
+> **Target vs today.** Items marked **(target)** are requirements this GDD takes
+> from the owner or from an approved neighbouring GDD that the code does not meet
+> yet. Items marked **(planned)** are new states, actions or values nothing builds
+> yet. Everything unmarked describes the code.
 
 > **Quick reference** — Layer: `Core` · Priority: `MVP` · Index entry: #1 Player controller and input (R3)
 > Key deps: Terrain pipeline (solid geometry). Downstream: nearly everything.
-> Implementation status: **fully implemented** for movement; **dash and wall-cling ownership are planned, not built**; the ledge grab is built but disabled.
+> Implementation status: **fully implemented** for movement; **dash and wall-cling ownership are planned, not built**; the ledge grab is built but disabled; **HEAL, RESTING and ARRIVING are planned**, as are the `no_cling` skip, the gate-anchor spend, the damage block and `kill()`.
 > Out of scope here: melee (`combat.md`), guard (`guard-break.md`), health (R6), camera (R7), hit and dust effects (R8).
 
 ---
 
 ## Overview
 
-The Seeker is a `CharacterBody2D` driven by a 12-state machine. It runs, jumps, double jumps, dashes, slides and jumps off walls, climbs ladders and vines, crouches, grapples to anchor points, enters doors, and (optionally) catches ledges. Melee runs inside the ATTACK and AIR states through the combat node; hits from enemies send the controller through HURT and DEAD. All numbers come from `PlayerConfig` (`player_config.tres`); the code holds no gameplay literals. The node origin is the feet point, and the body box is 10 x 22 px at the 480 x 270 base. Movement is the concept's pillar 1 ("Movement Is the Mastery").
+The Seeker is a `CharacterBody2D` driven by a 12-state machine (three more are planned: HEAL, RESTING and ARRIVING; see States). It runs, jumps, double jumps, dashes, slides and jumps off walls, climbs ladders and vines, crouches, grapples to anchor points, enters doors, and (optionally) catches ledges. Melee runs inside the ATTACK and AIR states through the combat node; hits from enemies send the controller through HURT and DEAD. All numbers come from `PlayerConfig` (`player_config.tres`); the code holds no gameplay literals. The node origin is the feet point, and the body box is 10 x 22 px at the 480 x 270 base. Movement is the concept's pillar 1 ("Movement Is the Mastery").
 
 Presentation note: the Seeker is drawn from either the owner's painted redraw (default, `painted = true`) or the original pixel art; the painted sheets are 8x size drawn at 1/8, so every gameplay value is the same in both.
 
@@ -31,9 +37,12 @@ Presentation note: the Seeker is drawn from either the owner's painted redraw (d
 - **Confirmed by the owner (2026-11-22):** the **ledge grab** is a test-room feature for now (`ledge_grab_enabled = false`; the art-style rooms turn it on). No ability or pickup is planned for it, and the gate figures assume it is off.
 - **Confirmed by the owner (2026-11-22):** the dash gives **no invulnerability frames**: it is movement, not defence.
 - **Confirmed by the owner (2026-11-22):** movement is **digital**: a key or stick direction gives full run speed at once (no analog walk), serving precision.
+- **Confirmed by the owner (2026-11-23):** the **heal is keyboard A**, as in Hollow Knight, where movement is the arrow keys alone. Keyboard A needs movement off WASD, so **keyboard movement becomes the arrow keys only** (WASD dropped; `interact` and `crouch` stay on the up and down arrows). Gamepad **Y** is heal, and `rapid_fire` moves to R3 (`healing.md` Open Questions 1 and 15, owner 2026-11-23).
+- **Confirmed by the owner (2026-11-23):** **entering a door blocks damage** from the interact press. A **rest (bench) is made safe by placement**, as in Hollow Knight: no enemy can reach a rest area (the placement requirements of `save-points-and-save-load.md`), so the controller needs no damage block for resting or arriving.
+- **Confirmed by the owner (2026-11-23, second review):** a **kill plane calls a separate `kill()`** that ignores the 1.0 s invulnerability but respects the damage block; spikes and floor hazards go through `take_hit`. On one tick, a **heal press ranks after every other action press, jump included**. A **hit in CROUCH keeps the crouch-sized box** until there is headroom.
 - `INTENT UNKNOWN — inferred from implementation, not confirmed`: the exact feel values (accelerations, gravity multipliers, buffer and coyote times), the nearest-anchor rule of the grapple, and why a crouching Seeker cannot jump, dash or attack.
 
-**Scope**: in: states, input actions, movement rules, ability ownership, doors, hurt and death transitions on the controller side. Out: see above.
+**Scope**: in: states, input actions, movement rules, ability ownership, doors, hurt and death transitions on the controller side, and what approved GDDs require of the controller. Out: see above.
 
 ---
 
@@ -45,56 +54,98 @@ Presentation note: the Seeker is drawn from either the owner's painted redraw (d
 |-------|--------------|-------------|
 | `GROUND` | Landing, standing up, ledge pull-up, door exit, revive | Walking off an edge (→ AIR); jump (→ AIR); dash, grapple, crouch, door, attack |
 | `AIR` | Jump, falling, wall-coyote, grapple release | Lands (→ GROUND); pushes into a wall while falling (→ WALL_SLIDE or LEDGE); dash, grapple, climb |
-| `DASH` | Dash press from GROUND, AIR or an unlocked ATTACK | Timer ends or a wall is hit; or a jump (dash-jump) |
+| `DASH` | Dash press from GROUND, AIR, or an ATTACK whose cancel window is open (`PlayerCombat.is_locked()` is false; the window is `combat.md`'s) | Timer ends or a wall is hit; or a jump (dash-jump) |
 | `WALL_SLIDE` | AIR, pushing into a wall while falling | Wall jump; leaving the wall, releasing the push, or reaching the floor |
 | `CLIMB` | Up (or down in the air) while overlapping a `climbable` | Jump off; leaving the ladder; reaching the floor going down |
 | `CROUCH` | Crouch held on the ground | Crouch released with headroom (stand-up clip), or leaving the floor |
 | `GRAPPLE` | Grapple press with an anchor in range | Release ends (→ AIR); jump out (→ AIR) |
-| `ENTER_DOOR` | `interact` in a door area on the ground, not attacking | `resume_from_door()` |
+| `ENTER_DOOR` | `interact` in a door area on the ground, not attacking | `resume_from_door()`. **Damage is blocked from the press until it leaves (target, owner 2026-11-23; see Damage block)** |
 | `ATTACK` | Ground swing or heavy charge (combat) | Attack ends; walking off an edge (→ AIR) |
-| `HURT` | `take_hit` that lands and does not kill | `hurt_lock_time` elapses |
+| `HURT` | `take_hit` that lands and does not kill | `hurt_lock_time` elapses, then GROUND, or CROUCH when the standing box does not fit or crouch is held **(target: a hit in CROUCH keeps the 14 px box, owner 2026-11-23; see Edge Cases)** |
 | `DEAD` | `take_hit` that empties health | `revive(at)` |
 | `LEDGE` | Falling into a wall at a corner, if enabled | Pull-up, wall jump, or let go |
+| `HEAL` *(planned)* | The `heal` press; start, run and cancel rules are `healing.md` rules 7-9 | The channel completes, or a cancel of `healing.md` rule 9 |
+| `RESTING` *(planned)* | `interact` in a rest area (`save-points-and-save-load.md` rule 2) | The stand-up ends |
+| `ARRIVING` *(planned)* | After a death, Continue or new game, seated at the save point (Save points rule 8) | The stand-up ends |
+
+`HEAL` is the name `healing.md` uses (rule 7); an earlier draft of this GDD called it `CHANNEL`. `RESTING` and `ARRIVING` are named for the two things Save points needs; their rules (input lock, snap to the seat, standing hitbox kept, sit and stand clips) are `save-points-and-save-load.md` rules 2, 3 and 8 and are not repeated here.
 
 ### Input actions (`PlayerInputBindings`)
 
-| Action | Keyboard | Gamepad |
-|--------|----------|---------|
-| move_left / move_right | A, D, arrows | D-pad, left stick X |
-| move_up / move_down | W, S, up/down arrows | D-pad, left stick Y |
-| crouch | S, down arrow | D-pad down, stick down |
-| jump | Space, Z | A |
-| dash | Shift, C | Right shoulder |
-| interact (enter a door) | W, up arrow | D-pad up, B |
-| grapple | E | Left shoulder |
-| attack | X | X |
-| bow, cast, rapid_fire | F, Q, V | Right trigger, left trigger, Y (reserved, do nothing) |
+| Action | Keyboard (code today) | Gamepad (code today) | Planned change |
+|--------|----------|---------|----------------|
+| move_left / move_right | A, D, arrows | D-pad, left stick X | A and D dropped: left and right arrows only (heal takes A; owner 2026-11-23) |
+| move_up / move_down | W, S, up/down arrows | D-pad, left stick Y | W and S dropped: up and down arrows only |
+| crouch | S, down arrow | D-pad down, stick down | S dropped: down arrow only |
+| jump | Space, Z | A | — |
+| dash | Shift, C | Right shoulder | — |
+| interact (enter a door) | W, up arrow | D-pad up, B | W dropped: up arrow only. Gamepad B dropped: reserved for `cancel` (`pause-and-menus.md` rule 19) |
+| grapple | E | Left shoulder | — |
+| attack | X | X | — |
+| bow, cast, rapid_fire | F, Q, V | Right trigger, left trigger, Y (reserved, do nothing) | `rapid_fire` moves to R3 to free Y (`healing.md` Open Question 15; it has no GDD) |
+| heal *(planned)* | — | — | Keyboard **A**, gamepad **Y** (owner, 2026-11-23). Must not be registered on A while `move_left` still holds it: both would fire (`healing.md` Open Question 1) |
+| pause *(planned)* | — | — | Escape / Start, fixed and reserved (registry `pause_inputs`); Pause owns it |
+| map *(planned)* | — | — | M and Tab / Back, recommended in `grid-map.md` (open); Grid map owns it |
+| cancel *(planned)* | — | — | Pause's (`pause-and-menus.md` rule 19), with gamepad B |
 
-All actions use a dead zone of 0.5. Registering is safe to repeat, and an action already defined elsewhere is left untouched. Horizontal and vertical input are `sign()`ed each physics tick: digital movement.
+The controller owns the one action list; the system named in the last column owns each planned action's meaning. All actions use a dead zone of 0.5. Registering is safe to repeat, and an action already defined elsewhere is left untouched. Horizontal and vertical input are `sign()`ed each physics tick: digital movement. `move_up` and `interact` share the up arrow (and W until WASD is dropped), and `crouch` and `move_down` share the down arrow (and S), by design (`pause-and-menus.md` rule 17).
 
 ### Movement rules
 
 1. **Run.** Target speed is `move_x x run_speed` (140). The rate of change is one of five, chosen each tick: *overspeed* when |vx| exceeds run speed and the input agrees or is neutral; *deceleration* with no input; *turn* when pushing against the motion; otherwise *acceleration*. Ground and air have their own set (F1).
-2. **Jump.** A ground jump gives vy -330. A jump press is buffered for 0.12 s; after walking off an edge a ground jump is allowed for 0.1 s (coyote). In the air the priority is: ground jump (coyote) → wall jump → air jump. Releasing jump while rising multiplies vy by 0.5 (variable height).
-3. **Air jump (double jump).** Needs `has_double_jump`. One air jump (vy -320); the count refreshes on the ground, on a ladder, at a ledge pull-up, on a grapple jump-out and on a pogo. Without the ability the count stays 0 and an air jump or air dash-jump does nothing.
-4. **Air gravity.** Lighter at the apex while jump is held, heavier when falling, heavier still on a fast fall (F2).
-5. **Dash.** Starts from the ground or air if the cooldown (0.3 s) is clear and, in the air, an air dash remains (1; refreshed like air jumps). 0.25 s at 370 px/s, horizontal, no gravity. Ends on the timer or a wall (speed 0 on a wall, else 0.55 of dash speed, then the overspeed rate). A jump pressed during a dash is a **dash-jump** and keeps 0.85 of dash speed; in the air it needs an air jump left. A dash cannot start from CROUCH, CLIMB, WALL_SLIDE or LEDGE.
-6. **Wall slide and wall jump.** Pushing into a wall while falling slides at up to 60 px/s. A wall jump gives vy -380 and vx 190 away from the wall, and steering is locked for 0.1 s. It is allowed with a wall within 3 px, or within 0.1 s of leaving a slide; it does not use the air jump and has no count limit.
-7. **Climb.** Up (or down in the air) on a `climbable` area snaps x to its centre; speed 70 px/s. Leaving the top with up held gives a hop of -200. A jump off gives vx `move_x x 140`, vy -330 and a 0.2 s lockout before regrabbing.
+2. **Jump.** A ground jump gives vy -330. A jump press is buffered for 0.12 s; after walking off an edge a ground jump is allowed for 0.1 s (coyote). In the air the priority is: ground jump (coyote) → wall jump → air jump. Releasing jump while rising multiplies vy by 0.5 (variable height; F5).
+3. **Air jump (double jump).** Needs `has_double_jump`. One air jump (vy -320); the count refreshes on the ground, on a ladder, at a ledge pull-up, on a grapple jump-out (not off a `gate_anchor`, rule 9) and on a pogo. Without the ability the count stays 0 and an air jump or air dash-jump does nothing.
+4. **Air gravity.** Lighter at the apex while jump is held, heavier when falling, heavier still on a fast fall, where the two multipliers **compound** (F2).
+5. **Dash.** Starts from the ground or air if the cooldown (0.3 s) is clear and, in the air, an air dash remains (1; refreshed like air jumps). 0.25 s at 370 px/s, horizontal, no gravity. Ends on the timer or a wall (speed 0 on a wall, else 0.55 of dash speed, then the overspeed rate). A jump pressed during a dash is a **dash-jump** and keeps 0.85 of dash speed; in the air it needs an air jump left. A dash-jump also starts the cooldown. A dash cannot start from CROUCH, CLIMB, WALL_SLIDE or LEDGE. **Ownership (target, not built):** the dash needs `has_dash`; unowned, the input is ignored.
+6. **Wall slide and wall jump.** Pushing into a wall while falling slides at up to 60 px/s. A wall jump gives vy -380 and vx 190 away from the wall, and steering is locked for 0.1 s. It is allowed with a wall within 3 px, or within 0.1 s of leaving a slide; it does not use the air jump and has no count limit. **Ownership (target, not built):** both need `has_wall_cling`; unowned, a wall gives no slide and no wall jump and the Seeker falls as in the air (`ability-gating.md` rule 3). **No-cling face (target, not built):** a face marked `no_cling` gives no slide and no wall jump even when the cling is owned; the controller skips both for it (`ability-gating.md` rule 14). How the face is marked (physics layer or group) is that rule's ADR; the code has only the material constant `NO_CLING` (`room_terrain_data.gd:9`).
+7. **Climb.** Up (or down in the air) on a `climbable` area snaps x to its centre; speed 70 px/s. Leaving the top with up held gives a hop of -200. A jump off gives vx `move_x x 140`, vy -330 and a 0.2 s lockout before regrabbing. **Ownership (target, not built):** the climb needs `has_wall_cling`; unowned, a `climbable` does not snap (`ability-gating.md` rule 3). The code has no check today (`player.gd:653-664`).
 8. **Crouch.** The body box shrinks to 14 px high, the feet staying put; speed 40 px/s; standing needs headroom. From CROUCH the Seeker cannot jump, dash, grapple or attack (it must stand first). `INTENT UNKNOWN`.
-9. **Grapple.** Needs `has_grapple`. The nearest `grapple_anchor` within 200 px is chosen (no line-of-sight check). Phases: throw, pull at 360 px/s until the hand is within 6 px (or a wall, ceiling or floor below the anchor stops it), release. On release the velocity is multiplied by 0.8, and on arrival the vertical speed is set so the feet peak 24 px above the anchor (F4). A jump during the pull or release is a **grapple jump-out** that refreshes air moves.
+9. **Grapple.** Needs `has_grapple`. The nearest `grapple_anchor` within 200 px is chosen (no line-of-sight check; on an equal distance the later node in the group wins, so the result depends on scene order). Phases: throw, pull at 360 px/s until the hand is within 6 px (or a wall, ceiling or floor below the anchor stops it), release. On release the velocity is multiplied by 0.8, and on arrival the vertical speed is set so the feet peak 24 px above the anchor (F4). A jump during the pull or release is a **grapple jump-out** that refreshes air moves. **Gate anchors (target, not built; `ability-gating.md` rule 18):** an anchor marked `gate_anchor` **spends** the air jump and the air dash when the hook starts (both go to 0, used or not), and a jump-out from a pull or release on it still jumps (260 up, keep 0.5) but does **not** refresh them; the release lasts `grapple_release_time` (0.08 s), after which the Seeker is in AIR and can no longer jump out. All other anchors are unchanged: nothing spent, full jump-out and refresh. Today a hook spends nothing and every jump-out refreshes (`_grapple_jump_out`).
 10. **Assists.** Corner correction (head clips an edge: slide sideways up to 6 px, keeping vy), ledge nudge (feet miss a ledge: lift up to 5 px) and the 3 px wall-jump reach.
 11. **Ledge grab (disabled by default).** Falling into a wall with a corner within -6/+8 px of the hand height grabs it, if there is room to stand: grab, hang, then pull up (jump, up or a fresh press toward the wall), wall jump (jump while pushing away) or let go (down or away). Re-grab lockout 0.3 s.
-12. **Doors.** `interact` while the sensor overlaps a `door` area, on the ground and not attacking, snaps x to the door and plays the enter clip; `door_entered` is emitted when it finishes. The Seeker stays until `resume_from_door()`.
-13. **Hurt and death.** `take_hit(damage, source)` returns false while dead or invulnerable. A landed hit cancels the current state, turns the Seeker toward the source, and plays Hurt (HurtKnockback for 20 damage or more); the player has no control for 0.35 s. At zero health: DEAD, and `died` after the clip until `revive(at)`.
+12. **Doors.** `interact` while the sensor overlaps a `door` area, on the ground and not attacking, snaps x to the door and plays the enter clip; `door_entered` is emitted when it finishes. The Seeker stays until `resume_from_door()`. **From the tick after the accepted press the Seeker cannot be hurt or killed, through the door clip and on to the end of the fade-in (target, owner 2026-11-23; Damage block).**
+13. **Hurt and death.** `take_hit(damage, source)` returns false while dead, invulnerable or under the damage block. `kill()` *(planned)* is the kill plane's call: it ignores the invulnerability, returns false while dead or under the damage block, and otherwise empties health and goes to DEAD as a lethal hit would. A landed hit cancels the current state, turns the Seeker toward the source, and plays Hurt (HurtKnockback for 20 damage or more); the player has no control for 0.35 s. At zero health: DEAD, and `died` after the clip until `revive(at)`.
+14. **Same-tick priority.** When several presses arrive on one tick the first available wins: on GROUND, grapple, dash, a door's or rest area's `interact` (a fresh press only), attack, climb, jump, `heal` *(planned; owner 2026-11-23: after every other action press, jump included, as `healing.md` rule 6 already has it for jump)*, crouch (a held direction, not a press); in AIR, grapple, dash, climb, then jump (ground jump by coyote, else wall jump, else air jump); in ATTACK with the cancel window open, grapple, dash, jump; in WALL_SLIDE, grapple, then wall jump. A fresh `interact` press with a door or a rest area overlapped therefore enters it before a ladder is tried (the rest area is the target, as at a door); up held without a fresh press on a door area suppresses the up attack and then climbs if a `climbable` overlaps.
+
+### Damage block (target)
+
+`take_hit` and `kill()` return false, with no damage and no state change, while the **damage block** holds. The block is the **OR of two independent sources**; neither clears the other:
+1. **The controller's own:** in ENTER_DOOR, from the tick after the accepted `interact` press until the Seeker leaves the state (owner, 2026-11-23).
+2. **Rooms' hold:** a flag Rooms sets and clears through a setter on the controller. Rooms sets it on the frame the Seeker crosses an exit **or on the up press that starts EnterDoor**, and clears it when the fade-in ends (`rooms-and-transitions.md` rule 7 and Edge Cases: the Seeker "cannot be hurt or killed ... until the fade-in ends"). This is what covers a door trip after the Seeker leaves ENTER_DOOR at `resume_from_door()`, whenever Rooms calls it, and every fade-in after a respawn, load or fast travel that Rooms runs.
+
+The check runs before any health change, so a blocked hit neither damages nor starts the invulnerability window.
+
+**What reaches the controller.** Enemy and boss attacks, spikes and floor hazards call `take_hit` (the invulnerability and the block apply). A kill plane calls `kill()` *(planned)*: it ignores the invulnerability, so the 1.0 s window after a hit never saves the Seeker from a pit, but the block applies, so a fall exit that crosses a kill plane during a transition does not kill (owner, 2026-11-23; `rooms-and-transitions.md` Edge Cases). Level design and Rooms own where the planes and hazards sit; Health, damage and death has no GDD yet.
+
+It does **not** hold in a rest or on arrival: a bench is safe because no enemy can reach it (owner, 2026-11-23). Today's code has none of this: `take_hit` tests only DEAD and the health's invulnerability window, there is no `kill()` and no setter (`player.gd:285-295`).
 
 ### Ability ownership (`PlayerState`)
 
-A `Resource` with `has_double_jump` and `has_grapple` and `abilities_changed`; it is "the one place ability ownership lives" (the world-state GDD saves it). A new `PlayerState` owns nothing. If none is supplied, `Player` makes one that owns both (the test rooms rely on this).
+A `Resource` with `has_double_jump` and `has_grapple` and `abilities_changed`; it is "the one place ability ownership lives" (the world-state GDD saves it). A new `PlayerState` owns nothing. If none is supplied, `Player` makes one that owns both (the test rooms rely on this; target: all four).
+
+**Target: four keys.** `ability-gating.md` rule 3 (Approved) sets what an unowned key does, with no partial effect, no animation and no "locked" sound; `world-state.md` stores the flags.
+
+| Key | Flag | Unowned: the controller | Built |
+|-----|------|-------------------------|-------|
+| Dash | `has_dash` | The dash input is ignored: no dash, no cooldown | No: no flag, the dash is always on |
+| Double jump | `has_double_jump` | An air jump press does nothing; the air count stays 0 | Yes |
+| Wall cling | `has_wall_cling` | No wall slide, no wall jump, and a `climbable` does not snap | No: no flag, slide, wall jump and climb are always on |
+| Grapple | `has_grapple` | The grapple input does nothing | Yes |
 
 ### Scene contract and API
 
-Level geometry on physics layer 1; Area2D `climbable` and `door` nodes on layer 2; `grapple_anchor` Node2Ds; the player body on layer 4; `hittable` Area2Ds on layer 8 for combat. Signals: `door_entered(door)`, `landed(impact_speed)`, `damaged(amount, left)`, `died`. Public calls: `take_hit`, `revive`, `resume_from_door`, `body_sprite`, `art_scale`, `art_filter`.
+Level geometry on physics layer 1; Area2D `climbable` and `door` nodes on layer 2; `grapple_anchor` Node2Ds; the player body on layer 4; `hittable` Area2Ds on layer 8 for combat. Signals: `door_entered(door)`, `landed(impact_speed)`, `damaged(amount, left)`, `died`. Public calls: `take_hit`, `revive`, `resume_from_door`, `body_sprite`, `art_scale`, `art_filter`. **Target markings, not built:** a `no_cling` face (marking is an ADR, `ability-gating.md` rule 14) and a `gate_anchor` on a `grapple_anchor` (`ability-gating.md` rule 18).
+
+**Required by approved GDDs, not built:**
+
+| Needed by | What |
+|-----------|------|
+| Rooms and transitions | Placement on arrival (inset into the new room, with velocity, facing, state, timers and air moves as captured at the crossing); capture of the Seeker's state; a freeze from the crossing until the fade-in starts; holding the Seeker behind a shut opening; a setter for the damage block, which Rooms sets on a crossing or on the up press that starts EnterDoor and clears at the fade-in's end (rules 5, 6, 7, 9) |
+| Ability gating | The unowned-key behaviours of rule 3 (flags `has_dash` and `has_wall_cling`); the `no_cling` skip (rule 14); the `gate_anchor` spend and no-refresh, the 0.08 s `grapple_release_time` and the jump-out during the release (rule 18) |
+| Level design, Rooms | `kill()` for kill planes; spikes and floor hazards call `take_hit` |
+| Save points | RESTING and ARRIVING states; a **seated** arrival (`revive(at)` stands the Seeker up today); the snap to the seat, the standing hitbox kept while seated, the up attack suppressed in a rest area, the press refused when the feet are more than a tile from the seat floor (rules 2, 3, 8) |
+| Healing | The `heal` action, the `HEAL` state with its own handler and cleanup, `revive` resetting the heal timer and phase (`healing.md` Dependencies) |
+| Grid map | A `map` action; input withheld while the map is open, presses discarded on close (`grid-map.md` rules 11, 12) |
 
 ### Values (`player_config.tres`)
 
@@ -107,7 +158,7 @@ Level geometry on physics layer 1; Area2D `climbable` and `door` nodes on layer 
 | Assists | corner correction 6 px; ledge nudge 5 px |
 | Climb | 70 px/s; top hop 200; lockout 0.2 s |
 | Body | hitbox 10 x 22; crouch 14 high; crouch speed 40 |
-| Grapple | range 200; speed 360; arrive 6 px; fling keep 0.8; fling height 24; jump-out 260 up, keep 0.5 |
+| Grapple | range 200; speed 360; arrive 6 px; fling keep 0.8; fling height 24; jump-out 260 up, keep 0.5; release time 0.08 s *(planned: not in the `.tres`; the registry's F11 expects it)* |
 | Hurt | max health 100; invulnerability 1.0 s; lock 0.35 s; knockback at 20 damage; deceleration 1200 |
 
 The camera and effects groups in the same file belong to the Camera (R7) and Hit feedback (R8) GDDs.
@@ -116,20 +167,35 @@ The camera and effects groups in the same file belong to the Camera (R7) and Hit
 
 ## Formulas
 
+Physics runs at 60 Hz: `delta` = 1/60 s. Speeds are px/s, accelerations px/s², distances px.
+
 **F1. Horizontal steering** (each physics tick)
 `vx = move_toward(vx, move_x x run_speed, rate x delta)`, with `rate` = overspeed if `|vx| > run_speed` and (`move_x == 0` or `move_x == sign(vx)`); else deceleration if `move_x == 0`; else turn if `move_x != sign(vx)` and `vx != 0`; else acceleration.
+Variables: `vx` current horizontal speed; `move_x` in {-1, 0, 1}; `run_speed` 140; `rate` one of ground 1400 / 2000 / 2800 / 900 or air 1100 / 700 / 3000 / 260 (acceleration / deceleration / turn / overspeed).
+Range: steering alone never takes |vx| above `run_speed` (140); the largest horizontal speed anywhere is the dash, 370.
 Example: from rest on the ground, holding right: 140 / 1400 = 0.1 s to full speed. A dash ending at 203.5 px/s with no input bleeds at 900 px/s² on the ground, 260 in the air.
 
 **F2. Air vertical acceleration**
-`a = gravity (900)`; if `|vy| < 50` and jump is held: `a x 0.55`; else if `vy > 0`: `a x 1.5`, and if not attacking and down has been held 0.2 s: `a x 1.8` with the fall cap raised from 480 to 640. A down attack lowers the cap to 220 (combat). If `vy` exceeds the cap it is moved toward the cap at `a`; otherwise `vy = min(vy + a x delta, cap)`.
+`a = gravity (900)`; if `|vy| < 50` and jump is held: `a = 900 x 0.55 = 495`; else if `vy > 0` (falling): `a = 900 x 1.5 = 1350`, and if not attacking and down has been held 0.2 s, the fast-fall multiplier **compounds** with the fall multiplier: `a = 900 x 1.5 x 1.8 = 2430`, with the fall cap raised from 480 to 640 (`player.gd:818-825`); else (rising at 50 px/s or faster): `a = 900`. A down attack lowers the cap to 220 (combat). If `vy` exceeds the cap it is moved toward the cap at `a`; otherwise `vy = min(vy + a x delta, cap)`.
+Variables: `vy` vertical speed (down is positive); `a` the acceleration this tick; `cap` 480, 640 or 220.
+Range: `a` is one of 495, 900, 1350, 2430; `vy` lies in [-635, 640] (-635 is the largest grapple fling, F4; 640 is the fast-fall cap).
 Note: the apex hang applies to a slow fall as well as the rise whenever jump is held.
 
 **F3. Dash**
-Distance ≈ `dash_speed x dash_time` = 370 x 0.25 = 92.5 px. After the dash: `vx = facing x 370 x 0.55` = 203.5 px/s. Dash-jump: `vx = facing x 370 x 0.85` = 314.5 px/s. Cooldown 0.3 s starts when the dash ends.
+Distance ≈ `dash_speed x dash_time` = 370 x 0.25 = 92.5 px. After the dash: `vx = facing x 370 x 0.55` = 203.5 px/s. Dash-jump: `vx = facing x 370 x 0.85` = 314.5 px/s. The 0.3 s cooldown starts when the dash ends, or when a dash-jump starts.
+Variables: `dash_speed` 370; `dash_time` 0.25 s; `dash_end_speed_keep` 0.55; `dash_jump_speed_keep` 0.85; `facing` in {-1, 1}.
+Range: distance 92.5 (less when a wall ends it, 0 after the first tick against one); end speed 203.5 or 0; dash-jump speed 314.5.
 
 **F4. Grapple fling**
 `rise = feet_y - (anchor_y - 24)`; `vy = -sqrt(2 x gravity x rise)` when `rise > 0`, else 0; the horizontal velocity is `0.8 x` the pull velocity. A jump out: `v = pull_direction x 360 x 0.5 + (0, -260)`.
+Variables: `feet_y`, `anchor_y` world y of the feet at the instant release begins and of the anchor (up is smaller y); `gravity` 900; 24 is `grapple_fling_height`.
+Range: the anchor is at most 200 px away, so `rise` is at most 224 and `vy` is in [-635, 0].
 Example: `rise` = 124 px gives `vy` = -sqrt(2 x 900 x 124) = -472 px/s. The inputs are the feet at the instant release begins, not the anchor distance alone.
+
+**F5. Jump arc** (analytic cross-check; ability gating's 60 Hz sim figures are the gate inputs)
+Rise to the apex-hang threshold: `(v0^2 - 50^2) / (2 x 900)`; rise inside the hang: `50^2 / (2 x 900 x 0.55)`; apex = the sum.
+Variables: `v0` 330 (ground jump) or 320 (air jump); 50 is `apex_hang_speed`; 0.55 the hang multiplier; jump held throughout.
+Held ground jump: (108900 - 2500) / 1800 = 59.1, plus 2500 / 990 = 2.5, so about **61.6 px** in about 0.41 s. Held air jump: 55.5 + 2.5 = about 58.0 px. A jump released on the first air tick has vy cut to -165 and rises about 15 px. The analytic 61.6 sits about 3 px above ability gating's sim figure (`jump_apex` 58.7, `double_jump_total_low` 113.5) because the 60 Hz steps lose part of the arc; **the sim figures win**, and a change to `player_config.tres` needs `/propagate-design-change`.
 
 Reach figures derived from these values (run jump about 122 px, dash-jump about 165 px, wall kick rise about 78 px) are owned by `ability-gating.md` and were not recomputed here.
 
@@ -141,17 +207,27 @@ Reach figures derived from these values (run jump about 122 px, dash-jump about 
 - A jump press stays buffered for 0.12 s, so a press just before landing still jumps; a press just after walking off an edge still jumps (0.1 s).
 - Corner correction and the ledge nudge stop a clipped head or toe killing a jump.
 - A dash into a wall ends at once with vx 0; a dash started from the ground that leaves a ledge ends in AIR.
+- A dash-jump starts the dash cooldown, so a dash cannot follow it at once.
 - Any state change cancels a melee attack, except into ATTACK.
 - A hit while invulnerable or dead is ignored (`take_hit` returns false).
 - A grapple pull stopped by a wall, ceiling or floor below the anchor releases without the fling lift.
 - A wall jump off a ledge hang sets the re-grab lockout.
 - Without `has_double_jump` an air dash-jump cannot start; without `has_grapple` the grapple input does nothing.
+- Presses on the same tick resolve by the fixed order of movement rule 14, so a fresh `interact` at a door beats a ladder behind it.
+- A hit during CLIMB, GRAPPLE or WALL_SLIDE ends the state (the rope is hidden), plays HURT for 0.35 s, then returns to AIR or GROUND; there is no re-grab lockout, so a ladder can be caught again as soon as control returns.
 
 **Not handled / observed gaps**
-- **Dash and wall-cling keys.** Always available today. Planned (owner, 2026-11-22).
+- **Dash and wall-cling keys.** Always available today, and so is the climb. Planned (owner, 2026-11-22); the target is in Ability ownership.
 - **Wall cling.** The code has only an automatic wall slide; there is no cling that holds the Seeker still. The art bible and ability gating describe a cling. `INTENT: planned, not built`.
-- **Door entry is not safe.** `take_hit` does not check `ENTER_DOOR`, so a hit during the door clip lands and pulls the Seeker out of it. The rooms GDD requires that the Seeker "cannot be hurt or killed ... from the up press that starts EnterDoor". Controller need, open.
+- **Door entry is not safe.** `take_hit` does not check `ENTER_DOOR`, so a hit during the door clip lands and pulls the Seeker out of it. **Decided (owner, 2026-11-23): the controller blocks damage from the press, and Rooms' hold carries it to the fade-in's end** (Damage block). Code change owed.
+- **Kill plane.** No `kill()` exists; the code has no kill plane. **Decided (owner, 2026-11-23): a kill plane calls `kill()`, which ignores the invulnerability and respects the damage block** (Damage block). Code change owed.
+- **Gate-anchor hook.** Hooking a `gate_anchor` today spends nothing and a jump-out refreshes both air moves, so a Seeker can chain gate hooks. Target in rule 9 (ability gating rule 18). Code change owed.
+- **No-cling face.** The code has no `no_cling` skip, so a marked face still slides and kicks. Target in rule 6 (ability gating rule 14). Code change owed.
+- **Rest areas.** No controller damage block: a bench is made safe by placement. `save-points-and-save-load.md` still says a rest and an arrival "block damage" (rules 3, 6, 8 and Interactions); that wording is Save points' to reconcile.
+- **Hit from CROUCH.** Leaving CROUCH restores the standing hitbox with no headroom check (`player.gd:569-570`), so a hit in a tunnel 14 to 21 px high leaves the 22 px box inside the geometry. **Decided (owner, 2026-11-23): a hit in CROUCH keeps the 14 px box.** HURT runs with the crouch box; when the lock ends the Seeker is in CROUCH if the standing box does not fit (or crouch is held), else in GROUND with the standing box. No state restores the standing box without headroom. Code change owed.
 - **Grapple through walls.** The nearest anchor in range is taken even when geometry is between. `INTENT UNKNOWN`.
+- **Grapple on a tie.** Two anchors at equal distance: the later node in group order wins, so the result depends on scene order. `INTENT UNKNOWN`.
+- **Rest area against a ladder.** With a rest area and a `climbable` overlapping, which wins on up is not specified (a door beats a ladder, rule 14). Target: a fresh press at a rest area wins, as at a door.
 - **No jump, dash or attack from a crouch.** `INTENT UNKNOWN`.
 - **Hit during DASH lands** (no i-frames; confirmed intent).
 - **No analog movement; no input remapping in this system** (digital movement confirmed intent).
@@ -164,55 +240,66 @@ Reach figures derived from these values (run jump about 122 px, dash-jump about 
 | System | Direction | Nature |
 |--------|-----------|--------|
 | Terrain pipeline | Upstream, hard | Solid geometry on layer 1; the controller uses `move_and_slide`, `test_move` and point queries against it |
-| Animation data (`seeker_animations.json`) | Upstream, hard | Clips, frame timings and pivots; animation-finished events drive door, grapple, ledge and death |
-| World state / save | Both | `PlayerState` holds the live keys; world state stores them and sets them on load; the code has two of the four keys |
+| Animation data (`seeker_animations.json`) | Upstream, hard | Clips, frame timings and pivots; animation-finished events drive door, grapple, ledge and death. A data file, not a GDD |
+| World state / save | Both | `PlayerState` holds the live keys; world state stores them and sets them on load; the code has two of the four keys (target: four) |
 | Combat | Downstream, hard | The controller owns the attack input; it calls the combat node's `poll`, `update`, `cancel` (see `combat.md`) |
-| Health, damage and death (R6) | Downstream | `PlayerHealth` is composed in; `take_hit` is the entry point for enemies and the boss |
-| Camera (R7) | Downstream | Reads the config's camera values |
-| Rooms and transitions | Downstream, hard | `door_entered`, `resume_from_door`, `revive`; needs the controller invulnerable during door entry (gap) |
-| Ability gating, Level design | Downstream, hard | Gate dimensions derive from `player_config.tres` (dash 370, jump 330, wall jump, grapple); panes break in the DASH state; `climbable`, `door` and `grapple_anchor` objects |
+| Health, damage and death (R6) | Downstream | `PlayerHealth` is composed in; `take_hit` is the entry point for enemies, the boss, spikes and floor hazards, and `kill()` *(planned)* for kill planes. The 1.0 s invulnerability, `max_health` and the damage block live in the controller until this GDD exists. No GDD yet (index #10) |
+| Camera (R7) | Downstream | Reads the config's camera values. No GDD yet (index #2) |
+| Rooms and transitions | Both, hard | `door_entered`, `resume_from_door`, `revive`; `dash_speed` and `fast_fall_speed` for its R5 check. **Required, not built:** the arrival placement, state capture, freeze, hold-behind-an-opening and damage-block setter (set on a crossing or the up press that starts EnterDoor, cleared at the fade-in's end) listed under Scene contract and API |
+| Save points and save/load | Both, hard | In: `interact` in a rest area (on the ground, not attacking, not in hurt lock), `died`. **Required, not built:** RESTING and ARRIVING, a seated arrival, the snap, the standing hitbox, the up attack suppressed in a rest area. **No damage block** (owner, 2026-11-23) |
+| Ability gating, Level design | Downstream, hard | Gate dimensions derive from `player_config.tres` (dash 370, jump 330, wall jump, grapple); panes break in the DASH state; `climbable`, `door` and `grapple_anchor` objects; the unowned-key behaviour of rule 3; **the `no_cling` skip (rule 14) and the `gate_anchor` spend, no-refresh and release time (rule 18), required, not built**; kill planes call `kill()` |
 | Collectible upgrades | Downstream | `max_health` (100) is the base for health upgrades |
 | Enemies, Bosses | Downstream | Call `Player.take_hit` |
-| Pause and menus | Downstream | The input actions (rebinding is that system's) |
+| Pause and menus | Downstream | The input actions (no remapping); the reserved `pause` action; `interact` loses gamepad B |
+| Grid map | Downstream, hard | A `map` action and `cancel`; input withheld while the map is open, presses discarded on close |
+| Healing | Both, hard | A `heal` input action and the `HEAL` state that plants the Seeker and ends on the cancels of `healing.md` rule 9; Healing reads the state, hurt lock, death and `revive` |
+| Hit feedback and effects (R8) | Downstream | Dust and hit effects; no GDD yet |
 
-**Bidirectional check:** `world-state.md` and `ability-gating.md` name the controller; `combat.md` names it as upstream. Rooms, enemies and bosses have rooms-side or no GDD for their side.
+**Bidirectional check (2026-11-23):** these GDDs name the controller on their side: `world-state.md`, `ability-gating.md`, `combat.md`, `rooms-and-transitions.md`, `save-points-and-save-load.md`, `healing.md`, `pause-and-menus.md`, `grid-map.md`, `enemies.md`, `bosses.md` and `collectible-upgrades.md` (`base_max_health`). Still stale: `rooms-and-transitions.md` (its cross-reference notes, L281) and `world-state.md` (L159) say the controller "has no GDD yet"; each should point here once this is approved. Health, Camera and Hit feedback have no GDD, so their side is unwritten.
 
 ---
 
 ## Acceptance Criteria
 
-Verification: **Logic** (stepped physics scene, as the existing integration tests do) unless marked. Values are read from `player_config.tres`; none is hardcoded in a test.
+Verification: **Logic** (stepped physics scene, as the existing integration tests do) unless marked. Values are read from `player_config.tres`; none is hardcoded in a test. Physics runs at 60 Hz; a time in seconds is tested at least two ticks either side of its boundary, and the boundary tick itself is not pinned. Criteria marked **fails today** state a target the code does not meet; they are requirements, not descriptions.
 
-1. **AC-1 Run.** Holding right from rest on flat ground reaches 140 px/s in 0.1 s and never exceeds it; releasing stops from 140 within 0.07 s (2000 px/s²).
-2. **AC-2 Jump.** A ground jump starts at vy -330; releasing jump while rising halves vy once; a held jump peaks higher than a tapped one.
-3. **AC-3 Coyote and buffer.** A jump pressed 0.09 s after walking off an edge jumps; at 0.11 s it does not. A press 0.10 s before landing jumps on landing; at 0.13 s it does not.
-4. **AC-4 Air jump.** With `has_double_jump` one air jump (vy -320) is available per air time and refreshes on the ground, a ladder, a ledge pull-up, a grapple jump-out and a pogo. Without it, an air jump press changes nothing.
+1. **AC-1 Run.** Holding right from rest on flat ground reaches 140 px/s within 6 to 7 ticks (about 0.1 s; the boundary tick depends on float rounding) and never exceeds it; releasing stops from 140 in at most 5 ticks (2000 px/s²).
+2. **AC-2 Jump.** A ground jump starts at vy -330; releasing jump while rising halves vy once. A jump released on the first air tick peaks at 20 px or less; a held jump peaks at 58.7 px within 1 px (ability gating's sim figure; F5's analytic 61.6 is an upper bound). *Pin the tapped figure with the stepped sim when the test is written.*
+3. **AC-3 Coyote and buffer.** A jump pressed 5 ticks after walking off an edge jumps; 7 ticks after it does not. A jump pressed 6 ticks before landing jumps on landing; 9 ticks before it does not.
+4. **AC-4 Air jump.** With `has_double_jump` one air jump (vy -320) is available per air time and refreshes on the ground, a ladder, a ledge pull-up, a grapple jump-out off an ordinary anchor (not a `gate_anchor`, AC-13) and a pogo. Without it, an air jump press changes nothing.
 5. **AC-5 Priority.** With a ground jump, a wall jump and an air jump all available, a press performs the ground jump; with the first unavailable, the wall jump; then the air jump.
-6. **AC-6 Dash.** A dash lasts 0.25 s at 370 px/s, ends at once on a wall with vx 0, otherwise ends at 0.55 of dash speed; a second dash within 0.3 s is refused; one air dash until grounded; none from CROUCH, CLIMB or WALL_SLIDE.
-7. **AC-7 Dash-jump.** A jump during a ground dash starts with vx 314.5; during an air dash it works only with an air jump left.
+6. **AC-6 Dash.** A dash lasts 15 ticks (0.25 s) at 370 px/s, ends at once on a wall with vx 0, otherwise ends at 0.55 of dash speed; a second dash started 16 ticks after the first ends is refused, 20 ticks after it is accepted; one air dash until grounded; none from CROUCH, CLIMB or WALL_SLIDE.
+7. **AC-7 Dash-jump.** A jump during a ground dash starts with vx 314.5; during an air dash it works only with an air jump left; either starts the dash cooldown.
 8. **AC-8 Wall.** Slide speed never exceeds 60; a wall jump gives vy -380, vx 190 away, locks steering 0.1 s; it works with a wall within 3 px or within 0.1 s after leaving a slide, and does not use the air jump.
-9. **AC-9 Fast fall.** It starts only after down has been held 0.2 s, caps at 640, and does not start during an attack; a quick down + attack does not start it.
+9. **AC-9 Fast fall.** Falling with down held 13 ticks: `a` = 2430 and the cap is 640. Held 11 ticks, then released: `a` = 1350 and the cap is 480. During a swing other than the down attack neither fast-fall value applies; during the down attack the cap is 220 (`combat.md`).
 10. **AC-10 Assists.** A head clipping an edge by up to 6 px slides sideways and keeps vy; by 7 px it does not. Feet missing a ledge by up to 5 px lift onto it; by 6 px they do not.
-11. **AC-11 Climb.** Up on a `climbable` snaps x to its centre and moves at 70 px/s; up past the top hops at -200; jumping off gives vx `move_x x 140`, vy -330 and a 0.2 s regrab lockout.
-12. **AC-12 Crouch.** The body box is 14 px high with its bottom on the feet; standing is refused without headroom; speed 40; jump, dash and attack are refused from CROUCH (current behaviour).
-13. **AC-13 Grapple.** With no ability, nothing; with it, the nearest anchor within 200 px is chosen and none beyond; the pull runs at 360 px/s and ends within 6 px of the anchor; the release keeps 0.8 of the velocity; a jump out gives pull direction x 180 plus 260 upward and refreshes air moves.
+11. **AC-11 Climb.** Up on a `climbable` snaps x to its centre and moves at 70 px/s; up past the top hops at -200; jumping off gives vx `move_x x 140`, vy -330 and a 0.2 s regrab lockout. (The unowned case is AC-16.)
+12. **AC-12 Crouch (provisional: the no-jump, no-dash, no-attack rule is `INTENT UNKNOWN`).** The body box is 14 px high with its bottom on the feet; standing is refused without headroom; speed 40; jump, dash and attack are refused from CROUCH (current behaviour, to be confirmed or changed). **Target, fails today:** a hit in CROUCH in a tunnel 14 to 21 px high leaves the 14 px box through HURT and ends in CROUCH; with headroom and crouch released it ends in GROUND with the 22 px box; the standing box is never restored without headroom.
+13. **AC-13 Grapple.** With no ability, nothing; with it, the nearest anchor within 200 px is chosen and none beyond; the pull runs at 360 px/s and ends within 6 px of the anchor; the release keeps 0.8 of the velocity; on an ordinary anchor a jump out gives pull direction x 180 plus 260 upward and refreshes air moves. **Gate anchor (target, fails today):** the hook sets the air jump and air dash to 0 whether or not they were used; a jump-out during the pull or the 0.08 s release still gives 260 upward but leaves both at 0; after the release the Seeker is in AIR and a jump press does not jump out; the air moves return on the ground, a pogo hit or the climb state.
 14. **AC-14 Door.** `interact` in a door area on the ground, not attacking, enters it and emits `door_entered` after the clip; the Seeker stays until `resume_from_door()`.
 15. **AC-15 Hurt and death.** `take_hit` returns false while invulnerable (1.0 s after a landed hit) or dead; below 20 damage plays Hurt, from 20 HurtKnockback; control is lost 0.35 s; at zero health `died` follows the clip; `revive` restores full health standing.
-16. **AC-16 Ownership.** With no `PlayerState` supplied both abilities work; with an empty one, double jump and grapple do nothing and the dash and wall slide still work (current behaviour).
-17. **AC-17 Input.** Every action in the table is registered at startup with dead zone 0.5; an action already defined is untouched; a second `register()` adds nothing.
+16. **AC-16 Ownership (target; the dash, wall and climb parts fail today).** With no `PlayerState` supplied the Seeker owns all four keys. With a new one that owns nothing: the dash input is ignored and starts no cooldown; an air jump press does nothing; touching a wall gives no slide and no wall jump; up on a `climbable` does not snap; the grapple input does nothing. Granting a key enables exactly its moves on the next tick. *Today:* the double jump and grapple parts pass; `has_dash` and `has_wall_cling` do not exist, so the dash, slide, wall jump and climb always work.
+17. **AC-17 Input.** Every action in the table's code columns is registered at startup with dead zone 0.5; an action already defined is untouched; a second `register()` adds nothing. Planned bindings (heal on A and Y, arrows-only keyboard movement, `interact` without W or B, `rapid_fire` on R3) are tested when built.
 18. **AC-18 Ledge.** With `ledge_grab_enabled = false` a fall into a ledge corner never enters LEDGE.
 19. **AC-19 No i-frames (current behaviour).** A hit during DASH lands. *Records confirmed intent.*
-20. **AC-20 Door safety (open gap).** A hit during ENTER_DOOR must not land (rooms GDD). *Fails today; to be fixed or the rooms requirement changed.*
-21. **AC-21 Feel (playtest, Visual/Feel).** The owner plays the movement for ten minutes and says it feels good (the concept's pass test). Evidence in `production/qa/evidence/`.
+20. **AC-20 Damage block (target; fails today).** From the tick after an accepted door `interact` press until the Seeker leaves ENTER_DOOR, `take_hit` and `kill()` return false, health is unchanged and the invulnerability window does not start. While Rooms holds the block set (the crossing frame or the up press that starts EnterDoor, to the fade-in's end), both return false, **including after the Seeker has left ENTER_DOOR**; the Seeker is still unhurt on the last tick before the fade-in ends. Clearing Rooms' hold while the Seeker is in ENTER_DOOR leaves the block set, and the reverse. The 1.0 s invulnerability after a landed hit makes `take_hit` return false but does not stop `kill()`: with the block clear, `kill()` during that window kills. A hit in a rest area is not blocked by the controller. *Owner, 2026-11-23.*
+21. **AC-21 Feel (playtest, Visual/Feel).** The owner plays one region-1 route that uses every owned movement (run, jump, double jump, dash, wall moves, grapple) for ten minutes, then answers three questions in an evidence note: did any press feel dropped or late; did any jump or dash end somewhere unexpected; does the movement feel good. Pass: the first two answers are "no" with no example, the third "yes". Evidence in `production/qa/evidence/`.
+22. **AC-22 Same-tick priority.** With the presses on one tick, the first move that is available wins: on GROUND grapple, dash, a door's `interact`, attack, climb, jump, crouch, in that order (heal, once built, sits after jump and before crouch: a heal press with any other action pressed starts that action, and a heal press alone starts the heal; the rest area's `interact` joins the door's slot when built); in AIR grapple, dash, climb, then jump (coyote, wall, air jump); in ATTACK with the cancel window open grapple, dash, jump; in WALL_SLIDE grapple, then wall jump. A move that is unavailable (unowned key, cooldown, no anchor in range) is skipped, and the next one wins.
+23. **AC-23 No-cling face (target; fails today).** With the wall cling owned, falling against a `no_cling` face gives no slide and a jump press beside it gives no wall jump; against a plain face the same Seeker slides and kicks. A `no_cling` face is skipped within the 3 px reach and the 0.1 s wall coyote alike.
 
 ---
 
 ## Open Questions and Follow-Up
 
-- **Ownership keys.** Add `has_dash` and `has_wall_cling` to `PlayerState` with their pickups (world-state GDD already assumes four keys).
+- **Ownership keys.** Add `has_dash` and `has_wall_cling` to `PlayerState` with their pickups (world-state GDD already assumes four keys), and gate the dash, wall slide, wall jump and climb on them (Ability ownership, AC-16).
 - **Wall cling.** Design the cling (hold, grooves, `no_cling` faces) or confirm the wall slide plus wall jump as the shipped move. The art bible and ability gating describe a cling.
-- **Door safety.** Make the Seeker invulnerable from the interact press, as the rooms GDD requires.
-- **Crouch.** `INTENT UNKNOWN`: why a crouching Seeker cannot jump, dash or attack.
-- **Grapple line of sight.** `INTENT UNKNOWN`.
-- **Tests.** Pin AC-1 to AC-19 as integration tests; gdUnit4 is not installed (`/test-setup`).
+- **Damage block.** Decided 2026-11-23 (door yes, bench by placement; second review: Rooms' hold runs from the crossing or the EnterDoor press to the fade-in's end; a kill plane calls `kill()`, which ignores the invulnerability). Code change owed in `take_hit`, plus `kill()` and the setter. Save points to reconcile its "block damage" wording for a rest and an arrival (rules 3, 6, 8, Interactions and its AC at L266). Rooms and Level design to name `kill()` for kill planes; Rooms' setter is the one Rooms already needs.
+- **Heal with doors and rests.** `healing.md` lists a door and a rest among the events that end HEAL (state table), while its rule 7 names only attack, jump, dash and grapple as cancels. Whether an `interact` press cancels HEAL into ENTER_DOOR or RESTING is not settled; decide in the heal story and then add HEAL to the Entered-from cells of those two states.
+- **Accessibility.** Keyboard movement becomes the arrow keys only and controls are fixed in the first scope (`pause-and-menus.md` rule 17: no answer for a player who cannot use a fixed control); `design/accessibility-requirements.md` does not exist yet. Check the layout against it when it is written.
+- **Keyboard layout.** Decided (owner, 2026-11-23; `healing.md` Open Question 1): heal on keyboard **A** and gamepad **Y**, so keyboard movement is the arrow keys only and `rapid_fire` moves to R3. Owed, none made yet: `PlayerInputBindings` (drop WASD, add `heal`, move `rapid_fire`); `pause-and-menus.md` rule 17's controls table and rule 18 page; the rest glyph in `save-points-and-save-load.md` ("W, Up" becomes "Up"); then close Healing Open Questions 1 and 15. Each other GDD's edit needs the owner's go-ahead (coordination rule 5).
+- **Crouch.** `INTENT UNKNOWN`: why a crouching Seeker cannot jump, dash or attack. The hit from CROUCH in a low tunnel is decided (Edge Cases, AC-12); code change owed.
+- **Grapple.** `INTENT UNKNOWN`: line of sight, and the equal-distance tie. The concept (Open Questions) also asks whether the grapple hits; the dash does (pillar 4) and `combat.md` lists a dash attack as planned, so the DASH state must let combat hit from it. Owner decision before the grapple gates are tuned.
+- **Tests.** Pin AC-1 to AC-19, AC-22 and AC-23 as integration tests (AC-20 once the block, setter and `kill()` exist); gdUnit4 is not installed (`/test-setup`).
 - **Reach figures.** `ability-gating.md` derives its gate sizes from these values; any change to `player_config.tres` needs `/propagate-design-change`.
+- **Registry.** Done 2026-11-23 (`/consistency-check`, owner approved): `dash_speed` 370, `fast_fall_speed` 640, `grapple_range` 200 and `base_max_health` 100 are registered with this GDD as source. Still to register when built: `grapple_release_time` 0.08 (planned; F11).
+- **Advisory sections.** Player Fantasy and Tuning Knobs (ranges for the feel values) are absent; optional at `standard`.

@@ -194,6 +194,7 @@ The guard_mult formula is defined as:
 | Enemies and Bosses | Soft | The steps a player can hold by each region, to tune later regions (Formulas, Feedback loops) |
 | Bow and Spell casts (later) | Soft | The magic steps (rule 10) |
 | Pause and menus (later) | Soft | `held` and steps per kind for an optional collection view |
+| Healing | Soft | Reads the derived max health (F2) when a heal completes; the edge multiplier must not speed the heal meter (`healing.md` Dependencies seam; no edge step can complete in region 1, rule 12) |
 
 **Bidirectional check (2026-11-21):**
 - **World state** lists Collectible upgrades as a hard dependent needing "its pickups' `collected` flags". This matches.

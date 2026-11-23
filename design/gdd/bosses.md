@@ -160,6 +160,7 @@ A flat code-built room of three solids between two walls. The Seeker spawns at x
 | Guard-break (`guard-break.md`) | Upstream, hard | The boss's guard config is built from `BossConfig.make_guard_config()`; guard break is the only stagger |
 | Combat (`combat.md`) | Upstream, hard | The fight is beatable with the Seeker's combat set only |
 | Player controller | Upstream, hard | `Player.take_hit`, layers, the jump that avoids the shockwave |
+| Healing (`healing.md`) | Upstream, hard | The heal meter and heal values the three stages are tuned against ("tuned together with healing"); the boss must supply a pattern or stage element that punishes a planted Seeker, because at the current timings a 1.0 s channel ends 0.6 to 0.9 s before the next wind-up begins (`healing.md` Open Question 12); the stagger and stage-change heal rules (`healing.md` Open Question 2). A shockwave in flight can hit a planted Seeker. Row added 2026-11-23 (third Healing design review) |
 | Camera | Downstream, soft | Death shake |
 | Level design | Downstream, hard | Boss rooms, the defeat flag, the reward pickup, the save point before the arena (rules 10, 15, 21) |
 | World state | Downstream, hard | Stores `boss_defeated`; `boss_arena.gd` is listed as the emitter |

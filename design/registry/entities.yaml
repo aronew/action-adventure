@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: "2026-11-21"
+last_updated: "2026-11-23"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -349,9 +349,9 @@ formulas:
       - health
       - max_health
       - heal_share
-    output_range: [10, 90]
+    output_range: [20, 72]
     expression: "health' = min(health + heal_share x max_health, max_health)"
-    notes: "Healing F2. heal_share 0.30 (range 0.10-0.50) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained. Range is heal_share x max_health at the share's bounds (0.10 x 100 to 0.50 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
+    notes: "Healing F2. heal_share 0.30 (range 0.20-0.40) of max_health_derived (100-180): +30 at 100, +54 at 180. Applied when the 1.0 s channel completes; the meter is spent in full whatever health is gained, and a heal only starts when missing health is at least start_deficit = max(1, min(start_deficit_share x the heal, start_deficit_cap 20)) (15 at 100 max health, 20 from about 133 max health up). Range is heal_share x max_health at the share's bounds (0.20 x 100 to 0.40 x 180). Collectible upgrades, Save points and Bosses tune against it; they add themselves to referenced_by when their GDDs adopt it."
     added: 2026-11-22
 
 # Example:
@@ -522,25 +522,34 @@ constants:
     source: design/gdd/pause-and-menus.md
     referenced_by:
       - design/gdd/grid-map.md   # Open Question 7: Escape is also cancel and closes the map
+      - design/gdd/player-controller.md   # input table: `pause` is a reserved, planned action
     value: {keyboard: Escape, gamepad: Start}
     unit: input
-    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack."
+    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack. Gamepad B is reserved for `cancel` (rule 19), so the controller's `interact` drops it (pause-and-menus.md Open Questions; player-controller.md input table)."
     added: 2026-11-21
   - name: meter_capacity
     status: active
     source: design/gdd/healing.md
     referenced_by: []
+    variables:
+      - meter_cost_ratio
+      - heal_share
+      - max_health
+      - capacity_floor
+    output_range: [84, 720]
+    expression: "meter_capacity = max(capacity_floor, meter_cost_ratio x heal_share x max_health)"
     value: 120
     unit: damage units
-    notes: "Healing F1 and F3 (range 40-300; owner, 2026-11-22). The heal meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so one heal per guard-break cycle is the starting target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
+    notes: "Healing F1, derived from the heal amount in the fourth design review (owner, 2026-11-23) so a heal costs the same fighting at every max health. `value` is the result at 100 max health and the defaults: meter_cost_ratio 4.0 (range 2.8-10) x heal_share 0.30 x 100 = 120; 216 at 180 max health. capacity_floor 84 (fixed: two combos, above a charged heavy; raised from 40 in the third design review). The meter keeps its fraction when max health changes. The meter is counted in the base damage of landed hits (attack_data.tres, charged heavy x2, before the guarded, finisher and edge multipliers): about 9 light hits or 3 combos per heal at 100 max health. A full-guard boss cycle fills about 106 before the punish hits (guard-break F2: 8 light hits), so a skilled player earns about 1 heal per guard-break cycle and 2 when a banked heal is also spent in the guard phase, about 1.5 sustained when a charged heavy breaks the guard (meter 60; Healing F3 cap-aware cycle model, estimates); whether that is fair is decided in play, not a target. Bosses and HUD tune and display against it; they add themselves to referenced_by when their GDDs adopt it; empty until then."
     added: 2026-11-22
+    revised: 2026-11-23
   - name: heal_share
     status: active
     source: design/gdd/healing.md
     referenced_by: []
     value: 0.30
     unit: share of max health
-    notes: "Healing F2 (range 0.10-0.50; owner, 2026-11-22). The share of the derived max health (max_health_derived) one heal restores. Bosses tune their hit damage against it (slam 40, lunge 25, shockwave 20); they add themselves to referenced_by when their GDD adopts it; empty until then."
+    notes: "Healing F2 (range 0.20-0.40, narrowed in the second design review; starting value owner, 2026-11-22). The share of the derived max health (max_health_derived) one heal restores. Bosses tune their hit damage against it (slam 40, lunge 25, shockwave 20); they add themselves to referenced_by when their GDD adopts it; empty until then."
     added: 2026-11-22
   - name: channel_time
     status: active
@@ -548,8 +557,53 @@ constants:
     referenced_by: []
     value: 1.0
     unit: s
-    notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the boss pattern recoveries (1.0-1.3 s) and stagger (4.0 s): a heal fits a recovery only barely and a stagger easily. Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
+    notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the gap from the end of one boss strike to the start of the next: previous recovery plus attack_cooldown 0.6 s plus the next pattern's wind-up, and the last pattern is never picked again, so the gaps are 2.4 to 3.0 s (after slam 2.7 or 2.9, after lunge 2.6 or 3.0, after shockwave 2.4 or 3.0; 0.4 s more after a stagger: post_stagger_cooldown 1.0 s replaces attack_cooldown 0.6 s) and the 4.0 s stagger. A heal started right after a strike ends 0.6 to 0.9 s before the next wind-up begins, so the existing patterns cannot punish it; that is the boss's to change (Healing Open Question 12). A heal that follows a hit starts after the 0.35 s hurt lock and ends about 0.55 s (after a slam) or 0.25 s (after a lunge or shockwave) before the next wind-up, and at least 1.05 s before the next strike (fifth design review, 2026-11-23). A shockwave already in flight (3.5 s at 150 px/s) is the exception. Revised in the second design review (replaced the 1.0-1.3 s recovery premise) and the third (replaced the gap labels, which named same-pattern repeats that cannot happen). Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
     added: 2026-11-22
+  - name: dash_speed
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # F3, Values (Dash)
+      - design/gdd/ability-gating.md   # F10 pane_detect_px, the dash gap window F1
+      - design/gdd/level-design.md   # gate dimensions
+      - design/gdd/rooms-and-transitions.md   # R5 t_reach reads it from player_config.tres
+      - design/gdd/terrain-pipeline.md
+    value: 370
+    unit: px/s
+    notes: "Player controller F3 (`player_config.tres` `dash_speed`). Horizontal speed of the 0.25 s dash (92.5 px). Gate figures derive from it: ability gating F10 (pane_detect_px = ceil(dash_speed / sim_hz) + detect_margin, 9 px at 370) and the dash gap window F1; Rooms R5 reads it for the advisory exit-reach check. A change to the config value needs /propagate-design-change."
+    added: 2026-11-23
+  - name: fast_fall_speed
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # F2, Values (Jump)
+      - design/gdd/rooms-and-transitions.md   # R5 t_reach: dy / fast_fall_speed
+      - design/gdd/terrain-pipeline.md
+    value: 640
+    unit: px/s
+    notes: "Player controller F2 (`player_config.tres` `fast_fall_speed`). The fall cap while down has been held 0.2 s and the Seeker is not attacking; the normal cap is 480 and the down attack's is 220 (combat). Acceleration there is 900 x 1.5 x 1.8 = 2430 px/s2 (the multipliers compound). Rooms R5 reads it as a lower bound on fall time."
+    added: 2026-11-23
+  - name: grapple_range
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # rule 9, F4
+      - design/gdd/ability-gating.md   # F3 and F11: every grapple hop is at most this far
+      - design/gdd/level-design.md   # anchor placement
+    value: 200
+    unit: px
+    notes: "Player controller rule 9 (`player_config.tres` `grapple_range`). The nearest grapple_anchor within this distance is chosen, with no line-of-sight check. The farthest anchor it can fling from gives a rise of at most 224 px and a vy of at most -635 px/s (F4). Ability gating F11 bounds every hop by it."
+    added: 2026-11-23
+  - name: base_max_health
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # Values (Hurt)
+      - design/gdd/collectible-upgrades.md   # F2: the base that health steps add to
+    value: 100
+    unit: health
+    notes: "Player controller Values (`player_config.tres` `max_health`). Max health with no upgrade steps. Anything that heals or sizes a bar must read max_health_derived (base + steps x health_step, 100-180), never this base; Healing and Save points already do."
+    added: 2026-11-23
 
 # Example:
 #
