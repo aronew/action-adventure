@@ -25,3 +25,30 @@ Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c7571
 Reviewed-Content-Hash: design/gdd/game-concept.md 4709af3861c39f34ad0f7bc76fa173e105d31c88
 Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
 Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L (producer to verify; the system is built, the remaining work is tests, the planned dash attack and the cross-GDD seams with Healing and Collectible upgrades)
+Specialists: none (lean)
+Blocking items: 1 (revised the same day) | Recommended: 6 open
+Summary: The GDD is faithful to the code: all seven hitbox rects, damages, chain and cancel frames, lunges and the attack3 shake match `attack_data.tres`, and the first review's three blockers hold (fall cap reaches 220 in 12 ticks; the jump is buffered during the lock; charged lands on tick 33, 0.55 s after the press tick). One acceptance criterion would fail against correct code: AC-21 said a first swing from a fresh press does not turn, but the controller sets `facing` from the held direction before `combat.poll`. Revised in AC-21 and Detailed Design item 4. Recommended items are open.
+Prior verdict resolved: Yes (the first review's 3 blockers held against the code; its open items, the F3 overlap measurement and the advisory Player Fantasy and Tuning Knobs, remain)
+Owner decisions recorded: tap-to-swing latency marked INTENT UNKNOWN for a playtest (not yet written into the GDD); `hit_landed` damage excludes the edge multiplier (recommended answer, not yet written into the GDD, which Healing's Dependencies seam already assumes).
+Findings:
+- [BLOCKING] Acceptance Criteria AC-21 and Detailed Design item 4: "a first swing from a fresh press does not turn" fails against `_state_ground` and `_state_air`, which set facing before the poll. Revised.
+- [RECOMMENDED] Dependencies: Level design (rule 24, pogo) and Collectible upgrades ("Hard (edge and guard only)") name Combat and are missing from its table; state that `hit_landed` damage is before the edge multiplier (Healing Open Question 4)
+- [RECOMMENDED] Detailed Design: no timings in seconds; frames last 40 to 140 ms in `seeker_animations.json`. By that data attack1 hits at 140 to 240 ms (total 420), attack2 at 60 to 160 (200 chain, 280 total), attack3 at 240 to 340 (580 total); a looping light combo is about 41 damage per second, against 49 assumed in Healing F3
+- [RECOMMENDED] Input resolution: a tap swing starts on button release, so press-to-swing latency equals the hold time (up to 0.133 s); intent not stated and no feel target
+- [RECOMMENDED] Acceptance Criteria: all tagged Logic, but `PlayerCombat` needs `Player`, the `Input` singleton, `AnimatedSprite2D` and a physics step; retag Integration or add an injection seam; gdUnit4 is not installed
+- [RECOMMENDED] Edge Cases: a press queued during an air swing starts a fresh air swing (a pogo if down is held); the GDD says only a fresh ground attack
+- [RECOMMENDED] Contract with targets, AC-16: "layer bit 8" is collision value 8 (editor layer 4); state the bitmask convention shared with `enemies.md` and `healing.md`
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/registry/entities.yaml e5dde6408bcb54311a80f136adf0b0fea54ee0be
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/ability-gating.md 3f8d018daed6b507b9fa79d4f26f5b387e51d897
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2

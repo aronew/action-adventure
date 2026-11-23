@@ -232,3 +232,46 @@ Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1d
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
 Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
 Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8
+
+## Review — 2026-11-23 — Verdict: MAJOR REVISION NEEDED
+Review mode: full · Workflow: standard
+Scope signal: L (trending XL: Collectible upgrades, Bosses, Player controller, Pause and menus, `PlayerHealth` and `enemy_base.gd` need changes; a HUD spec and an audio spec are new documents)
+Specialists: game-designer, systems-designer, economy-designer, qa-lead, gameplay-programmer, godot-specialist, ux-designer, ui-programmer, audio-director; creative-director (senior)
+Blocking items: 11 | Recommended: about 30
+Summary: The core design is sound; the document form fails. The fifth review's condition (under 60 KB, no engine API names outside Dependencies) is unmet (86 KB), and each pass finds new contradictions against `src/` because the GDD narrates the code. Verified against `player.gd`: jump is not polled first, stand-up is in CROUCH, attack plus jump on one tick gives only the jump, `PlayerHealth` has no heal API. Creative-director path: no seventh review until the doc is under 60 KB with zero engine names outside Dependencies; rules state outcomes and mechanisms go to ADR-0003; Visual/Audio and its ACs move to a HUD spec and an audio spec; every code claim gets a `file:line`; run the story-1 spike (priority order, hit-stop counter, unpause, Area2D flush, AC-17d boundary, gdUnit4 install) before the review; then a lean review scoped to the 11 items.
+Prior verdict resolved: Mostly (the fifth review's 10 blockers held in substance; the split was done but the size and engine-name conditions were not met, and new code-fact errors appeared)
+Owner questions (recommendation): own stake for Healing (no, the boss owns it); per-foe `fill_scale` default 1.0 (yes); whole-bar spend vs proportional (keep whole bar); farm counter resets on rest only, shipped dormant (yes); boss damage budget as a paper invariant owned by Bosses (yes); keyboard A for heal (reopen with ux-designer, it removes WASD); audio telegraph priority rule into `bosses.md` (yes).
+Disagreements adjudicated by the creative-director: own stake and 0.5 guarded fill rejected (override dated owner decisions); `body_entered` hazard safety unverified on both sides (spike); tick-60 asymmetry kept; AC-26b stays a non-gate and the "risky" sign-off moves to Bosses; "decided in play" holds for feel values, not for paper bounds (items 5 and 6).
+Findings:
+- [BLOCKING] Core Rules 6, 9, 15 / Game Feel: misdescribe `player.gd` (jump not polled first; stand-up is in CROUCH; attack plus jump gives only the jump; no same-tick control after completion with the priority-10 helper)
+- [BLOCKING] Dependencies (Health): `PlayerHealth` has no `heal`, `healed` or `set_max_health`; `configure()` resets and clears the invulnerability window
+- [BLOCKING] AC-28c: contradicts the 0.12 s jump buffer (about 4 ticks still live, jump fires first)
+- [BLOCKING] Core Rules 9, 15 / Values: `stick_cancel_deadzone` 0.2 to 0.9 is below the InputMap deadzone 0.5; toggle stick push on tick 60 unspecified
+- [BLOCKING] Formulas F1/F2/F3 / registry: max health reaches 220 (health_step 30 x 4 steps), breaking capacity, heal and F3 ranges; cap health_step at 20 or widen every range
+- [BLOCKING] Values `channel_time`: at or below about 0.63 s a heal completes inside rule 10's protected window and can never be punished; raise the lower bound to about 0.7 s
+- [BLOCKING] Interactions / UI / Visual-Audio: no HUD data contract (owner, payload, tick, meter-change cause, usable-state owner); rule 6 and the Visual/Audio table contradict on door and death
+- [BLOCKING] Core Rules 6, 14: "reason visible on the Seeker" false for crouch, ladder, wall, ledge; held press through HURT silently dropped in hold mode
+- [BLOCKING] Visual/Audio: ready chime always coincides with the filling hit; completion swell contradicts "stops within 80 ms" and "one voice"
+- [BLOCKING] Acceptance Criteria: AC-17d, AC-27a/40, AC-18d pattern, unowned "not closable" ACs, AC-37 vacuous, AC-26b vs Open Question 12
+- [BLOCKING] whole document: 86 KB against the 60 KB condition; engine API names outside Dependencies
+- [RECOMMENDED] ADR-0003: delete "a `body_entered` hazard is probably safe"; `take_hit` only from physics-process context; hit-stop counter breaks "Enemies not changed" (file a bug for `enemy_base.gd` `_hit_stop`)
+- [RECOMMENDED] Formulas / Values: capacity_floor 60 lets one charged heavy fill the bar; no joint `validate()`; start_deficit_cap 28 to 40 dead; t_full and heal_ratio undefined at fill_rate 0 and zero damage; carry_in label; rescale needs a min; rule 12 holds for stage 1 only
+- [RECOMMENDED] Economy: boss damage-budget invariant owned by Bosses; `fill_scale` hook; farm counter resets on rest only; retry asymmetry; stagger heal has no stake
+- [RECOMMENDED] Core Rules 14 / ADR: tabulate hidden state; epsilon in rules 8 and 15; `NOTIFICATION_UNPAUSED`; latch is toggle-only; CHANNEL vs HEAL naming (`player-controller.md`); missing `heal_loop` clip is a hard error
+- [RECOMMENDED] Acceptance Criteria: no test runner (gdUnit4 absent); Logic ACs assert states the seam cannot report; AC-8 vacuous; about 12 rules without an AC; bundled ACs; unmeasurable AC-31, 27e, 14b, 22; AC-42 vs the TrainingDummy room
+- [RECOMMENDED] UX / Audio: `heal_mode` options row and accessibility doc missing; minimum HUD contract; channel progress legibility; stick drift cancels toggle; swell-vs-telegraph priority in `bosses.md`; swell pause behaviour; refusal ticks; chime anti-fatigue; no audio ACs; glow luma units and HDR clamp
+Reviewed-Content-Hash: design/gdd/healing.md e999a7ef97a08ddf4b2f9c7cea9a96b8bd87c311
+Reviewed-Content-Hash: design/registry/entities.yaml e5dde6408bcb54311a80f136adf0b0fea54ee0be
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/combat.md 504cb4c4a7b721d2b21fd518e8d4796f82e709c9
+Reviewed-Content-Hash: design/gdd/guard-break.md db88a0e1247115e424f3dd3b528fbfc437151c88
+Reviewed-Content-Hash: design/gdd/player-controller.md c08d4b121bb91d5c413ba9b97ee7b5f66b82c5c2
+Reviewed-Content-Hash: design/gdd/bosses.md 025d6e45c55d02b0ffe748d22de9466fde7db4e4
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/collectible-upgrades.md 93f8c4f08602c58aa46b1696ff19ae11490cf2e1
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md 4627eb28f2dad36dc8b24e898cea2a8ab78033c8
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/art/art-bible.md 85683b615330f35961f3bc72493ac4b3911431e8

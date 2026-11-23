@@ -3,7 +3,7 @@ status: reverse-documented
 source: src/player/player_combat.gd, src/player/attack_config.gd, src/player/attack_data.tres (hooks in src/player/player.gd and src/enemies/enemy_base.gd)
 date: 2026-11-22
 verified-by: pending review (intent confirmed by the owner in session for 3 items, marked below)
-review: 2026-11-22 lean design review, NEEDS REVISION; 3 blockers and 8 recommended items revised the same day; re-review owed
+review: 2026-11-22 lean design review, NEEDS REVISION; 3 blockers and 8 recommended items revised the same day. Second lean review 2026-11-23, NEEDS REVISION; 1 blocker (AC-21, Detailed Design item 4) revised the same day, 6 recommended open (Dependencies rows and the edge-multiplier seam, timings in seconds, tap latency, AC tagging, air-queue edge case, layer wording); re-review owed
 ---
 
 # Combat (Seeker melee) — Design Document
@@ -63,7 +63,7 @@ All frame numbers are sheet frame indices from the animation guide. The hitbox i
 1. **Ground press.** A press starts a pending state. Released before `hold_threshold` (0.14 s) it is a tap: `up_attack` if up is held and no door is overlapped, else `attack1`. Held for `hold_threshold` it starts the heavy.
 2. **Air press.** Swings at once: `down_attack` if down is held, else `jump_attack`. The air never charges a heavy and never chains.
 3. **Queued press.** A press during a swing (not on the frame the swing started) is queued with an age. From the attack's `chain_from` frame (or `move_cancel_from` when the attack has no `next`) the queue is used: a ground swing with the button still held waits until the queue is `hold_threshold` old, then starts the heavy; if the button was released first it starts the `next` attack. An air swing never uses a queue for a heavy.
-4. **Turning.** A chained swing or heavy turns the Seeker toward the held direction first; otherwise facing is locked for a swing.
+4. **Turning.** A swing chained from a queued press, and a heavy started from one, turn the Seeker toward the held direction first (`_turn_to_input`). Combat does not turn the Seeker for a first swing or heavy from a fresh press: the controller has already set `facing` from the held direction on every tick before polling (`_state_ground`, `_state_air`), so that swing faces the held direction. Once a swing starts, facing is locked until it ends.
 
 ### Heavy charge
 
@@ -189,7 +189,7 @@ Verification: all are **Logic** unless marked; they need unit tests under `tests
 18. **AC-18 Data-driven (Config).** Setting `attack1.damage` to 11 in `attack_data.tres` makes `hit_landed` report 11 for attack1, with no code edit (smoke check).
 19. **AC-19 Glide and charge deceleration.** With no input during a ground swing, forward speed decays at 500 px/s²; during the CHARGE phase it decays at 2000 px/s² and left and right input is ignored until the release.
 20. **AC-20 Heavy lunge.** A released heavy with floor below sets forward speed to at least 140; during its wind-up and charge no lunge is applied.
-21. **AC-21 Turning.** A swing chained from a queued press, and a heavy started from one, turn the Seeker toward the held direction first; a first swing from a fresh press does not turn.
+21. **AC-21 Turning.** A swing chained from a queued press, and a heavy started from one, turn the Seeker toward the held direction first (combat calls `_turn_to_input`). A first swing from a fresh press does not call it: the Seeker already faces the direction the controller set from the held input, so with the Seeker facing right and left held, the first swing faces left; with no direction held it keeps its facing. Facing then stays locked until the swing ends.
 
 ---
 
