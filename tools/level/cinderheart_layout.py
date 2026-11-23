@@ -43,6 +43,11 @@ class Room:
     def fake(self, x0, y0, x1, y1):
         return self._fill(x0, y0, x1, y1, "F")
 
+    def island(self, x, s, w, h):
+        """A large floating rock island: top (surface) row s, w columns, h rows thick. Drawn
+        with the big painted rock frame (edges around a dark middle)."""
+        return self.solid(x, s, x + w - 1, s + h - 1)
+
     def plat(self, x, s, w):
         """A floating rock island one cell thick: top (surface) row s, columns x..x+w-1."""
         return self.solid(x, s, x + w - 1, s)
@@ -149,8 +154,9 @@ r = Room("c01_waking_niche", "Waking Niche", 48, 26)
 r.open(6, 2, 45, 21)
 r.open(2, 18, 3, 21).fake(4, 18, 5, 21)                 # secret nook behind a fake wall
 r.solid(38, 6, 47, 7).open(46, 3, 47, 5)               # top ledge and exit
-r.plat(14, 20, 4).plat(19, 18, 4).plat(24, 16, 4).plat(29, 14, 4).plat(34, 12, 4)
-r.plat(39, 10, 4).plat(33, 8, 4)
+r.plat(9, 20, 3).island(14, 18, 6, 3).island(22, 16, 6, 4).plat(30, 14, 2)
+r.island(33, 12, 6, 3).plat(28, 10, 3).plat(31, 8, 2)
+r.solid(34, 6, 37, 7)
 r.exit("right", "right", 3, 5, "c02_ash_steps", "left")
 r.mark("start", 8, 22).mark("rest", 11, 22).mark("relic", 2, 22)
 rooms.append(r)
@@ -161,8 +167,8 @@ r = Room("c02_ash_steps", "Ash Steps", 64, 30)
 r.open(0, 2, 61, 27)
 r.solid(0, 6, 10, 7)                                    # entry ledge
 r.solid(16, 12, 44, 17)                                 # the great rock
-r.plat(19, 10, 2).plat(22, 8, 3).plat(27, 6, 3)         # climb to the relic
-r.plat(49, 22, 4).plat(53, 25, 3)                       # steps down to the exit
+r.plat(19, 10, 2).plat(22, 8, 2).island(25, 6, 6, 3)    # climb to the relic
+r.island(47, 22, 5, 3).plat(54, 25, 3)                  # down to the exit
 r.open(62, 24, 63, 27)
 r.exit("left", "left", 3, 5, "c01_waking_niche", "right")
 r.exit("right", "right", 24, 27, "c03_kiln_hall", "high_left")
@@ -181,8 +187,8 @@ r.solid(0, 8, 12, 9).solid(0, 2, 0, 4)                  # high shelf (arrival, o
 r.solid(0, 10, 1, 23)
 r.open(20, 28, 22, 31)                                  # floor hole
 r.solid(28, 26, 40, 27).solid(31, 24, 37, 25)           # kiln mound
-r.plat(40, 22, 3).plat(45, 20, 3).plat(50, 18, 3).plat(55, 16, 3).plat(60, 14, 3)
-r.plat(64, 12, 3).plat(59, 10, 3)
+r.island(40, 22, 6, 3).plat(48, 20, 2).island(52, 18, 6, 3).plat(60, 16, 2)
+r.island(63, 14, 4, 3).plat(58, 12, 3).plat(62, 10, 2)
 r.solid(63, 8, 69, 9)                                   # upper ledge to the hidden room
 r.solid(68, 10, 69, 23).open(68, 5, 69, 7).open(68, 24, 69, 27)
 r.exit("high_left", "left", 5, 7, "c02_ash_steps", "right")
@@ -208,7 +214,7 @@ r.solid(44, 18, 52, 19)                                 # shelf
 r.open(38, 20, 40, 21)                                  # pit
 r.solid(22, 19, 23, 19).solid(24, 17, 32, 19)           # step and shelf
 r.open(14, 20, 16, 21)                                  # pit
-r.plat(48, 16, 3).plat(42, 14, 4).plat(36, 12, 4).plat(29, 11, 4).plat(24, 9, 4)
+r.plat(48, 16, 3).island(41, 14, 5, 3).plat(36, 12, 3).island(28, 10, 6, 3).plat(23, 9, 2)
 r.solid(2, 1, 14, 8).open(4, 6, 10, 7).fake(11, 6, 14, 7).solid(15, 8, 20, 8)
 r.exit("up", "top", 70, 72, "c03_kiln_hall", "down")
 r.exit("left", "left", 16, 19, "c06_keepers_forge", "right")
@@ -226,7 +232,7 @@ r.open(0, 2, 53, 13)
 r.solid(24, 13, 53, 13)                                 # far side, a cell higher
 r.open(20, 14, 23, 16).solid(20, 16, 20, 16)            # pit with a step
 r.solid(0, 2, 0, 9).solid(53, 2, 53, 8)
-r.plat(28, 11, 2).plat(31, 9, 3)
+r.plat(27, 11, 2).island(30, 9, 6, 3)
 r.exit("left", "left", 10, 13, "c03_kiln_hall", "right")
 r.exit("right", "right", 9, 12, "c08_brun_antechamber", "left")
 r.mark("gate", 16, 14, ability="dash").mark("relic", 32, 9)
@@ -238,7 +244,7 @@ rooms.append(r)
 r = Room("c06_keepers_forge", "Keeper's Forge", 40, 20)
 r.open(1, 2, 38, 15)
 r.open(0, 12, 0, 15).open(39, 12, 39, 15)
-r.plat(6, 14, 3).plat(10, 12, 4).plat(16, 10, 6).plat(31, 14, 3).plat(26, 12, 4)
+r.plat(6, 14, 3).island(10, 12, 4, 2).island(15, 10, 8, 3).island(25, 12, 4, 2).plat(31, 14, 3)
 r.exit("right", "right", 12, 15, "c04_cinder_run", "left")
 r.exit("left", "left", 12, 15, "c07_bellows_climb", "low_left")
 r.mark("enemy", 20, 16, config="brute").mark("enemy", 12, 16, config="skitter") \
@@ -252,8 +258,8 @@ r = Room("c07_bellows_climb", "Bellows Climb", 34, 36)
 r.open(1, 2, 32, 32)
 r.open(0, 29, 0, 32)
 r.plat(4, 31, 4).plat(9, 29, 4).plat(14, 27, 4).plat(19, 25, 4).plat(24, 23, 4)
-r.plat(28, 21, 4)                                       # turn
-r.plat(23, 19, 4).plat(18, 17, 4).plat(13, 15, 4).plat(8, 13, 4).plat(3, 11, 4)
+r.island(28, 21, 4, 3)                                  # turn
+r.plat(23, 19, 4).plat(18, 17, 4).island(12, 15, 5, 3).plat(8, 13, 4).plat(3, 11, 4)
 r.plat(9, 9, 4).plat(14, 7, 4)                          # turn, then the top
 r.solid(22, 6, 33, 7).open(33, 2, 33, 5)                # far ledge past the dash gap
 r.exit("low_left", "left", 29, 32, "c06_keepers_forge", "left")
