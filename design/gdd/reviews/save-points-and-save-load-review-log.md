@@ -83,3 +83,32 @@ Reviewed-Content-Hash: design/game-brief.md 0e2256ea873548131646bbb0def54731733a
 Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
 Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md e5929245b7bffed6811be99e22551a4e0190f848
 Reviewed-Content-Hash: design/gdd/grid-map.md c353dac247f2dd86e7600d282e3d26a3306460e8
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean; no agents spawned)
+Blocking items: 2 (both revised the same day) | Recommended: 4
+Summary: Sixth review, after the cross-GDD review of 2026-11-23 (C-1, C-2). The design held, and F1 and F2 and the registry values re-derive, but the GDD was stale against two owner decisions of 2026-11-23 recorded in player-controller.md: a rest and an arrival have no damage block (a bench is safe by placement), and `interact` loses W and gamepad B (B is Pause's `cancel`). Both were revised the same day (owner approved the changeset); a re-review is owed.
+Prior verdict resolved: Yes (fifth review APPROVED; its 5 recommended items remain open, one now moot)
+Findings:
+- [BLOCKING] Rules 3, 8, States, Interactions, Dependencies, F1, F2, Edge Cases, ACs L255/L266: invulnerable rest and arrival contradict player-controller.md's Damage block and AC-20; Rooms' hold not stated for rule 8 arrivals. Revised: no damage block, safety by placement, Rooms' hold added to Open Question 1 as a fifth owed change, a landed hit ends the rest
+- [BLOCKING] Rule 2, ACs L249/L250, UI Requirements: `interact` bound to W and gamepad B, against pause-and-menus rule 19 and the controller's input table. Revised: up arrow and D-pad up; B starts no rest
+- [RECOMMENDED] Rule 2: whether `interact` during HEAL starts a rest (healing.md rule 9 says the rest takes over); wait for the Healing revision
+- [RECOMMENDED] Dependencies / Bidirectional check: "no GDD" still stated for Pause and menus, Bosses and Enemies
+- [RECOMMENDED] Open Questions: two items numbered 7; dead-body trigger AC omits exit, door, arena-lock and shortcut; no AC for a step exactly one tile below the seat; cite controller rule 14 for same-tick precedence (carried from the fifth review)
+- [RECOMMENDED] Rooms and transitions still owes the Open Question 1 changes (seated arrival, discarded presses, room checks, retired-id region, now the arrival hold)
+- [ADVISORY] Player Fantasy absent (advisory at `standard`)
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md e13aa56c469e48ea14656749eed058180f555b3c
+Reviewed-Content-Hash: design/registry/entities.yaml 6973ce3317cea2b607472cc1b224a83515918536
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md efab1cbedfc71daa37a1dc861584b53b12fae74e
+Reviewed-Content-Hash: design/gdd/level-design.md d4ad8527049c331a3cc88d44f7b99ab9d6dd333e
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/narrative/lore/region-1-cooling-yards.md ffc1e13897b5b6d25bcd2bf9dcbceea39c50cdbd
+Reviewed-Content-Hash: design/narrative/kiln-city-level-integration.md c1f178e2bd2b1cfe4fcdbc8964c2083d0e981c94
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/player-controller.md fb10bc6b71d00494a5b4d4c56d15ed4ae9980629
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md f78479e94533dbc3a4e0ee426abe4dd6f724620a
+Reviewed-Content-Hash: design/gdd/healing.md e999a7ef97a08ddf4b2f9c7cea9a96b8bd87c311
