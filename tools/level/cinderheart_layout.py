@@ -177,11 +177,11 @@ class Room:
 rooms = []
 
 # ---------------------------------------------------------------------------
-# C1 Waking Niche. You wake on the floor of a tall open cavern (rest spot). Big rock
-# islands climb to a ledge on the left wall with a fake wall behind it (relic), and to a
-# window on the right that opens into the cave. The cave side is a switchback: a low
-# tunnel from the cavern floor, then five stacked levels up to the exit. The window joins
-# the switchback's third level, so a climber can skip the first two.
+# C1 Waking Niche. You wake on the floor of a tall open cavern (rest spot). Two ways to
+# the exit, which is lit, at the end of the cave's third level: climb the cavern's big
+# islands to the window on the right and walk out, or take the low tunnel into the cave
+# and climb its switchback. The islands also reach a ledge on the left wall with a fake
+# wall behind it (a relic).
 r = Room("c01_waking_niche", "Waking Niche", 60, 34).cave(30)
 r.open(3, 14, 29, 29)                                   # the cavern
 r.solid(3, 14, 3, 17).fake(3, 18, 3, 19).open(1, 18, 2, 19).solid(3, 20, 11, 21)
@@ -189,11 +189,11 @@ r.plat(5, 28, 3).island(9, 26, 7, 3).island(18, 24, 8, 4).plat(14, 22, 3).plat(2
 r.solid(10, 14, 22, 15).solid(13, 16, 19, 16)           # rock hanging from the roof
 r.tunnel(30, 40, 20)                                    # the window into the cave
 r.tunnel(30, 40, 30)                                    # low tunnel to the switchback
-r.switchback(41, 56, 30, 5)
-r.tunnel(41, 59, 10)                                    # top level runs out to the exit
-r.exit("right", "right", 7, 9, "c02_ash_steps", "left")
+r.switchback(41, 56, 30, 3)
+r.tunnel(41, 59, 20)                                    # third level runs out to the exit
+r.exit("right", "right", 17, 19, "c02_ash_steps", "left")
 r.mark("start", 26, 30).mark("rest", 29, 30).mark("relic", 1, 20)
-r.mark("enemy", 48, 20, config="grunt").mark("enemy", 46, 15, config="skitter")
+r.mark("enemy", 48, 20, config="grunt").mark("enemy", 46, 25, config="skitter")
 rooms.append(r)
 
 # C2 Ash Steps. A tunnel from the left opens high in the Ash Well, a deep open cavern;

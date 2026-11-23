@@ -30,7 +30,61 @@ const RELIC_HEALTH := 10.0
 ## trim plus the surface sink).
 const FLOOR_OFFSET := 7.5
 ## Cells of wall fill drawn into solid rock from open air (deeper rock stays black).
-const ROOM_FILL_DEPTH := 5
+const ROOM_FILL_DEPTH := 6
+## Terrain-anchored foreground (replaces the art room's screen-height loops, which assume
+## a room one screen tall with one ceiling and one floor). Every ceiling gets the rock
+## overhang hanging from it, every stretch of solid ground the near rocks over the rock
+## below it, and cavern floors the black foliage: fixed to the terrain up and down, with
+## the art room's sideways parallax (FOREGROUND_SCALE.x) around their own centre.
+## Each band's depth is a share of the space it sits in, so tunnels get a smaller one.
+const CEILING_SHARE := 0.3
+const GROUND_SHARE := 0.35
+const BAND_MIN_SIZE := 0.3
+## The segments' opaque part, in source px of their 1920x1080 canvas: the ceiling's from
+## the top down to this, the ground's from this down to the bottom.
+const CEILING_OPAQUE_PX := 435.0
+const GROUND_OPAQUE_TOP_PX := 645.0
+## How far the ground band's canvas bottom sits below the floor line, world px at full size
+## (so its hills rise only a little above the floor, as in the art room).
+const GROUND_SINK := 66.0
+## Foliage: canvas bottom below the floor line (world px at full size), the least headroom
+## (cells) a floor needs for it, and the narrowest run (cells).
+const FOLIAGE_SINK := 64.0
+const FOLIAGE_MIN_HEADROOM := 5
+const BAND_MIN_RUN := 4
+## Sideways drift allowed either side of a band's rest place (world px).
+const BAND_DRIFT := 24.0
+## Draw order of the ground and ceiling bands (the art room's foreground loops sit at 10).
+const FOREGROUND_Z_BOTTOM := 10
+const FOREGROUND_Z_TOP := 11
+## Bands need this much open space (cells) beside them, and ground bands and foliage this
+## many rows of rock under the floor, or they'd paint black over thin rock and tunnels.
+const BAND_MIN_HEADROOM := 4
+const GROUND_MIN_ROCK := 4
+## A band's canvas edges that fall inside the rock fade out over this share of its height,
+## so no hard black edge shows on the textured rock (the art room hides them at the
+## screen's edges).
+const CEILING_TOP_FADE := 0.06
+const GROUND_BOTTOM_FADE := 0.45
+const FOLIAGE_BOTTOM_FADE := 0.4
+const BAND_SHADER := """
+shader_type canvas_item;
+uniform vec2 ends = vec2(0.0);
+uniform vec2 vfade = vec2(0.0, 1.0);
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	float a = 1.0;
+	if (ends.x > 0.0) { a *= smoothstep(0.0, ends.x, UV.x); }
+	if (ends.y > 0.0) { a *= smoothstep(0.0, ends.y, 1.0 - UV.x); }
+	if (vfade.x > 0.0) { a *= smoothstep(0.0, vfade.x, UV.y); }
+	if (vfade.y < 1.0) { a *= 1.0 - smoothstep(vfade.y, 1.0, UV.y); }
+	COLOR.a *= a;
+}
+"""
+static var _band_shader: Shader
+## The warm light at each exit, so the way on reads from across the room.
+const EXIT_LIGHT := Color(1.0, 0.62, 0.3, 0.55)
+const EXIT_LIGHT_DEPTH := 3.0
 
 ## The room's name, shown on entry.
 @export var room_name := "Room"
@@ -57,6 +111,7 @@ func _ready() -> void:
 	player_state = RegionTravel.player_state
 	ledge_grab = false
 	fill_depth = ROOM_FILL_DEPTH
+	close_band_overlap_at_steps = false
 	help_text = ""
 	spawn_point = _arrival_point()
 	super._ready()
@@ -121,6 +176,182 @@ func _read_layout() -> void:
 	corridor_hanging_props = []
 	corridor_start_col = cave_from_col
 	borders = []
+
+
+# --- Terrain-anchored foreground ------------------------------------------------
+
+## Replaces the art room's foreground: the rim (unchanged), then ceiling, ground and
+## foliage bands anchored to the terrain (see CEILING_SHARE).
+func _add_foreground(parent: Node2D) -> void:
+	_add_middle_rim(parent)
+	for run in _ceiling_runs():
+		if run[3] >= BAND_MIN_HEADROOM:
+			_add_ceiling_band(parent, run)
+	var next_foliage := 0
+	for run in _floor_runs():
+		if run[2] - run[1] + 1 < BAND_MIN_RUN or run[3] < BAND_MIN_HEADROOM \
+				or not _solid_below(run, GROUND_MIN_ROCK):
+			continue
+		_add_ground_band(parent, run)
+		if run[3] >= FOLIAGE_MIN_HEADROOM:
+			next_foliage = _add_foliage(parent, run, next_foliage)
+	_add_exit_lights(parent)
+
+
+## Runs of open cells with rock right above: [row, first col, last col, headroom in cells
+## (open cells below, the least along the run)].
+func _ceiling_runs() -> Array:
+	var runs := []
+	for row in range(1, grid.size()):
+		var start := -1
+		var start_room := 0
+		for col in grid[0].length() + 1:
+			var cell: bool = col < grid[0].length() and not _solid(col, row) and _solid(col, row - 1)
+			var room := 0
+			if cell:
+				while row + room < grid.size() and not _solid(col, row + room):
+					room += 1
+			if start >= 0 and (not cell or col == grid[0].length()):
+				if col - start >= BAND_MIN_RUN:
+					runs.append([row, start, col - 1, start_room])
+				start = -1
+			if cell and start < 0:
+				start = col
+				start_room = room
+			elif cell:
+				start_room = mini(start_room, room)
+	return runs
+
+
+## True when the floor run stands on at least [param depth] rows of rock all along it
+## (sampled at its ends, quarters and middle), not a ledge or an island.
+func _solid_below(run: Array, depth: int) -> bool:
+	for i in 5:
+		var col: int = run[1] + (run[2] - run[1]) * i / 4
+		for d in range(1, depth + 1):
+			if not _solid(col, run[0] + d):
+				return false
+	return true
+
+
+func _segments(folder: String, side: String) -> Array[Texture2D]:
+	return [_texture(BIOME + folder + "segments/foreground-%s-A.png" % side),
+			_texture(BIOME + folder + "segments/foreground-%s-B.png" % side)]
+
+
+## The cave look's segments for runs in the cave columns, else the open cavern's.
+func _folder_for(run: Array) -> String:
+	var mid: float = (run[1] + run[2]) * 0.5
+	return "corridor/" if corridor_start_col >= 0 and mid >= corridor_start_col else "parallax/"
+
+
+func _add_ceiling_band(parent: Node2D, run: Array) -> void:
+	var pieces := _segments(_folder_for(run), "top")
+	var full := VIEW_SIZE.y / 1080.0
+	var size := clampf(run[3] * CELL * CEILING_SHARE / (CEILING_OPAQUE_PX * full), BAND_MIN_SIZE, 1.0)
+	# The canvas's top is solid rock: tuck it into the ceiling, its edge faded out.
+	var top: float = run[0] * CELL - 30.0 * size
+	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_TOP, 0,
+			Vector2(CEILING_TOP_FADE, 1.0))
+
+
+func _add_ground_band(parent: Node2D, run: Array) -> void:
+	var pieces := _segments(_folder_for(run), "bottom")
+	var full := VIEW_SIZE.y / 1080.0
+	var size := clampf(run[3] * CELL * GROUND_SHARE / ((1080.0 - GROUND_OPAQUE_TOP_PX) * full),
+			BAND_MIN_SIZE, 1.0)
+	var floor_line: float = (run[0] + 1) * CELL
+	var top := floor_line + GROUND_SINK * size - VIEW_SIZE.y * size
+	_add_band(parent, run, pieces, full * size, top, FOREGROUND_Z_BOTTOM, 0,
+			Vector2(0.0, 1.0 - GROUND_BOTTOM_FADE))
+
+
+## Black foliage standing on a cavern floor, in front of the player. Returns the next piece
+## index (the pieces cycle across runs, like the art room's band).
+func _add_foliage(parent: Node2D, run: Array, first: int) -> int:
+	var pieces: Array[Texture2D] = []
+	for name in SILHOUETTE_PIECES:
+		pieces.append(_texture(SILHOUETTES + "%s.png" % name))
+	var full := VIEW_SIZE.y / 1080.0
+	var floor_line: float = (run[0] + 1) * CELL
+	var top := floor_line + FOLIAGE_SINK - pieces[0].get_height() * full
+	return _add_band(parent, run, pieces, full, top, SILHOUETTE_Z, first,
+			Vector2(0.0, 1.0 - FOLIAGE_BOTTOM_FADE))
+
+
+## One band of [param pieces] across the run's width (whole pieces, stretched a little to
+## fit, the ends faded), its canvas top at world y [param top], fixed up and down and
+## scrolling sideways at FOREGROUND_SCALE.x around the run's centre. Returns the index of
+## the piece after the last one used.
+func _add_band(parent: Node2D, run: Array, pieces: Array[Texture2D], image_scale: float,
+		top: float, z: int, first := 0, vfade := Vector2(0.0, 1.0)) -> int:
+	var x0: float = run[1] * CELL
+	var x1: float = (run[2] + 1) * CELL
+	var width := x1 - x0
+	var piece_w := pieces[0].get_width() * image_scale
+	var count := maxi(1, roundi(width / piece_w))
+	var stretch := width / (count * piece_w)
+	var layer := Node2D.new()
+	layer.z_index = z
+	parent.add_child(layer)
+	var index := first
+	for i in count:
+		var sprite := Sprite2D.new()
+		sprite.texture = pieces[index % pieces.size()]
+		sprite.centered = false
+		sprite.scale = Vector2(image_scale * stretch, image_scale)
+		sprite.position = Vector2(i * piece_w * stretch, 0.0)
+		layer.add_child(sprite)
+		var fade_uv := CLOSE_ROCKS_END_FADE / (piece_w * stretch)
+		var ends := Vector2(fade_uv if i == 0 else 0.0, fade_uv if i == count - 1 else 0.0)
+		if _band_shader == null:
+			_band_shader = Shader.new()
+			_band_shader.code = BAND_SHADER
+		var material := ShaderMaterial.new()
+		material.shader = _band_shader
+		material.set_shader_parameter("ends", ends)
+		material.set_shader_parameter("vfade", vfade)
+		sprite.material = material
+		index += 1
+	var spot := Vector2(x0, top)
+	var reference := clampf((x0 + x1) * 0.5, VIEW_SIZE.x * 0.5, _room_size.x - VIEW_SIZE.x * 0.5)
+	var factor := Vector2(FOREGROUND_SCALE.x, 1.0)
+	_layers.append([layer, factor, spot - Vector2(reference * (1.0 - factor.x), 0.0),
+			Vector2(spot.x - BAND_DRIFT, spot.x + BAND_DRIFT)])
+	return index
+
+
+## A warm light in each exit's opening, fading into the room, so the way on is easy to see.
+func _add_exit_lights(parent: Node2D) -> void:
+	for exit in _exits():
+		var at: Vector2 = exit.position + (exit.get_parent() as Node2D).position
+		var half: Vector2 = exit.size * 0.5
+		var depth := EXIT_LIGHT_DEPTH * CELL
+		var clear := Color(EXIT_LIGHT, 0.0)
+		var light := Polygon2D.new()
+		light.z_index = -5
+		var inward := Vector2.ZERO
+		if at.x < CELL:
+			inward = Vector2.RIGHT
+		elif at.x > _room_size.x - CELL:
+			inward = Vector2.LEFT
+		elif at.y < CELL * 4.0:
+			inward = Vector2.DOWN
+		else:
+			inward = Vector2.UP
+		var a: Vector2
+		var b: Vector2
+		if inward.x != 0.0:
+			var x: float = 0.0 if inward.x > 0.0 else _room_size.x
+			a = Vector2(x, at.y - half.y)
+			b = Vector2(x, at.y + half.y)
+		else:
+			var y: float = 0.0 if inward.y > 0.0 else _room_size.y
+			a = Vector2(at.x - half.x, y)
+			b = Vector2(at.x + half.x, y)
+		light.polygon = PackedVector2Array([a, b, b + inward * depth, a + inward * depth])
+		light.vertex_colors = PackedColorArray([EXIT_LIGHT, EXIT_LIGHT, clear, clear])
+		parent.add_child(light)
 
 
 func _is_slab(rows: Array[PackedStringArray], x: int, y: int, cells: Vector2i) -> bool:
