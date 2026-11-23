@@ -1,6 +1,6 @@
 # Cinderheart (region 1)
 
-Status: second layout, 2026-11-23. Layouts live in `tools/level/cinderheart_layout.py` and
+Status: third layout (ant farm), 2026-11-23. Layouts live in `tools/level/cinderheart_layout.py` and
 are checked by `tools/level/reach.py`; the built rooms are
 `src/world/cinderheart/rooms/*.tscn` and can be edited in Godot (paint the Layout layer:
 the rock brush, or the purple fake-wall brush for secret passages).
@@ -23,37 +23,56 @@ the rock brush, or the purple fake-wall brush for secret passages).
 - **World first, by intuition, then iterate on play** (Team Cherry, via
   [Game Developer](https://gamedeveloper.com/design/how-the-i-hollow-knight-i-devs-mapped-out-their-metroidvania-)).
 
+## Ant farm, beehive, switchbacks (third layout, 2026-11-23)
+
+The second layout was big open boxes with islands floating in them: rooms with no
+structure. The third is built the other way round, like an ant farm seen in cross
+section: **every room starts as solid rock and is carved**:
+
+- **Chambers** (open caverns, the far city behind) and **tunnels** (cave sections, the
+  close rock wall behind: `cave_from_col`) at different depths.
+- **Beehive connections:** each chamber joins two or three others, so there's more than
+  one way through a room (Waking Niche's window into its switchback, Cinder Run's high and
+  low tunnels joined by the Middle Chamber, Ash Steps' high road and low road).
+- **The big islands are the rock left between passages**, not boxes floating in air.
+  Small floating platforms sit between them where a climb needs a step.
+- **Switchbacks:** stacked tunnels climbed in a zig-zag. Run to the end, hop up through a
+  gap in the slab (a 2-cell step, then a ledge), run back the other way a level higher
+  (Waking Niche, Bellows Climb).
+
+Every room renders through the art-style test room's full pipeline (`RegionRoom` extends
+it): far city and ruins, close rock and plant bands, the cave's close rear wall, foreground
+loops, the porous rock rim and textured wall fill, silhouettes and the mood pass.
+
 ## Movement the layout is built on (measured in game, `tools/level/measure_jump.gd`)
 
-A cell is 36 px. `jump_speed` is now 420 (was 330): a jump rises 96 px, so **2-cell
-climbs** are possible and rooms can go up. A run jump crosses a 3-cell gap; the dash jump
-crosses 4. Dash gates are 4-cell gaps whose far side is a cell higher, over a pit you
-can climb back out of on the near side only.
+A cell is 36 px. `jump_speed` is 420: a jump rises 96 px, so **2-cell climbs** are possible.
+A run jump crosses a 3-cell gap; the dash jump crosses 4. Dash gates are 4-cell gaps whose
+far side is a cell higher, over a pit you can climb back out of on the near side only.
 
 ## The map
 
+Room layouts as pictures: `production/qa/evidence/cinderheart/layout-*.png` (tan open
+cavern, grey cave section, purple fake wall, blue exits, green rest, red enemies, pink
+relics, yellow ability).
+
 ```
- [C1 Waking Niche] ─► [C2 Ash Steps] ───(one-way drop onto a high shelf)──┐
-  start, rest,          high road over a great rock,                       ▼
-  secret wall, climb    low cave under it, relic on islands    [C3 KILN HALL] ─► [C9 Ember Hoard]
-                                                                HUB, rest       hidden, relic
- [C7 Bellows Climb] ──(dash gap)──────────────────────────────► low left        (island climb)
-  tall shaft, shortcut home                                         │ floor hole      │ right
-        ▲                                                           ▼                 ▼
- [C6 Keeper's Forge] ◄────────────────────────────── [C4 Cinder Run]   [C5 Glaze Bridge] ─► [C8 Antechamber] ─► Boss
-  arena, DASH on a high island                         low road + island     DASH GATE, relic    rest
-                                                       road, secret wall     seen from the near side
+ [C1 Waking Niche] ─► [C2 Ash Steps] ───(one-way drop onto an island)───┐
+  cavern + 5-level      the Ash Well (deep cavern),                      ▼
+  switchback, secret    high road / low road, relic    [C3 KILN HALL] ─► [C9 Ember Hoard]
+                                                        HUB, rest        hidden, relic
+ [C7 Bellows Climb] ──(dash gap)──────────────────────► low left tunnel   (island climb)
+  6-level switchback, shortcut home                        │ floor hole      │ right
+        ▲                                                  ▼                 ▼
+ [C6 Keeper's Forge] ◄──────────────────────── [C4 Cinder Run]    [C5 Glaze Bridge] ─► [C8 Antechamber] ─► Boss
+  arena, DASH on the middle island               landing chamber,       DASH GATE, relic    rest
+                                                 high + low tunnels,    seen from the near side
+                                                 Middle Chamber, secret
 ```
 
-Intended first run: wake (C1), climb out, descend Ash Steps (high or low road), drop
-into the hub. Choices: try the bridge (blocked), climb the hub's islands to the hidden
-room, or go down the floor hole. Cinder Run → Keeper's Forge (win the dash on its high
-island) → Bellows Climb (zig-zag up, dash the gap) → the hub's lower left: the loop is
-closed. Cross the bridge, take its relic, rest, boss.
-
-Relics (Ember Hearts, +10 max health each): C1 behind the wall at the start, C2 on the
-island climb over the great rock, C4 behind the fake wall at the end of the upper road,
-C5 over the bridge (after the dash), C9 in the hidden room.
+Relics (Ember Hearts, +10 max health each): C1 behind the fake wall off the cavern's high
+ledge, C2 at the far end of the high road, C4 behind the fake wall in the Middle Chamber,
+C5 on the island over the bridge (after the dash), C9 in the hidden room.
 
 ## Not built yet
 
