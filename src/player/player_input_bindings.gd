@@ -5,7 +5,7 @@
 ## Keyboard layout follows the Seeker pack's playable test: Space or Z jump, X attack
 ## (tap for the combo, hold for the heavy, up + X up attack, in the air X jump attack and
 ## down + X the pogo), Shift or C dash, E grapple, F bow, Q cast or charge, V rapid fire.
-## Up (W or the up arrow) enters doors. bow, cast and rapid_fire are reserved for later
+## Up (W or the up arrow) enters doors. Hold R (gamepad Y) to heal when the heal meter is full. bow, cast and rapid_fire are reserved for later
 ## stories and do nothing yet.
 ##
 ## Usage: [codeblock]
@@ -34,7 +34,8 @@ const BINDINGS := {
 	"attack": {"keys": [KEY_X], "buttons": [JOY_BUTTON_X]},
 	"bow": {"keys": [KEY_F], "buttons": [], "axis": JOY_AXIS_TRIGGER_RIGHT, "axis_value": 1.0},
 	"cast": {"keys": [KEY_Q], "buttons": [], "axis": JOY_AXIS_TRIGGER_LEFT, "axis_value": 1.0},
-	"rapid_fire": {"keys": [KEY_V], "buttons": [JOY_BUTTON_Y]},
+	"heal": {"keys": [KEY_R], "buttons": [JOY_BUTTON_Y]},
+	"rapid_fire": {"keys": [KEY_V], "buttons": []},
 }
 
 

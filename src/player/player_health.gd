@@ -22,6 +22,8 @@ extends RefCounted
 signal damaged(amount: float, health_left: float)
 ## Emitted once, on the hit that brings health to zero.
 signal depleted
+## Emitted when [method heal] restores health, with the amount restored and the new health.
+signal healed(amount: float, health_now: float)
 
 ## Health the player starts and respawns with (read only; set through configure).
 var max_health := 0.0
@@ -57,6 +59,24 @@ func take_damage(amount: float) -> bool:
 	if current <= 0.0:
 		depleted.emit()
 	return true
+
+
+## Restores up to [param amount] health, never above [member max_health] and never at
+## zero health. Leaves the invulnerability window alone. Returns the amount restored.
+func heal(amount: float) -> float:
+	if amount <= 0.0 or current <= 0.0:
+		return 0.0
+	var restored := minf(amount, max_health - current)
+	if restored <= 0.0:
+		return 0.0
+	current += restored
+	healed.emit(restored, current)
+	return restored
+
+
+## True when health is below max and above zero.
+func is_hurt() -> bool:
+	return current > 0.0 and current < max_health
 
 
 ## Advances the invulnerability window by [param delta] seconds.

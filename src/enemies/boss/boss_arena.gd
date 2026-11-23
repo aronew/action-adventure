@@ -31,12 +31,17 @@ const RELOAD_DELAY := 1.0
 const BACKGROUND_COLOR := Color(0.1, 0.09, 0.14)
 const SOLID_COLOR := Color(0.32, 0.3, 0.4)
 const HELP_POSITION := Vector2(4, 256) * DebugHud.SCALE
-const HELP_TEXT := "Move arrows/WASD  Jump Space/Z  Dash Shift/C  Attack X (hold: heavy)\nGuarded, the boss shrugs hits off.\nBreak its guard (a charged heavy does it at once), then hit hard."
+const HELP_TEXT := "Move arrows/WASD  Jump Space/Z  Dash Shift/C  Attack X (hold: heavy)  Heal hold R (meter full)\nGuarded, the boss shrugs hits off.\nBreak its guard (a charged heavy does it at once), then hit hard."
 const FONT_SIZE := DebugHud.FONT_SIZE
 
 const PLAYER_BAR_POSITION := Vector2(4, 4) * DebugHud.SCALE
 const PLAYER_BAR_SIZE := Vector2(100, 6) * DebugHud.SCALE
 const PLAYER_HEALTH_COLOR := Color(0.85, 0.25, 0.25)
+## The heal meter bar, under the health bar.
+const METER_BAR_POSITION := PLAYER_BAR_POSITION + Vector2(0, 8) * DebugHud.SCALE
+const METER_BAR_SIZE := Vector2(100, 3) * DebugHud.SCALE
+const METER_COLOR := Color(0.95, 0.85, 0.45)
+const METER_FILLING_COLOR := Color(0.55, 0.5, 0.35)
 const BAR_BACK_COLOR := Color(0.1, 0.1, 0.1)
 const BOSS_BAR_POSITION := Vector2(200, 11) * DebugHud.SCALE
 const BOSS_BAR_SIZE := Vector2(200, 7) * DebugHud.SCALE
@@ -68,6 +73,7 @@ var _player: Player
 var _boss: Boss
 var _player_fill: ColorRect
 var _player_status: Label
+var _meter_fill: ColorRect
 var _boss_hud: Control
 var _boss_health_fill: ColorRect
 var _boss_health_text: Label
@@ -84,6 +90,7 @@ func _ready() -> void:
 	_player = PLAYER_SCENE.instantiate()
 	_player.position = SPAWN_POINT
 	_player.damaged.connect(_on_player_damaged)
+	_player.healed.connect(func(_amount: float, now: float) -> void: _on_player_damaged(0.0, now))
 	_player.died.connect(_on_player_died)
 	add_child(_player)
 
@@ -128,6 +135,9 @@ func _build_hud() -> void:
 	var hud := CanvasLayer.new()
 	_add_label(hud, HELP_POSITION).text = HELP_TEXT
 	_player_fill = _add_bar(hud, PLAYER_BAR_POSITION, PLAYER_BAR_SIZE, PLAYER_HEALTH_COLOR)
+	_meter_fill = _add_bar(hud, METER_BAR_POSITION, METER_BAR_SIZE, METER_FILLING_COLOR)
+	_player.heal_meter.changed.connect(_on_meter_changed)
+	_on_meter_changed(_player.heal_meter.amount, _player.heal_meter.capacity)
 	_player_status = _add_label(hud, PLAYER_BAR_POSITION + Vector2(PLAYER_BAR_SIZE.x + 6.0 * DebugHud.SCALE, -4.0 * DebugHud.SCALE))
 
 	_boss_hud = Control.new()
@@ -165,6 +175,11 @@ func _add_label(parent: Node, label_position: Vector2) -> Label:
 	label.add_theme_font_size_override(&"font_size", FONT_SIZE)
 	parent.add_child(label)
 	return label
+
+
+func _on_meter_changed(amount: float, capacity: float) -> void:
+	_meter_fill.size.x = METER_BAR_SIZE.x * (amount / capacity if capacity > 0.0 else 0.0)
+	_meter_fill.color = METER_COLOR if _player.heal_meter.is_full() else METER_FILLING_COLOR
 
 
 func _on_player_damaged(_amount: float, health_left: float) -> void:

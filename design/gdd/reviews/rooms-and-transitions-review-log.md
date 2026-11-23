@@ -244,3 +244,67 @@ Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d
 Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
 Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
 Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+
+## Review — 2026-11-23 — Verdict: NEEDS REVISION
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 1 | Recommended: 7
+Summary: Re-review of the seventh review's revised text (its receipt stamped the revised text, so the verdict had not covered it). The dead-Seeker rule, hold-clear ownership, load and fast-travel AC and Healing citation hold; R1 and R2 arithmetic and registry values check out. The new blocker was a seam between rules 7 and 9: a door arrival both ignored input and delivered buffered presses. Revised the same session (owner: discarded after a door). Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (the seventh review's blocker held)
+Findings:
+- [BLOCKING] Rules 7 / 9: door arrivals ignore input until the fade-in ends but rule 9 delivered buffered presses after a door — revised: discarded after a door, AC added
+- [RECOMMENDED] Rule 5: dead body "stops at the bounds" had no mechanism — revised: rests in the exit lip, AC added; "stop" wording for enemies and projectiles aligned to removed or freed
+- [RECOMMENDED] Cross-References: Save points shown Approved, controller without status — revised; Last Verified updated
+- [RECOMMENDED] R2: hurt knockback speed unspecified, could exceed the lip's fastest move — noted in R2, open until the controller specifies it
+- [RECOMMENDED] Edge Cases: 48 px spawn clearance now also covers a room's default arrival point — revised
+- [RECOMMENDED] Rule 16 undefined arena, hazard and kill-plane fields; Rooms-owned values not in the registry; Parallax build measurement against R3; Grid map and Parallax room data; retired id record — open, Open Questions 8-11
+- [RECOMMENDED] Carried from 2026-11-19: box centre vs feet origin, unreachable corner tie, shut-line landing refresh, residency cancel and free-before-load, graph edge attributes, camera zone ACs, compound ACs, Tuning Knobs and Player Fantasy (advisory) — open
+Receipt note: the target doc is stamped at the revised text; the other files at their state when the review ended.
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
+Reviewed-Content-Hash: design/registry/entities.yaml f9a1ec2541f72715a52114f805bf6d32d3ee9dcb
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+
+## Review — 2026-11-23 — Verdict: APPROVED
+Review mode: lean · Workflow: standard
+Scope signal: L
+Specialists: none (lean mode)
+Blocking items: 0 | Recommended: 6
+Summary: Ninth review, of the eighth review's revised text (that receipt stamped the revised text, so its verdict had not covered it). The door-press discard (rules 7, 9), dead body in the exit lip (rule 5), hold ownership and rest-area checks are consistent with Save points rules 6 and 8 and the controller's Damage block; all formula arithmetic and registry values re-verified, including the changed player_config.tres, seeker_animations.json (EnterDoor 1620 ms) and project.godot (60 Hz default). Main-review assessment only (lean: no creative-director).
+Prior verdict resolved: Yes (the eighth review's blocker held)
+Findings:
+- [RECOMMENDED] Rule 8: a new game's seated arrival (Save points rule 8, controller ARRIVING) is not listed; state its fade and hold
+- [RECOMMENDED] Rule 7 / Edge Cases: a pause press during EnterDoor (world running, input ignored, not yet a transition) is undefined against Pause rule 5
+- [RECOMMENDED] Rules 7, 9: a button held across the end of the ignore window (heavy charge, hold-mode heal) is unspecified; read it as not held until released, as Pause rule 9
+- [RECOMMENDED] Dependencies: healing.md never names Rooms; its rule 9 involuntary list names an exit taking over, but the summary list above it omits the exit (corrected the same day at the Healing review)
+- [RECOMMENDED] Acceptance Criteria: dead-body rest AC does not say box edge or centre, and has no 12 px side-exit case
+- [RECOMMENDED] Open Questions 8-11 and items carried from 2026-11-19 (box centre vs feet origin, corner tie, shut-line landing refresh, residency cancel, graph edge attributes, camera zone ACs, compound ACs; Tuning Knobs and Player Fantasy advisory) — open
+Reviewed-Content-Hash: design/gdd/rooms-and-transitions.md 279a4745fa7a3a1c6f3f4978ca736a4ef516e27a
+Reviewed-Content-Hash: design/registry/entities.yaml f9a1ec2541f72715a52114f805bf6d32d3ee9dcb
+Reviewed-Content-Hash: .claude/skills/design-review/SKILL.md 4dcc8b81162613c757144532f1b72708ab3ba27f
+Reviewed-Content-Hash: design/gdd/save-points-and-save-load.md d594feb094dca1291ef14d458e4bee0cd2184c73
+Reviewed-Content-Hash: design/gdd/level-design.md 98715c97dfbc832944c44cfe593b5ada9e0e8df1
+Reviewed-Content-Hash: design/gdd/player-controller.md b5767f9f0ac6f93f3ccbd508dfb09d1787d95b0a
+Reviewed-Content-Hash: design/gdd/healing.md b0fe575dac61be3248dfd3d464447531aec39a42
+Reviewed-Content-Hash: design/gdd/grid-map.md ad69268541bb3f991a284f924b6fbf04dddda268
+Reviewed-Content-Hash: design/gdd/parallax-lighting-and-atmosphere.md d3fbdfdf2fe6a357a04860a017ff4be251f272de
+Reviewed-Content-Hash: design/gdd/game-concept.md c63468587aa8bd1ec34d8aaea42a37d41bdfee6f
+Reviewed-Content-Hash: design/gdd/terrain-pipeline.md 319821e70abf7cca3ebffe7e3d3bd8b48acca4ca
+Reviewed-Content-Hash: design/gdd/enemies.md f43acef9bc8cb4f63cac9fa8c8607c21ee525c3a
+Reviewed-Content-Hash: design/gdd/pause-and-menus.md aa956598e966d76f26910f4925a74e9fb87ef580
+Reviewed-Content-Hash: design/game-brief.md dc436c0b723420a0c7dbf2890f03b2771e3fc433
+Reviewed-Content-Hash: design/gdd/world-state.md 6cd27bb29d87325eafada99f059a83bbeae7b513
+Reviewed-Content-Hash: src/player/player_config.tres 7654ef2ba4121534d4d2e0d1e3ff115d401114f7
+Reviewed-Content-Hash: src/player/seeker_animations.json ac029ef6d533048e6eb7d8b003eefc0539140e77
+Reviewed-Content-Hash: project.godot e39be1b5ab397a4cf756fcc887007699b7ae27d2
