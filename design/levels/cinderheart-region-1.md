@@ -41,8 +41,22 @@ section: **every room starts as solid rock and is carved**:
   (Waking Niche, Bellows Climb).
 
 Every room renders through the art-style test room's full pipeline (`RegionRoom` extends
-it): far city and ruins, close rock and plant bands, the cave's close rear wall, foreground
-loops, the porous rock rim and textured wall fill, silhouettes and the mood pass.
+it): far city and ruins, close rock and plant bands, the cave's close rear wall, the porous
+rock rim and textured wall fill, and the mood pass.
+
+**Foreground in carved rooms.** The art room's foreground is two screen-height loops (the
+rock ceiling across the top of the screen, the near rocks across the bottom) and a foliage
+band locked to the screen's bottom. That fits a room one screen tall with one ceiling and
+one floor; in a tall carved room it floats with the camera. Here the same art is anchored
+to the terrain instead: every ceiling over a space at least 4 cells tall gets the rock
+overhang hanging from it, every cavern floor on deep rock gets the near rocks over the rock
+under it and the black foliage standing on it. All of it is fixed to the terrain up and
+down, scrolls sideways at the art room's 1.2, is sized to the space it sits in, and fades
+on every edge that lands inside rock.
+
+**Exits are lit**: a warm light in each exit's opening, so the way on reads from across the
+room. Waking Niche's exit is at the end of its third level, reached two ways: climb the
+cavern's islands to the window, or take the low tunnel up the switchback.
 
 ## Movement the layout is built on (measured in game, `tools/level/measure_jump.gd`)
 

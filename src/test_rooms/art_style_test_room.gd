@@ -389,6 +389,12 @@ var borders: Array = BORDERS
 var player_state: PlayerState = null
 var ledge_grab := true
 var fill_depth := -1
+## Cells over which the wall fill fades out at fill_depth.
+const FILL_FADE_CELLS := 2
+## Where a floor run ends at a step in the ceiling (not a drop, not a wall), whether its
+## close bands run on two cells as if behind a wall (this room's corridor mouth) or fade
+## out at the run's end (carved rooms, where the next run may be too short for a band).
+var close_band_overlap_at_steps := true
 ## The Seeker this room made (read only).
 var seeker: Player
 ## Distance in cells from each solid cell to the nearest open one (only when fill_depth >= 0).
@@ -596,6 +602,15 @@ func _shallow(col: int, row: int) -> bool:
 	return fill_depth < 0 or _depth.get(Vector2i(col, row), 999) <= fill_depth
 
 
+## How opaque the wall fill is at this cell: full near open air, fading out over its last
+## FILL_FADE_CELLS cells so deep rock blends into black instead of stopping at an edge.
+func _fill_alpha(col: int, row: int) -> float:
+	if fill_depth < 0:
+		return 1.0
+	var d: int = _depth.get(Vector2i(col, row), 999)
+	return clampf(float(fill_depth + 1 - d) / float(FILL_FADE_CELLS + 1), 0.0, 1.0)
+
+
 ## The edge tile for a solid cell, or -1 for an interior cell (plain black).
 func _edge_tile(col: int, row: int) -> int:
 	var up := not _solid(col, row - 1)
@@ -780,6 +795,12 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 		# towards a wall (the wall hides it).
 		var drop_left := not _solid(run[1] - 1, row + 1)
 		var drop_right := not _solid(run[2] + 1, row + 1)
+		# A step in the ceiling (open beside, floor continuing): fade there, like a drop,
+		# unless this room overlaps bands at steps.
+		var step_left := not drop_left and not _solid(run[1] - 1, row) \
+				and not close_band_overlap_at_steps
+		var step_right := not drop_right and not _solid(run[2] + 1, row) \
+				and not close_band_overlap_at_steps
 		if drop_left:
 			x0 += CLOSE_ROCKS_EDGE_INSET
 		if drop_right:
@@ -788,9 +809,9 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 		var drift_right := CLOSE_ROCKS_DROP_DRIFT if drop_right else CELL
 		# At a wall the band runs on behind it (one cell plus its drift), so it meets the
 		# wall at full height instead of tapering; it only tapers and fades at a drop.
-		if not drop_left:
+		if not drop_left and not step_left:
 			x0 -= CELL * 2.0
-		if not drop_right:
+		if not drop_right and not step_right:
 			x1 += CELL * 2.0
 		var width := x1 - x0
 		if width < CLOSE_ROCKS_MIN_RUN:
@@ -816,8 +837,8 @@ func _add_close_band(parent: Node2D, folder: String, names: Array, scroll: float
 			# The stretch's ends: the pieces end in a low block of rubble; fade its last
 			# CLOSE_ROCKS_END_FADE px so it trails off instead of stopping square.
 			var fade_uv := CLOSE_ROCKS_END_FADE / (piece_size.x * stretch)
-			var ends := Vector2(fade_uv if i == 0 and drop_left else 0.0,
-					fade_uv if i == count - 1 and drop_right else 0.0)
+			var ends := Vector2(fade_uv if i == 0 and (drop_left or step_left) else 0.0,
+					fade_uv if i == count - 1 and (drop_right or step_right) else 0.0)
 			if ends != Vector2.ZERO:
 				_end_fade(sprite, ends)
 		# Where the stretch sits with the camera centred on it; it scrolls sideways at
@@ -1086,6 +1107,8 @@ func _add_middle_patches(parent: Node2D, featured: Dictionary) -> void:
 			sprite.position = square.position
 			sprite.z_index = MIDDLE_Z - 1
 			sprite.material = material
+			var centre := Vector2i((square.get_center() / CELL).floor())
+			sprite.modulate.a = _fill_alpha(centre.x, centre.y)
 			parent.add_child(sprite)
 
 
@@ -1118,7 +1141,7 @@ func _patch_fits(square: Rect2, featured: Dictionary, clear_depth: float) -> boo
 ## features may go.
 func _fill_cell(col: int, row: int) -> bool:
 	return _solid(col, row) and col >= 0 and row >= 0 and col < grid[0].length() \
-			and row < grid.size() and _shallow(col, row) and _edge_tile(col, row) < 0 \
+			and row < grid.size() and _fill_alpha(col, row) >= 1.0 and _edge_tile(col, row) < 0 \
 			and _inside_corner_tiles(col, row).is_empty()
 
 
@@ -1167,6 +1190,7 @@ func _add_middle_fill(parent: Node2D, col: int, row: int, masks: Array = []) -> 
 	sprite.scale = Vector2.ONE * CELL / TILE_SOURCE
 	sprite.position = Vector2(col * CELL, row * CELL)
 	sprite.z_index = MIDDLE_Z - 1
+	sprite.modulate.a = _fill_alpha(col, row)
 	if not masks.is_empty():
 		if _mask_shader == null:
 			_mask_shader = Shader.new()
@@ -1305,7 +1329,9 @@ func _add_corridor_wall(parent: Node2D) -> void:
 	# rows of the loop stacked below, every other one mirrored so the seams meet.
 	var height := texture.get_height() * image_scale
 	var travel_y := maxf(_room_size.y - VIEW_SIZE.y, 0.0)
-	var rows := int(ceil((VIEW_SIZE.y + travel_y * (1.0 - factor.y)) / height)) + 1
+	# The layer moves with the world at factor.y, so it must span the camera's travel
+	# times that (plus a screen) to stay under the view.
+	var rows := int(ceil((VIEW_SIZE.y + travel_y * factor.y) / height)) + 1
 	var layer := Node2D.new()
 	mask.add_child(layer)
 	for r in rows:
