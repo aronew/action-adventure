@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: "2026-11-21"
+last_updated: "2026-11-23"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -522,9 +522,10 @@ constants:
     source: design/gdd/pause-and-menus.md
     referenced_by:
       - design/gdd/grid-map.md   # Open Question 7: Escape is also cancel and closes the map
+      - design/gdd/player-controller.md   # input table: `pause` is a reserved, planned action
     value: {keyboard: Escape, gamepad: Start}
     unit: input
-    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack."
+    notes: "Pause and menus rules 5, 6 and 19. The `pause` action: fixed, never remappable, and reserved: no game action may take it. While the map is open Escape closes it as cancel and Start does nothing (rule 6, which settles Grid map Open Question 7); pause and the map never stack. Gamepad B is reserved for `cancel` (rule 19), so the controller's `interact` drops it (pause-and-menus.md Open Questions; player-controller.md input table)."
     added: 2026-11-21
   - name: meter_capacity
     status: active
@@ -558,6 +559,51 @@ constants:
     unit: s
     notes: "Healing rules 7 and 8 (range 0.5-2.0 s; owner, 2026-11-22). The planted channel before a heal completes. Compared against the gap from the end of one boss strike to the start of the next: previous recovery plus attack_cooldown 0.6 s plus the next pattern's wind-up, and the last pattern is never picked again, so the gaps are 2.4 to 3.0 s (after slam 2.7 or 2.9, after lunge 2.6 or 3.0, after shockwave 2.4 or 3.0; 0.4 s more after a stagger: post_stagger_cooldown 1.0 s replaces attack_cooldown 0.6 s) and the 4.0 s stagger. A heal started right after a strike ends 0.6 to 0.9 s before the next wind-up begins, so the existing patterns cannot punish it; that is the boss's to change (Healing Open Question 12). A heal that follows a hit starts after the 0.35 s hurt lock and ends about 0.55 s (after a slam) or 0.25 s (after a lunge or shockwave) before the next wind-up, and at least 1.05 s before the next strike (fifth design review, 2026-11-23). A shockwave already in flight (3.5 s at 150 px/s) is the exception. Revised in the second design review (replaced the 1.0-1.3 s recovery premise) and the third (replaced the gap labels, which named same-pattern repeats that cannot happen). Bosses adds itself to referenced_by when its GDD adopts it; empty until then."
     added: 2026-11-22
+  - name: dash_speed
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # F3, Values (Dash)
+      - design/gdd/ability-gating.md   # F10 pane_detect_px, the dash gap window F1
+      - design/gdd/level-design.md   # gate dimensions
+      - design/gdd/rooms-and-transitions.md   # R5 t_reach reads it from player_config.tres
+      - design/gdd/terrain-pipeline.md
+    value: 370
+    unit: px/s
+    notes: "Player controller F3 (`player_config.tres` `dash_speed`). Horizontal speed of the 0.25 s dash (92.5 px). Gate figures derive from it: ability gating F10 (pane_detect_px = ceil(dash_speed / sim_hz) + detect_margin, 9 px at 370) and the dash gap window F1; Rooms R5 reads it for the advisory exit-reach check. A change to the config value needs /propagate-design-change."
+    added: 2026-11-23
+  - name: fast_fall_speed
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # F2, Values (Jump)
+      - design/gdd/rooms-and-transitions.md   # R5 t_reach: dy / fast_fall_speed
+      - design/gdd/terrain-pipeline.md
+    value: 640
+    unit: px/s
+    notes: "Player controller F2 (`player_config.tres` `fast_fall_speed`). The fall cap while down has been held 0.2 s and the Seeker is not attacking; the normal cap is 480 and the down attack's is 220 (combat). Acceleration there is 900 x 1.5 x 1.8 = 2430 px/s2 (the multipliers compound). Rooms R5 reads it as a lower bound on fall time."
+    added: 2026-11-23
+  - name: grapple_range
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # rule 9, F4
+      - design/gdd/ability-gating.md   # F3 and F11: every grapple hop is at most this far
+      - design/gdd/level-design.md   # anchor placement
+    value: 200
+    unit: px
+    notes: "Player controller rule 9 (`player_config.tres` `grapple_range`). The nearest grapple_anchor within this distance is chosen, with no line-of-sight check. The farthest anchor it can fling from gives a rise of at most 224 px and a vy of at most -635 px/s (F4). Ability gating F11 bounds every hop by it."
+    added: 2026-11-23
+  - name: base_max_health
+    status: active
+    source: design/gdd/player-controller.md
+    referenced_by:
+      - design/gdd/player-controller.md   # Values (Hurt)
+      - design/gdd/collectible-upgrades.md   # F2: the base that health steps add to
+    value: 100
+    unit: health
+    notes: "Player controller Values (`player_config.tres` `max_health`). Max health with no upgrade steps. Anything that heals or sizes a bar must read max_health_derived (base + steps x health_step, 100-180), never this base; Healing and Save points already do."
+    added: 2026-11-23
 
 # Example:
 #
