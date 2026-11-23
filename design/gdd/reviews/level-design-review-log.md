@@ -495,3 +495,11 @@ Reviewed-Content-Hash: src/player/attack_data.tres ff3546b25b67bdb9c8b01637d6d43
 Reviewed-Content-Hash: src/enemies/enemy_grunt.tres cc60d3f8b768d749f87d7ca1d034fa9e9a046333
 Reviewed-Content-Hash: src/enemies/enemy_brute.tres 31fbfb9fece80205ea2e4e42e39e75cc8366d296
 Reviewed-Content-Hash: src/enemies/enemy_skitter.tres f1619fbd4dee8708a9eb2b42e76499647713b950
+
+## Freshness check — 2026-11-23 — no verdict (full re-review owed)
+Review mode: lean · Workflow: standard
+The GDD was byte-identical to the eighteenth review (APPROVED, 2026-11-21). Stamped cross-document files had changed: `player_config.tres` and `player.gd` (ledge grab added, off by default: no conflict), the registry (controller, heal and pause entries; `dash_speed` 370 matches F7) and `design/game-brief.md`, whose hooks now say double jump and wall cling are pure traversal. That conflicts with rule 7 ("changes combat as well as movement ... wall cling: wall-based attack angles; double jump: second air window"), as does concept pillar 4 (cross-review 2026-11-23, D-2). Per the skill, a conflict escalates to a full re-review; the owner chose to run it after /clear.
+Owner decision, 2026-11-23: rule 7 amended to follow pillar 4 (only the dash, and the grapple if it hits, have a fight role; double jump and wall cling are pure traversal). No other line of the GDD restated the per-key combat roles.
+Findings:
+- [BLOCKING, revised] Core Rules rule 7: per-key combat roles contradict pillar 4 and the game brief
+- Full re-review owed in a fresh session (no other section re-read here)
